@@ -197,6 +197,8 @@ body.pv .pgb{display:none}
 <div class="catp" data-c="po" id="popal"></div>
 <button class="cat" data-c="pl">📐 Satz des Pythagoras</button>
 <div class="catp" data-c="pl" id="plpal"></div>
+<button class="cat" data-c="pn">∥ Parallele und Normale</button>
+<div class="catp" data-c="pn" id="pnpal"></div>
 <div class="catp" data-c="zr" id="zrpal"></div>
 <button class="cat" data-c="pc">％ Prozentrechnung</button>
 <div class="catp" data-c="pc" id="prpal"></div>
@@ -243,6 +245,7 @@ body.pv .pgb{display:none}
 <div class="grp" id="g-pc" data-cats="pc"></div>
 <div class="grp" id="g-po" data-cats="po"></div>
 <div class="grp" id="g-pl" data-cats="pl"></div>
+<div class="grp" id="g-pn" data-cats="pn"></div>
 <div class="grp" id="g-zr" data-cats="zr"></div>
 <div class="grp" id="g-sw" data-cats="sw"></div>
 <div class="grp" id="g-dk" data-cats="dk"></div>
@@ -1053,8 +1056,8 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ra-act]');
 const MDT=['mm','mv','ms','kf','ks'];
 const PRT=['prd','prg','prw','prs','prk','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
-const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const ZRT=['zr'];
-const TLT=[...SWT,...PYT,...ZRT,...POT,...PRT,...MDT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
+const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const PNT=['pnk','pnb','pnz'];const ZRT=['zr'];
+const TLT=[...SWT,...PYT,...PNT,...ZRT,...POT,...PRT,...MDT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
 const TLN={tdv:'Teiler ∣ / ∤',tpr:'Primzahlen nennen',ttr:'Teilbarkeitsregeln',tzw:'Zahlen finden',tpz:'Primfaktorzerlegung',tsv:'Sieb des Eratosthenes',ttm:'Teilermengen',tgg:'ggT',tkm:'kgV',tsa:'Sachaufgaben'};
 const TLD={tdv:{n:16,lv:1,co:4},tpr:{mx:20,ps:2},ttr:{n:5,dv:'2,3,5,9,10',lv:2,mk:'kreuz'},tzw:{n:3,dv:'3,5,9',zk:3,lv:2},tpz:{n:12,co:4,lv:2,pot:false},tsv:{mx:100,cs:36,ins:false},ttm:{n:6,lv:1,bsp:false},tgg:{n:3,gm:'tm',nz:2,lv:1},tkm:{n:3,gm:'vm',nz:2,lv:1},tsa:{n:3,ty:'beide',rl:2,an:true}};
 const tgcd=(a,b)=>b?tgcd(b,a%b):a,tlcm=(a,b)=>a/tgcd(a,b)*b;
@@ -1097,7 +1100,7 @@ const TLGGT=[
  ()=>{const [a,b]=tpick([[24,36],[18,30],[20,45],[32,48],[28,42],[15,25]]),g=tgcd(a,b);
   return [`Lea hat ${a} Äpfel und ${b} Birnen. Sie möchte möglichst viele gleiche Obstteller herrichten, ohne dass Obst übrig bleibt. Wie viele Teller kann sie höchstens machen? Was liegt auf jedem Teller?`,`ggT(${a}, ${b}) = ${g}. Sie kann ${g} Teller machen; auf jedem liegen ${a/g} Äpfel und ${b/g} Birnen.`];}
 ];
-function tlGen(it){if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
+function tlGen(it){if(PNT.includes(it.type))return pnGen(it);if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
  if(k==='tdv'){const o=own.filter(l=>l.length>=2);
   if(o.length)it.d=o.map(l=>[l[0],l[1]]);
   else{const mx=[0,100,1000,99999][lv];it.d=tuniq(n,()=>{const a=tpick(lv===3?[2,3,4,5,6,8,9,10,11,12]:[2,3,4,5,6,7,8,9,10,12,15,20,25]);let b;
@@ -1125,7 +1128,7 @@ const tlS=it=>it.show||SOL,tlSv=(it,s)=>tlS(it)?`<span class="sv">${s}</span>`:'
 const tlRow=(it,l,s,br)=>`<div class="tlrw"><span>${l}</span><span class="tlln" style="flex:1">${tlSv(it,s)}</span>${br?'<span>}</span>':''}</div>`;
 const tlGrid=(c,h)=>`<div style="display:grid;grid-template-columns:repeat(${c},1fr);gap:.9em 1.4em;align-items:start">${h}</div>`;
 const TLL='abcdefghijkl';
-function tlBlock(it){if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
+function tlBlock(it){if(PNT.includes(it.type))return pnBlock(it);if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
  if(k==='tdv'){h=tlGrid(+it.co||4,it.d.map(([a,b])=>`<div style="white-space:nowrap">${tfm(a)} <span class="tlc">${tlSv(it,b%a===0?'∣':'∤')}</span> ${tfm(b)}</div>`).join(''));}
  else if(k==='tpr'){const mx=+it.mx||20,pr=[];for(let i=2;i<=mx;i++)if(tisP(i))pr.push(i);
   h=`<div>Nenne alle Primzahlen bis ${mx}:</div>`+Array.from({length:+it.ps||2},()=>'<div class="tlln" style="display:block;min-height:1.9em"></div>').join('')+(s?`<div class="sv" style="margin-top:.3em">${pr.join(', ')}</div>`:'');}
@@ -1161,7 +1164,7 @@ const tlSet=a=>a.join(', ');
  ['ttm',T(50,26,'T(12)={…}',13)],['tgg',T(50,26,'ggT(a, b)',14)],['tkm',T(50,26,'kgV(a, b)',14)],['tsa',T(50,16,'Jeden 3. Tag …',10)+T(50,30,'Wann wieder?',10)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 const TLRG=['n','lv','dv','gm','nz','ty','zk','own'];
-function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
+function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!PNT.includes(i.type)&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Eine Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern die Aufgabe auf dem Blatt markieren.</div>';return;}
  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-tl="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-tl="${f}"${it[f]?' checked':''}> ${t}</label>`;
  const lvs=o=>`<label>Zahlenraum${sl('lv',o)}</label>`;
@@ -1499,6 +1502,7 @@ const AST=[
 ['4.0-Aufgaben',[
  ['zr','4.0 gemischt','Löse die 4.0-Aufgabe!'],['zr:zs','4.0 Zahlenstrahl','Löse die 4.0-Aufgabe!'],['zr:cp','4.0 Vergleichen, Nachbarzahlen','Löse die 4.0-Aufgabe!'],['zr:st','4.0 Dekadische Einheiten, Stellenwerte','Löse die 4.0-Aufgabe!'],['zr:rd','4.0 Runden','Löse die 4.0-Aufgabe!'],['zr:as','4.0 Addieren und Subtrahieren','Löse die 4.0-Aufgabe!'],['zr:kr','4.0 Rechnen (+ − · :)','Löse die 4.0-Aufgabe!'],['zr:tl','4.0 Teiler und Vielfache','Löse die 4.0-Aufgabe!'],['zr:po','4.0 Potenzen','Löse die 4.0-Aufgabe!'],['zr:br','4.0 Brüche','Löse die 4.0-Aufgabe!'],['zr:pc','4.0 Prozent','Löse die 4.0-Aufgabe!'],['zr:wk','4.0 Winkel','Löse die 4.0-Aufgabe!'],['zr:sg','4.0 Strecke, Strahl, Gerade','Löse die 4.0-Aufgabe!'],['zr:kd','4.0 Koordinatensystem','Löse die 4.0-Aufgabe!'],['zr:kk','Koordinatensystem: Aussagen ankreuzen','Kreuze die richtigen Aussagen an!']]],
 ['Satz des Pythagoras',[
+ ['pnk','Parallele / Normale zeichnen','Zeichne durch den Punkt P die Parallele bzw. die Normale zur Geraden g!'],['pnb','Normalabstand','Bestimme bzw. zeichne den Normalabstand!'],['pnz','Parallele und Normale: Symbole','Setze die Symbole ∥ und ⊥ ein bzw. kreuze richtig oder falsch an!'],
  ['pys','Pythagoras: Sachaufgaben','Löse die Sachaufgaben! Fertige eine Skizze an, schreibe die Rechnung und einen Antwortsatz auf!'],['pyt','Pythagoras: Textaufgaben (mehrteilig)','Löse die Aufgaben! Fertige eine Skizze an, schreibe die Rechnungen und Antwortsätze auf!'],['pyb','Pythagoras: Berechnungen','Berechne die fehlende Seite des rechtwinkeligen Dreiecks!']]],
 ['Stellenwerte',[
  ['swt','Stellenwerttabelle','Trage die Zahlen in die Stellenwerttabelle ein!'],['swl','Stellenwerttabelle (leer)','Trage die Zahlen in die Stellenwerttabelle ein!']]],
@@ -2125,6 +2129,99 @@ function zrGen(it){if(it.th==='-'){it.d=[{t:'__ph',a:''}];return;}window.KKN=+it
  ];
  zrNm.mu='Maßumwandlungen: Denkaufgaben';Z40TH.mu='mu';
 })();
+/* ===== Parallele und Normale ===== */
+Object.assign(TLN,{pnk:'Parallele / Normale zeichnen',pnb:'Normalabstand',pnz:'Parallele und Normale: Symbole'});
+Object.assign(TLD,{pnk:{n:4,md:'mix',co:2,lab:'a',mk:false},pnb:{n:4,md:'pz',un:'mix',co:2,lab:'a',bx:true,mk:false},pnz:{n:5,md:'sym',lab:'a',mk:false}});
+const PNRED='#c0392b';
+const pnPt=(p,dx,dy)=>[p[0]+dx,p[1]+dy];
+function pnTxt(x,y,t,col,an,fs){return `<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-size="${fs||4.8}" text-anchor="${an||'middle'}" fill="${col||'#000'}" font-family="inherit">${t}</text>`;}
+function pnLine(a,b,col,w,dash){return `<path d="M${a[0].toFixed(2)} ${a[1].toFixed(2)}L${b[0].toFixed(2)} ${b[1].toFixed(2)}" stroke="${col||'#000'}" stroke-width="${w||.45}" fill="none"${dash?` stroke-dasharray="${dash}"`:''} stroke-linecap="round"/>`;}
+function pnCross(p,col){const r=1.6;return pnLine([p[0]-r,p[1]-r],[p[0]+r,p[1]+r],col,.45)+pnLine([p[0]-r,p[1]+r],[p[0]+r,p[1]-r],col,.45);}
+function pnRA(F,u,v,col,s){s=s||3;const a=[F[0]+u[0]*s,F[1]+u[1]*s],c=[F[0]+v[0]*s,F[1]+v[1]*s],b=[a[0]+v[0]*s,a[1]+v[1]*s];return `<path d="M${a[0].toFixed(2)} ${a[1].toFixed(2)}L${b[0].toFixed(2)} ${b[1].toFixed(2)}L${c[0].toFixed(2)} ${c[1].toFixed(2)}" stroke="${col}" stroke-width=".4" fill="none"/><circle cx="${((a[0]+c[0])/2+ (F[0]-(a[0]+c[0])/2)*.0).toFixed(2)}" cy="${((a[1]+c[1])/2).toFixed(2)}" r="0" fill="${col}"/>`;}
+const pnSvg=(W,H,g,extra)=>`<svg width="${(W*MMPX).toFixed(1)}" height="${(H*MMPX).toFixed(1)}" viewBox="0 0 ${W} ${H}" style="display:block;max-width:100%;overflow:visible${extra||''}" font-family="inherit">${g}</svg>`;
+/* Aufgabe: Punkt P und Gerade g im Originalmaß (mm) */
+function pnGeo(){const W=82,H=56,al=tpick([0,0,10,-10,15,-15,20,-20,25,-25,30,-30,35,-35]),a=al*Math.PI/180,u=[Math.cos(a),Math.sin(a)],n=[-Math.sin(a),Math.cos(a)],d=kri(12,26),s=tpick([-1,1]),off=kri(-12,12),C=[W/2,H/2+kri(-3,3)],F=[C[0]+u[0]*off,C[1]+u[1]*off],P=[F[0]+n[0]*s*d,F[1]+n[1]*s*d];
+ return {W,H,u,n,d,s,F,P,C,al};}
+function pnClip(P,v,W,H,m){const x0=m,x1=W-m,y0=m,y1=H-m;let lo=-1e9,hi=1e9;const upd=(d,mn,mx,o)=>{if(Math.abs(d)<1e-9)return;let a=(mn-o)/d,b=(mx-o)/d;if(a>b)[a,b]=[b,a];lo=Math.max(lo,a);hi=Math.min(hi,b);};upd(v[0],x0,x1,P[0]);upd(v[1],y0,y1,P[1]);return [[P[0]+v[0]*lo,P[1]+v[1]*lo],[P[0]+v[0]*hi,P[1]+v[1]*hi]];}
+function pnFigGP(t,sh,nm){const G=t.geo,e=pnClip(G.C,G.u,G.W,G.H,3),st=[e[1][0]>e[0][0]?e[1]:e[0]];let g=pnLine(e[0],e[1],'#000',.5);
+ const R=e[1][0]>=e[0][0]?e[1]:e[0];g+=pnTxt(R[0]-2,R[1]+(G.n[1]*-1>0?-2.2:5.4),'g','#000','middle');
+ g+=pnCross(G.P,'#000')+pnTxt(G.P[0]+3,G.P[1]-1.6,'P','#000','start');
+ if(sh&&t.k==='nor'||sh&&t.k==='mess'){const f=pnClip(G.P,G.n,G.W,G.H,3);g+=pnLine(f[0],f[1],PNRED,.5);g+=pnRA(G.F,[G.u[0],G.u[1]],[G.n[0]*G.s,G.n[1]*G.s],PNRED,3);if(t.k==='nor')g+=pnTxt(f[1][1]>f[0][1]?f[1][0]+3:f[0][0]+3,f[1][1]>f[0][1]?f[1][1]-1:f[0][1]+5,'n',PNRED,'start');}
+ if(sh&&t.k==='par'){const f=pnClip(G.P,G.u,G.W,G.H,3);g+=pnLine(f[0],f[1],PNRED,.5);const q=f[1][0]>=f[0][0]?f[1]:f[0];g+=pnTxt(q[0]-2,q[1]-2,'p',PNRED,'middle');}
+ return pnSvg(G.W,G.H,g);}
+function pnMk(){const W=70,H=30;const par=pnLine([2,8],[40,8])+pnLine([2,22],[40,22])+pnLine([18,6.5],[20.5,9.5],'#000',.4)+pnLine([18,20.5],[20.5,23.5],'#000',.4)+pnTxt(44,10,'f','#000','start')+pnTxt(44,24,'g','#000','start');
+ const nor=pnLine([2,15],[40,15])+pnLine([14,1],[14,29])+`<path d="M14 15h3.2v-3.2h-3.2" fill="none" stroke="#000" stroke-width=".4" transform="translate(0 0)"/>`+pnTxt(44,17,'g','#000','start')+pnTxt(17,4,'h','#000','start');
+ return `<div style="border:1.4px solid #000;border-radius:4px;padding:.5em .8em;margin:0 0 1em;break-inside:avoid"><b>Merke:</b><div style="display:flex;gap:1.6em;flex-wrap:wrap;margin-top:.3em"><div style="flex:1;min-width:14em"><b>Parallele Geraden</b>${pnSvg(W,H,par,';margin:.2em 0')}<div>f ∥ g … f ist parallel zu g. Parallele Geraden haben überall denselben Abstand voneinander und keinen Schnittpunkt.</div></div><div style="flex:1;min-width:14em"><b>Normale Geraden</b>${pnSvg(W,H,nor,';margin:.2em 0')}<div>g ⊥ h … g steht normal auf h. Zwei Geraden, die normal aufeinander stehen, bilden einen rechten Winkel.</div></div></div><div style="margin-top:.4em"><b>Normalabstand:</b> d(g, P) ist die kürzeste Verbindung zwischen der Geraden g und dem Punkt P („P ist 2 cm von g entfernt“).</div></div>`;}
+/* ---- Generatoren ---- */
+const pnNm=['f','g','h','k','m','n','p','q'];
+function pnGen(it){const n=+it.n||1,md=it.md,out=[];
+ if(it.type==='pnk'){for(let i=0;i<n;i++){const k=md==='mix'?(i%2?'nor':'par'):md;out.push({k,geo:pnGeo()});}if(md==='mix'){const sw=Math.random()<.5;if(sw)out.forEach(t=>t.k=t.k==='nor'?'par':'nor');}it.d=out;return;}
+ if(it.type==='pnb'){
+  if(md==='mess'){for(let i=0;i<n;i++){const geo=pnGeo(),u=it.un==='mix'?tpick(['mm','cm']):it.un||'mm';out.push({k:'mess',geo,u});}it.d=out;return;}
+  const ds=[];while(ds.length<n){const v=tpick([2,3,4,5,6,7,8,9,10,12,15,16,18,20,24,30,36,42,45,48,60,70]);ds.push(v);}
+  if(md==='pp'){it.d=ds.slice(0,n).map(v=>({k:'pp',mm:Math.min(v,70)*(it.un==='mm'?1:10)>80?v:v,u:'cm',v:Math.min(v,10)}));it.d.forEach(t=>{t.v=tpick([2,3,4,5,6]);t.mm=t.v*10;t.u=it.un==='mm'?'mm':'cm';if(t.u==='mm')t.v=t.mm;});return;}
+  const pool=[];while(pool.length<n){const cm=tpick([2,3,4,5,6]),un=it.un==='mix'?tpick(['cm','mm']):it.un||'cm';pool.push(un==='cm'?{v:cm,u:'cm',mm:cm*10}:{v:cm*10+tpick([0,4,6]),u:'mm',mm:cm*10+tpick([0,4,6])});}
+  it.d=pool.map(t=>({k:'pz',v:t.v,u:t.u,mm:t.mm}));pool.forEach((t,i)=>{});return;}
+ if(it.type==='pnz'){
+  if(md==='ck'){const T=[['Das Zeichen ⊥ bedeutet „normal auf“.','Das Zeichen ⊥ bedeutet „parallel zu“.'],['Parallele Geraden haben überall denselben Abstand voneinander.','Parallele Geraden haben überall einen anderen Abstand voneinander.'],['Parallele Geraden haben keinen Schnittpunkt.','Parallele Geraden schneiden sich in genau einem Punkt.'],['Zwei Geraden, die normal aufeinander stehen, bilden einen rechten Winkel.','Zwei Geraden, die normal aufeinander stehen, bilden einen Winkel von 45°.'],['g ∥ h bedeutet: g ist parallel zu h.','g ∥ h bedeutet: g steht normal auf h.'],['Der Normalabstand ist die kürzeste Verbindung zwischen einem Punkt und einer Geraden.','Der Normalabstand ist die längste Verbindung zwischen einem Punkt und einer Geraden.'],['Die Normale zu g durch P steht im rechten Winkel auf g.','Die Normale zu g durch P ist parallel zu g.'],['Normale Geraden schließen einen rechten Winkel ein.','Normale Geraden schneiden sich nie.'],['d(g, P) = 2 cm bedeutet: P ist 2 cm von g entfernt.','d(g, P) = 2 cm bedeutet: P liegt auf der Geraden g.'],['Zwei Geraden, die auf dieselbe Gerade normal stehen, sind parallel zueinander.','Zwei Geraden, die auf dieselbe Gerade normal stehen, stehen auch normal aufeinander.']];
+   const NN=Math.max(3,Math.min(+it.n||5,8)),idx=tshuf(T.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(4,NN-1)));
+   it.d=[{ck:idx.map((i,j)=>({s:T[i][ok[j]?0:1],ok:ok[j]}))}];return;}
+  /* Figur mit Geraden */
+  const nm=tshuf(pnNm.slice()).slice(0,5),be=tpick([10,15,20,25,30,35,60,65,70]),a=be*Math.PI/180,u=[Math.cos(a),-Math.sin(a)],v=[Math.sin(a),Math.cos(a)],W=112,H=72,B=[W/2,H/2];
+  const two=Math.random()<.6,L=[];
+  L.push({nm:nm[0],P:[B[0]+v[0]*-17,B[1]+v[1]*-17],d:u,g:'A'});L.push({nm:nm[1],P:[B[0]+v[0]*17,B[1]+v[1]*17],d:u,g:'A'});
+  L.push({nm:nm[2],P:[B[0]+u[0]*-24,B[1]+u[1]*-24],d:v,g:'B'});if(two)L.push({nm:nm[3],P:[B[0]+u[0]*24,B[1]+u[1]*24],d:v,g:'B'});
+  const c=be+tpick([40,50,-40,-50])*Math.PI/180*0;const ang=(be+tpick([35,45,-35,-45]))*Math.PI/180;L.push({nm:nm[4],P:[B[0]+tpick([-30,30]),B[1]+tpick([-26,26])*0.0],d:[Math.cos(ang),-Math.sin(ang)],g:'C'});
+  const pairs=[];for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const x=L[i],y=L[j];pairs.push({a:x.nm,b:y.nm,rel:x.g==='C'||y.g==='C'?'':(x.g===y.g?'∥':'⊥')});}
+  const lines=L.map(l=>{const e=pnClip(l.P,l.d,W,H,2);return {nm:l.nm,a:e[0],b:e[1]};});
+  if(md==='sym'){const rel=pairs.filter(p=>p.rel);it.d=[{fig:{W,H,lines},items:tshuf(rel).slice(0,Math.max(2,Math.min(+it.n||5,rel.length)))}];return;}
+  /* rf */
+  const rel=pairs.filter(p=>p.rel),non=pairs.filter(p=>!p.rel),NN=Math.max(3,Math.min(+it.n||5,8)),nT=kri(1,NN-1),flags=tshuf(Array.from({length:NN},(_,i)=>i<nT)),items=[];
+  flags.forEach(ok=>{let r=null,g=0;while(g++<30){const p=tpick(rel.concat(non)),other=p.rel==='∥'?'⊥':'∥';let t,tv;if(ok){if(!p.rel)continue;t=`${p.a} ${p.rel} ${p.b}`;tv=true;}else{if(p.rel){t=`${p.a} ${other} ${p.b}`;tv=false;}else{t=`${p.a} ${tpick(['∥','⊥'])} ${p.b}`;tv=false;}}if(items.some(x=>x.t===t))continue;r={t,ok:tv};break;}if(r)items.push(r);});
+  it.d=[{fig:{W,H,lines},items}];return;}
+}
+function pnFigLines(f){let g='';f.lines.forEach(l=>{g+=pnLine(l.a,l.b,'#000',.5);const R=l.a[1]>=l.b[1]?l.a:l.b,Q=R===l.a?l.b:l.a,dx=R[0]-Q[0],dy=R[1]-Q[1],q=Math.hypot(dx,dy)||1;g+=pnTxt(R[0]+dx/q*4.2,R[1]+dy/q*4.2+1.6,l.nm,'#000','middle');});return pnSvg(f.W,f.H+4,g,';margin-left:14px');}
+function pnBlock(it){const sh=tlS(it),L=['a','n'].includes(it.lab)?it.lab:'none',lb=i=>L==='a'?poL(i):L==='n'?(i+1)+'.':'',co=+it.co||1;let h='';
+ if(it.mk)h+=pnMk();
+ const ln=(txt,w)=>`<span style="display:inline-block;min-width:${w||3}em;border-bottom:1.2px solid #444;text-align:center">${txt}</span>`;
+ if(it.type==='pnk'){
+  const ins={par:'Zeichne durch den Punkt P die <b>Parallele</b> p zur Geraden g.',nor:'Zeichne durch den Punkt P die <b>Normale</b> n auf die Gerade g.'};
+  h+=tlGrid(co,(it.d||[]).map((t,i)=>`<div style="break-inside:avoid"><div>${lb(i)?`<b>${lb(i)}</b> `:''}${ins[t.k]}</div>${pnFigGP(t,sh)}</div>`).join(''));
+  return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ if(it.type==='pnb'){
+  if(it.md==='mess'){h+=tlGrid(co,(it.d||[]).map((t,i)=>{const G=t.geo,val=t.u==='cm'?pyF(Math.round(G.d)/10):String(Math.round(G.d));return `<div style="break-inside:avoid"><div>${lb(i)?`<b>${lb(i)}</b> `:''}Zeichne die Normale durch P auf g und miss den Normalabstand.</div>${pnFigGP({k:'mess',geo:G},sh)}<div style="margin-top:.3em">d(g, P) = ${ln(sh?`<span class="sv">${val}</span>`:'&nbsp;',4)} ${t.u}</div></div>`;}).join(''));return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+  const bw=70;
+  h+=`<div style="margin:0 0 .5em">${it.md==='pz'?'Zeichne jeweils eine Gerade g und einen Punkt P mit dem gesuchten Normalabstand.':'Konstruiere jeweils zwei parallele Geraden f und g mit dem angegebenen Normalabstand.'}</div>`;
+  h+=tlGrid(co,(it.d||[]).map((t,i)=>{const hh=Math.max(40,t.mm+24),txt=it.md==='pz'?`d(g, P) = ${t.v} ${t.u}`:`d(f, g) = ${t.v} ${t.u}`;let box='';
+   if(it.bx){let g='';if(sh){const y0=10,y1=10+t.mm;if(it.md==='pz'){g+=pnLine([5,y0],[bw-5,y0],PNRED,.5)+pnTxt(bw-8,y0-1.5,'g',PNRED)+pnCross([bw/2,y1],PNRED)+pnTxt(bw/2+3,y1+1.5,'P',PNRED,'start')+pnLine([bw/2,y0],[bw/2,y1],PNRED,.4,'1.5 1')+pnRA([bw/2,y0],[1,0],[0,1],PNRED,2.6)+pnTxt(bw/2+2,(y0+y1)/2+1.5,t.v+' '+t.u,PNRED,'start',4);}else{g+=pnLine([5,y0],[bw-5,y0],PNRED,.5)+pnLine([5,y1],[bw-5,y1],PNRED,.5)+pnTxt(bw-8,y0-1.5,'f',PNRED)+pnTxt(bw-8,y1-1.5,'g',PNRED)+pnLine([bw/2,y0],[bw/2,y1],PNRED,.4,'1.5 1')+pnRA([bw/2,y0],[1,0],[0,1],PNRED,2.6)+pnTxt(bw/2+2,(y0+y1)/2+1.5,t.v+' '+t.u,PNRED,'start',4);}}
+    box=`<div style="border:1.2px dashed #999;width:${(bw*MMPX).toFixed(0)}px;max-width:100%;height:${(hh*MMPX).toFixed(0)}px;position:relative;margin-top:.3em">${g?`<div style="position:absolute;left:0;top:0">${pnSvg(bw,hh,g)}</div>`:''}</div>`;}
+   return `<div style="break-inside:avoid">${lb(i)?`<b>${lb(i)}</b> `:''}${txt}${box}</div>`;}).join(''));
+  return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ /* pnz */
+ const D=(it.d||[])[0];if(!D)return `<div class="tlx" style="${kst(it)}"></div>`;
+ if(it.md==='ck'){h+=`<div style="font-weight:700;margin-bottom:.4em">Kreuze alle richtigen Aussagen an.</div>`+D.ck.map(c=>`<div style="display:flex;gap:.6em;align-items:flex-start;margin:.35em 0"><span style="display:inline-block;flex:none;width:1.05em;height:1.05em;border:1.6px solid #000;margin-top:.1em;text-align:center;line-height:.95em;color:${PNRED};font-weight:700">${sh&&c.ok?'✕':''}</span><span>${c.s}</span></div>`).join('');return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ if(it.md==='sym'){h+=`<div style="font-weight:700;margin-bottom:.4em">Setze ∥ (parallel) oder ⊥ (normal) ein!</div><div style="display:flex;gap:1.6em;align-items:flex-start;flex-wrap:wrap"><div style="flex:none">${pnFigLines(D.fig)}</div><div style="flex:1;min-width:10em">`+D.items.map((p,i)=>`<div style="margin:.45em 0;display:flex;align-items:center;gap:.5em">${lb(i)?`<b>${lb(i)}</b>`:''}<span>${p.a}</span><span style="display:inline-block;width:2.2em;height:1.6em;border:1.4px solid #000;text-align:center;line-height:1.5em;color:${PNRED};font-weight:700">${sh?p.rel:''}</span><span>${p.b}</span></div>`).join('')+`</div></div>`;return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ const bx=ok=>`<td style="border:1.6px solid #000;text-align:center;width:4.2em">${ok?`<span class="sv" style="font-weight:700">✕</span>`:''}</td>`;
+ h+=`<div style="font-weight:700;margin-bottom:.4em">Kreuze an, ob die Aussagen zu dieser Abbildung richtig oder falsch sind:</div><div style="display:flex;gap:1.4em;align-items:flex-start;flex-wrap:wrap"><table style="border-collapse:collapse;flex:none"><tr><td style="border:0"></td><th style="border:1.6px solid #000;padding:.15em .5em">richtig</th><th style="border:1.6px solid #000;padding:.15em .5em">falsch</th></tr>`+D.items.map(x=>`<tr><td style="border:1.6px solid #000;padding:.35em .8em;font-size:1.05em">${x.t}</td>${bx(sh&&x.ok)}${bx(sh&&!x.ok)}</tr>`).join('')+`</table><div style="flex:none">${pnFigLines(D.fig)}</div></div>`;
+ return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+/* ---- Panel ---- */
+function renderPn(){const g=$('#g-pn'),it=items.find(i=>i.id===sel&&PNT.includes(i.type));if(!g)return;
+ if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern auf dem Blatt markieren.</div>';return;}
+ const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-pn="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-pn="${f}"${it[f]?' checked':''}> ${t}</label>`;
+ let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+ const lab=`<label>Nummerierung${sl('lab',[['a','a) b) c) d)'],['n','1. 2. 3. 4.'],['none','keine']])}</label>`;
+ if(k==='pnk')H+=`<label>Aufgaben${sl('md',[['mix','Parallele und Normale (gemischt)'],['par','nur Parallele'],['nor','nur Normale']])}</label><label>Anzahl der Aufgaben${sl('n',tN([1,2,3,4,5,6,8]))}</label><label>Spalten${sl('co',tN([1,2,3]))}</label>`+lab;
+ if(k==='pnb')H+=`<label>Aufgabe${sl('md',[['pz','Gerade g und Punkt P mit gegebenem Abstand zeichnen'],['mess','Normalabstand messen (Zeichnung gegeben)'],['pp','Zwei Parallelen mit gegebenem Normalabstand']])}</label><label>Anzahl der Aufgaben${sl('n',tN([2,3,4,6,8,9,10,12]))}</label><label>Einheit${sl('un',[['mix','cm und mm gemischt'],['cm','nur cm'],['mm','nur mm']])}</label><label>Spalten${sl('co',tN([1,2,3,4]))}</label>`+lab+(it.md==='mess'?'':ck('bx','Zeichenfläche (mit Rahmen) anzeigen'));
+ if(k==='pnz')H+=`<label>Aufgabe${sl('md',[['sym','Symbole ∥ und ⊥ einsetzen (Abbildung)'],['rf','richtig oder falsch (Abbildung)'],['ck','Aussagen ankreuzen (Merkwissen)']])}</label><label>Anzahl der Aussagen${sl('n',tN([3,4,5,6,8]))}</label>`+lab;
+ H+=ck('mk','Merkkasten (Parallele, Normale, Normalabstand)')+ck('show','Lösung zeigen')+'<button data-pn-act="mix">Neu mischen</button>';g.innerHTML=H;}
+const pnHandler=e=>{const t=e.target,k=t.dataset.pn;if(!k)return;const it=items.find(i=>i.id===sel&&PNT.includes(i.type));if(!it)return;if(e.type==='change')return;
+ rec('pn'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','co'].includes(k))v=+v;it[k]=v;
+ if(['n','md','un'].includes(k))tlGen(it);render();if(['md'].includes(k))renderProps();};
+$('#rp').addEventListener('input',pnHandler);
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-pn-act]');if(!b)return;const it=items.find(i=>i.id===sel&&PNT.includes(i.type));if(!it)return;rec();tlGen(it);render();});
+(function(){const P=$('#pnpal');if(!P)return;const T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||10}" fill="#000">${t}</text>`,
+ L=[['pnk','<path d="M8 12H92" stroke="#000" stroke-width="1.5"/><path d="M8 32H70" stroke="#c0392b" stroke-width="1.5"/>'+T(80,20,'P',9)+T(50,9,'g',9)],['pnb','<path d="M10 12H90" stroke="#000" stroke-width="1.5"/><path d="M50 12V32" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="3 2"/><path d="M47 15h3v-3" fill="none" stroke="#000"/>'+T(66,28,'d = 2 cm',9)],['pnz','<path d="M10 10H44M10 28H44" stroke="#000" stroke-width="1.5"/><path d="M62 4V36" stroke="#000" stroke-width="1.5"/>'+T(78,26,'∥  ⊥',14)]];
+ P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 /* ===== 4.0 Winkel: Uhr ===== */
 (function(){const R=kri,P=tpick;
  const mk=(h,m,l)=>({l,f:()=>{const hh=typeof h==='function'?h():h,mm=typeof m==='function'?m():m;
@@ -3054,8 +3151,8 @@ function cmpBlock(it){
  return `<div class="cmp" style="${st};display:flex;gap:1.6em">${cols}</div>`;
 }
 let cat=null;
-const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
-function catOf(it){return TLT.includes(it.type)?(it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':PRT.includes(it.type)?'pc':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
+const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',pn:'Parallele und Normale',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
+function catOf(it){return TLT.includes(it.type)?(PNT.includes(it.type)?'pn':it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':PRT.includes(it.type)?'pc':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
 (function(){const q=document.getElementById('lsq');if(!q)return;const nz=t=>String(t).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
  window.lsFilter=function(){const v=nz(q.value),cats=document.querySelectorAll('#left .cat');let n=0;
   cats.forEach(b=>{const p=document.querySelector('#left .catp[data-c="'+b.dataset.c+'"]'),pals=p?[...p.querySelectorAll('.pal')]:[];
@@ -3090,7 +3187,7 @@ function renderLy(){const g=$('#g-ly');if(!g)return;const it=items.find(i=>i.id=
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ly-act]');if(!b)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();const a=b.dataset.lyAct;it.z=a==='bg'?-1:a==='fg'?10:0;render();renderLy();});
 $('#rp').addEventListener('input',e=>{const t=e.target;if(t.dataset.ly!=='op')return;const it=items.find(i=>i.id===sel);if(!it)return;rec('lyop');it.op=+t.value/100;const v=$('#lyv');if(v)v.textContent=(100-t.value)+' %';const el=sheet.querySelector('[data-id="'+it.id+'"]');if(el)el.style.opacity=it.op;});
 function renderProps(){
- const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderMd();renderPr();renderPo();renderPl();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
+ const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderMd();renderPr();renderPo();renderPl();renderPn();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
  const T=ptarget();if(!T)return;const it=T.o;
  const ck=(k,txt)=>`<label class="ck"><input type="checkbox" data-p="${k}"${it[k]?' checked':''}> ${txt}</label>`;
  const tx=(k,txt)=>`<label>${txt}<input type="text" inputmode="decimal" data-p="${k}" value="${escA(it[k])}"></label>`;
