@@ -349,7 +349,7 @@ function add(t,x,y){let za=null;if(t==='zs:zeichnen')t='zzk';if(t==='zs:lesen'||
  :t==='zs'?(()=>{const z={id:uid++,type:'zs',x:x??60,y:y??100,w:454,...DEFS.zs};if(za){z.aufg=za;if(za==='lesen')z.show=false;}if(z.aufg==='mark'){z.show=false;zsRoll(z,z.zrs);}return z;})()
  :t==='wk'?{id:uid++,type:'wk',x:x??60,y:y??100,w:wkW(DEFS.wk),...DEFS.wk,d:DEFS.wk.rnd?5*(1+Math.floor(Math.random()*72)):DEFS.wk.d}
  :{id:uid++,type:t,x:x??60,y:y??100,vl:def.vl,sl:def.sl,A:def.A,u:def.u,w:def.w,md:def.md,un:def.un,sh:def.sh,fs:def.fs,col:def.col,fb:false,fi:true,fu:false,nl:def.nl,par:{...PAR[t]}};
- if(!it.ff)it.ff=def.ff;it.x=Math.max(0,Math.min(it.x,794-it.w));it.y=Math.max(0,it.y);items.push(it);sel=it.id;render();sync();}
+ if(!it.ff)it.ff=def.ff;it.x=Math.max(0,Math.min(it.x,794-it.w));it.y=Math.max(0,it.y);items.push(it);sel=it.id;render();if(x===undefined){try{const e=elOf(it.id),w=e?e.offsetWidth:0;if(w>=600&&w<=794){const nx=Math.round((794-w)/2);if(Math.abs(nx-it.x)>1){it.x=nx;render();const w2=elOf(it.id).offsetWidth;if(w2!==w){it.x=Math.round((794-w2)/2);render();}}}}catch(_){}}sync();}
 const MANX=['text','num','deko','img','tb','zs','wk','kb','frm','ckf','lb'];
 function mk(it){const e=document.createElement('div');e.className='item'+(it.nh?' nohd':'')+(it.type==='text'?' txt':'')+(it.type==='num'?' num':'')+(it.id===sel?' sel':'');e.dataset.id=it.id;
  e.style.cssText=`left:${it.x}px;top:${it.y}px;width:${it.w}px;font-family:${FF(it)}`;
@@ -3443,7 +3443,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-lb-act]');
   ['snake','Rechenschlange',`<div style="display:flex;align-items:center;gap:2px;justify-content:center;font:11px Arial;color:#000">${['48','125','7'].map((x,i)=>`<span style="border:1.6px solid #000;border-radius:99px;padding:0 7px;background:#f3f6fb">${x}</span>${i<2?'→':''}`).join('')}</div>`],
   ['cards','einzelne Kärtchen',`<div style="display:flex;gap:5px;justify-content:center">${['48','125','7'].map(x=>`<span style="border:1.5px solid #000;border-radius:5px;padding:0 6px;box-shadow:2px 2px 0 #000;font:11px Arial;background:#fff;color:#000">${x}</span>`).join('')}</div>`]]
   .map(([k,n,svg],i)=>`<div class="pal" draggable="true" data-t="lb:${k}"${i<3?' style="margin-bottom:8px"':''}>${svg}<span>${n}</span></div>`).join('');
- const kfp=$('#kfpal');kfp.after(b);b.after(P);
+ const dkp=document.querySelector('.catp[data-c="dk"]');(dkp||$('#kfpal')).after(b);b.after(P);
  b.onclick=()=>{cat=(cat==='lb'&&!sel)?null:'lb';select(null);};
  let n=0;P.querySelectorAll('.pal').forEach(d=>{d.ondragstart=e=>e.dataTransfer.setData('text/plain',d.dataset.t);d.onclick=()=>{n++;add(d.dataset.t,50+(n%6)*30,100+(n%6)*30);};});})();
 </script></body></html>
