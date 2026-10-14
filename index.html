@@ -1052,7 +1052,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ra-act]');
 /* ===== Teiler: Teilbarkeit, Primfaktoren, ggT, kgV, Sieb, Sachaufgaben ===== */
 const MDT=['mm','mv','ms','kf','ks'];
 const PRT=['prd','prg','prw','prs','prk','prr','prm','prz'];
-const POT=['pob','poz','pog','pom','pov','pot'];
+const POT=['pob','poz','pog','pom','pov','pot','pos'];
 const SWT=['swt','swl'];const PYT=['pys','pyb'];const ZRT=['zr'];
 const TLT=[...SWT,...PYT,...ZRT,...POT,...PRT,...MDT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
 const TLN={tdv:'Teiler ∣ / ∤',tpr:'Primzahlen nennen',ttr:'Teilbarkeitsregeln',tzw:'Zahlen finden',tpz:'Primfaktorzerlegung',tsv:'Sieb des Eratosthenes',ttm:'Teilermengen',tgg:'ggT',tkm:'kgV',tsa:'Sachaufgaben'};
@@ -1503,7 +1503,7 @@ const AST=[
 ['Stellenwerte',[
  ['swt','Stellenwerttabelle','Trage die Zahlen in die Stellenwerttabelle ein!'],['swl','Stellenwerttabelle (leer)','Trage die Zahlen in die Stellenwerttabelle ein!']]],
 ['Potenzen',[
- ['pob','Potenzen berechnen','Berechne den Wert der Potenzen!'],['poz','Zehnerpotenzen','Schreibe als Zehnerpotenz!'],['pog','Gleitkommadarstellung','Schreibe in Gleitkommadarstellung!'],['pom','Potenzen mit gleicher Basis','Schreibe als Potenz mit einer Hochzahl!'],['pov','Rechnen mit Variablen','Multipliziere bzw. dividiere die Potenzen!'],['pov:m0','Potenzen multiplizieren (nur Variablen)','Multipliziere die Potenzen!'],['pov:m1','Potenzen multiplizieren (mit Zahlen)','Multipliziere zuerst die Zahlen, dann die Potenz!'],['pov:d0','Potenzen dividieren (Hochzahlen subtrahieren)','Achte auf die Subtraktion der Hochzahlen!'],['pov:d1','Potenzen dividieren (mit Zahlen)','Dividiere die Potenzen!'],['pot','Potenzterme','Berechne!']]],
+ ['pob','Potenzen berechnen','Berechne den Wert der Potenzen!'],['poz','Zehnerpotenzen','Schreibe als Zehnerpotenz!'],['pog','Gleitkommadarstellung','Schreibe in Gleitkommadarstellung!'],['pom','Potenzen mit gleicher Basis','Schreibe als Potenz mit einer Hochzahl!'],['pov','Rechnen mit Variablen','Multipliziere bzw. dividiere die Potenzen!'],['pov:m0','Potenzen multiplizieren (nur Variablen)','Multipliziere die Potenzen!'],['pov:m1','Potenzen multiplizieren (mit Zahlen)','Multipliziere zuerst die Zahlen, dann die Potenz!'],['pov:d0','Potenzen dividieren (Hochzahlen subtrahieren)','Achte auf die Subtraktion der Hochzahlen!'],['pov:d1','Potenzen dividieren (mit Zahlen)','Dividiere die Potenzen!'],['pot','Potenzterme','Berechne!'],['pos','Potenzen: Sachaufgaben','Löse die Sachaufgaben! Schreibe die Rechnung als Potenz und einen Antwortsatz auf!']]],
 ['Funktionen',[
  ['fk:ja','Funktion ja oder nein?','Kreuze an: Bei welchen Darstellungen handelt es sich um eine Funktion?'],['fk:wt','Wertetabelle zur Gleichung','Berechne die y-Werte und vervollständige die Wertetabelle!'],['fk:tx','Text → Funktionsgleichung','Schreibe zu jedem Text die passende Funktionsgleichung!'],['fk:sk','Sachaufgabe: Gleichung und Tabelle','Stelle die Funktionsgleichung auf und vervollständige die Wertetabelle!'],
  ['fk:ab','Gleichung am Graphen ablesen','Bestimme jeweils k (und d) und gib die Funktionsgleichung an!'],['fk:zg','Graph zeichnen','Zeichne die Graphen der Funktionen mithilfe der Wertetabelle!'],['fk:dg','Diagramm lesen','Lies die Antworten aus dem Diagramm ab!'],['fk:wm','Funktionsmaschine','Erforsche, wie die Funktionsmaschine rechnet, und ergänze die Tabelle!'],['fk:gi','Sachaufgabe mit Graph','Lies aus dem Diagramm ab und beantworte die Fragen!']]],
@@ -1629,8 +1629,8 @@ function astBuild(title,sel2,size,clear,x){x=x||{};
  const u=$('#undo');u.parentNode.insertBefore(b,u);
 })();
 /* ===== Potenzen ===== */
-Object.assign(TLD,{pob:{n:12,fm:'wert',ba:'pos',lv:2,co:3,mk:false},poz:{n:6,md:'tab',gv:'mix',mx:8,co:2,mk:false},pog:{n:6,md:'zg',lv:1,co:2},pom:{n:8,op:'mix',bt:'zahl',lv:1,co:4,mk:false},pov:{n:8,op:'mix',ko:true,ng:false,lv:1,co:2,mk:false},pot:{n:6,lv:1,co:2}});
-Object.assign(TLN,{pob:'Potenzen berechnen',poz:'Zehnerpotenzen',pog:'Gleitkommadarstellung',pom:'Potenzen multiplizieren / dividieren',pov:'Rechnen mit Variablen',pot:'Potenzterme'});
+Object.assign(TLD,{pob:{n:12,fm:'wert',ba:'pos',lv:2,co:3,mk:false},poz:{n:6,md:'tab',gv:'mix',mx:8,co:2,mk:false},pog:{n:6,md:'zg',lv:1,co:2},pom:{n:8,op:'mix',bt:'zahl',lv:1,co:4,mk:false},pov:{n:8,op:'mix',ko:true,ng:false,lv:1,co:2,mk:false},pot:{n:6,lv:1,co:2},pos:{n:4,lv:1,rl:true,al:true,tt:true,lab:'a',co:1}});
+Object.assign(TLN,{pob:'Potenzen berechnen',poz:'Zehnerpotenzen',pog:'Gleitkommadarstellung',pom:'Potenzen multiplizieren / dividieren',pov:'Rechnen mit Variablen',pot:'Potenzterme',pos:'Potenzen: Sachaufgaben'});
 const poM=n=>n<0?'−'+tfm(-n):tfm(n);
 const poN=x=>String(Math.round(x*100)/100).replace('.',',').replace('-','−');
 const poS=e=>'<sup>'+String(e).replace('-','−')+'</sup>';
@@ -1642,7 +1642,27 @@ function poGl(s){s=String(s).replace(/\s/g,'');const sig=s.replace(/0+$/,'')||'0
 function poShift(d,dc,e){let s=d+'0'.repeat(Math.max(0,e-dc));return tfm(s.replace(/^0+(?=\d)/,''));}
 function poPowStr(k,e,dc){let K=BigInt(k)**BigInt(e),s=K.toString(),n=dc*e;if(n>0){s=s.padStart(n+1,'0');s=s.slice(0,-n)+','+s.slice(-n);s=s.replace(/0+$/,'').replace(/,$/,'');}return s.replace(/\B(?=(\d{3})+(?!\d))(?<!,\d*)/g,' ');}
 function poVar(){return tpick(['a','b','c','m','n','x','y','z','r','s']);}
+const POSX=[
+ lv=>{const b=kri(2,lv===1?4:6),r=kri(2,lv===1?4:5),v=BigInt(b)**BigInt(r);return{t:'Nachrichten verbreiten sich',q:`Du schickst eine Nachricht an ${b} Personen. Jede davon schickt sie an ${b} weitere Personen, die sie noch nicht erhalten haben. Das geht so weiter.<br>Wie viele Personen erhalten die Nachricht in der ${r}. Weitergaberunde? Schreibe die Rechnung als Potenz.`,c:`${b}${poS(r)} = ${tfm(String(v))}`,a:`In der ${r}. Weitergaberunde erhalten ${tfm(String(v))} Personen die Nachricht.`};},
+ lv=>{const k=kri(1,lv===1?3:4),sd=tfm('1'+'0'.repeat(k)),v=tfm('1'+'0'.repeat(2*k));return{t:'Ein Foto speichern',q:`Ein quadratisches Bild ist ${sd} Pixel breit und ${sd} Pixel hoch.<br>Wie viele Pixel hat es insgesamt? Schreibe die Anzahl als Potenz von 10.`,c:`${sd} · ${sd} = 10${poS(k)} · 10${poS(k)} = 10${poS(2*k)} = ${v}`,a:`Das Bild hat insgesamt ${v} Pixel.`};},
+ lv=>{const a=kri(3,lv===1?6:10);return{t:'Einen Würfel bauen',q:`Du baust einen großen Würfel aus kleinen Bauwürfeln. Entlang jeder Kante liegen ${a} kleine Würfel.<br>Wie viele kleine Würfel brauchst du insgesamt?`,c:`${a}${poS(3)} = ${a} · ${a} · ${a} = ${tfm(a**3)}`,a:`Du brauchst insgesamt ${tfm(a**3)} kleine Würfel.`};},
+ lv=>{const di=tpick([1,2,5]),n=kri(3,lv===1?7:10),mm=poN(di*2**n/10),d=poN(di/10);return{t:'Papier falten',q:`Ein Blatt Papier ist ${d} mm dick. Bei jeder Faltung verdoppelt sich die Dicke.<br>Wie dick wäre es nach ${n} Faltungen? Wir nehmen an, dass es sich problemlos falten lässt.`,c:`${d} · 2${poS(n)} = ${d} · ${2**n} = ${mm} mm`,a:`Nach ${n} Faltungen wäre das Papier ${mm} mm dick.`};},
+ lv=>{const n=kri(5,lv===1?8:12);return{t:'Bakterien vermehren sich',q:`Eine Bakterie teilt sich jede Stunde in 2 Bakterien. Jede davon teilt sich in der nächsten Stunde wieder.<br>Wie viele Bakterien sind es nach ${n} Stunden? Schreibe die Rechnung als Potenz.`,c:`2${poS(n)} = ${tfm(2**n)}`,a:`Nach ${n} Stunden sind es ${tfm(2**n)} Bakterien.`};},
+ lv=>{const n=kri(3,lv===1?5:7);return{t:'Das K.-o.-Turnier',q:`Bei einem K.-o.-Turnier scheidet in jeder Runde die Hälfte der Spieler aus. Das Turnier hat ${n} Runden (mit dem Finale).<br>Wie viele Spieler haben am Anfang mitgespielt?`,c:`2${poS(n)} = ${tfm(2**n)}`,a:`Am Anfang haben ${tfm(2**n)} Spieler mitgespielt.`};},
+ lv=>{const n=kri(3,lv===1?6:9);return{t:'Deine Vorfahren',q:`Du hast 2 Eltern. Jedes Elternteil hat wieder 2 Eltern und so weiter.<br>Wie viele Vorfahren hast du in der ${n}. Generation vor dir? Schreibe die Rechnung als Potenz.`,c:`2${poS(n)} = ${tfm(2**n)}`,a:`In der ${n}. Generation hast du ${tfm(2**n)} Vorfahren.`};},
+ lv=>{const n=kri(5,lv===1?8:12);return{t:'Sparen mit Verdoppeln',q:`Du bekommst am 1. Tag 1 Cent. An jedem weiteren Tag bekommst du doppelt so viel wie am Tag davor.<br>Wie viele Cent bekommst du am ${n}. Tag? Schreibe die Rechnung als Potenz.`,c:`2${poS(n-1)} = ${tfm(2**(n-1))}`,a:`Am ${n}. Tag bekommst du ${tfm(2**(n-1))} Cent.`};},
+ lv=>{const n=tpick([8,10,12,15,16,20,25].filter(x=>lv>1||x<=16));return{t:'Fliesen legen',q:`Ein quadratischer Boden wird mit Fliesen belegt: ${n} Reihen mit je ${n} Fliesen.<br>Wie viele Fliesen sind es insgesamt? Schreibe die Rechnung als Potenz.`,c:`${n}${poS(2)} = ${n} · ${n} = ${tfm(n*n)}`,a:`Der Boden hat insgesamt ${tfm(n*n)} Fliesen.`};},
+ lv=>{const a=kri(2,lv===1?6:9);return{t:'Das Aquarium',q:`Ein würfelförmiges Aquarium ist ${a} dm lang, ${a} dm breit und ${a} dm hoch.<br>Wie viele Liter Wasser passen hinein? (1 dm³ = 1 Liter) Schreibe die Rechnung als Potenz.`,c:`${a}${poS(3)} = ${a} · ${a} · ${a} = ${tfm(a**3)} dm³`,a:`In das Aquarium passen ${tfm(a**3)} Liter Wasser.`};},
+ lv=>{const x=kri(2,lv===1?3:4),y=kri(2,lv===1?3:4);return{t:'Viele Bücher',q:`Ein Bibliotheksverbund hat 10${poS(y)} Bibliotheken. In jeder Bibliothek stehen 10${poS(x)} Bücher.<br>Wie viele Bücher sind es insgesamt? Schreibe als Potenz von 10.`,c:`10${poS(y)} · 10${poS(x)} = 10${poS(x+y)} = ${tfm('1'+'0'.repeat(x+y))}`,a:`Es sind insgesamt ${tfm('1'+'0'.repeat(x+y))} Bücher.`};},
+ lv=>{const n=kri(3,lv===1?5:6);return{t:'Das Zahlenschloss',q:`Ein Fahrradschloss hat ${n} Ziffernräder. Auf jedem Rad kann man die Ziffern 0 bis 9 einstellen.<br>Wie viele verschiedene Zahlenkombinationen gibt es? Schreibe die Rechnung als Potenz.`,c:`10${poS(n)} = ${tfm('1'+'0'.repeat(n))}`,a:`Es gibt ${tfm('1'+'0'.repeat(n))} verschiedene Kombinationen.`};},
+ lv=>{const n=kri(3,lv===1?6:8);return{t:'Münzwurf',q:`Du wirfst eine Münze ${n} Mal hintereinander. Jedes Mal kommt Kopf oder Zahl.<br>Wie viele verschiedene Ergebnisfolgen sind möglich? Schreibe die Rechnung als Potenz.`,c:`2${poS(n)} = ${tfm(2**n)}`,a:`Es sind ${tfm(2**n)} verschiedene Ergebnisfolgen möglich.`};},
+ lv=>{const n=kri(5,lv===1?9:14);return{t:'Die Seerose',q:`Eine Seerose verdoppelt jeden Tag ihre Fläche. Am 1. Tag bedeckt sie 1 m² des Teichs.<br>Wie viele m² bedeckt sie am ${n}. Tag? Schreibe die Rechnung als Potenz.`,c:`2${poS(n-1)} = ${tfm(2**(n-1))} m²`,a:`Am ${n}. Tag bedeckt die Seerose ${tfm(2**(n-1))} m².`};},
+ lv=>{const a=tpick([10,12,15,20,25,30,40,50].filter(x=>lv>1||x<=25));return{t:'Der Garten',q:`Ein quadratischer Garten ist ${a} m lang und ${a} m breit.<br>Wie groß ist seine Fläche? Schreibe die Rechnung als Potenz.`,c:`${a}${poS(2)} = ${a} · ${a} = ${tfm(a*a)} m²`,a:`Der Garten hat eine Fläche von ${tfm(a*a)} m².`};}
+];
 function poGen(it){const k=it.type,n=+it.n||1,lv=+it.lv||1;
+ if(k==='pos'){const gens=tshuf(POSX.map((_,i)=>i)),out=[];let g=0;const seen=new Set();
+  while(out.length<n&&g<400){const f=POSX[gens[g%gens.length]],t=f(lv);g++;if(seen.has(t.q)&&g<300)continue;seen.add(t.q);out.push(t);}
+  it.d=out;return;}
  if(k==='pob'){const BM=[5,10,15][lv-1],EM=[3,4,5][lv-1],fm=it.fm,ba=it.ba;
   it.d=tuniq(n,()=>{let neg=ba==='neg'||(ba==='mix'&&Math.random()<.5),e=kri(2,fm==='wert'?EM:Math.min(EM,5));
    if(ba==='dez'){const b=kri(1,lv===1?9:lv===2?19:29);let bb=b%10===0?b+1:b;if(Math.random()<.35)neg=true;e=kri(2,lv===3?3:2);const bs=poN((neg?-1:1)*bb/10),sg=neg&&e%2?'−':'';return{q:neg?`(${bs})${poS(e)}`:`${bs}${poS(e)}`,pr:Array(e).fill(neg?`(${bs})`:bs).join(' · '),s:sg+poPowStr(bb,e,1),e};}
@@ -1677,7 +1697,16 @@ function poGen(it){const k=it.type,n=+it.n||1,lv=+it.lv||1;
    return{q,s:`${st} = ${poM(res)}`};});}
 }
 const poMk=h=>`<div style="border:1.4px solid #000;border-radius:4px;padding:.5em .8em;margin:0 0 1em"><b>Merke:</b> ${h}</div>`;
-function poBlock(it){const k=it.type,s=tlS(it),co=+it.co||1;let h='';
+function posBlock(it){const sh=tlS(it),L=['a','n'].includes(it.lab)?it.lab:'none';
+ const lb=i=>L==='a'?poL(i):L==='n'?(i+1)+'.':'';
+ const h=(it.d||[]).map((t,i)=>{const l=lb(i),ind=l?'1.8em':'0';
+  let x=`<div style="margin:0 0 1.05em;break-inside:avoid"><div>${l?`<b>${l}</b> `:''}${it.tt!==false?`<b>${t.t}</b>`:''}</div><div style="margin-left:${ind}">${t.q}</div>`;
+  if(it.rl)x+=`<div class="tlrw" style="margin-left:${ind};margin-top:.5em"><span>Rechnung:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,t.c)}</span></div>`;
+  if(it.al)x+=`<div class="tlrw" style="margin-left:${ind};margin-top:.4em"><span>Antwort:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,t.a)}</span></div>`;
+  if(!it.rl&&!it.al&&sh)x+=`<div style="margin-left:${ind};margin-top:.3em">${tlSv(it,t.c)}</div>`;
+  return x+'</div>';}).join('');
+ return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+function poBlock(it){const k=it.type,s=tlS(it),co=+it.co||1;let h='';if(k==='pos')return posBlock(it);
  const row=(i,q,sol,mw)=>`<div class="tlrw"><b>${poL(i)}</b><span style="white-space:nowrap">${q}</span><span class="tlln" style="flex:1;min-width:${mw||3}em">${tlSv(it,sol)}</span></div>`;
  if(k==='pob'){const fm=it.fm;
   h=(it.mk?poMk(`Eine Potenz a${poS('n')} ist eine Kurzschreibweise für ein Produkt aus gleichen Faktoren: a${poS('n')} = a · a · … · a (n Faktoren). <b>a</b> heißt <b>Basis</b>, <b>n</b> heißt <b>Hochzahl</b> (Exponent). Bei negativen Basen gilt: gerade Hochzahl → das Ergebnis ist positiv, ungerade Hochzahl → das Ergebnis ist negativ.`):'')+
@@ -1702,6 +1731,7 @@ function renderPo(){const g=$('#g-po'),it=items.find(i=>i.id===sel&&POT.includes
  if(k==='pog')H+=`<label>Aufgabe${sl('md',[['zg','Zahl in Gleitkommadarstellung'],['gz','Gleitkommadarstellung als Zahl'],['er','Sachaufgabe: Fakten der Erde'],['pa','Paare zuordnen'],['vg','Vergleichen (< = >)'],['wo','Zahlwort (Millionen …) als Zehnerpotenz']])}</label>`+nn(it.md==='er'?[3,4,5,6,8,10]:[3,4,5,6,8,10,12])+lv([[1,'leicht'],[2,'mittel'],[3,'schwer']])+((it.md==='pa'||it.md==='er')?'':co([1,2,3]));
  if(k==='pom')H+=nn([4,6,8,10,12,16])+`<label>Rechenart${sl('op',[['mix','gemischt'],['mal','Multiplizieren'],['geteilt','Dividieren']])}</label><label>Basis${sl('bt',[['zahl','Zahlen (2 – 9)'],['zehn','Zehnerpotenzen (10)'],['var','Variablen (a, x, …)']])}</label>`+lv([[1,'Hochzahlen bis 5'],[2,'Hochzahlen bis 9'],[3,'Hochzahlen bis 12']],'Größe')+co([1,2,3,4])+ck('mk','Merkkasten (Rechenregeln)');
  if(k==='pov')H+=nn([4,6,8,10,12])+`<label>Rechenart${sl('op',[['mix','gemischt'],['mal','Multiplizieren'],['geteilt','Dividieren']])}</label>`+ck('ko','mit Koeffizienten (3x² · 7x³)')+(it.ko?'':ck('ex0','Multiplizieren: auch Hochzahl 0 (a³ · a⁰)'))+ck('neg','Dividieren: auch Ergebnis mit negativer Hochzahl (a⁶ : a⁹)')+ck('ng','auch negative Zahlen')+lv([[1,'leicht'],[2,'mittel'],[3,'schwer (auch Dezimalzahlen)']])+co([1,2,3])+ck('mk','Merkkasten anzeigen');
+ if(k==='pos')H+=nn([1,2,3,4,5,6,7,8,9,10])+lv([[1,'leicht (kleine Zahlen)'],[2,'mittel (größere Zahlen)']],'Zahlengröße')+`<label>Nummerierung${sl('lab',[['a','a) b) c) d)'],['n','1. 2. 3. 4.'],['none','keine']])}</label>`+ck('tt','Überschrift jeder Aufgabe')+ck('rl','Rechnungszeile')+ck('al','Antwortzeile');
  if(k==='pot')H+=nn([2,3,4,6,8,10])+lv([[1,'2 Terme'],[2,'3 Terme'],[3,'3 Terme, auch negative Basen']],'Aufbau')+co([1,2,3]);
  H+=ck('show','Lösung zeigen')+'<button data-po-act="mix">Neu mischen</button>';g.innerHTML=H;}
 const poHandler=e=>{const t=e.target,k=t.dataset.po;if(!k)return;const it=items.find(i=>i.id===sel&&POT.includes(i.type));if(!it)return;if(e.type==='change')return;
@@ -1711,7 +1741,7 @@ const poHandler=e=>{const t=e.target,k=t.dataset.po;if(!k)return;const it=items.
 $('#rp').addEventListener('input',poHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-po-act]');if(!b)return;const it=items.find(i=>i.id===sel&&POT.includes(i.type));if(!it)return;rec();poGen(it);render();});
 (function(){const P=$('#popal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
- L=[['pob',T(50,17,'2⁴ = ?',14)+T(50,33,'(−5)³ = ?',12)],['poz',T(50,17,'10⁶ =',13)+T(50,33,'1 000 000',12)],['pog',T(50,18,'2,43 · 10⁸',13)+T(50,33,'243 000 000',10)],['pom',T(50,17,'a³ · a² = a⁵',12)+T(50,33,'3⁵ : 3² = 3³',11)],['pov',T(50,17,'3x² · 7x³',12)+T(50,33,'= 21x⁵',12)],['pot',T(50,17,'4² + 3³ − 5²',11)+T(50,33,'= 18',12)]];
+ L=[['pob',T(50,17,'2⁴ = ?',14)+T(50,33,'(−5)³ = ?',12)],['poz',T(50,17,'10⁶ =',13)+T(50,33,'1 000 000',12)],['pog',T(50,18,'2,43 · 10⁸',13)+T(50,33,'243 000 000',10)],['pom',T(50,17,'a³ · a² = a⁵',12)+T(50,33,'3⁵ : 3² = 3³',11)],['pov',T(50,17,'3x² · 7x³',12)+T(50,33,'= 21x⁵',12)],['pot',T(50,17,'4² + 3³ − 5²',11)+T(50,33,'= 18',12)],['pos',T(50,16,'3 Personen, je 3 …',10)+T(50,32,'3⁴ = 81',12)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 /* ===== Satz des Pythagoras ===== */
 Object.assign(TLD,{pys:{bi:'ja',n:4,th:'mix',gs:'tr',rd:2,pl:4,an:true,co:1,mk:false},pyb:{rw:true,n:6,ge:'mix',zm:'mix',gs:'tr',rd:2,bz:'abc',un:'cm',pl:2,co:2,mk:false}});
