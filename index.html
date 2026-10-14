@@ -2093,6 +2093,38 @@ function zrGen(it){if(it.th==='-'){it.d=[{t:'__ph',a:''}];return;}window.KKN=+it
  zrNm.py='Pythagoras: Denkaufgaben';zrNm.pk='Pythagoras: Begriffe ankreuzen';Z40TH.pl='py,pk';Z40TH.py='py';Z40TH.pk='pk';
  {const _z=zrTheme;zrTheme=function(k){return /^py/.test(k)?'py,pk':_z(k);};}
 })();
+
+/* ===== 4.0 Maßumwandlungen ===== */
+(function(){const R=kri,P=tpick,F=x=>pyF(Math.round(x*1000)/1000),A=(t,a)=>({t:t.replace(/^([^:]+):/,'<b>$1:</b>'),q:'Antwort',a,sp:3});
+ zrTH.mu=[
+ {l:2,f:()=>{const nm=shuf(['Mia','Ben','Ali','Lena','Tim','Eva']).slice(0,3),c=P([60,80,90,120,150,180,200,250]),tr=Math.random()<.35,v=[{u:'cm',x:c},{u:'m',x:c/100},{u:'dm',x:c/10}];shuf(v);let k=-1;if(tr){k=R(0,2);const d=P([10,20]);v[k].x+=v[k].u==='cm'?d:v[k].u==='dm'?d/10:d/100;}
+  const cm=x=>Math.round((x.u==='cm'?x.x:x.u==='m'?x.x*100:x.x*10)*10)/10,best=v.map((x,i)=>[cm(x),i]).sort((a,b)=>b[0]-a[0]);
+  const txt=`${nm[0]} hat ein Band mit ${F(v[0].x)} ${v[0].u}, ${nm[1]} eines mit ${F(v[1].x)} ${v[1].u} und ${nm[2]} eines mit ${F(v[2].x)} ${v[2].u}.`;
+  return A(`Wer hat das längste Band?: ${txt} Wer hat das längste Band – oder steckt hier ein Trick dahinter?`,tr?`${nm[best[0][1]]} hat das längste Band (${F(best[0][0])} cm). Umgerechnet in cm: ${v.map((x,i)=>nm[i]+' '+F(cm(x))+' cm').join(', ')}.`:`Alle drei Bänder sind gleich lang: ${F(cm(v[0]))} cm. Der Trick: Die Einheiten sind verschieden (cm, m, dm), die Zahlen dürfen nur in derselben Einheit verglichen werden.`);}},
+ {l:2,f:()=>{const g=P([['m','cm','mm',100,10],['m','dm','cm',10,10],['km','m','cm',1000,100]]),L=P([2,3,4,5,6]);
+  return A(`Die schrumpfende Strecke: Eine Strecke ist ${L} ${g[0]} lang. Du gibst ihre Länge zuerst in ${g[1]=='cm'?'Zentimetern':g[1]=='dm'?'Dezimetern':'Metern'}, dann in ${g[2]=='mm'?'Millimetern':'Zentimetern'} an. Die Zahl wird immer größer. Wird auch die Strecke länger?`,`Nein, die Strecke bleibt gleich lang: ${L} ${g[0]} = ${tfm(L*g[3])} ${g[1]} = ${tfm(L*g[3]*g[4])} ${g[2]}. Je kleiner die Einheit, desto größer ist die Maßzahl.`);}},
+ {l:2,f:()=>{const n=P(['Tom','Lena','Jan','Mia']),g=P([['g','kg','Paket',1000,'schwerer','Pakete'],['ml','l','Flasche',1000,'mehr Inhalt','Flaschen'],['m','km','Strecke',1000,'länger','Strecken']]),k=P([1.5,2.5,0.5,3.5,4.5,2.25]);
+  const big=k*g[3];let t;
+  if(g[0]==='g')t=`Auf zwei Paketen steht: 📦 Paket A: ${tfm(big)} g, 📦 Paket B: ${F(k)} kg. ${n} sagt: „Paket A ist viel schwerer, denn ${tfm(big)} ist größer als ${F(k)}.“ Wie überzeugst du ${n}, dass sich ${n} irrt?`;
+  else if(g[0]==='ml')t=`Auf zwei Flaschen steht: Flasche A: ${tfm(big)} ml, Flasche B: ${F(k)} l. ${n} sagt: „Flasche A hat viel mehr Inhalt, denn ${tfm(big)} ist größer als ${F(k)}.“ Wie überzeugst du ${n}, dass sich ${n} irrt?`;
+  else t=`Zwei Wege: Weg A ist ${tfm(big)} m lang, Weg B ist ${F(k)} km lang. ${n} sagt: „Weg A ist viel länger, denn ${tfm(big)} ist größer als ${F(k)}.“ Wie überzeugst du ${n}, dass sich ${n} irrt?`;
+  return A(`Der schwere Irrtum: ${t}`,`Beide sind gleich: ${tfm(big)} ${g[0]} = ${F(k)} ${g[1]} (1 ${g[1]} = 1 000 ${g[0]}). Man darf nur Zahlen mit gleicher Einheit vergleichen.`);}},
+ {l:3,f:()=>{const g=P([['m','cm',100,'Meter','Zentimeter'],['dm','cm',10,'Dezimeter','Zentimeter'],['m','dm',10,'Meter','Dezimeter'],['cm','mm',10,'Zentimeter','Millimeter']]),n=P(['Lena','Jan','Tim','Eva']),a=g[2],q=a*a;
+  return A(`Die Flächenfalle: Ein Quadrat ist 1 ${g[0]} lang und 1 ${g[0]} breit. ${n} behauptet: „Ein ${g[3]} sind ${a} ${g[4]}. Also ist ein Quadrat${g[3].toLowerCase()} gleich ${a} Quadrat${g[4].toLowerCase()}.“ Welchen Denkfehler macht ${n}? Tipp: Wie viele kleine Quadrate mit einer Seitenlänge von 1 ${g[1]} passen in eine Reihe? Wie viele Reihen gibt es?`,`In einer Reihe passen ${a} Quadrate, und es gibt ${a} Reihen: ${a} · ${a} = ${tfm(q)}. Also 1 ${g[0]}² = ${tfm(q)} ${g[1]}². Bei Flächen muss man zweimal umrechnen.`);}},
+ {l:2,f:()=>{const v=P([[.5,'½'],[.5,'½'],[.25,'¼'],[.75,'¾'],[1.5,'1½']]),tr=Math.random()<.4,names=['A','B','C'],ml=v[0]*1000,fl=[{t:`${v[1]} Liter`,ml:ml},{t:`${tfm(ml)} ml`,ml:ml},{t:`${F(ml/10)} cl`,ml:ml}];
+  if(tr){const k=R(0,2),d=P([50,100]);fl[k].ml+=d;fl[k].t=k===0?`${F((ml+d)/1000)} Liter`:k===1?`${tfm(ml+d)} ml`:`${F((ml+d)/10)} cl`;}
+  const sh=shuf(fl.slice()),mx=Math.max(...sh.map(x=>x.ml)),w=sh.map((x,i)=>x.ml===mx?names[i]:null).filter(Boolean);
+  return A(`Die Flaschenfrage: Auf dem Tisch stehen drei volle Flaschen: Flasche ${names[0]}: ${sh[0].t}, Flasche ${names[1]}: ${sh[1].t}, Flasche ${names[2]}: ${sh[2].t}. Welche Flasche enthält am meisten?`,w.length===3?`Alle drei Flaschen enthalten gleich viel: ${tfm(ml)} ml (1 l = 1 000 ml, 1 cl = 10 ml).`:`Flasche ${w[0]} enthält am meisten. In ml: ${sh.map((x,i)=>names[i]+' '+tfm(x.ml)+' ml').join(', ')}.`);}},
+ {l:2,f:()=>{const n=P(['Noah','Lena','Mia','Jan']),o=P([0,1,2]);
+  const t=[[`Eine halbe Stunde sind 50 Minuten. Schließlich ist ein halber Meter auch 50 Zentimeter.`,`Eine Stunde hat 60 Minuten, nicht 100. Eine halbe Stunde sind 30 Minuten. Beim Meter wird in 100er-Schritten umgerechnet (dezimal), bei der Zeit in 60er-Schritten.`],[`Eine Viertelstunde sind 25 Minuten. Schließlich ist ein Viertelmeter auch 25 Zentimeter.`,`Eine Stunde hat 60 Minuten: 60 min : 4 = 15 min. Eine Viertelstunde sind 15 Minuten. Die Zeit ist nicht dezimal (100er-System) wie die Länge.`],[`Eine Stunde hat 100 Minuten. Schließlich hat ein Meter auch 100 Zentimeter.`,`Eine Stunde hat 60 Minuten. Zeiteinheiten werden nicht mit 10, 100 oder 1 000 umgerechnet (1 h = 60 min, 1 min = 60 s).`]][o];
+  return A(`Die Zeitfalle: ${n} sagt: „${t[0]}“ Warum funktioniert diese Überlegung bei der Zeit nicht?`,t[1]);}},
+ {l:2,f:()=>{const m=R(2,9),c=R(2,9),n=P(['Sarah','Jan','Lena','Tim']);
+  return A(`Der Kommafehler: ${n} schreibt: „${m} m ${c} cm = ${m},${c} m“. Stimmt das? Begründe und gib die richtige Schreibweise an.`,`Nein. ${c} cm sind ${F(c/100)} m, nicht ${F(c/10)} m (1 cm = 0,01 m). Richtig: ${m} m ${c} cm = ${F(m+c/100)} m.`);}},
+ {l:2,f:()=>{const n=P(['Jan','Eva','Tim','Lena']);
+  return A(`Der Liter-Irrtum: ${n} sagt: „Ein Meter hat 100 Zentimeter, also hat ein Liter 100 Milliliter.“ Hat ${n} recht?`,`Nein. 1 Liter = 1 000 Milliliter. Jede Einheitengruppe hat ihre eigenen Umrechnungszahlen (Länge 10, Masse 1 000, Raummaß 1 000, Zeit 60).`);}}
+ ];
+ zrNm.mu='Maßumwandlungen: Denkaufgaben';Z40TH.mu='mu';
+})();
 /* ===== 4.0 Winkel: Uhr ===== */
 (function(){const R=kri,P=tpick;
  const mk=(h,m,l)=>({l,f:()=>{const hh=typeof h==='function'?h():h,mm=typeof m==='function'?m():m;
