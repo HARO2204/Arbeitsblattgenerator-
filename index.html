@@ -2136,23 +2136,32 @@ function zrGen(it){if(it.th==='-'){it.d=[{t:'__ph',a:''}];return;}window.KKN=+it
 })();
 /* ===== Parallele und Normale ===== */
 Object.assign(TLN,{pnk:'Parallele / Normale zeichnen',pnb:'Normalabstand',pnz:'Parallele und Normale: Symbole'});
-Object.assign(TLD,{pnk:{n:4,md:'mix',co:2,lab:'a',mk:false},pnb:{n:4,md:'pz',un:'mix',co:2,lab:'a',bx:true,mk:false},pnz:{n:5,md:'sym',lab:'a',mk:false}});
+Object.assign(TLD,{pnk:{n:4,md:'mix',co:2,kn:1,lab:'a',mk:false},pnb:{n:4,md:'pz',un:'mix',co:2,lab:'a',bx:true,mk:false},pnz:{n:5,md:'sym',lab:'a',mk:false}});
 const PNRED='#c0392b';
 const pnPt=(p,dx,dy)=>[p[0]+dx,p[1]+dy];
 function pnTxt(x,y,t,col,an,fs){return `<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-size="${fs||4.8}" text-anchor="${an||'middle'}" fill="${col||'#000'}" font-family="inherit">${t}</text>`;}
 function pnLine(a,b,col,w,dash){return `<path d="M${a[0].toFixed(2)} ${a[1].toFixed(2)}L${b[0].toFixed(2)} ${b[1].toFixed(2)}" stroke="${col||'#000'}" stroke-width="${w||.45}" fill="none"${dash?` stroke-dasharray="${dash}"`:''} stroke-linecap="round"/>`;}
 function pnCross(p,col){const r=1.6;return pnLine([p[0]-r,p[1]-r],[p[0]+r,p[1]+r],col,.45)+pnLine([p[0]-r,p[1]+r],[p[0]+r,p[1]-r],col,.45);}
 function pnRA(F,u,v,col,s){s=s||3;const a=[F[0]+u[0]*s,F[1]+u[1]*s],c=[F[0]+v[0]*s,F[1]+v[1]*s],b=[a[0]+v[0]*s,a[1]+v[1]*s];return `<path d="M${a[0].toFixed(2)} ${a[1].toFixed(2)}L${b[0].toFixed(2)} ${b[1].toFixed(2)}L${c[0].toFixed(2)} ${c[1].toFixed(2)}" stroke="${col}" stroke-width=".4" fill="none"/><circle cx="${((a[0]+c[0])/2+ (F[0]-(a[0]+c[0])/2)*.0).toFixed(2)}" cy="${((a[1]+c[1])/2).toFixed(2)}" r="0" fill="${col}"/>`;}
-const pnSvg=(W,H,g,extra)=>{const q=7,px=(q*MMPX).toFixed(1);return `<svg width="${((W+2*q)*MMPX).toFixed(1)}" height="${((H+2*q)*MMPX).toFixed(1)}" viewBox="${-q} ${-q} ${W+2*q} ${H+2*q}" style="display:block;max-width:none;overflow:visible;margin:-${px}px${extra||''}" font-family="inherit">${g}</svg>`;};
+const pnSvg=(W,H,g,extra)=>{const q=7,px=(q*MMPX).toFixed(1);return `<svg width="${((W+2*q)*MMPX).toFixed(1)}" height="${((H+2*q)*MMPX).toFixed(1)}" viewBox="${-q} ${-q} ${W+2*q} ${H+2*q}" style="display:block;width:${((W+2*q)*MMPX).toFixed(1)}px;height:${((H+2*q)*MMPX).toFixed(1)}px;max-width:none;overflow:visible;margin:-${px}px${extra||''}" font-family="inherit">${g}</svg>`;};
 /* Aufgabe: Punkt P und Gerade g im Originalmaß (mm) */
-function pnGeo(){const W=82,H=56,al=tpick([0,0,10,-10,15,-15,20,-20,25,-25,30,-30,35,-35]),a=al*Math.PI/180,u=[Math.cos(a),Math.sin(a)],n=[-Math.sin(a),Math.cos(a)],d=kri(12,26),s=tpick([-1,1]),off=kri(-12,12),C=[W/2,H/2+kri(-3,3)],F=[C[0]+u[0]*off,C[1]+u[1]*off],P=[F[0]+n[0]*s*d,F[1]+n[1]*s*d];
- return {W,H,u,n,d,s,F,P,C,al};}
+const PNL=['g','f','h','k','m','a','b','c'],PNP='ABCDEFGHKLMNPQRST'.split(''),PNSUB=['','₁','₂','₃','₄','₅'];
+function pnGeo(k){k=Math.max(1,Math.min(4,k||1));const W=k>1?92:82,H=k>1?64:56;let G=null;
+ for(let tr=0;tr<300&&!G;tr++){const al=tpick([0,0,10,-10,15,-15,20,-20,25,-25,30,-30,35,-35]),a=al*Math.PI/180,u=[Math.cos(a),Math.sin(a)],n=[-Math.sin(a),Math.cos(a)],C=[W/2,H/2+kri(-3,3)];
+  let offs;if(k===1)offs=[kri(-12,12)];else offs=tshuf([-30,-10,10,30]).slice(0,k).sort((x,y)=>x-y).map(o=>o+kri(-3,3));
+  const nm=tshuf(PNP).slice(0,k).sort(),pts=[];let ok=true;
+  offs.forEach((off,i)=>{const d=kri(10,22),s=tpick([-1,1]),F=[C[0]+u[0]*off,C[1]+u[1]*off],P=[F[0]+n[0]*s*d,F[1]+n[1]*s*d];pts.push({nm:nm[i],F,P,d,s});});
+  if(!pts.every(q=>q.P[0]>9&&q.P[0]<W-9&&q.P[1]>9&&q.P[1]<H-9))continue;
+  for(let x=0;x<k&&ok;x++)for(let y=x+1;y<k;y++){if(Math.hypot(pts[x].P[0]-pts[y].P[0],pts[x].P[1]-pts[y].P[1])<13||Math.abs(pts[x].s*pts[x].d-pts[y].s*pts[y].d)<6){ok=false;break;}}
+  if(!ok)continue;G={W,H,u,n,C,al,gn:tpick(PNL),pts,P:pts[0].P,F:pts[0].F,d:pts[0].d,s:pts[0].s};}
+ if(!G){const a=0,u=[1,0],n=[0,1],C=[W/2,H/2],pts=[{nm:'A',F:[W/2,H/2],P:[W/2,H/2+15],d:15,s:1}];G={W,H,u,n,C,al:0,gn:'g',pts,P:pts[0].P,F:pts[0].F,d:15,s:1};}
+ return G;}
 function pnClip(P,v,W,H,m){const x0=m,x1=W-m,y0=m,y1=H-m;let lo=-1e9,hi=1e9;const upd=(d,mn,mx,o)=>{if(Math.abs(d)<1e-9)return;let a=(mn-o)/d,b=(mx-o)/d;if(a>b)[a,b]=[b,a];lo=Math.max(lo,a);hi=Math.min(hi,b);};upd(v[0],x0,x1,P[0]);upd(v[1],y0,y1,P[1]);return [[P[0]+v[0]*lo,P[1]+v[1]*lo],[P[0]+v[0]*hi,P[1]+v[1]*hi]];}
-function pnFigGP(t,sh,nm){const G=t.geo,e=pnClip(G.C,G.u,G.W,G.H,3),st=[e[1][0]>e[0][0]?e[1]:e[0]];let g=pnLine(e[0],e[1],'#000',.5);
- const R=e[1][0]>=e[0][0]?e[1]:e[0];g+=pnTxt(R[0]-2,R[1]+(G.n[1]*-1>0?-2.2:5.4),'g','#000','middle');
- g+=pnCross(G.P,'#000')+pnTxt(G.P[0]+3,G.P[1]-1.6,'P','#000','start');
- if(sh&&t.k==='nor'||sh&&t.k==='mess'){const f=pnClip(G.P,G.n,G.W,G.H,3);g+=pnLine(f[0],f[1],PNRED,.5);g+=pnRA(G.F,[G.u[0],G.u[1]],[G.n[0]*G.s,G.n[1]*G.s],PNRED,3);if(t.k==='nor')g+=pnTxt(f[1][1]>f[0][1]?f[1][0]+3:f[0][0]+3,f[1][1]>f[0][1]?f[1][1]-1:f[0][1]+5,'n',PNRED,'start');}
- if(sh&&t.k==='par'){const f=pnClip(G.P,G.u,G.W,G.H,3);g+=pnLine(f[0],f[1],PNRED,.5);const q=f[1][0]>=f[0][0]?f[1]:f[0];g+=pnTxt(q[0]-2,q[1]-2,'p',PNRED,'middle');}
+function pnFigGP(t,sh,nm){const G=t.geo,e=pnClip(G.C,G.u,G.W,G.H,3),k=G.pts.length;let g=pnLine(e[0],e[1],'#000',.5);
+ const R=e[1][0]>=e[0][0]?e[1]:e[0];g+=pnTxt(R[0]-2,R[1]+(G.n[1]*-1>0?-2.2:5.4),G.gn,'#000','middle');
+ G.pts.forEach((q,i)=>{g+=pnCross(q.P,'#000')+pnTxt(q.P[0]+3,q.P[1]-1.6,q.nm,'#000','start');
+  if(sh&&(t.k==='nor'||t.k==='mess')){const f=pnClip(q.P,G.n,G.W,G.H,6);g+=pnLine(f[0],f[1],PNRED,.5);g+=pnRA(q.F,[G.u[0],G.u[1]],[G.n[0]*q.s,G.n[1]*q.s],PNRED,3);if(t.k==='nor'){const dt=e=>(e[0]-q.F[0])*G.n[0]*-q.s+(e[1]-q.F[1])*G.n[1]*-q.s,lo=dt(f[0])>dt(f[1])?f[0]:f[1],nn='n'+(k>1?PNSUB[i+1]:'');g+=pnTxt(lo[0]+3,lo[1]+(lo[1]<G.H/2?5:-1.5),nn,PNRED,'start');}}
+  if(sh&&t.k==='par'){const f=pnClip(q.P,G.u,G.W,G.H,6);g+=pnLine(f[0],f[1],PNRED,.5);const r=f[1][0]>=f[0][0]?f[1]:f[0];g+=pnTxt(r[0]-2,r[1]-2,'p'+(k>1?PNSUB[i+1]:''),PNRED,'middle');}});
  return pnSvg(G.W,G.H,g);}
 function pnMk(){const W=70,H=30;const par=pnLine([2,8],[40,8])+pnLine([2,22],[40,22])+pnLine([18,6.5],[20.5,9.5],'#000',.4)+pnLine([18,20.5],[20.5,23.5],'#000',.4)+pnTxt(44,10,'f','#000','start')+pnTxt(44,24,'g','#000','start');
  const nor=pnLine([2,15],[40,15])+pnLine([14,1],[14,29])+`<path d="M14 15h3.2v-3.2h-3.2" fill="none" stroke="#000" stroke-width=".4" transform="translate(0 0)"/>`+pnTxt(44,17,'g','#000','start')+pnTxt(17,4,'h','#000','start');
@@ -2160,13 +2169,13 @@ function pnMk(){const W=70,H=30;const par=pnLine([2,8],[40,8])+pnLine([2,22],[40
 /* ---- Generatoren ---- */
 const pnNm=['f','g','h','k','m','n','p','q'];
 function pnGen(it){const n=+it.n||1,md=it.md,out=[];
- if(it.type==='pnk'){for(let i=0;i<n;i++){const k=md==='mix'?(i%2?'nor':'par'):md;out.push({k,geo:pnGeo()});}if(md==='mix'){const sw=Math.random()<.5;if(sw)out.forEach(t=>t.k=t.k==='nor'?'par':'nor');}it.d=out;return;}
+ if(it.type==='pnk'){for(let i=0;i<n;i++){const k=md==='mix'?(i%2?'nor':'par'):md;out.push({k,geo:pnGeo(+it.kn||1)});}if(md==='mix'){const sw=Math.random()<.5;if(sw)out.forEach(t=>t.k=t.k==='nor'?'par':'nor');}it.d=out;return;}
  if(it.type==='pnb'){
   if(md==='mess'){for(let i=0;i<n;i++){const geo=pnGeo(),u=it.un==='mix'?tpick(['mm','cm']):it.un||'mm';out.push({k:'mess',geo,u});}it.d=out;return;}
   const ds=[];while(ds.length<n){const v=tpick([2,3,4,5,6,7,8,9,10,12,15,16,18,20,24,30,36,42,45,48,60,70]);ds.push(v);}
-  if(md==='pp'){it.d=ds.slice(0,n).map(v=>({k:'pp',mm:Math.min(v,70)*(it.un==='mm'?1:10)>80?v:v,u:'cm',v:Math.min(v,10)}));it.d.forEach(t=>{t.v=tpick([2,3,4,5,6]);t.mm=t.v*10;t.u=it.un==='mm'?'mm':'cm';if(t.u==='mm')t.v=t.mm;});return;}
+  if(md==='pp'){it.d=ds.slice(0,n).map(v=>({k:'pp',mm:Math.min(v,70)*(it.un==='mm'?1:10)>80?v:v,u:'cm',v:Math.min(v,10)}));it.d.forEach(t=>{t.v=tpick([2,3,4,5,6]);t.mm=t.v*10;t.u=it.un==='mm'?'mm':'cm';if(t.u==='mm')t.v=t.mm;const l=tshuf(PNL);t.a=l[0];t.b=l[1];});return;}
   const pool=[];while(pool.length<n){const cm=tpick([2,3,4,5,6]),un=it.un==='mix'?tpick(['cm','mm']):it.un||'cm';pool.push(un==='cm'?{v:cm,u:'cm',mm:cm*10}:{v:cm*10+tpick([0,4,6]),u:'mm',mm:cm*10+tpick([0,4,6])});}
-  it.d=pool.map(t=>({k:'pz',v:t.v,u:t.u,mm:t.mm}));pool.forEach((t,i)=>{});return;}
+  it.d=pool.map(t=>({k:'pz',v:t.v,u:t.u,mm:t.mm,a:tpick(PNL),pp:tpick(PNP)}));pool.forEach((t,i)=>{});return;}
  if(it.type==='pnz'){
   if(md==='ck'){const T=[['Das Zeichen ⊥ bedeutet „normal auf“.','Das Zeichen ⊥ bedeutet „parallel zu“.'],['Parallele Geraden haben überall denselben Abstand voneinander.','Parallele Geraden haben überall einen anderen Abstand voneinander.'],['Parallele Geraden haben keinen Schnittpunkt.','Parallele Geraden schneiden sich in genau einem Punkt.'],['Zwei Geraden, die normal aufeinander stehen, bilden einen rechten Winkel.','Zwei Geraden, die normal aufeinander stehen, bilden einen Winkel von 45°.'],['g ∥ h bedeutet: g ist parallel zu h.','g ∥ h bedeutet: g steht normal auf h.'],['Der Normalabstand ist die kürzeste Verbindung zwischen einem Punkt und einer Geraden.','Der Normalabstand ist die längste Verbindung zwischen einem Punkt und einer Geraden.'],['Die Normale zu g durch P steht im rechten Winkel auf g.','Die Normale zu g durch P ist parallel zu g.'],['Normale Geraden schließen einen rechten Winkel ein.','Normale Geraden schneiden sich nie.'],['d(g, P) = 2 cm bedeutet: P ist 2 cm von g entfernt.','d(g, P) = 2 cm bedeutet: P liegt auf der Geraden g.'],['Zwei Geraden, die auf dieselbe Gerade normal stehen, sind parallel zueinander.','Zwei Geraden, die auf dieselbe Gerade normal stehen, stehen auch normal aufeinander.']];
    const NN=Math.max(3,Math.min(+it.n||5,8)),idx=tshuf(T.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(4,NN-1)));
@@ -2216,15 +2225,15 @@ function pnBlock(it){const sh=tlS(it),L=['a','n'].includes(it.lab)?it.lab:'none'
  if(it.mk)h+=pnMk();
  const ln=(txt,w)=>`<span style="display:inline-block;min-width:${w||3}em;border-bottom:1.2px solid #444;text-align:center">${txt}</span>`;
  if(it.type==='pnk'){
-  const ins={par:'Zeichne durch den Punkt P die <b>Parallele</b> p zur Geraden g.',nor:'Zeichne durch den Punkt P die <b>Normale</b> n auf die Gerade g.'};
-  h+=tlGrid(co,(it.d||[]).map((t,i)=>`<div style="break-inside:avoid"><div>${lb(i)?`<b>${lb(i)}</b> `:''}${ins[t.k]}</div>${pnFigGP(t,sh)}</div>`).join(''));
+  const ins=t=>{const q=t.geo.pts,k=q.length,nms=q.map(x=>x.nm),lst=k===1?nms[0]:nms.slice(0,-1).join(', ')+' und '+nms[k-1],gn=t.geo.gn,sb=c=>k===1?c:Array.from({length:k},(_,i)=>c+PNSUB[i+1]).join(', ').replace(/, ([^,]*)$/,' und $1');return t.k==='par'?`Zeichne durch ${k===1?'den Punkt':'die Punkte'} ${lst} ${k===1?'die':'jeweils die'} <b>${k===1?'Parallele':'Parallelen'}</b> ${sb('p')} zur Geraden ${gn}.`:`Zeichne durch ${k===1?'den Punkt':'die Punkte'} ${lst} ${k===1?'die':'jeweils die'} <b>${k===1?'Normale':'Normalen'}</b> ${sb('n')} auf die Gerade ${gn}.`;};
+  h+=tlGrid(co,(it.d||[]).map((t,i)=>`<div style="break-inside:avoid"><div>${lb(i)?`<b>${lb(i)}</b> `:''}${ins(t)}</div>${pnFigGP(t,sh)}</div>`).join(''));
   return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
  if(it.type==='pnb'){
-  if(it.md==='mess'){h+=tlGrid(co,(it.d||[]).map((t,i)=>{const G=t.geo,val=t.u==='cm'?pyF(Math.round(G.d)/10):String(Math.round(G.d));return `<div style="break-inside:avoid"><div>${lb(i)?`<b>${lb(i)}</b> `:''}Zeichne die Normale durch P auf g und miss den Normalabstand.</div>${pnFigGP({k:'mess',geo:G},sh)}<div style="margin-top:.3em">d(g, P) = ${ln(sh?`<span class="sv">${val}</span>`:'&nbsp;',4)} ${t.u}</div></div>`;}).join(''));return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+  if(it.md==='mess'){h+=tlGrid(co,(it.d||[]).map((t,i)=>{const G=t.geo,val=t.u==='cm'?pyF(Math.round(G.d)/10):String(Math.round(G.d));return `<div style="break-inside:avoid"><div>${lb(i)?`<b>${lb(i)}</b> `:''}Zeichne die Normale durch ${G.pts[0].nm} auf ${G.gn} und miss den Normalabstand.</div>${pnFigGP({k:'mess',geo:G},sh)}<div style="margin-top:.3em">d(${G.gn}, ${G.pts[0].nm}) = ${ln(sh?`<span class="sv">${val}</span>`:'&nbsp;',4)} ${t.u}</div></div>`;}).join(''));return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
   const bw=70;
-  h+=`<div style="margin:0 0 .5em">${it.md==='pz'?'Zeichne jeweils eine Gerade g und einen Punkt P mit dem gesuchten Normalabstand.':'Konstruiere jeweils zwei parallele Geraden f und g mit dem angegebenen Normalabstand.'}</div>`;
-  h+=tlGrid(co,(it.d||[]).map((t,i)=>{const hh=Math.max(40,t.mm+24),txt=it.md==='pz'?`d(g, P) = ${t.v} ${t.u}`:`d(f, g) = ${t.v} ${t.u}`;let box='';
-   if(it.bx){let g='';if(sh){const y0=10,y1=10+t.mm;if(it.md==='pz'){g+=pnLine([5,y0],[bw-5,y0],PNRED,.5)+pnTxt(bw-8,y0-1.5,'g',PNRED)+pnCross([bw/2,y1],PNRED)+pnTxt(bw/2+3,y1+1.5,'P',PNRED,'start')+pnLine([bw/2,y0],[bw/2,y1],PNRED,.4,'1.5 1')+pnRA([bw/2,y0],[1,0],[0,1],PNRED,2.6)+pnTxt(bw/2+2,(y0+y1)/2+1.5,t.v+' '+t.u,PNRED,'start',4);}else{g+=pnLine([5,y0],[bw-5,y0],PNRED,.5)+pnLine([5,y1],[bw-5,y1],PNRED,.5)+pnTxt(bw-8,y0-1.5,'f',PNRED)+pnTxt(bw-8,y1-1.5,'g',PNRED)+pnLine([bw/2,y0],[bw/2,y1],PNRED,.4,'1.5 1')+pnRA([bw/2,y0],[1,0],[0,1],PNRED,2.6)+pnTxt(bw/2+2,(y0+y1)/2+1.5,t.v+' '+t.u,PNRED,'start',4);}}
+  h+=`<div style="margin:0 0 .5em">${it.md==='pz'?'Zeichne jeweils eine Gerade und einen Punkt mit dem gesuchten Normalabstand.':'Konstruiere jeweils zwei parallele Geraden mit dem angegebenen Normalabstand.'}</div>`;
+  h+=tlGrid(co,(it.d||[]).map((t,i)=>{const hh=Math.max(40,t.mm+24),txt=it.md==='pz'?`d(${t.a}, ${t.pp}) = ${t.v} ${t.u}`:`d(${t.a}, ${t.b}) = ${t.v} ${t.u}`;let box='';
+   if(it.bx){let g='';if(sh){const y0=10,y1=10+t.mm;if(it.md==='pz'){g+=pnLine([5,y0],[bw-5,y0],PNRED,.5)+pnTxt(bw-8,y0-1.5,t.a,PNRED)+pnCross([bw/2,y1],PNRED)+pnTxt(bw/2+3,y1+1.5,t.pp,PNRED,'start')+pnLine([bw/2,y0],[bw/2,y1],PNRED,.4,'1.5 1')+pnRA([bw/2,y0],[1,0],[0,1],PNRED,2.6)+pnTxt(bw/2+2,(y0+y1)/2+1.5,t.v+' '+t.u,PNRED,'start',4);}else{g+=pnLine([5,y0],[bw-5,y0],PNRED,.5)+pnLine([5,y1],[bw-5,y1],PNRED,.5)+pnTxt(bw-8,y0-1.5,t.a,PNRED)+pnTxt(bw-8,y1-1.5,t.b,PNRED)+pnLine([bw/2,y0],[bw/2,y1],PNRED,.4,'1.5 1')+pnRA([bw/2,y0],[1,0],[0,1],PNRED,2.6)+pnTxt(bw/2+2,(y0+y1)/2+1.5,t.v+' '+t.u,PNRED,'start',4);}}
     box=`<div style="border:1.2px dashed #999;width:${(bw*MMPX).toFixed(0)}px;max-width:100%;height:${(hh*MMPX).toFixed(0)}px;position:relative;margin-top:.3em">${g?`<div style="position:absolute;left:0;top:0">${pnSvg(bw,hh,g)}</div>`:''}</div>`;}
    return `<div style="break-inside:avoid">${lb(i)?`<b>${lb(i)}</b> `:''}${txt}${box}</div>`;}).join(''));
   return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
@@ -2241,13 +2250,13 @@ function renderPn(){const g=$('#g-pn'),it=items.find(i=>i.id===sel&&PNT.includes
  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-pn="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-pn="${f}"${it[f]?' checked':''}> ${t}</label>`;
  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
  const lab=`<label>Nummerierung${sl('lab',[['a','a) b) c) d)'],['n','1. 2. 3. 4.'],['none','keine']])}</label>`;
- if(k==='pnk')H+=`<label>Aufgaben${sl('md',[['mix','Parallele und Normale (gemischt)'],['par','nur Parallele'],['nor','nur Normale']])}</label><label>Anzahl der Aufgaben${sl('n',tN([1,2,3,4,5,6,8]))}</label><label>Spalten${sl('co',tN([1,2,3]))}</label>`+lab;
+ if(k==='pnk')H+=`<label>Aufgaben${sl('md',[['mix','Parallele und Normale (gemischt)'],['par','nur Parallele'],['nor','nur Normale']])}</label><label>Anzahl der Aufgaben${sl('n',tN([1,2,3,4,5,6,8]))}</label><label>Punkte (Parallelen/Normalen) je Gerade${sl('kn',[[1,'1 (eine Parallele/Normale)'],[2,'2'],[3,'3'],[4,'4']])}</label><label>Spalten${sl('co',tN([1,2,3]))}</label>`+lab;
  if(k==='pnb')H+=`<label>Aufgabe${sl('md',[['pz','Gerade g und Punkt P mit gegebenem Abstand zeichnen'],['mess','Normalabstand messen (Zeichnung gegeben)'],['pp','Zwei Parallelen mit gegebenem Normalabstand']])}</label><label>Anzahl der Aufgaben${sl('n',tN([2,3,4,6,8,9,10,12]))}</label><label>Einheit${sl('un',[['mix','cm und mm gemischt'],['cm','nur cm'],['mm','nur mm']])}</label><label>Spalten${sl('co',tN([1,2,3,4]))}</label>`+lab+(it.md==='mess'?'':ck('bx','Zeichenfläche (mit Rahmen) anzeigen'));
  if(k==='pnz')H+=`<label>Aufgabe${sl('md',[['sym','Symbole ‖ und ⊥ einsetzen (Abbildung)'],['rf','richtig oder falsch (Abbildung)'],['el','Element von: ∈ oder ∉ einsetzen (Abbildung)'],['er','Element von, ‖, ⊥: richtig oder falsch (Abbildung)'],['ck','Aussagen ankreuzen (Merkwissen)']])}</label><label>Anzahl der Aussagen${sl('n',tN([3,4,5,6,8]))}</label>`+lab;
  H+=ck('mk','Merkkasten (Parallele, Normale, Normalabstand)')+ck('show','Lösung zeigen')+'<button data-pn-act="mix">Neu mischen</button>';g.innerHTML=H;}
 const pnHandler=e=>{const t=e.target,k=t.dataset.pn;if(!k)return;const it=items.find(i=>i.id===sel&&PNT.includes(i.type));if(!it)return;if(e.type==='change')return;
- rec('pn'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','co'].includes(k))v=+v;it[k]=v;
- if(['n','md','un'].includes(k))tlGen(it);render();if(['md'].includes(k))renderProps();};
+ rec('pn'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','co','kn'].includes(k))v=+v;it[k]=v;
+ if(['n','md','un','kn'].includes(k))tlGen(it);render();if(['md'].includes(k))renderProps();};
 $('#rp').addEventListener('input',pnHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-pn-act]');if(!b)return;const it=items.find(i=>i.id===sel&&PNT.includes(i.type));if(!it)return;rec();tlGen(it);render();});
 (function(){const P=$('#pnpal');if(!P)return;const T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||10}" fill="#000">${t}</text>`,
