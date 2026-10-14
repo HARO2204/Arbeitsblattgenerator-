@@ -22,7 +22,7 @@ aside h3{margin:0 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.
 main{flex:1;overflow:auto;padding:20px}
 #sheet{isolation:isolate;position:relative;width:794px;height:1123px;margin:0 auto;background:#fff;color:#000;box-shadow:0 2px 14px rgba(0,0,0,.25);overflow:hidden}
 .tbl{border-collapse:collapse;table-layout:fixed;width:100%}.tbl td{border:1.6px solid #000;padding:2px 6px;vertical-align:middle;outline:none;word-break:break-word;white-space:pre-wrap}.tbl tr.hr td{background:#e9edf3;font-weight:700}.tbl.hc td:first-child{font-weight:700}
-#sg{position:absolute;left:40px;bottom:34px;font-size:17px;display:none}#sd{margin-left:auto}#spg{white-space:nowrap}
+#sg{position:absolute;left:40px;bottom:53px;font-size:17px;display:none}#sd{margin-left:auto}#spg{white-space:nowrap}
 #hd{position:absolute;left:40px;right:40px;top:30px;font-size:17px;display:none;justify-content:space-between}
 .item{position:absolute;cursor:move}
 .item.sel{outline:2px dashed var(--acc);outline-offset:3px}
@@ -1509,7 +1509,7 @@ function astScale(it,f,fam){if(Math.abs(f-1)<.01)return;const ks=[AST_CK[it.type
  ks.forEach(key=>{const v=+it[key];if(!(v>0))return;const nv=f<1?(v>1?Math.max(fam?1:v>=3?2:1,Math.round(v*f)):v):Math.min(40,Math.max(v+1,Math.round(v*f)));if(nv===v)return;it[key]=nv;try{if(TLT.includes(it.type))tlGen(it);else regen(it,key);}catch(e){}});}
 function astPass(title,sel2,f,o){
  const skipped=[],blocks=[];let made=0;
- const E=id=>sheet.querySelector('[data-id="'+id+'"]'),H=id=>{const e=E(id);return e?e.offsetHeight:0;},TB=id=>{const e=E(id),t=e&&e.querySelector('.tb');return t?t.offsetHeight:0;},HD=id=>{const e=E(id),t=e&&e.querySelector('.h');return t?t.offsetHeight:0;},last=()=>items[items.length-1],BM=(o.un?70:36)+(o.rh?10:0),MAXY=o.multi?PH*8:PH-BM;
+ const E=id=>sheet.querySelector('[data-id="'+id+'"]'),H=id=>{const e=E(id);return e?e.offsetHeight:0;},TB=id=>{const e=E(id),t=e&&e.querySelector('.tb');return t?t.offsetHeight:0;},HD=id=>{const e=E(id),t=e&&e.querySelector('.h');return t?t.offsetHeight:0;},last=()=>items[items.length-1],BM=(o.un?78:36)+(o.rh?10:0),MAXY=o.multi?PH*8:PH-BM;
  const IX=o.tbl?104:(o.ind?58:40),IW=(o.tbl?(o.nc?754:662):754)-IX,cap=o.fs;
  let end,tblTop=0;const trows=[];
  let seedRows=null;
@@ -2044,7 +2044,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-zr-act]');
 function ckAll(){const L=[];AST.forEach(g=>g[1].forEach(x=>L.push({k:x[0],n:x[1],i:x[2],g:g[0]})));return L;}
 function ckPass(P,f,o,cap0){
  const E=id=>sheet.querySelector('[data-id="'+id+'"]'),H=id=>{const e=E(id);return e?e.offsetHeight:0;},TB=id=>{const e=E(id),t=e&&e.querySelector('.tb');return t?t.offsetHeight:0;},HD=id=>{const e=E(id),t=e&&e.querySelector('.h');return t?t.offsetHeight:0;},last=()=>items[items.length-1];
- const BM=(o.un?70:36)+(o.rh?10:0),MAXY=o.multi?PH*8:PH-BM,cap=cap0||o.fs,pad=3,labW=46,pw=o.pts?66:0,cx=40+labW+10,cw=714-labW-pw-20,cwt=714-labW-20;
+ const BM=(o.un?78:36)+(o.rh?10:0),MAXY=o.multi?PH*8:PH-BM,cap=cap0||o.fs,pad=3,labW=46,pw=o.pts?66:0,cx=40+labW+10,cw=714-labW-pw-20,cwt=714-labW-20;
  items.length=0;uid=1;
  add('head',40,o.top);const hd=last();hd.text=P.title||'Check-up';hd.w=714;hd.mh=10;render();
  let end=o.top+HD(hd.id)+TB(hd.id)+12,made=0,fail=false,fl='';const hdr=0;
