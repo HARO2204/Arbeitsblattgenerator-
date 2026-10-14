@@ -3021,6 +3021,13 @@ kinder:{n:'Spielende Kinder',s:()=>dTube('M44 94L18 64',8,'#ffe0c2')+dTube('M66 
 grashuepfer:{n:'Grashüpfer',s:()=>dL('M130 130L142 178',6)+dL('M114 134L112 180',6)+dL('M156 84Q168 52 196 44',3)+dE(70,128,52,22,'#7bc043',4)+dE(124,114,26,20,'#7bc043')+dC(156,102,20,'#7bc043')+dEye(162,98,5)+dSm(158,110,5)+dP('M134 106Q92 92 22 136Q86 134 134 118Z','#c8f0b8')+dL('M126 111Q84 114 40 132',2)+dL('M56 94L30 164L12 168',6)+dE(86,110,36,12,'#5a9e2f',-30)}
 });
 
+
+const dHeart=(x,y,sc,f,r)=>`<g transform="translate(${x} ${y}) rotate(${r||0}) scale(${sc})">${dP('M0 22C-40 -4 -20 -34 0 -14C20 -34 40 -4 0 22Z',f)}</g>`;
+const dBf=(x,y,sc,r,c1,c2)=>`<g transform="translate(${x} ${y}) rotate(${r}) scale(${sc})">`+dE(-20,-12,20,16,c1,-20)+dE(20,-12,20,16,c1,20)+dE(-14,12,13,11,c2,15)+dE(14,12,13,11,c2,-15)+dC(-22,-13,5,'#fff')+dC(22,-13,5,'#fff')+dC(-14,12,3.5,'#fff')+dC(14,12,3.5,'#fff')+dL('M-2 -16Q-8 -30 -14 -30M2 -16Q8 -30 14 -30',2.5)+dE(0,0,4,17,'#7b4a8c')+'</g>';
+Object.assign(ART,{
+schwarm:{n:'Schmetterlingsschwarm',s:()=>dHeart(100,100,.9,'#ffd6e8',0)+dBf(100,96,1.5,0,'#ff8fc7','#cdb4ff')+dBf(40,50,.95,-25,'#b8a1ff','#ff9fd0')+dBf(160,52,1,22,'#7ad7f0','#ffb3d9')+dBf(36,150,.9,-18,'#ffd166','#ff8fc7')+dBf(166,150,.95,16,'#ff9fb5','#9bdcff')+dBf(100,30,.6,8,'#cdb4ff','#ffd6e8')+dBf(100,176,.62,-6,'#ff8fc7','#fff1a8')+dStar(18,92,9,4,'#fff1a8')+dStar(184,100,9,4,'#fff1a8')+dStar(68,16,7,3,'#ffd23f')+dStar(138,186,7,3,'#ffd23f')+dHeart(70,178,.28,'#ff4d6d',-10)+dHeart(138,16,.26,'#ff4d6d',12)},
+herz:{n:'Herz',s:()=>dP('M100 186C16 128 20 52 64 42C88 38 100 54 100 64C100 54 112 38 136 42C180 52 184 128 100 186Z','#ff4d6d')+`<path d="M46 74Q44 58 62 54" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity=".7"/>`+dStar(168,38,13,5,'#fff1a8')+dStar(30,150,8,3,'#fff1a8')}
+});
 function bubSvg(st,txt,flip,line){txt=String(txt||'Super!');const W=220,H=150;let sh='',cx=110,cy=66,tc=DK;
  if(st==='rund')sh=dP('M50 8H170Q212 8 212 48V72Q212 112 170 112H108L58 144L76 112H50Q8 112 8 72V48Q8 8 50 8Z','#fff3b0');
  else if(st==='comic'){const rr=[106,76,98,78,108,74,100,78,104,76,100,78,106,74];const pts=rr.map((r,i)=>{const a=Math.PI*2*i/rr.length-Math.PI/2;return (110+r*1.04*Math.cos(a)).toFixed(1)+','+(75+r*.7*Math.sin(a)).toFixed(1);});sh=`<polygon points="${pts.join(' ')}" fill="#ff595e" ${DS}/>`;cy=75;tc=line?DK:'#fff';}
