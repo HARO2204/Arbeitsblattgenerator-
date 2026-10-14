@@ -70,7 +70,7 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 .nb table{width:100%;border-collapse:collapse;table-layout:fixed}.nb th,.nb td{border:1.6px solid #000;text-align:center;padding:.25em .3em;height:1.9em;font-weight:inherit;white-space:nowrap}.nb th{font-weight:700}.nb .sv{color:#c0392b;font-weight:700}
 .bl{display:inline-block;border-bottom:1.6px solid #000;min-width:2.2em;text-align:center;line-height:1.3;color:#c0392b;font-weight:700;vertical-align:baseline}
 .sx .sr{display:flex;flex-wrap:nowrap;align-items:baseline;gap:.2em .4em;margin:.75em 0}.sx .sr .bl{flex:1 1 auto;min-width:2.6em}.sx .cl{font-weight:700;min-width:1.6em}.sx .nw{white-space:nowrap}.sx svg{flex:none;width:1em;height:.8em;align-self:center;overflow:visible}
-.as{display:flex;flex-wrap:wrap;gap:1.2em 2.4em}.as .tk{display:flex;align-items:flex-start;gap:.5em}.as .cl{font-weight:700;padding-top:.1em}.as .gd{display:grid}
+.as{display:flex;flex-wrap:wrap;gap:1.2em 1.3em}.as .tk{display:flex;align-items:flex-start;gap:.5em}.as .cl{font-weight:700;padding-top:.1em;min-width:1.7em;flex:none}.as .gd{display:grid}
 .as .c{box-sizing:border-box;height:1.2em;border:1px solid #9aa4b5;text-align:center;line-height:1.15em;overflow:visible}.as .c0{border:none;font-weight:700}.as .cu{border:1px dashed #b9c0cc}.as .rs{border-top:2.2px solid #000}.as .sv{color:#c0392b;font-weight:700}.as .c{width:auto}.as.mm5 .c{height:18.9px;line-height:17px;font-size:min(1em,16px)}.as.nok .c{border:none}.as.nok .rs{border-top:2.2px solid #000}
 .kx{display:grid;column-gap:2.2em;row-gap:.8em}.kx .kt{white-space:nowrap}.kx .cl{font-weight:700;margin-right:.4em}
 .ky,.kq{display:flex;flex-wrap:wrap;gap:1.4em 2.6em;align-items:flex-start}.py1{display:flex;flex-direction:column;align-items:center}.py1 .pr{display:flex}.py1 .pc{box-sizing:border-box;width:2.8em;height:1.9em;border:1.6px solid #000;margin:-.8px;text-align:center;line-height:1.75em}
@@ -2703,9 +2703,10 @@ function asBlock(it){
  const st=`font-size:${it.fs||16}px;font-weight:${it.fb?'bold':'normal'};font-style:${it.fi?'italic':'normal'};text-decoration:${it.fu?(it.fd?'underline double':'underline'):'none'};color:${it.col||'#000'}`;
  const sh=it.show||SOL,lb=i=>it.lab==='a'?'abcdefghijklmnopqrstuvwxyz'[i%26]+')':it.lab==='n'?(i+1)+'.':'';
  const dec=it.art==='dez'?Math.max(1,+it.dec||1):0,S=Math.pow(10,dec),gz=it.art==='ganz';
+ const NIG=Math.max(1,...(it.rows||[]).map(t=>Math.max(String(Math.floor(Math.abs(t.res)/S)).length,...t.ops.map(x=>x.ip.length))+(gz?1:0)));
  return `<div class="as mm5${it.nok?' nok':''}" style="${st}">`+(it.rows||[]).map((t,ti)=>{
   const a=Math.abs(t.res),rip=String(Math.floor(a/S)),rfp=dec?String(a%S).padStart(dec,'0'):'',rneg=t.res<0;
-  const ni=Math.max(rip.length,...t.ops.map(x=>x.ip.length))+(gz?1:0);
+  const ni=NIG;
   const cw=5*MMPX,cols=`${cw}px repeat(${ni},${cw}px)`+(dec?` ${(cw*.5).toFixed(1)}px repeat(${dec},${cw}px)`:'');
   const cell=(txt,cls)=>`<div class="c${cls?' '+cls:''}">${txt}</div>`;
   const row=(opch,ip,fp,neg,cls,solv)=>{let h=cell(opch,'c0');const L=ip.length;
