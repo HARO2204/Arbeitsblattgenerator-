@@ -2696,6 +2696,42 @@ function spBlock(it){
 const NUMW={1:'die richtige Aussage',2:'die zwei richtigen Aussagen',3:'die drei richtigen Aussagen',4:'die vier richtigen Aussagen'};
 const SKT=[['Eine Strecke hat zwei Endpunkte.','Eine Strecke ist die kürzeste Verbindung zweier Punkte.','Ein Strahl hat einen Anfangspunkt.','Ein Strahl hat keinen Endpunkt.','Eine Gerade hat weder einen Anfangs- noch einen Endpunkt.','Von einer Geraden kann man nur einen Ausschnitt zeichnen.','Eine Gerade ist unbegrenzt lang.','Die Länge einer Strecke kann man messen.','Durch zwei Punkte kann man genau eine Gerade zeichnen.'],
  ['Eine Strecke hat nur einen Anfangspunkt.','Eine Strecke hat nur einen Endpunkt.','Ein Strahl ist eine gerade Linie mit zwei Endpunkten.','Eine Gerade hat einen Anfangspunkt.','Eine Gerade hat zwei Endpunkte.','Die Länge einer Geraden kann man messen.','Ein Strahl hat zwei Anfangspunkte.','Die Länge eines Strahls kann man messen.','Eine Strecke ist unbegrenzt lang.']];
+
+const pt0=a=>a[Math.floor(Math.random()*a.length)];
+function skClipL(a,b,x0,x1,y0,y1){const dx=b[0]-a[0],dy=b[1]-a[1];let lo=-1e9,hi=1e9;const upd=(d,mn,mx,o)=>{if(Math.abs(d)<1e-9)return;let u=(mn-o)/d,v=(mx-o)/d;if(u>v)[u,v]=[v,u];lo=Math.max(lo,u);hi=Math.min(hi,v);};upd(dx,x0,x1,a[0]);upd(dy,y0,y1,a[1]);return [[a[0]+dx*lo,a[1]+dy*lo],[a[0]+dx*hi,a[1]+dy*hi]];}
+function skElemB(kind,n){
+ const W=340,pt=tpick,nT=rndi(1,n-1),flags=shuf(Array.from({length:n},(_,i)=>i<nT));let fig,G;
+ if(kind==='st'){
+  const L=pickL(5),[nd,na,nb,nc,ne]=L,ang=rndi(-22,22)*Math.PI/180,c=Math.cos(ang),sn=Math.sin(ang),O=[20,rndi(80,130)],at=u=>[O[0]+u*c,O[1]+u*sn];
+  const U={[nd]:22,[na]:92,[nb]:176,[nc]:256},Pp={};Object.keys(U).forEach(k=>Pp[k]=at(U[k]));
+  const eu=rndi(120,200),eo=pt([-1,1])*rndi(34,44);Pp[ne]=[at(eu)[0]-sn*eo,at(eu)[1]+c*eo];
+  const Y0=Math.min(...Object.values(Pp).map(v=>v[1]),at(0)[1],at(310)[1])-28,Yb=Math.max(...Object.values(Pp).map(v=>v[1]),at(0)[1],at(310)[1])+34;
+  const ends=skClipL(at(0),at(310),6,W-6,Y0,Yb);
+  fig={k:'v',W,Y0,Yb,mir:Math.random()<.5,lines:[{a:ends[0],b:ends[1],col:'#aaa',w:1.4},{a:Pp[na],b:at(312),col:'#000',w:2.2,arrow:1}],pts:Object.keys(Pp).map(k=>({n:k,x:Pp[k][0],y:Pp[k][1],dy:k===ne?(eo>0?20:-10):-10})),txt:[{t:'g',x:ends[1][0],y:ends[1][1]-8,col:'#888'}]};
+  const on=[na,nb,nc],S=`Strahl ${na}${nb}`,line=[nd,na,nb,nc];
+  G=[ok=>({t:`Der ${S} beginnt im Punkt ${ok?na:nb}.`,ok}),
+   ok=>{const neg=Math.random()<.5,p=pt(neg===ok?[nd,ne]:on);return{t:`Der Punkt ${p} liegt ${neg?'nicht ':''}auf dem ${S}.`,ok};},
+   ok=>{const p=pt(ok?line:[ne]);return{t:Math.random()<.5?`${p} ${ok?'∈':'∉'} g`:`${p} ${ok?'∈':'∉'} g`,ok:true};},
+   ok=>{const q=ok?shuf(on.slice()).slice(0,2):[nd,pt([nb,nc])];return{t:`Die Strecke ${q[0]}${q[1]} liegt auf dem ${S}.`,ok};},
+   ok=>{const p=pt(ok?[nd,ne]:on);return{t:`${p} ∉ ${S}`,ok};},
+   ok=>ok?{t:`Der ${S} und der Strahl ${nb}${na} sind derselbe Strahl.`,ok:false}:null];
+  G[2]=ok=>{const mem=ok?pt(line):ne;const inn=Math.random()<.5;const tru=inn?(line.includes(mem)):(!line.includes(mem));return{t:`${mem} ${inn?'∈':'∉'} g`,ok:tru};};
+ }else{
+  const L=pickL(6),[a1,a2,c1,c2,pP,qQ]=L,rr=pt(['R','S','T','U'].filter(x=>!L.includes(x))),ls=shuf(['g','h','k','m','n']).slice(0,3),[lg,lh,lk]=ls,tph=rndi(2,8)*Math.PI/180,tf=Math.tan(tph),psi=rndi(62,115)*Math.PI/180,kx=rndi(130,190),sepY=rndi(70,86);
+  const gY=x=>40+x*tf,hY=x=>40+sepY+x*tf,P=[kx,gY(kx)],tt=(40+sepY+P[0]*tf-P[1])/(Math.sin(psi)-Math.cos(psi)*tf),Q=[P[0]+tt*Math.cos(psi),P[1]+tt*Math.sin(psi)],dir=pt([-1,1]),Rr=dir>0?[Q[0]+36*Math.cos(psi),Q[1]+36*Math.sin(psi)]:[P[0]-36*Math.cos(psi),P[1]-36*Math.sin(psi)];
+  const pts={[a1]:[34,gY(34)],[a2]:[270,gY(270)],[c1]:[56,hY(56)],[c2]:[250,hY(250)],[pP]:P,[qQ]:Q,[rr]:Rr};
+  const Y0=Math.min(...Object.values(pts).map(v=>v[1]))-34,Yb=Math.max(...Object.values(pts).map(v=>v[1]))+34;
+  const eg=skClipL([0,gY(0)],[W,gY(W)],6,W-6,Y0,Yb),eh=skClipL([0,hY(0)],[W,hY(W)],6,W-6,Y0,Yb),ek=skClipL(P,Q,6,W-6,Y0,Yb);
+  fig={k:'v',W,Y0,Yb,mir:Math.random()<.5,lines:[{a:eg[0],b:eg[1],col:'#888',w:1.5},{a:eh[0],b:eh[1],col:'#888',w:1.5},{a:ek[0],b:ek[1],col:'#888',w:1.5}],pts:Object.keys(pts).map(k=>({n:k,x:pts[k][0],y:pts[k][1],dy:(k===a1||k===a2||k===pP)?-10:(k===rr?(dir>0?18:-8):20),dx:(k===rr||k===pP||k===qQ)?12:0})),txt:[{t:lg,x:eg[1][0]-8,y:eg[1][1]-8,col:'#666'},{t:lh,x:eh[1][0]-8,y:eh[1][1]-8,col:'#666'},{t:lk,x:ek[0][0]+12,y:ek[0][1]+14,col:'#666'}]};
+  const mem={[lg]:[a1,a2,pP],[lh]:[c1,c2,qQ],[lk]:[pP,qQ,rr]},all=[a1,a2,c1,c2,pP,qQ,rr],ln=[lg,lh,lk];
+  G=[ok=>({t:ok?`${lg} ∥ ${lh}`:`${pt([lk])} ∥ ${pt([lg,lh])}`,ok}),
+   ok=>{const l=pt(ln),inn=Math.random()<.5,m=mem[l],p=pt(inn===ok?m:all.filter(x=>!m.includes(x)));return{t:`${p} ${inn?'∈':'∉'} ${l}`,ok};},
+   ok=>({t:`${ok?pP:qQ} ist der Schnittpunkt der Geraden ${lk} und ${lg}.`,ok}),
+   ok=>({t:ok?`Die Geraden ${lg} und ${lh} schneiden sich nicht.`:`Die Geraden ${lg} und ${lh} schneiden sich im Punkt ${pP}.`,ok}),
+   ok=>{const l=pt(ln),m=mem[l],p=pt(ok?m:all.filter(x=>!m.includes(x)));return{t:`Der Punkt ${p} liegt auf der Geraden ${l}.`,ok};}];
+ }
+ const out=[],seen=new Set();flags.forEach(ok=>{let r=null,c=0;while((!r||seen.has(r.t))&&c++<60)r=pt(G)(ok);if(r){seen.add(r.t);out.push(r);}});
+ fig.instr='Kreuze an, ob die Aussagen zu dieser Abbildung richtig oder falsch sind:';return{fig,items:out};}
 function skGen(o){
  const mode=o.kt||'theorie',n=Math.max(2,Math.min(mode==='theorie'||mode==='elem'?6:4,+o.kn||4));
  const kT=o.kk==='any'?rndi(1,n-1):Math.min(+o.kk,n-1);
@@ -2703,6 +2739,8 @@ function skGen(o){
  let items,fig=null;
  if(mode==='theorie'){items=[...shuf(SKT[0].slice()).slice(0,kT).map(t=>({t,ok:true})),...shuf(SKT[1].slice()).slice(0,n-kT).map(t=>({t,ok:false}))];}
  else if(mode==='elem'){
+  const kd=o.kf&&o.kf!=='mix'?o.kf:pt0(['zug','st','pa']);
+  if(kd!=='zug'){const r=skElemB(kd,n);fig=r.fig;items=r.items;}else{
   const L=['A','B','C','D','E','F'],lines=shuf(['g','h','k','m','n','p']).slice(0,2),R={A:L[0],B:L[1],C:L[2],D:L[3],E:L[4],F:L[5],g:lines[0],h:lines[1]};
   const eOn=Math.random()<.4;
   const bx=rndi(95,120),Cx=24+bx+rndi(70,90),Cy=38+rndi(60,75),Fx=Cx-rndi(50,65),Fy=Cy+rndi(45,58);
@@ -2720,7 +2758,7 @@ function skGen(o){
    ok=>ok?null:{t:`${tpick(['a','b','c'])} ∥ ${R.g}`,ok:false}];
   const out=[];let g=0;const nT=rndi(1,n-1);const flags=shuf(Array.from({length:n},(_,i)=>i<nT));const seen=new Set();
   flags.forEach(ok=>{let r=null,c=0;while((!r||seen.has(r.t))&&c++<40)r=tpick(G)(ok);if(r){seen.add(r.t);out.push(r);}});
-  items=out;fig.instr='Kreuze an, ob die Aussagen zu dieser Abbildung richtig oder falsch sind:';
+  items=out;fig.instr='Kreuze an, ob die Aussagen zu dieser Abbildung richtig oder falsch sind:';}
  }
  else if(mode==='strecke'){
   const L=rndi(4,10),inn=Math.random()<0.5,cx=inn?rndi(25,75)/100*L*10:L*10+rndi(15,35);fig={k:'s',L,cx};
@@ -2752,6 +2790,10 @@ function skFig(f){
  if(!f)return '';
  if(f.k==='s'){const W=f.L*10+60,x0=12,y=9,xb=x0+f.L*10,xc=x0+f.cx;
   return `<svg width="${(W*MMPX).toFixed(1)}" height="${(18*MMPX).toFixed(1)}" viewBox="0 0 ${W} 18" font-family="inherit"><path d="M${x0} ${y}H${xb}" stroke="#000" stroke-width=".5"/><path d="M${x0} ${y-2}v4M${xb} ${y-2}v4" stroke="#000" stroke-width=".5"/><path d="M${xc-1.5} ${y-1.5}l3 3m0-3l-3 3" stroke="#555" stroke-width=".4"/><text x="${x0}" y="${y+7}" font-size="4.4" text-anchor="middle">A</text><text x="${xb}" y="${y+7}" font-size="4.4" text-anchor="middle">B</text><text x="${xc}" y="${y+7}" font-size="4.4" text-anchor="middle" fill="#555">C</text><text x="${(x0+xb)/2}" y="${y-2.5}" font-size="4.4" text-anchor="middle">a</text></svg>`;}
+ if(f.k==='v'){const W=f.W,m=x=>f.mir?W-x:x,Hh=Math.round(f.Yb-f.Y0);let g='';f.lines.forEach(l=>{g+=`<path d="M${m(l.a[0]).toFixed(1)} ${l.a[1].toFixed(1)}L${m(l.b[0]).toFixed(1)} ${l.b[1].toFixed(1)}" stroke="${l.col}" stroke-width="${l.w}" fill="none"/>`;if(l.arrow){const dx=m(l.b[0])-m(l.a[0]),dy=l.b[1]-l.a[1],q=Math.hypot(dx,dy),ux=dx/q,uy=dy/q,x=m(l.b[0]),y=l.b[1];g+=`<path d="M${x.toFixed(1)} ${y.toFixed(1)}L${(x-ux*11-uy*5).toFixed(1)} ${(y-uy*11+ux*5).toFixed(1)}L${(x-ux*11+uy*5).toFixed(1)} ${(y-uy*11-ux*5).toFixed(1)}Z" fill="${l.col}"/>`;}});
+  f.pts.forEach(p=>{g+=`<circle cx="${m(p.x).toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.4" fill="#fff" stroke="#000" stroke-width="1.3"/><text x="${(m(p.x)+(f.mir?-(p.dx||0):(p.dx||0))).toFixed(1)}" y="${(p.y+p.dy).toFixed(1)}" font-size="17" text-anchor="middle" fill="#000">${p.n}</text>`;});
+  f.txt.forEach(t=>{g+=`<text x="${m(t.x).toFixed(1)}" y="${t.y.toFixed(1)}" font-size="16" text-anchor="middle" fill="${t.col}">${t.t}</text>`;});
+  return `<svg width="290" height="${Math.round(Hh*290/W)}" viewBox="0 ${f.Y0} ${W} ${Hh}" style="max-width:100%;overflow:visible" font-family="inherit">${g}</svg>`;}
  if(f.k==='e'){const P=f.P,R=f.R,m=x=>f.mir?340-x:x,W=340;
   const Yb=Math.max(...Object.values(P).map(v=>v[1]))+34,Y0=Math.min(...Object.values(P).map(v=>v[1]))-30;
   const lineBox=(a,b)=>{const dx=b[0]-a[0],dy=b[1]-a[1];let lo=-1e9,hi=1e9;const upd=(d,min,max,o)=>{if(Math.abs(d)<1e-9)return;let u=(min-o)/d,v=(max-o)/d;if(u>v)[u,v]=[v,u];lo=Math.max(lo,u);hi=Math.min(hi,v);};upd(dx,6,W-6,a[0]);upd(dy,Y0,Yb,a[1]);return [[a[0]+dx*lo,a[1]+dy*lo],[a[0]+dx*hi,a[1]+dy*hi]];};
@@ -2985,7 +3027,7 @@ function applyCat(){
 }
 function ptarget(){const it=items.find(i=>i.id===sel);if(it&&(it.type==='ugk'||it.type==='wkk'||it.type==='zzk'))return null;const m={zs:'zs',wk:'wk',cmp:'cp',nb:'cp',st:'st',rd:'rd',as:'as',at:'as',ke:'kd',kz:'kd',kx:'kd',bd:'br',be:'br',bz:'br',mx:'kr',py:'kr',mq:'kr',rh:'kr',rt:'kr',rs:'kr',um:'mu',sa:'sg',sz:'sg',sp:'sg',sk:'sg',sv:'sg'};if(it&&m[it.type])return{o:it,item:true,t:m[it.type]};if(cat==='zs'||cat==='wk'||cat==='cp'||cat==='st'||cat==='rd'||cat==='as'||cat==='kr'||cat==='mu'||cat==='sg'||cat==='kd'||cat==='br')return{o:DEFS[cat],item:false,t:cat};return null;}
 function zsKey(o,k,v){if(k==='aufg'){if(v==='mark'){o.show=false;zsRoll(o,o.zrs);}return true;}if(k==='zk'){zsRoll(o,false);return true;}if(k==='zrs'&&v){zsRoll(o,true);return true;}return false;}
-function regen(o,k){if(o&&o.man&&o.mhtml!=null&&(!k||true))o.mhtml=null;const K={cmp:['art','max','dec','n','eq','co','mg'],nb:['art','max','dec','nn','gv','stp','mg'],st:['dir','nd','dd','n','lv'],rd:['art','nd','pl','n','co'],as:['op','art','nd','dec','n','sm','ue','nok'],mx:['mo','mf','mt','mn','mm','mu'],py:['ps','pm','pg','pn'],mq:['qz','qg','qn'],rh:['hn','hs','hm'],rt:['tm','tz','tr','tg','tn'],rs:['sm','ss','sr','sn'],um:['ut','uf','uz','ur','ua','ud','un'],sa:['an','ag','ar'],sz:['zn','zf','zm'],sp:['pm','pn'],sk:['kt','kn','kk'],sv:['vn','vl'],at:['xo','xa','xr','xd','xn'],ke:['xm','ym','np','ka','lt'],kz:['xm','ym','np','ka','lt','fig'],bd:['bm','bs','bx','bn'],be:['em','ed','ex','en'],bz:['zo','zn','zx','zc']}[o.type];if(!K||(k&&!K.includes(k)))return;if(o.type==='nb')o.rows=nbGen(o);else if(o.type==='cmp')o.pairs=cmpGen(o);else if(o.type==='st')o.rows=stGen(o);else if(o.type==='as')o.rows=asGen(o);else if(o.type==='mx')o.rows=mxGen(o);else if(o.type==='py')o.rows=pyGen(o);else if(o.type==='mq')o.rows=mqGen(o);else if(o.type==='rh')o.rows=rhGen(o);else if(o.type==='rt')o.rows=rtGen(o);else if(o.type==='rs')o.rows=rsGen(o);else if(o.type==='um')o.rows=umGen(o);else if(o.type==='sa')o.rows=saGen(o);else if(o.type==='sz')o.rows=szGen(o);else if(o.type==='sp')o.rows=spGen(o);else if(o.type==='sk')o.rows=skGen(o);else if(o.type==='sv')o.rows=svGen(o);else if(o.type==='at')o.rows=atGen(o);else if(o.type==='ke'||o.type==='kz')o.pts=kdGen(o);else if(o.type==='bd')o.rows=bdGen(o);else if(o.type==='be')o.rows=beGen(o);else if(o.type==='bz')o.rows=bzGen(o);else o.rows=rdGen(o);}
+function regen(o,k){if(o&&o.man&&o.mhtml!=null&&(!k||true))o.mhtml=null;const K={cmp:['art','max','dec','n','eq','co','mg'],nb:['art','max','dec','nn','gv','stp','mg'],st:['dir','nd','dd','n','lv'],rd:['art','nd','pl','n','co'],as:['op','art','nd','dec','n','sm','ue','nok'],mx:['mo','mf','mt','mn','mm','mu'],py:['ps','pm','pg','pn'],mq:['qz','qg','qn'],rh:['hn','hs','hm'],rt:['tm','tz','tr','tg','tn'],rs:['sm','ss','sr','sn'],um:['ut','uf','uz','ur','ua','ud','un'],sa:['an','ag','ar'],sz:['zn','zf','zm'],sp:['pm','pn'],sk:['kt','kn','kk','kf'],sv:['vn','vl'],at:['xo','xa','xr','xd','xn'],ke:['xm','ym','np','ka','lt'],kz:['xm','ym','np','ka','lt','fig'],bd:['bm','bs','bx','bn'],be:['em','ed','ex','en'],bz:['zo','zn','zx','zc']}[o.type];if(!K||(k&&!K.includes(k)))return;if(o.type==='nb')o.rows=nbGen(o);else if(o.type==='cmp')o.pairs=cmpGen(o);else if(o.type==='st')o.rows=stGen(o);else if(o.type==='as')o.rows=asGen(o);else if(o.type==='mx')o.rows=mxGen(o);else if(o.type==='py')o.rows=pyGen(o);else if(o.type==='mq')o.rows=mqGen(o);else if(o.type==='rh')o.rows=rhGen(o);else if(o.type==='rt')o.rows=rtGen(o);else if(o.type==='rs')o.rows=rsGen(o);else if(o.type==='um')o.rows=umGen(o);else if(o.type==='sa')o.rows=saGen(o);else if(o.type==='sz')o.rows=szGen(o);else if(o.type==='sp')o.rows=spGen(o);else if(o.type==='sk')o.rows=skGen(o);else if(o.type==='sv')o.rows=svGen(o);else if(o.type==='at')o.rows=atGen(o);else if(o.type==='ke'||o.type==='kz')o.pts=kdGen(o);else if(o.type==='bd')o.rows=bdGen(o);else if(o.type==='be')o.rows=beGen(o);else if(o.type==='bz')o.rows=bzGen(o);else o.rows=rdGen(o);}
 function warnZ(o){const el=$('#pw');if(el&&o&&'start' in o){const r=zsBlock(o);el.textContent=r.err||r.w||'';}}
 function renderMan(){const g=$('#g-man');if(!g)return;const it=items.find(i=>i.id===sel);if(!it||MANX.includes(it.type)){g.innerHTML='';return;}
  const FL=it.type==='deltoid'?`<label>Lage des Deltoids<select id="flc"><option value="0"${it.fl?'':' selected'}>Spitze oben (breit unten)</option><option value="1"${it.fl?' selected':''}>Spitze unten (breit oben)</option></select></label>`:'';
@@ -3015,7 +3057,7 @@ function renderProps(){
   if(A||ty==='sa')H+=h('Strecken messen')+`<label>Anzahl der Strecken${sl('an',N([2,3,4,5,6]))}</label><label>Längen${sl('ag',[['cm','ganze cm'],['h','halbe cm (5 mm)'],['mm','beliebig (mm)']])}</label><label>Längste Strecke${sl('ar',[[6,'6 cm'],[10,'10 cm'],[14,'14 cm']])}</label><label>Antwort in${sl('ae',[['mm','mm'],['cm','cm']])}</label>`;
   if(A||ty==='sz')H+=h('Strecken zeichnen')+`<label>Anzahl der Strecken${sl('zn',N([2,3,4,5,6]))}</label><label>Schreibweise${sl('zf',[['mix','gemischt'],['cmmm','3 cm 5 mm'],['mm','35 mm'],['cm','3,5 cm']])}</label><label>Längste Strecke${sl('zm',[[6,'6 cm'],[10,'10 cm'],[14,'14 cm']])}</label>`;
   if(A||ty==='sp')H+=h('Gerade, Strahl, Strecke zeichnen')+`<label>Aufgabe${sl('pm',[['std','Gerade, Strahl und Strecke messen'],['str','Strahlen von einem Punkt aus'],['ger','Zwei Geraden durch Punktpaare']])}</label><label>Anzahl der Zeichenfelder${sl('pn',N([1,2,3]))}</label>`;
-  if(A||ty==='sk')H+=h('Aussagen ankreuzen')+`<label>Art${sl('kt',[['theorie','Aussagen über Strecke, Strahl, Gerade'],['strecke','Zeichnung: Strecke a mit Punkten'],['geraden','Zeichnung: Punkte und Geraden'],['elem','Abbildung: richtig oder falsch (∈, ∉, Strecke …)']])}</label><label>Anzahl der Aussagen${sl('kn',N([3,4,5,6]))}</label><label>Richtige Aussagen${sl('kk',[['any','zufällig viele (alle richtigen ankreuzen)'],[1,'genau 1'],[2,'genau 2'],[3,'genau 3']])}</label><div style="font-size:12px;color:var(--mut)">Bei den Zeichnungen gibt es höchstens 4 Aussagen.</div>`;
+  if(A||ty==='sk')H+=h('Aussagen ankreuzen')+`<label>Art${sl('kt',[['theorie','Aussagen über Strecke, Strahl, Gerade'],['strecke','Zeichnung: Strecke a mit Punkten'],['geraden','Zeichnung: Punkte und Geraden'],['elem','Abbildung: richtig oder falsch (∈, ∉, Strecke …)']])}</label><label>Abbildung (bei „richtig oder falsch“)${sl('kf',[['mix','gemischt'],['zug','Streckenzug mit zwei Geraden'],['st','Strahl mit Punkten'],['pa','parallele Geraden und Schnittgerade']])}</label><label>Anzahl der Aussagen${sl('kn',N([3,4,5,6]))}</label><label>Richtige Aussagen${sl('kk',[['any','zufällig viele (alle richtigen ankreuzen)'],[1,'genau 1'],[2,'genau 2'],[3,'genau 3']])}</label><div style="font-size:12px;color:var(--mut)">Bei den Zeichnungen gibt es höchstens 4 Aussagen.</div>`;
   if(A||ty==='sv')H+=h('Schnittpunkte (Sachverhalte)')+`<label>Anzahl der Aufgaben${sl('vn',N([3,4,5,6]))}</label><label>Schwierigkeit${sl('vl',[['leicht','nur 2 Geraden'],['alle','2 oder 3 Geraden']])}</label>`;
   gg.innerHTML=H+(ty==='sz'||ty==='sv'?'':ck('show','Lösung zeigen'))+(T.item?'<button data-act="roll">Neu würfeln</button>':'');}
  else if(T.t==='mu'){const sl=(k,opts)=>`<select data-p="${k}">${opts.map(([v,t])=>`<option value="${v}"${String(it[k])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`;
