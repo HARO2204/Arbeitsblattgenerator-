@@ -386,7 +386,7 @@ function mk(it){const e=document.createElement('div');e.className='item'+(it.nh?
  else if(it.type==='lb'){e.style.width=it.w+'px';e.innerHTML=lbBlock(it);}
  else if(it.type==='deko'&&it.art)e.innerHTML=dkSvg(it);
  else if(it.type==='deko')e.innerHTML=`<div style="font-size:${it.w*.8}px;line-height:1;text-align:center">${it.emoji}</div>`;
- else if(it.type==='ckf'){const W=it.w,Hh=it.h,hh=it.hh,R=it.rows||[],lw=it.lw||46,pw=it.pw||0;let d='';R.forEach(y=>{d+=`M0 ${y}H${W}`;});d+=`M${lw} 0V${Hh}`;if(pw)d+=`M${W-pw} 0V${Hh}`;e.style.width=W+'px';e.style.height=Hh+'px';e.innerHTML=`<svg width="${W}" height="${Hh}" viewBox="0 0 ${W} ${Hh}" style="width:${W}px;height:${Hh}px;display:block" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="${W}" height="${hh}" fill="#e9ecf3"/><path d="${d}" stroke="#000" stroke-width="1.3" fill="none"/><rect x="0.7" y="0.7" width="${W-1.4}" height="${Hh-1.4}" fill="none" stroke="#000" stroke-width="1.6"/></svg>`;}
+ else if(it.type==='ckf'){const W=it.w,Hh=it.h,hh=it.hh,R=it.rows||[],lw=it.lw||46,pw=it.pw||0;let d='';R.forEach(y=>{d+=`M0 ${y}H${W}`;});d+=`M${lw} 0V${Hh}`;if(pw)d+=`M${W-pw} 0V${hh}`;e.style.width=W+'px';e.style.height=Hh+'px';e.innerHTML=`<svg width="${W}" height="${Hh}" viewBox="0 0 ${W} ${Hh}" style="width:${W}px;height:${Hh}px;display:block" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="${W}" height="${hh}" fill="#e9ecf3"/><path d="${d}" stroke="#000" stroke-width="1.3" fill="none"/><rect x="0.7" y="0.7" width="${W-1.4}" height="${Hh-1.4}" fill="none" stroke="#000" stroke-width="1.6"/></svg>`;}
  else if(it.type==='frm'){const W=it.w,Hh=it.h,x1=56,x2=it.nc?W:W-84,hh=it.hh||34,R=it.rows||[];let s=`<svg width="${W}" height="${Hh}" viewBox="0 0 ${W} ${Hh}" style="width:${W}px;height:${Hh}px;display:block" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="${W}" height="${hh}" fill="#e9ecf3"/>`;let d=`M${x1} 0V${Hh}M${x2} 0V${Hh}M0 ${hh}H${W}`;R.slice(1).forEach(r=>{d+=`M0 ${r}H${W}`;});s+=`<path d="${d}" stroke="#000" stroke-width="1.3" fill="none"/><rect x="0.7" y="0.7" width="${W-1.4}" height="${Hh-1.4}" fill="none" stroke="#000" stroke-width="1.6"/>`;const T=(x,t,fs)=>`<text x="${x}" y="${hh/2}" text-anchor="middle" dominant-baseline="central" font-size="${fs||16}" font-weight="700" fill="#000" font-family="inherit">${t}</text>`;s+=T(x1/2,'Nr.')+T((x1+x2)/2,'Aufgabe')+(it.nc?'':T(x2+42,'\u2713',20));if(!it.nc)R.forEach(r=>{s+=`<rect x="${x2+30}" y="${r+8}" width="24" height="24" rx="3" fill="#fff" stroke="#000" stroke-width="1.4"/>`;});e.style.width=W+'px';e.style.height=Hh+'px';e.innerHTML=s+'</svg>';}
  else if(it.type==='img')e.innerHTML=`<img src="${it.src}" style="width:100%;display:block;pointer-events:none">`;
  else e.innerHTML=(()=>{const r=svgNew(it);e.style.width=r.W+'px';return r.svg})()+((it.A||it.u)?`<div class="fl" style="font-size:${(it.fs||16)+3}px;color:${it.col||'#000'};font-weight:${it.fb?'bold':'normal'};font-style:${it.fi?'italic':'normal'};text-decoration:${it.fu?(it.fd?'underline double':'underline'):'none'}">${it.A?'<div>A =<i class="s">'+solTxt(it,'A')+'</i></div>'+ex(it.nl,solCalc(it,'A')):''}${it.u?'<div>u =<i class="s">'+solTxt(it,'u')+'</i></div>'+ex(it.nl,solCalc(it,'u')):''}</div>`:'');
@@ -2044,7 +2044,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-zr-act]');
 function ckAll(){const L=[];AST.forEach(g=>g[1].forEach(x=>L.push({k:x[0],n:x[1],i:x[2],g:g[0]})));return L;}
 function ckPass(P,f,o,cap0){
  const E=id=>sheet.querySelector('[data-id="'+id+'"]'),H=id=>{const e=E(id);return e?e.offsetHeight:0;},TB=id=>{const e=E(id),t=e&&e.querySelector('.tb');return t?t.offsetHeight:0;},HD=id=>{const e=E(id),t=e&&e.querySelector('.h');return t?t.offsetHeight:0;},last=()=>items[items.length-1];
- const BM=(o.un?70:36)+(o.rh?10:0),MAXY=o.multi?PH*8:PH-BM,cap=cap0||o.fs,pad=3,labW=46,pw=o.pts?66:0,cx=40+labW+10,cw=714-labW-pw-20;
+ const BM=(o.un?70:36)+(o.rh?10:0),MAXY=o.multi?PH*8:PH-BM,cap=cap0||o.fs,pad=3,labW=46,pw=o.pts?66:0,cx=40+labW+10,cw=714-labW-pw-20,cwt=714-labW-20;
  items.length=0;uid=1;
  add('head',40,o.top);const hd=last();hd.text=P.title||'Check-up';hd.w=714;hd.mh=10;render();
  let end=o.top+HD(hd.id)+TB(hd.id)+12,made=0,fail=false,fl='';const hdr=0;
@@ -2058,10 +2058,10 @@ function ckPass(P,f,o,cap0){
    const t=P.tp[g][j],m=meta.find(x=>x.k===t),rowTop=end,V0=rowTop+pad,hardest=j===P.tp[g].length-1;
    tx(42,V0,'abcd'[j]+')',labW-4,cap>18?22:cap<16?16:20,true);
    let Vb=V0+(t==='zr'?5:0);
-   if(t==='frei'){const e=tx(cx,V0,'Aufgabe hier eingeben …',cw,cap>18?20:18,false);Vb=V0+TB(e.id);
-    add('text',cx,Vb);const l=last();l.text='';l.html='<div style="line-height:2.2">_____________________________________________________<br>_____________________________________________________</div>';l.w=cw;l.mh=10;l.fs=cap;l.nh=true;l.y=Vb;render();end=l.y+H(l.id)+pad+6;fa.b.push({ids:[l.id],pad:pad+6,min:20});}
+   if(t==='frei'){const e=tx(cx,V0,'Aufgabe hier eingeben …',cwt,cap>18?20:18,false);Vb=V0+TB(e.id);
+    add('text',cx,Vb);const l=last();l.text='';l.html='<div style="line-height:2.2">_____________________________________________________<br>_____________________________________________________</div>';l.w=cwt;l.mh=10;l.fs=cap;l.nh=true;l.y=Vb;render();end=l.y+H(l.id)+pad+6;fa.b.push({ids:[l.id],pad:pad+6,min:20});}
    else{
-    if(m&&m.i&&t!=='zr'){const e=tx(cx,V0,m.i,cw,cap>18?20:18,!!o.fb);Vb=V0+TB(e.id);}
+    if(m&&m.i&&t!=='zr'){const e=tx(cx,V0,m.i,cwt,cap>18?20:18,!!o.fb);Vb=V0+TB(e.id);}
     add(t,cx,Vb-hdr);const it=last();it.nh=true;if('show' in it)it.show=false;if(it.fs>cap)it.fs=cap;
     const nmax=o.nmax;try{
      if(t==='zr'){const th=[...new Set(P.tp[g].map(zrTheme).filter(Boolean))];it.n=1;it.lv=2;it.th=th.length?th.join(','):'sw,nb,re';zrGen(it);}
@@ -2070,7 +2070,7 @@ function ckPass(P,f,o,cap0){
       if(f<.99&&it.n>1){it.n=Math.max(f<.6?1:(it.n>=3?2:1),Math.round(it.n*f));}
       if(it.type==='nb'&&it.nn>nmax)it.nn=nmax;if(it.type==='nb'&&f<.99&&it.nn>2)it.nn=Math.max(f<.6?1:2,Math.round(it.nn*f));
       if(TLT.includes(it.type))tlGen(it);else{regen(it,'n');if(it.type==='nb')regen(it,'nn');}}}catch(e){}
-    if(it.w>cw)it.w=cw;it.mw=cw;it.x=cx;it.y=Vb-hdr;render();
+    if(it.w>cwt)it.w=cwt;it.mw=cwt;it.x=cx;it.y=Vb-hdr;render();
     end=it.y+H(it.id)+pad;fa.b.push({ids:[it.id],pad,min:20});}
    if(end>MAXY){fail=true;fl=(g+1)+'. '+'abcd'[j]+') '+(m?m.n:t);break;}
    rowsY.push(end-gTop);}
