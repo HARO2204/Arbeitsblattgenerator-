@@ -111,7 +111,7 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 body.pv .pgb{display:none}
 @media screen{#sheet[data-sol]{display:none!important}}@media print{#sheet[data-sol]{break-before:page;page-break-before:always}}
 @media print{.pgb{display:none!important}#sheet{height:calc(var(--np,1)*1122px)!important}}
-</style></head><body>
+.pp{display:inline-block;width:.34em;height:.78em;border-left:.085em solid currentColor;border-right:.085em solid currentColor;box-sizing:border-box;vertical-align:-.06em;margin:0 .06em;font-style:normal}</style></head><body>
 <div class="bar no-print">
 <strong>Arbeitsblatt-Generator</strong>
 <label><input type="checkbox" id="hn"> Name</label><label><input type="checkbox" id="hdt"> Datum</label><label><input type="checkbox" id="hpg"> Seite</label><label><input type="checkbox" id="hu"> Unterschrift</label>
@@ -1502,7 +1502,7 @@ const AST=[
 ['4.0-Aufgaben',[
  ['zr','4.0 gemischt','Löse die 4.0-Aufgabe!'],['zr:zs','4.0 Zahlenstrahl','Löse die 4.0-Aufgabe!'],['zr:cp','4.0 Vergleichen, Nachbarzahlen','Löse die 4.0-Aufgabe!'],['zr:st','4.0 Dekadische Einheiten, Stellenwerte','Löse die 4.0-Aufgabe!'],['zr:rd','4.0 Runden','Löse die 4.0-Aufgabe!'],['zr:as','4.0 Addieren und Subtrahieren','Löse die 4.0-Aufgabe!'],['zr:kr','4.0 Rechnen (+ − · :)','Löse die 4.0-Aufgabe!'],['zr:tl','4.0 Teiler und Vielfache','Löse die 4.0-Aufgabe!'],['zr:po','4.0 Potenzen','Löse die 4.0-Aufgabe!'],['zr:br','4.0 Brüche','Löse die 4.0-Aufgabe!'],['zr:pc','4.0 Prozent','Löse die 4.0-Aufgabe!'],['zr:wk','4.0 Winkel','Löse die 4.0-Aufgabe!'],['zr:sg','4.0 Strecke, Strahl, Gerade','Löse die 4.0-Aufgabe!'],['zr:kd','4.0 Koordinatensystem','Löse die 4.0-Aufgabe!'],['zr:kk','Koordinatensystem: Aussagen ankreuzen','Kreuze die richtigen Aussagen an!']]],
 ['Satz des Pythagoras',[
- ['pnk','Parallele / Normale zeichnen','Zeichne durch den Punkt P die Parallele bzw. die Normale zur Geraden g!'],['pnb','Normalabstand','Bestimme bzw. zeichne den Normalabstand!'],['pnz','Parallele und Normale: Symbole','Setze die Symbole ∥ und ⊥ ein bzw. kreuze richtig oder falsch an!'],
+ ['pnk','Parallele / Normale zeichnen','Zeichne durch den Punkt P die Parallele bzw. die Normale zur Geraden g!'],['pnb','Normalabstand','Bestimme bzw. zeichne den Normalabstand!'],['pnz','Parallele und Normale: Symbole','Setze die Symbole ‖ und ⊥ ein bzw. kreuze richtig oder falsch an!'],
  ['pys','Pythagoras: Sachaufgaben','Löse die Sachaufgaben! Fertige eine Skizze an, schreibe die Rechnung und einen Antwortsatz auf!'],['pyt','Pythagoras: Textaufgaben (mehrteilig)','Löse die Aufgaben! Fertige eine Skizze an, schreibe die Rechnungen und Antwortsätze auf!'],['pyb','Pythagoras: Berechnungen','Berechne die fehlende Seite des rechtwinkeligen Dreiecks!']]],
 ['Stellenwerte',[
  ['swt','Stellenwerttabelle','Trage die Zahlen in die Stellenwerttabelle ein!'],['swl','Stellenwerttabelle (leer)','Trage die Zahlen in die Stellenwerttabelle ein!']]],
@@ -2238,7 +2238,7 @@ function renderPn(){const g=$('#g-pn'),it=items.find(i=>i.id===sel&&PNT.includes
  const lab=`<label>Nummerierung${sl('lab',[['a','a) b) c) d)'],['n','1. 2. 3. 4.'],['none','keine']])}</label>`;
  if(k==='pnk')H+=`<label>Aufgaben${sl('md',[['mix','Parallele und Normale (gemischt)'],['par','nur Parallele'],['nor','nur Normale']])}</label><label>Anzahl der Aufgaben${sl('n',tN([1,2,3,4,5,6,8]))}</label><label>Spalten${sl('co',tN([1,2,3]))}</label>`+lab;
  if(k==='pnb')H+=`<label>Aufgabe${sl('md',[['pz','Gerade g und Punkt P mit gegebenem Abstand zeichnen'],['mess','Normalabstand messen (Zeichnung gegeben)'],['pp','Zwei Parallelen mit gegebenem Normalabstand']])}</label><label>Anzahl der Aufgaben${sl('n',tN([2,3,4,6,8,9,10,12]))}</label><label>Einheit${sl('un',[['mix','cm und mm gemischt'],['cm','nur cm'],['mm','nur mm']])}</label><label>Spalten${sl('co',tN([1,2,3,4]))}</label>`+lab+(it.md==='mess'?'':ck('bx','Zeichenfläche (mit Rahmen) anzeigen'));
- if(k==='pnz')H+=`<label>Aufgabe${sl('md',[['sym','Symbole ∥ und ⊥ einsetzen (Abbildung)'],['rf','richtig oder falsch (Abbildung)'],['el','Element von: ∈ oder ∉ einsetzen (Abbildung)'],['er','Element von, ∥, ⊥: richtig oder falsch (Abbildung)'],['ck','Aussagen ankreuzen (Merkwissen)']])}</label><label>Anzahl der Aussagen${sl('n',tN([3,4,5,6,8]))}</label>`+lab;
+ if(k==='pnz')H+=`<label>Aufgabe${sl('md',[['sym','Symbole ‖ und ⊥ einsetzen (Abbildung)'],['rf','richtig oder falsch (Abbildung)'],['el','Element von: ∈ oder ∉ einsetzen (Abbildung)'],['er','Element von, ‖, ⊥: richtig oder falsch (Abbildung)'],['ck','Aussagen ankreuzen (Merkwissen)']])}</label><label>Anzahl der Aussagen${sl('n',tN([3,4,5,6,8]))}</label>`+lab;
  H+=ck('mk','Merkkasten (Parallele, Normale, Normalabstand)')+ck('show','Lösung zeigen')+'<button data-pn-act="mix">Neu mischen</button>';g.innerHTML=H;}
 const pnHandler=e=>{const t=e.target,k=t.dataset.pn;if(!k)return;const it=items.find(i=>i.id===sel&&PNT.includes(i.type));if(!it)return;if(e.type==='change')return;
  rec('pn'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','co'].includes(k))v=+v;it[k]=v;
@@ -2284,6 +2284,9 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-pn-act]');
  {const _z=zrTheme;zrTheme=function(k){return /^pn/.test(k)?'pn,pq':_z(k);};}
 })();
 
+/* ∥ immer als zwei Striche zeichnen (Schriftarten stellen das Zeichen teils einstrichig dar) */
+const PPS='<i class="pp"></i>';
+['pnBlock','zrBlock','skBlock'].forEach(n=>{const f=window[n]||eval(n);const g=function(it){const r=f(it);return typeof r==='string'?r.replace(/∥/g,PPS):r;};eval(n+'=g');});
 /* ===== 4.0 Winkel: Uhr ===== */
 (function(){const R=kri,P=tpick;
  const mk=(h,m,l)=>({l,f:()=>{const hh=typeof h==='function'?h():h,mm=typeof m==='function'?m():m;
