@@ -2703,6 +2703,7 @@ function asBlock(it){
  const st=`font-size:${it.fs||16}px;font-weight:${it.fb?'bold':'normal'};font-style:${it.fi?'italic':'normal'};text-decoration:${it.fu?(it.fd?'underline double':'underline'):'none'};color:${it.col||'#000'}`;
  const sh=it.show||SOL,lb=i=>it.lab==='a'?'abcdefghijklmnopqrstuvwxyz'[i%26]+')':it.lab==='n'?(i+1)+'.':'';
  const dec=it.art==='dez'?Math.max(1,+it.dec||1):0,S=Math.pow(10,dec),gz=it.art==='ganz';
+ const KMX=Math.max(0,...(it.rows||[]).map(t=>t.ops.length));
  const NIG=Math.max(1,...(it.rows||[]).map(t=>Math.max(String(Math.floor(Math.abs(t.res)/S)).length,...t.ops.map(x=>x.ip.length))+(gz?1:0)));
  return `<div class="as mm5${it.nok?' nok':''}" style="${st}">`+(it.rows||[]).map((t,ti)=>{
   const a=Math.abs(t.res),rip=String(Math.floor(a/S)),rfp=dec?String(a%S).padStart(dec,'0'):'',rneg=t.res<0;
@@ -2719,6 +2720,7 @@ function asBlock(it){
   t.ops.forEach((x,i)=>{g+=row(i===0?'':(t.op==='add'?'+':'−'),x.ip,x.fp,x.neg,'');});
   g+=row('',sh?rip:'',sh?rfp:'',sh&&rneg,'rs',true);
   if(fr)g+=brow();
+  if(!it.nok)for(let q=t.ops.length;q<KMX;q++)g+=Array.from({length:nc+(fr?2:0)},()=>cell('','cf')).join('');
   return `<div class="tk">${it.lab==='none'?'':'<span class="cl">'+lb(ti)+'</span>'}<div class="gd" style="grid-template-columns:${cols}">${g}</div></div>`;}).join('')+'</div>';
 }
 function rdBlock(it){
