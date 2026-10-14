@@ -1053,7 +1053,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ra-act]');
 const MDT=['mm','mv','ms','kf','ks'];
 const PRT=['prd','prg','prw','prs','prk','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
-const SWT=['swt','swl'];const PYT=['pys','pyb'];const ZRT=['zr'];
+const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const ZRT=['zr'];
 const TLT=[...SWT,...PYT,...ZRT,...POT,...PRT,...MDT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
 const TLN={tdv:'Teiler ∣ / ∤',tpr:'Primzahlen nennen',ttr:'Teilbarkeitsregeln',tzw:'Zahlen finden',tpz:'Primfaktorzerlegung',tsv:'Sieb des Eratosthenes',ttm:'Teilermengen',tgg:'ggT',tkm:'kgV',tsa:'Sachaufgaben'};
 const TLD={tdv:{n:16,lv:1,co:4},tpr:{mx:20,ps:2},ttr:{n:5,dv:'2,3,5,9,10',lv:2,mk:'kreuz'},tzw:{n:3,dv:'3,5,9',zk:3,lv:2},tpz:{n:12,co:4,lv:2,pot:false},tsv:{mx:100,cs:36,ins:false},ttm:{n:6,lv:1,bsp:false},tgg:{n:3,gm:'tm',nz:2,lv:1},tkm:{n:3,gm:'vm',nz:2,lv:1},tsa:{n:3,ty:'beide',rl:2,an:true}};
@@ -1097,7 +1097,7 @@ const TLGGT=[
  ()=>{const [a,b]=tpick([[24,36],[18,30],[20,45],[32,48],[28,42],[15,25]]),g=tgcd(a,b);
   return [`Lea hat ${a} Äpfel und ${b} Birnen. Sie möchte möglichst viele gleiche Obstteller herrichten, ohne dass Obst übrig bleibt. Wie viele Teller kann sie höchstens machen? Was liegt auf jedem Teller?`,`ggT(${a}, ${b}) = ${g}. Sie kann ${g} Teller machen; auf jedem liegen ${a/g} Äpfel und ${b/g} Birnen.`];}
 ];
-function tlGen(it){if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
+function tlGen(it){if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
  if(k==='tdv'){const o=own.filter(l=>l.length>=2);
   if(o.length)it.d=o.map(l=>[l[0],l[1]]);
   else{const mx=[0,100,1000,99999][lv];it.d=tuniq(n,()=>{const a=tpick(lv===3?[2,3,4,5,6,8,9,10,11,12]:[2,3,4,5,6,7,8,9,10,12,15,20,25]);let b;
@@ -1125,7 +1125,7 @@ const tlS=it=>it.show||SOL,tlSv=(it,s)=>tlS(it)?`<span class="sv">${s}</span>`:'
 const tlRow=(it,l,s,br)=>`<div class="tlrw"><span>${l}</span><span class="tlln" style="flex:1">${tlSv(it,s)}</span>${br?'<span>}</span>':''}</div>`;
 const tlGrid=(c,h)=>`<div style="display:grid;grid-template-columns:repeat(${c},1fr);gap:.9em 1.4em;align-items:start">${h}</div>`;
 const TLL='abcdefghijkl';
-function tlBlock(it){if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
+function tlBlock(it){if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
  if(k==='tdv'){h=tlGrid(+it.co||4,it.d.map(([a,b])=>`<div style="white-space:nowrap">${tfm(a)} <span class="tlc">${tlSv(it,b%a===0?'∣':'∤')}</span> ${tfm(b)}</div>`).join(''));}
  else if(k==='tpr'){const mx=+it.mx||20,pr=[];for(let i=2;i<=mx;i++)if(tisP(i))pr.push(i);
   h=`<div>Nenne alle Primzahlen bis ${mx}:</div>`+Array.from({length:+it.ps||2},()=>'<div class="tlln" style="display:block;min-height:1.9em"></div>').join('')+(s?`<div class="sv" style="margin-top:.3em">${pr.join(', ')}</div>`:'');}
@@ -1499,7 +1499,7 @@ const AST=[
 ['4.0-Aufgaben',[
  ['zr','4.0 gemischt','Löse die 4.0-Aufgabe!'],['zr:zs','4.0 Zahlenstrahl','Löse die 4.0-Aufgabe!'],['zr:cp','4.0 Vergleichen, Nachbarzahlen','Löse die 4.0-Aufgabe!'],['zr:st','4.0 Dekadische Einheiten, Stellenwerte','Löse die 4.0-Aufgabe!'],['zr:rd','4.0 Runden','Löse die 4.0-Aufgabe!'],['zr:as','4.0 Addieren und Subtrahieren','Löse die 4.0-Aufgabe!'],['zr:kr','4.0 Rechnen (+ − · :)','Löse die 4.0-Aufgabe!'],['zr:tl','4.0 Teiler und Vielfache','Löse die 4.0-Aufgabe!'],['zr:po','4.0 Potenzen','Löse die 4.0-Aufgabe!'],['zr:br','4.0 Brüche','Löse die 4.0-Aufgabe!'],['zr:pc','4.0 Prozent','Löse die 4.0-Aufgabe!'],['zr:wk','4.0 Winkel','Löse die 4.0-Aufgabe!'],['zr:sg','4.0 Strecke, Strahl, Gerade','Löse die 4.0-Aufgabe!'],['zr:kd','4.0 Koordinatensystem','Löse die 4.0-Aufgabe!'],['zr:kk','Koordinatensystem: Aussagen ankreuzen','Kreuze die richtigen Aussagen an!']]],
 ['Satz des Pythagoras',[
- ['pys','Pythagoras: Sachaufgaben','Löse die Sachaufgaben! Fertige eine Skizze an, schreibe die Rechnung und einen Antwortsatz auf!'],['pyb','Pythagoras: Berechnungen','Berechne die fehlende Seite des rechtwinkeligen Dreiecks!']]],
+ ['pys','Pythagoras: Sachaufgaben','Löse die Sachaufgaben! Fertige eine Skizze an, schreibe die Rechnung und einen Antwortsatz auf!'],['pyt','Pythagoras: Textaufgaben (mehrteilig)','Löse die Aufgaben! Fertige eine Skizze an, schreibe die Rechnungen und Antwortsätze auf!'],['pyb','Pythagoras: Berechnungen','Berechne die fehlende Seite des rechtwinkeligen Dreiecks!']]],
 ['Stellenwerte',[
  ['swt','Stellenwerttabelle','Trage die Zahlen in die Stellenwerttabelle ein!'],['swl','Stellenwerttabelle (leer)','Trage die Zahlen in die Stellenwerttabelle ein!']]],
 ['Potenzen',[
@@ -1518,8 +1518,8 @@ const AST_FAM={
  cmp:['cmp','nb','ugk',Object.assign({},ZRV,{th:'nb'})],
  wk:['wk','wkk',Object.assign({},ZRV,{th:'wi,wr'})],
  sg:['sa','sz','sp',Object.assign({},ZRV,{th:'sg'})],
- pl:['pys','pyb'],rd:['rd',Object.assign({},ZRV,{th:'rd'})],st:['st',Object.assign({},ZRV,{th:'sw'})]};
-const AST_FM={'zs:lesen':'zs','zs:mark':'zs',zzk:'zs',cmp:'cmp',nb:'cmp',ugk:'cmp',wk:'wk',wkk:'wk',sa:'sg',sz:'sg',sp:'sg',pys:'pl',pyb:'pl',rd:'rd',st:'st'};
+ pl:['pys','pyt','pyb'],rd:['rd',Object.assign({},ZRV,{th:'rd'})],st:['st',Object.assign({},ZRV,{th:'sw'})]};
+const AST_FM={'zs:lesen':'zs','zs:mark':'zs',zzk:'zs',cmp:'cmp',nb:'cmp',ugk:'cmp',wk:'wk',wkk:'wk',sa:'sg',sz:'sg',sp:'sg',pys:'pl',pyt:'pl',pyb:'pl',rd:'rd',st:'st'};
 const AST_FN={zs:'Zahlenstrahl',cmp:'Vergleichen',wk:'Winkel',sg:'Strecke, Strahl, Gerade',pl:'Satz des Pythagoras',rd:'Runden',st:'Dekadische Einheiten'};
 function astEntries(sel2,fam){const A={};AST.forEach(g=>g[1].forEach(([t,lbl,ins])=>{A[t]={t,lbl,ins};}));
  if(fam)return AST_FAM[fam].map(e=>typeof e==='string'?A[e]:e).filter(Boolean);
@@ -1745,7 +1745,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-po-act]');
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 /* ===== Satz des Pythagoras ===== */
 Object.assign(TLD,{pys:{bi:'ja',n:4,th:'mix',gs:'tr',rd:2,pl:4,an:true,co:1,mk:false},pyb:{rw:true,n:6,ge:'mix',zm:'mix',gs:'tr',rd:2,bz:'abc',un:'cm',pl:2,co:2,mk:false}});
-Object.assign(TLN,{pys:'Pythagoras: Sachaufgaben',pyb:'Pythagoras: Berechnungen'});
+Object.assign(TLN,{pys:'Pythagoras: Sachaufgaben',pyb:'Pythagoras: Berechnungen',pyt:'Pythagoras: Textaufgaben (mehrteilig)'});Object.assign(TLD,{pyt:{n:3,lab:'a',tt:true,rl:true,al:true,pl:0,co:1,mk:false}});
 const pyF=v=>String(Math.round(v*10000)/10000).replace('.',',');
 const pyTR=[[3,4,5],[3,4,5],[5,12,13],[8,15,17],[6,8,10],[7,24,25]];
 /* Zahlen für ein rechtwinkeliges Dreieck: A,B Katheten, C Hypotenuse; kind 'h' = C gesucht, 'k' = A gesucht */
@@ -1872,6 +1872,36 @@ function pysOne(it,avoid){const gs=it.gs,rd=+it.rd||2,pool0=PYS.filter(t=>it.th=
  const o=T.f(m,V),sv=pySolve(T.k,o.n,o.g,o.v[0],o.v[1],rd);
  return{i:PYS.indexOf(T),ic:T.ic,pv:o.v,un:T.u,t:o.t,sv,res:pyF(sv.res)+' '+un,a:o.a(pyF(sv.res)+' '+un),ex:m.ex};}
 const dupOthers=it=>{const t=new Set(),ix=new Set();items.forEach(o=>{if(o===it||!Array.isArray(o.d))return;if(o.type==='pys')o.d.forEach(x=>{if(x&&x.i!=null)ix.add(x.i);});if(o.type==='zr')o.d.forEach(x=>{if(x&&x.t)t.add(x.t);});});return{t,ix};};
+
+/* ===== Pythagoras: mehrteilige Textaufgaben ===== */
+const pyR=v=>pyF(Math.round(v*1000)/1000),pyT3=[[3,4,5],[3,4,5],[3,4,5],[5,12,13],[8,15,17],[7,24,25],[6,8,10]],pyS2=poS(2);
+function pyTri(sc,sw){const b=tpick(pyT3),f=tpick(sc);let r=[b[0],b[1],b[2]].map(v=>Math.round(v*f*1000)/1000);if(sw&&Math.random()<.5)[r[0],r[1]]=[r[1],r[0]];return r;}
+const pyHy=(n,a,b,c,u)=>`${n}${pyS2} = ${pyR(a)}${pyS2} + ${pyR(b)}${pyS2} = ${pyR(a*a)} + ${pyR(b*b)} = ${pyR(a*a+b*b)}; ${n} = √${pyR(a*a+b*b)} = ${pyR(c)} ${u}`;
+const pyKa=(n,c,b,a,u,m)=>`${n}${pyS2} = ${m}${pyS2} − ${pyR(b)}${pyS2} = ${pyR(c*c)} − ${pyR(b*b)} = ${pyR(a*a)}; ${n} = √${pyR(a*a)} = ${pyR(a)} ${u}`;
+const PYX=[
+ ()=>{const b=tpick(pyT3),s=tpick(b[2]>13?[5,10]:[10,20,30]),a=b[0]*s,w=b[1]*s,c=b[2]*s,[l,br]=a>w?[a,w]:[w,a];return{t:'Abkürzung durch den Park',s:`Ein rechteckiger Park ist ${tfm(l)} m lang und ${tfm(br)} m breit. Lea geht von einer Ecke zur gegenüberliegenden Ecke quer durch den Park.`,qs:[{q:'Wie lang ist die Abkürzung?',c:pyHy('d',l,br,c,'m'),a:`Die Abkürzung ist ${tfm(c)} m lang.`},{q:'Wie viele Meter spart sie gegenüber dem Weg entlang zweier Parkseiten?',c:`${tfm(l)} + ${tfm(br)} − ${tfm(c)} = ${tfm(l+br-c)} m`,a:`Sie spart ${tfm(l+br-c)} m.`}]};},
+ ()=>{const b=tpick([[3,4,5],[3,4,5],[5,12,13]]),f=b[2]>5?tpick([.1,.2]):tpick([.2,.3,.4,.5]),h=Math.round(b[0]*f*100)/100,d=Math.round(b[1]*f*100)/100,c=Math.round(b[2]*f*100)/100,ex=tpick([20,30,40,50]),tot=Math.round((c*100+ex))/100;return{t:'Ein Seil für das Zelt',s:`Eine senkrechte Zeltstange ist ${pyR(h)} m hoch. Ein Seil führt von ihrer Spitze zu einem Hering, der auf ebenem Boden ${pyR(d)} m vom Fuß der Stange entfernt steckt.`,qs:[{q:'Wie lang muss das Seil mindestens sein?',c:pyHy('s',h,d,c,'m'),a:`Das Seil muss mindestens ${pyR(c)} m lang sein.`},{q:`Wie viel Seil braucht man, wenn für das Befestigen zusätzlich ${ex} cm eingeplant werden?`,c:`${pyR(c)} m + ${ex} cm = ${pyR(c)} m + ${pyR(ex/100)} m = ${pyR(tot)} m`,a:`Man braucht ${pyR(tot)} m Seil.`}]};},
+ ()=>{const b=tpick([[3,4,5],[3,4,5],[5,12,13],[8,15,17]]),s=b[2]>13?tpick([4,6]):tpick([12,16,20,24,30]),a=b[0]*s,w=b[1]*s,c=b[2]*s,k=kri(2,6),W=['','','zweimal','dreimal','viermal','fünfmal','sechsmal'][k],[l,br]=a>w?[a,w]:[w,a];return{t:'Der Fußballplatz',s:`Ein rechteckiger Fußballplatz ist ${tfm(l)} m lang und ${tfm(br)} m breit. Beim Training läuft Amir diagonal von einer Ecke zur gegenüberliegenden Ecke.`,qs:[{q:'Wie viele Meter läuft er bei einer Diagonale?',c:pyHy('d',l,br,c,'m'),a:`Er läuft ${tfm(c)} m.`},{q:`Wie weit läuft er, wenn er diese Strecke ${W} zurücklegt?`,c:`${k} · ${tfm(c)} m = ${tfm(k*c)} m`,a:`Er läuft ${tfm(k*c)} m.`}]};},
+ ()=>{const b=tpick([[3,4,5],[3,4,5],[5,12,13]]),f=b[2]>5?.2:tpick([.4,.5,.6]),a=Math.round(b[0]*f*100)/100,w=Math.round(b[1]*f*100)/100,c=Math.round(b[2]*f*100)/100,hh=b[2]>5?a:a,hz=w;return{t:'Die Rutsche',s:`Eine gerade Rutsche ist ${pyR(c)} m lang. Zwischen dem Punkt senkrecht unter ihrem oberen Ende und ihrem unteren Ende liegen auf waagerechtem Boden ${pyR(hz)} m.`,qs:[{q:'Wie hoch liegt das obere Ende der Rutsche?',c:pyKa('h',c,hz,hh,'m',pyR(c)),a:`Das obere Ende der Rutsche liegt ${pyR(hh)} m hoch.`}]};},
+ ()=>{const b=tpick([[3,4,5],[3,4,5]]),f=tpick([.3,.4,.5]),l=Math.round(b[1]*f*100)/100,br=Math.round(b[0]*f*100)/100,d=Math.round(b[2]*f*100)/100,pass=Math.random()<.5,dl=tpick([.1,.2]),len=Math.round((pass?d-dl:d+dl)*100)/100;return{t:'Passt die Holzleiste hinein?',s:`Der rechteckige Boden eines Kofferraums ist ${pyR(l)} m lang und ${pyR(br)} m breit. Eine schmale Holzleiste ist ${pyR(len)} m lang.`,qs:[{q:'Kann die Leiste vollständig flach auf dem Boden liegen, wenn man sie diagonal hineinlegt? Begründe rechnerisch.',c:pyHy('d',l,br,d,'m')+`; ${pyR(len)} m ${pass?'<':'>'} ${pyR(d)} m`,a:pass?`Ja, die Leiste (${pyR(len)} m) ist kürzer als die Diagonale (${pyR(d)} m) und passt hinein.`:`Nein, die Leiste (${pyR(len)} m) ist länger als die Diagonale (${pyR(d)} m) und passt nicht hinein.`}]};},
+ ()=>{const b=tpick([[3,4,5],[5,12,13],[8,15,17]]),s=b[2]>13?tpick([10,20]):tpick([10,20,30,40]),a=b[0]*s,w=b[1]*s,c=b[2]*s;return{t:'Die Seilbahn',s:`Eine Seilbahn überwindet einen Höhenunterschied von ${tfm(a)} m. Die Talstation und die Bergstation sind waagerecht gemessen ${tfm(w)} m voneinander entfernt.`,qs:[{q:'Wie lang ist das Tragseil mindestens?',c:pyHy('s',a,w,c,'m'),a:`Das Tragseil ist mindestens ${tfm(c)} m lang.`},{q:'Wie viele Meter länger ist das Seil als die waagerechte Entfernung?',c:`${tfm(c)} − ${tfm(w)} = ${tfm(c-w)} m`,a:`Es ist ${tfm(c-w)} m länger.`}]};},
+ ()=>{const b=tpick([[5,12,13],[8,15,17],[7,24,25],[3,4,5]]),s=b[2]>13?tpick([1,2]):tpick([2,4,5]),n=b[0]*s,e=b[1]*s,c=b[2]*s;return{t:'Das Schiff',s:`Ein Schiff fährt ${tfm(n)} km nach Norden und danach ${tfm(e)} km nach Osten.`,qs:[{q:'Wie weit ist das Schiff nun (Luftlinie) von seinem Startpunkt entfernt?',c:pyHy('d',n,e,c,'km'),a:`Das Schiff ist ${tfm(c)} km vom Startpunkt entfernt.`},{q:'Wie viele Kilometer ist es insgesamt gefahren? Um wie viele Kilometer wäre der direkte Weg kürzer?',c:`${tfm(n)} + ${tfm(e)} = ${tfm(n+e)} km; ${tfm(n+e)} − ${tfm(c)} = ${tfm(n+e-c)} km`,a:`Es ist ${tfm(n+e)} km gefahren. Der direkte Weg wäre ${tfm(n+e-c)} km kürzer.`}]};},
+ ()=>{const b=tpick([[3,4,5],[5,12,13],[8,15,17]]),s=b[2]>13?tpick([.5,1]):tpick([1,2]),h=b[0]*s,d=b[1]*s,c=b[2]*s;return{t:'Der Fahnenmast',s:`Ein Fahnenmast ist ${pyR(h)} m hoch. Er wird von der Spitze aus mit einem Seil gesichert, das ${pyR(d)} m vom Mast entfernt im Boden verankert ist.`,qs:[{q:'Wie lang ist das Seil?',c:pyHy('s',h,d,c,'m'),a:`Das Seil ist ${pyR(c)} m lang.`}]};}
+];
+function pytGen(it){const n=+it.n||1,ix=tshuf(PYX.map((_,i)=>i)),out=[];let g=0;while(out.length<n&&g<60){out.push(PYX[ix[g%ix.length]]());g++;}it.d=out;}
+function pytBlock(it){const sh=tlS(it),L=['a','n'].includes(it.lab)?it.lab:'none',lb=i=>L==='a'?poL(i):L==='n'?(i+1)+'.':'';
+ const sk=+it.pl||0,co=+it.co||1;let h='';
+ if(it.mk)h+=poMk(`Zeichne eine <b>Skizze</b> und markiere das <b>rechtwinkelige Dreieck</b>. Die Seite gegenüber dem rechten Winkel ist die <b>Hypotenuse</b> (c), die beiden anderen sind die <b>Katheten</b> (a, b). Es gilt: a${pyS2} + b${pyS2} = c${pyS2}.`);
+ h+=tlGrid(co,(it.d||[]).map((t,i)=>{const l=lb(i),ind=l?'1.8em':'0',m=t.qs.length>1;
+  let x=`<div style="margin:0 0 1.05em;break-inside:avoid"><div>${l?`<b>${l}</b> `:''}${it.tt!==false?`<b>${t.t}</b>`:''}</div><div style="margin-left:${ind}">${t.s}</div>`;
+  if(sk)x+=`<div style="margin-left:${ind};height:${sk*1.5}em"></div>`;
+  t.qs.forEach((q,j)=>{const ql=m?(L==='a'?(j+1):'abcdef'[j])+') ':'';
+   x+=`<div style="margin-left:${ind};margin-top:.45em">${ql}${q.q}</div>`;
+   if(it.rl)x+=`<div class="tlrw" style="margin-left:${ind};margin-top:.35em"><span>Rechnung:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,q.c)}</span></div>`;
+   if(it.al)x+=`<div class="tlrw" style="margin-left:${ind};margin-top:.35em"><span>Antwort:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,q.a)}</span></div>`;
+   if(!it.rl&&!it.al&&sh)x+=`<div style="margin-left:${ind};margin-top:.3em">${tlSv(it,q.c)}</div>`;});
+  return x+'</div>';}).join(''));
+ return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
 function pysGen(it){const n=+it.n||1;it.d=[];let g=0;const seen=new Set(),ext=dupOthers(it);let avoid=new Set(ext.ix);const np=PYS.filter(t=>it.th==='mix'||t.th===it.th).length;while(it.d.length<n&&g++<600){const t=pysOne(it,avoid);if(seen.has(t.t))continue;seen.add(t.t);avoid.add(t.i);if(avoid.size>=np)avoid=new Set();t.pic=it.bi!=='nein';it.d.push(t);}}
 function pysBlock(it){const s=tlS(it),co=+it.co||1,pl=+it.pl||0;let h='';
  if(it.mk)h+=poMk(`Zeichne eine <b>Skizze</b> und markiere das <b>rechtwinkelige Dreieck</b>. Die Seite gegenüber dem rechten Winkel ist die <b>Hypotenuse</b> (c), die beiden anderen sind die <b>Katheten</b> (a, b). Es gilt: a${poS(2)} + b${poS(2)} = c${poS(2)}.`);
@@ -1888,15 +1918,16 @@ function renderPl(){const g=$('#g-pl'),it=items.find(i=>i.id===sel&&PYT.includes
  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
  const gsl=`<label>Zahlen${sl('gs',[['tr','ganze Ergebnisse (pythagoreische Zahlen)'],['ga','ganze Zahlen, Ergebnis gerundet'],['de','Dezimalzahlen, Ergebnis gerundet'],['mix','gemischt']])}</label>`+(it.gs!=='tr'?`<label>Runden auf${sl('rd',[[1,'eine Dezimalstelle'],[2,'zwei Dezimalstellen']])}</label>`:'');
  if(k==='pyb')H+=`<label>Anzahl der Aufgaben${sl('n',tN([2,3,4,6,8,9,10,12,15,18]))}</label><label>Gesucht ist${sl('ge',[['mix','a, b oder c (gemischt)'],['c','Hypotenuse c'],['k','Kathete a oder b']])}</label><label>Dreieck${sl('zm',[['mix','mit und ohne Zeichnung (gemischt)'],['zeich','mit gezeichnetem Dreieck'],['text','ohne Zeichnung (nur Zahlen)']])}</label>`+gsl+`<label>Einheit${sl('un',[['cm','cm'],['m','m'],['mm','mm'],['dm','dm'],['km','km'],['mix','gemischt'],['ohne','ohne Einheit']])}</label><label>Bezeichnung der Seiten${sl('bz',[['abc','a, b, c'],['pqr','p, q, r'],['xyz','x, y, z'],['uvw','u, v, w'],['klm','k, l, m'],['mix','gemischt']])}</label><label>Platz zum Rechnen${sl('pl',[[0,'nur Ergebnis'],[2,'2 Zeilen'],[3,'3 Zeilen'],[4,'4 Zeilen'],[5,'5 Zeilen']])}</label><label>Spalten${sl('co',tN([1,2,3]))}</label>`+ck('rw','Rechter Winkel markieren (Bogen mit Punkt)')+ck('mk','Merkkasten (Hypotenuse, Katheten)');
+ else if(k==='pyt')H+=`<label>Anzahl der Aufgaben${sl('n',tN([1,2,3,4,5,6,7,8]))}</label><label>Nummerierung${sl('lab',[['a','a) b) c) d)'],['n','1. 2. 3. 4.'],['none','keine']])}</label><label>Platz für Skizze${sl('pl',[[0,'keiner'],[3,'3 Zeilen'],[4,'4 Zeilen'],[5,'5 Zeilen'],[6,'6 Zeilen']])}</label>`+ck('tt','Überschrift jeder Aufgabe')+ck('rl','Rechnungszeile')+ck('al','Antwortzeile')+ck('mk','Merkkasten (Hypotenuse, Katheten)');
  else H+=`<label>Anzahl der Aufgaben${sl('n',tN([1,2,3,4,5,6,8]))}</label><label>Bild zur Aufgabe${sl('bi',[['ja','mit Bild'],['nein','ohne Bild']])}</label><label>Themen${sl('th',[['mix','gemischt'],['fl','Rechteck, Quadrat, Raute, Dreieck'],['al','Alltag (Leiter, Fernseher, Dach …)']])}</label>`+gsl+`<label>Platz für Skizze und Rechnung${sl('pl',[[0,'keiner'],[3,'3 Zeilen'],[4,'4 Zeilen'],[5,'5 Zeilen'],[6,'6 Zeilen'],[8,'8 Zeilen']])}</label><label>Spalten${sl('co',tN([1,2]))}</label>`+ck('an','Antwortzeilen')+ck('mk','Merkkasten (Hypotenuse, Katheten)');
  H+=ck('show','Lösung zeigen')+'<button data-py-act="mix">Neu mischen</button>';g.innerHTML=H;}
 const pyHandler=e=>{const t=e.target,k=t.dataset.py;if(!k)return;const it=items.find(i=>i.id===sel&&PYT.includes(i.type));if(!it)return;if(e.type==='change')return;
  rec('py'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','co','pl','rd'].includes(k))v=+v;it[k]=v;
- if(['n','ge','zm','gs','rd','un','bz','th','bi'].includes(k))tlGen(it);render();if(['gs'].includes(k))renderProps();};
+ if(['n','ge','zm','gs','rd','un','bz','th','bi'].includes(k)&&!(it.type==='pyt'&&k!=='n'))tlGen(it);render();if(['gs'].includes(k))renderProps();};
 $('#rp').addEventListener('input',pyHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-py-act]');if(!b)return;const it=items.find(i=>i.id===sel&&PYT.includes(i.type));if(!it)return;rec();tlGen(it);render();});
 (function(){const P=$('#plpal'),tri='<path d="M14 32H44V10Z" fill="#fff" stroke="#000" stroke-width="1.6"/><path d="M14 27h5v5" fill="none" stroke="#000"/>',T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
- L=[['pys',T(20,17,'Leiter',10)+T(20,31,'h = ?',10)+'<path d="M52 33L80 5M80 5V33H52" fill="none" stroke="#000" stroke-width="1.6"/>'],['pyb',tri+T(29,40,'a',9)+T(52,22,'b',9)+T(74,17,'a²+b²=c²',9)+T(74,32,'c = ?',11)]];
+ L=[['pys',T(20,17,'Leiter',10)+T(20,31,'h = ?',10)+'<path d="M52 33L80 5M80 5V33H52" fill="none" stroke="#000" stroke-width="1.6"/>'],['pyt',T(50,15,'Park: 120 m × 90 m',10)+T(50,32,'Abkürzung?  a)  b)',10)],['pyb',tri+T(29,40,'a',9)+T(52,22,'b',9)+T(74,17,'a²+b²=c²',9)+T(74,32,'c = ?',11)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 /* ===== Zahlenrätsel ===== */
 Object.assign(TLD,{zr:{n:3,lv:2,th:'mix',show:false,lb:true}});
