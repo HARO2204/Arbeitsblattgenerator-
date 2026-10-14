@@ -3261,13 +3261,14 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-fk-act]');
 
 /* ---- Lösungsbox: Ergebnisse einer Aufgabe zur Selbstkontrolle ---- */
 CATS.lb='Lösungsbox';
-const LBT=['at','as','mx','mm','mv','ms','um','rd','nb','prr','prm','pob','pyb','prw','prs','prk','pot'],LBN={nb:'Nachbarzahlen',prr:'Prozent: Rechnen',prm:'Prozent: Rechnen',pob:'Potenzen: Werte',pyb:'Pythagoras: Berechnungen',prw:'Prozent: Prozentwert',prs:'Prozent: Prozentsatz',prk:'Prozent: Grundwert',pot:'Potenzen: Rechnen',at:'Sachaufgaben Plus/Minus',as:'Schriftlich addieren/subtrahieren',mx:'Einmaleins',mm:'Schriftlich multiplizieren',mv:'Schriftlich dividieren',ms:'Sachaufgaben Mal/Geteilt',um:'Maßumwandlungen',rd:'Runden'};
+const LBT=['at','as','mx','mm','mv','ms','um','rd','nb','prr','prm','pob','pyb','prw','prs','prk','pot','pos'],LBN={pos:'Potenzen: Sachaufgaben',nb:'Nachbarzahlen',prr:'Prozent: Rechnen',prm:'Prozent: Rechnen',pob:'Potenzen: Werte',pyb:'Pythagoras: Berechnungen',prw:'Prozent: Prozentwert',prs:'Prozent: Prozentsatz',prk:'Prozent: Grundwert',pot:'Potenzen: Rechnen',at:'Sachaufgaben Plus/Minus',as:'Schriftlich addieren/subtrahieren',mx:'Einmaleins',mm:'Schriftlich multiplizieren',mv:'Schriftlich dividieren',ms:'Sachaufgaben Mal/Geteilt',um:'Maßumwandlungen',rd:'Runden'};
 const lbNum=v=>parseFloat(String(v).replace(/−/g,'-').replace(/[\s ]/g,'').replace(',','.'));
 function lbDom(it){const old=SOL;let sv=[];try{SOL=true;mk(it);const el=sheet.lastElementChild;sv=[...el.querySelectorAll('.sv')].map(e=>e.textContent.replace(/\s+/g,' ').trim()).filter(Boolean);el.remove();}finally{SOL=old;}return sv;}
 function lbVals(s){const o=[],last=c=>String(c).split('= ').pop().trim();
  if(['nb','prr','prm','pob','pyb'].includes(s.type))return lbDom(s).filter(x=>/^[−-]?[\d ]+(,\d+)?( ?(%|€|m|cm|km|kg|g|l|°|m²|cm²|h|min|s))?$/.test(x));
  if(['prw','prs','prk','pot'].includes(s.type))return lbDom(s).map(x=>last(x.split('. ')[0])).filter(x=>x);
- if(s.type==='at')(s.rows||[]).forEach(r=>o.push(last(r.calc)));
+ if(s.type==='pos')(s.d||[]).forEach(t=>o.push(last(String(t.c).replace(/<sup>(.*?)<\/sup>/g,(m,x)=>poS?poS(x):x).replace(/<[^>]+>/g,''))));
+ else if(s.type==='at')(s.rows||[]).forEach(r=>o.push(last(r.calc)));
  else if(s.type==='as'){const dec=s.art==='dez'?Math.max(1,+s.dec||1):0,S=Math.pow(10,dec);(s.rows||[]).forEach(r=>o.push(kgr(r.res/S,dec||undefined)));}
  else if(s.type==='mx')(s.rows||[]).forEach(r=>o.push(String(r.t==='m'?r.x*r.y:r.b)));
  else if(s.type==='mm')(s.d||[]).forEach(p=>o.push(tfm(p[0]*p[1])));
