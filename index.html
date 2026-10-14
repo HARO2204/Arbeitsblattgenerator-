@@ -2285,9 +2285,9 @@ function wkBlock(it){
   if(it.qG)h+=`<div class="wr"><span class="k">${g} =</span><span class="ln">${sol?d:''}</span><span>°</span></div>`;
   if(it.qA)h+=`<div class="wr"><span class="k">Winkelart:</span><span class="ln">${sol?wkArt(d):''}</span></div>`;
   return h+'</div>';}
- const off=list.slice(0,idx).reduce((a,x)=>a+Math.max(1,Math.min(12,+x.n||1)),0),ds=wkAng(it),co=n>1?Math.min(n,2,Math.max(1,+it.co||2)):1;
+ const off=list.slice(0,idx).reduce((a,x)=>a+Math.max(1,Math.min(12,+x.n||1)),0),ds=wkAng(it),co=n>1?Math.min(n,2,Math.max(1,+it.co||2)):1,rw=Math.ceil(n/co),SH=rw>=4?145:rw===3?165:200;
  const card=(d,k)=>{const g=GRK[(off+k)%GRK.length];
-  let h=`<div style="${it.wf?'border:1.5px solid #c5cde8;border-radius:14px;padding:8px 12px 10px;':''}min-width:0"><div>${wkSvg(d,it.mir,off+k,g)}</div>`+(it.wf?'<div style="border-top:1.5px dashed #c5cde8;margin-top:4px"></div>':'')+'<div class="wa">';
+  let h=`<div style="${it.wf?'border:1.5px solid #c5cde8;border-radius:14px;padding:8px 12px 10px;':''}min-width:0"><div>${wkSvg(d,it.mir,off+k,g).replace('<svg ','<svg style="height:'+SH+'px;width:100%" ')}</div>`+(it.wf?'<div style="border-top:1.5px dashed #c5cde8;margin-top:4px"></div>':'')+'<div class="wa">';
   if(it.qG)h+=`<div class="wr"><span class="k">${g} =</span><span class="ln">${sol?d:''}</span><span>°</span></div>`;
   if(it.qA)h+=`<div class="wr"><span class="k">Winkelart:</span><span class="ln">${sol?wkArt(d):''}</span></div>`;
   return h+'</div></div>';};
