@@ -503,6 +503,33 @@ let clrT=null;$('#clr').onclick=()=>{const b=$('#clr');if(!items.length)return;i
 $('#pgo').onclick=()=>{rec();const n=paginate();render();toast(n?'Seitenumbrüche geordnet: '+n+' Aufgabe(n) auf die nächste Seite verschoben.':'Keine Aufgabe ragt über einen Seitenumbruch.');};
 $('#prn').onclick=()=>printAll();
 document.addEventListener('keydown',e=>{if((e.key==='Delete'||e.key==='Backspace')&&sel&&!e.target.closest('[contenteditable],select,input'))$('#del').click();});
+/* Kopieren / Einfügen / Duplizieren + Rechtsklick-Menü */
+let CLIP=null,pasteN=0;
+function clipCopy(){const it=items.find(i=>i.id===sel);if(!it)return false;CLIP=JSON.parse(JSON.stringify(it));pasteN=0;toastMsg('Kopiert – mit Strg+V einfügen');return true;}
+function clipPaste(x,y){if(!CLIP)return;const o=JSON.parse(JSON.stringify(CLIP));delete o.gid;delete o.pof;delete o.pk;pasteN++;
+ const nx=x!=null?x-(o.w||100)/2:(o.x||60)+24*pasteN,ny=y!=null?y:(o.y||100)+24*pasteN;addX(o,Math.max(0,nx),Math.max(0,ny));}
+function clipDup(){if(clipCopy()){clipPaste();}}
+function toastMsg(t){let d=document.getElementById('clip-toast');if(!d){d=document.createElement('div');d.id='clip-toast';d.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:8px 16px;border-radius:8px;font-size:14px;z-index:99999;box-shadow:0 2px 10px #0005;transition:opacity .3s';document.body.appendChild(d);}
+ d.textContent=t;d.style.opacity=1;clearTimeout(d._t);d._t=setTimeout(()=>d.style.opacity=0,1800);}
+document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||e.altKey)return;if(e.target.closest&&e.target.closest('[contenteditable],select,input,textarea'))return;
+ const k=e.key.toLowerCase();
+ if(k==='c'&&sel){e.preventDefault();clipCopy();}
+ else if(k==='x'&&sel){e.preventDefault();if(clipCopy())$('#del').click();}
+ else if(k==='v'&&CLIP){e.preventDefault();clipPaste();}
+ else if(k==='d'&&sel){e.preventDefault();clipDup();}});
+(function(){const m=document.createElement('div');m.id='ctxm';m.style.cssText='position:fixed;display:none;background:#fff;color:#222;border:1px solid #c9d0dc;border-radius:8px;box-shadow:0 6px 22px #0003;padding:4px;z-index:99998;min-width:190px;font-size:14px';document.body.appendChild(m);
+ const hide=()=>{m.style.display='none';};
+ const mac=/Mac|iPhone|iPad/.test(navigator.platform||''),K=mac?'⌘':'Strg+';
+ function show(ev,hasItem){const px=ev.clientX,py=ev.clientY,r=sheet.getBoundingClientRect(),sc=r.width/sheet.offsetWidth||1,sx=(px-r.left)/sc,sy=(py-r.top)/sc;
+  const E=[];if(hasItem){E.push(['📋 Kopieren',K+'C',()=>clipCopy()],['✂️ Ausschneiden',K+'X',()=>{if(clipCopy())$('#del').click();}],['➕ Duplizieren',K+'D',()=>clipDup()]);}
+  E.push(['📥 Einfügen',K+'V',()=>clipPaste(hasItem?null:sx,hasItem?null:sy),!CLIP]);
+  if(hasItem)E.push(['🗑️ Löschen','Entf',()=>$('#del').click()]);
+  m.innerHTML=E.map((x,i)=>`<div data-i="${i}" style="display:flex;justify-content:space-between;gap:18px;padding:7px 10px;border-radius:6px;cursor:${x[3]?'default':'pointer'};${x[3]?'opacity:.4':''}"><span>${x[0]}</span><span style="color:#888">${x[1]}</span></div>`).join('');
+  m.querySelectorAll('[data-i]').forEach(d=>{const x=E[+d.dataset.i];d.onmouseenter=()=>{if(!x[3])d.style.background='#eef3ff';};d.onmouseleave=()=>d.style.background='';d.onclick=()=>{if(x[3])return;hide();x[2]();};});
+  m.style.display='block';const w=m.offsetWidth,h=m.offsetHeight;m.style.left=Math.min(px,innerWidth-w-6)+'px';m.style.top=Math.min(py,innerHeight-h-6)+'px';}
+ sheet.addEventListener('contextmenu',e=>{if(e.target.closest('[contenteditable="true"]:focus'))return;const el=e.target.closest('.item');e.preventDefault();
+  if(el){select(+el.dataset.id);show(e,true);}else show(e,false);});
+ document.addEventListener('mousedown',e=>{if(!m.contains(e.target))hide();});document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});window.addEventListener('scroll',hide,true);window.addEventListener('blur',hide);})();
 document.addEventListener('pointerup',()=>{items.forEach(i=>{if(i.type==='text'){const e=sheet.querySelector(`[data-id="${i.id}"]`);if(e)i.w=e.offsetWidth;}})});
 sheet.addEventListener('pointerdown',e=>{if(e.target===sheet)select(null);});
 /* ===== Körper, Netze, Oberflächen, Textaufgaben ===== */
