@@ -77,7 +77,7 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 .mq1{display:flex;flex-direction:column;align-items:center;gap:.3em}.mq1 .cap{font-size:.75em;font-weight:700}.mq1 .gq{display:grid;grid-template-columns:repeat(3,2.4em)}.mq1 .qc{box-sizing:border-box;height:2.4em;border:1.6px solid #000;margin:-.8px;text-align:center;line-height:2.2em}
 .cmp .cr{display:grid;grid-template-columns:auto 1fr auto 1fr;column-gap:.7em;align-items:center;margin:.6em 0}
 .cmp .cr.n0{grid-template-columns:1fr auto 1fr}
-.cmp .ca{text-align:right;white-space:nowrap}.cmp .cc{text-align:left;white-space:nowrap}.cmp .cl{font-weight:700}.cmp .cg{margin-left:1.6em}
+.cmp .ca{text-align:right;white-space:nowrap}.cmp .cc{text-align:left;white-space:nowrap}.cmp .cl{font-weight:700}.cmp .cg{margin-left:.8em}
 .cmp .cb{display:inline-block;width:1.5em;height:1.5em;border:1.6px solid #000;text-align:center;line-height:1.4em;color:#c0392b;font-weight:700}
 .fl div.x{margin-top:0}.fl div.x i{margin-left:0;height:26px}
 .fl i.s{font-style:normal;color:#c0392b;font-weight:700;padding-left:8px;font-size:16px;line-height:20px;overflow:hidden;white-space:nowrap}
@@ -460,7 +460,8 @@ function fitPages(){let mb=0;sheet.querySelectorAll('.item').forEach(e=>{mb=Math
  const sp=$('#spg');if(sp)sp.textContent='Seite 1 von '+n;}
 function render(){sheet.querySelectorAll('.item').forEach(e=>e.remove());items.forEach(mk);
  const m=reflow(),c=frameFit();if(m||c){sheet.querySelectorAll('.item').forEach(e=>e.remove());items.forEach(mk);}
- fitPages();ghBar();}
+ fitCmp();fitPages();ghBar();}
+function fitCmp(){sheet.querySelectorAll('.cmg').forEach(e=>{const w=e.clientWidth,sw=e.scrollWidth;if(w&&sw>w+1){const f=parseFloat(e.style.fontSize)||24;e.style.fontSize=(f*w/sw*.97).toFixed(1)+'px';}});}
 function paginate(){const BM=36,L=k=>(k+1)*PH-BM;let moved=0;
  const el=id=>elOf(id);
  for(let g=0;g<400;g++){const cand=items.filter(i=>(i.z!==-1||i.type==='ckf')&&i.type!=='frm'&&el(i.id)).map(i=>({i,h:el(i.id).offsetHeight})).sort((a,b)=>a.i.y-b.i.y);
@@ -3754,7 +3755,7 @@ function cmpBlock(it){
  for(let r=0;r<per;r++)for(let c=0;c<nc;c++){const i=c*per+r,p=P[i];const g=c>0?' cg':'';
   if(!p){cells+=(n0?'':'<span></span>')+'<span></span><span></span><span></span>';continue;}
   cells+=(n0?'':`<span class="cl${g}">${lb(i)}</span>`)+`<span class="ca${n0&&c>0?' cg':''}">${p[0]}</span><span class="cb">${sh?p[2]:''}</span><span class="cc">${p[1]}</span>`;}
- return `<div class="cmp cmg" style="${st};display:grid;grid-template-columns:repeat(${nc},${n0?'1fr auto 1fr':'auto 1fr auto 1fr'});column-gap:.7em;row-gap:.6em;align-items:center">${cells}</div>`;
+ return `<div class="cmp cmg" style="${st};display:grid;grid-template-columns:repeat(${nc},${n0?'auto auto auto':'auto auto auto auto'});justify-content:space-between;column-gap:.7em;row-gap:.6em;align-items:center">${cells}</div>`;
 }
 let cat=null;
 const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
