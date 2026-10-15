@@ -77,7 +77,7 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 .mq1{display:flex;flex-direction:column;align-items:center;gap:.3em}.mq1 .cap{font-size:.75em;font-weight:700}.mq1 .gq{display:grid;grid-template-columns:repeat(3,2.4em)}.mq1 .qc{box-sizing:border-box;height:2.4em;border:1.6px solid #000;margin:-.8px;text-align:center;line-height:2.2em}
 .cmp .cr{display:grid;grid-template-columns:auto 1fr auto 1fr;column-gap:.7em;align-items:center;margin:.6em 0}
 .cmp .cr.n0{grid-template-columns:1fr auto 1fr}
-.cmp .ca{text-align:right;white-space:nowrap}.cmp .cc{text-align:left;white-space:nowrap}.cmp .cl{font-weight:700}
+.cmp .ca{text-align:right;white-space:nowrap}.cmp .cc{text-align:left;white-space:nowrap}.cmp .cl{font-weight:700}.cmp .cg{margin-left:1.6em}
 .cmp .cb{display:inline-block;width:1.5em;height:1.5em;border:1.6px solid #000;text-align:center;line-height:1.4em;color:#c0392b;font-weight:700}
 .fl div.x{margin-top:0}.fl div.x i{margin-left:0;height:26px}
 .fl i.s{font-style:normal;color:#c0392b;font-weight:700;padding-left:8px;font-size:16px;line-height:20px;overflow:hidden;white-space:nowrap}
@@ -3749,9 +3749,12 @@ function cmpBlock(it){
  const lb=i=>it.lab==='a'?'abcdefghijklmnopqrstuvwxyz'[i%26]+')':it.lab==='n'?(i+1)+'.':'';
  const st=`font-size:${it.fs||24}px;font-weight:${it.fb?'bold':'normal'};font-style:${it.fi?'italic':'normal'};text-decoration:${it.fu?(it.fd?'underline double':'underline'):'none'};color:${it.col||'#000'}`;
  const sh=it.show||SOL,n0=it.lab==='none';
- const co=Math.max(1,Math.min(3,+it.co||1)),per=Math.max(1,+it.n||4),P=it.pairs||[];let cols='';
- for(let c=0;c<co;c++){const part=P.slice(c*per,(c+1)*per);if(!part.length&&c>0)break;cols+=`<div style="flex:1;min-width:0">`+part.map((p,i)=>`<div class="cr${n0?' n0':''}">${n0?'':'<span class="cl">'+lb(c*per+i)+'</span>'}<span class="ca">${p[0]}</span><span class="cb">${sh?p[2]:''}</span><span class="cc">${p[1]}</span></div>`).join('')+'</div>';}
- return `<div class="cmp" style="${st};display:flex;gap:1.6em">${cols}</div>`;
+ const co=Math.max(1,Math.min(3,+it.co||1)),per=Math.max(1,+it.n||4),P=it.pairs||[];let cells='';
+ const nc=Math.min(co,Math.ceil(P.length/per))||1;
+ for(let r=0;r<per;r++)for(let c=0;c<nc;c++){const i=c*per+r,p=P[i];const g=c>0?' cg':'';
+  if(!p){cells+=(n0?'':'<span></span>')+'<span></span><span></span><span></span>';continue;}
+  cells+=(n0?'':`<span class="cl${g}">${lb(i)}</span>`)+`<span class="ca${n0&&c>0?' cg':''}">${p[0]}</span><span class="cb">${sh?p[2]:''}</span><span class="cc">${p[1]}</span>`;}
+ return `<div class="cmp cmg" style="${st};display:grid;grid-template-columns:repeat(${nc},${n0?'1fr auto 1fr':'auto 1fr auto 1fr'});column-gap:.7em;row-gap:.6em;align-items:center">${cells}</div>`;
 }
 let cat=null;
 const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
