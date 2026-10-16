@@ -4095,12 +4095,40 @@ fliegenpilz:{n:'Pilz mit Moos',soft:1,img:1,s:()=>'<image href="data:image/webp;
 const DKBUB=[['rund','Super!'],['wolke','Toll gemacht!'],['stern','Klasse!'],['rund','Du schaffst das!'],['wolke','Weiter so!'],['stern','Bravo!'],['rund','Prima!'],['wolke','Ich glaub an dich!'],['comic','BOOM!'],['neon','Level up!'],['sticker','Easy!'],['eckig','Das packst du!'],['comic','Mega!'],['neon','Nice!'],['sticker','Epic!'],['eckig','Brain on!'],['comic','Krass!'],['neon','Check!'],['sticker','Boss!'],['eckig','Alles klar?'],['neon','Du rockst!'],['sticker','Respekt!'],['comic','Wow!'],['eckig','Gut gemacht!'],['neon','Weiter so!'],['sticker','Top!']];
 let dkMode='color';
 function dkNew(key){return{type:'deko',art:key,m:dkMode,w:String(key).startsWith('bub|')?190:140};}
-function dkPalette(){const g=$('#deko');
- g.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';
+const DKCAT={
+'Tiere':'katze giraffe affe schildkroete marienkaefer dino hund hase fisch elefant loewe baer schwein kuh pinguin eule frosch maus biene schmetterling fuchs spinne grashuepfer schwarm schmetterling_blau fuchs_schlaf vogel eichhoernchen schnecke libelle biene_blume vogel_bluete hase_aquarell hase_herbst igel_herbst igel_schlafend igel_apfel igel_seite maus_schaukel maus_ast fuchs_pullover katze_grau katze_schwarz katze_weiss katze_getigert katze_gescheckt katze_liegend katze_liegend_grau katze_buckel katze_schlafend obstfreunde',
+'Obst & Gemüse':'apfel kuerbis erdbeere erdbeere_f apfel_f banane orange trauben birne obstfreunde igel_apfel vogelscheuche',
+'Pflanzen & Pilze':'tulpe gaensebluemchen sonnenblume mohnblume blume_rosa baum blaetter herbstbaum kirschbaum tulpen_schirm ahornblatt ahornblatt_rot eichenblatt eichel kastanie zapfen fliegenpilz pilze_farn laubgirlande',
+'Frühling':'tulpe gaensebluemchen mohnblume blume_rosa kirschbaum biene_blume vogel_bluete tulpen_schirm hase_aquarell schmetterling schmetterling_blau schwarm marienkaefer biene regenbogen hase einhorn_regenbogen',
+'Sommer':'sonne sonnenblume libelle grashuepfer fisch schildkroete erdbeere erdbeere_f regenbogen wolken',
+'Herbst':'kuerbis blaetter herbstbaum fuchs_schlaf maus eule eichhoernchen ahornblatt ahornblatt_rot eichenblatt eichel kastanie fliegenpilz laubgirlande schirm_laub buecher_tasse igel_herbst hase_herbst igel_schlafend igel_apfel igel_seite maus_schaukel maus_ast pilze_farn vogelscheuche fuchs_pullover apfel apfel_f birne trauben obstfreunde',
+'Winter':'schneemann_blau schneemann_hut schnecke haube schneeflocken kakao zapfen pinguin vogel',
+'Fantasie':'einhorn einhorn_blau einhorn_rosa einhorn_lila einhorn_regenbogen einhorn_kopf einhorn_liegend drache fee prinzessin superheld krone ufo roboter rakete regenbogen',
+'Schule':'stifte schultasche buchfrage buecher_tasse gluehbirne fragezeichen fragezeichen2 haekchen kreuz rufzeichen rufzeichen2 tisch sessel',
+'Spiel & Sport':'fussball basketball skateboard kopfhoerer sneaker gamepad rutsche kinder schuhe',
+'Formen & Zeichen':'stern sonne herz kreis blitz diamant smiley sternschnuppe sternenschauer wolken regenbogen kreuz haekchen rufzeichen rufzeichen2 fragezeichen fragezeichen2'};
+const DKCATS=Object.fromEntries(Object.entries(DKCAT).map(([k,v])=>[k,new Set(v.split(' '))]));
+let dkQ='',dkC='';
+const dkNorm=t=>String(t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/ß/g,'ss');
+function dkGrid(){const g=$('#dkgrid');if(!g)return;
  const th=(key,name)=>`<div draggable="true" data-m="${key.replace(/"/g,'&quot;')}" title="${name}" style="text-align:center;cursor:grab;user-select:none;border:1px solid var(--line);border-radius:6px;padding:3px;background:#fff;color:#000">${dkSvg({art:key,m:dkMode,txt:null})}<div style="font:11px Arial;margin-top:1px">${name}</div></div>`;
- g.innerHTML=`<div style="grid-column:1/-1;display:flex;gap:6px"><button data-dm="color" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='color'?'on':''}">🎨 Farbig</button><button data-dm="line" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='line'?'on':''}">✏️ Umriss</button><button data-dm="wc" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='wc'?'on':''}">💧 Aquarell</button></div>`+Object.keys(ART).map(k=>th(k,ART[k].n)).join('')+`<div style="grid-column:1/-1;font-size:12px;color:var(--mut);margin-top:4px">Sprechblasen</div>`+DKBUB.map(b=>th('bub|'+b[0]+'|'+b[1],b[1])).join('');
- g.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{dkMode=b.dataset.dm;dkPalette();});
+ const q=dkNorm(dkQ.trim());
+ const ks=Object.keys(ART).filter(k=>(!dkC||DKCATS[dkC].has(k))&&(!q||dkNorm(ART[k].n+' '+k).includes(q)||Object.keys(DKCATS).some(c=>DKCATS[c].has(k)&&dkNorm(c).includes(q))));
+ const bs=dkC?[]:DKBUB.filter(b=>!q||dkNorm(b[1]).includes(q)||dkNorm('sprechblase').includes(q));
+ g.innerHTML=(ks.length||bs.length?'':'<div style="grid-column:1/-1;font-size:12px;color:var(--mut);padding:8px 2px">Nichts gefunden.</div>')+ks.map(k=>th(k,ART[k].n)).join('')+(bs.length?`<div style="grid-column:1/-1;font-size:12px;color:var(--mut);margin-top:4px">Sprechblasen</div>`+bs.map(b=>th('bub|'+b[0]+'|'+b[1],b[1])).join(''):'');
  g.querySelectorAll('[data-m]').forEach(d=>{d.ondragstart=e=>e.dataTransfer.setData('text/plain','deko:'+d.dataset.m);d.onclick=()=>addX(dkNew(d.dataset.m));});}
+function dkPalette(){const g=$('#deko');
+ g.style.gridTemplateColumns='1fr';
+ const chip=(c,t)=>`<button data-dc="${c}" style="font-size:11px;padding:2px 7px;border-radius:12px;border:1px solid ${dkC===c?'var(--acc)':'var(--line)'};background:${dkC===c?'var(--acc)':'#fff'};color:${dkC===c?'#fff':'inherit'};font-weight:400">${t}</button>`;
+ g.innerHTML=`<div style="display:flex;gap:6px"><button data-dm="color" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='color'?'on':''}">🎨 Farbig</button><button data-dm="line" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='line'?'on':''}">✏️ Umriss</button><button data-dm="wc" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='wc'?'on':''}">💧 Aquarell</button></div>`
+ +`<input id="dkq" type="search" placeholder="🔍 Bild suchen (z. B. Igel, Herbst) …" value="${escA(dkQ)}" style="width:100%;box-sizing:border-box;padding:6px 8px;border:1px solid var(--line);border-radius:6px;font:13px system-ui,sans-serif">`
+ +`<div style="display:flex;flex-wrap:wrap;gap:4px">${chip('','Alle')}${Object.keys(DKCAT).map(c=>chip(c,c)).join('')}</div>`
+ +`<div id="dkgrid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px"></div>`;
+ g.style.gap='6px';
+ g.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{dkMode=b.dataset.dm;dkPalette();});
+ g.querySelectorAll('[data-dc]').forEach(b=>b.onclick=()=>{dkC=b.dataset.dc;dkPalette();$('#dkq').focus();});
+ let tm;$('#dkq').oninput=e=>{dkQ=e.target.value;clearTimeout(tm);tm=setTimeout(dkGrid,150);};
+ dkGrid();}
 function renderDk(){const g=$('#g-dk'),it=items.find(i=>i.id===sel&&i.type==='deko'&&i.art);if(!g)return;
  if(!it){g.innerHTML='';g.style.display='none';return;}g.style.display='';
  const isB=String(it.art).startsWith('bub|');
