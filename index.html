@@ -1074,7 +1074,7 @@ $('#rp').addEventListener('input',raHandler);$('#rp').addEventListener('change',
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ra-act]');if(!b)return;const it=items.find(i=>i.id===sel&&(i.type==='rk'||i.type==='rw'));if(!it)return;rec();raRegen(it);render();renderProps();});
 
 /* ===== Teiler: Teilbarkeit, Primfaktoren, ggT, kgV, Sieb, Sachaufgaben ===== */
-const MDT=['mm','mv','ms','kf','ks'],VRT=['vr','vk'];
+const MDT=['mm','mv','ms','kf','ks'],VRT=['vr','vk','vl','vp','vt','vf','vs'];
 const PRT=['prd','prg','prw','prs','prk','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
 const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const PNT=['pnk','pnb','pnz'];const SST=['ssd','ssm','ssh','ssg','ssl','ssb'];const LWT=['lw'];const CIT=['cib','ciu','cia','cit','cis','cir','cik','cix','cil','cig','cic'];const ZRT=['zr'];const K4T=['k4b','k4w','k4p','k4z','k4y','k4k','k4g','k4x','k4f'];const MBT=['mbb','mbw','mbz','mbd','mbs','mbm'];const ZNT=['znb','zni','znq','znt','znk','znr'];
@@ -1305,41 +1305,90 @@ const mdHandler=e=>{const t=e.target,k=t.dataset.md;if(!k)return;const it=items.
 $('#rp').addEventListener('input',mdHandler);$('#rp').addEventListener('change',mdHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-md-act]');if(!b)return;const it=items.find(i=>i.id===sel&&MDT.includes(i.type));if(!it)return;rec();
  if(b.dataset.mdAct==='fw'){it.kc=Math.floor(714/((+it.ks||5)*MMPX));}mdGen(it);render();renderProps();});
-/* ===== Vorteilhaft rechnen ===== */
-Object.assign(TLN,{vr:'Vorteilhaft rechnen',vk:'Klammern zuerst berechnen'});
-Object.assign(TLD,{vr:{n:6,sm:'m',zr:2,co:2,rl:1,lab:'a'},vk:{n:4,gr:3,zr:1,co:2,rl:1,lab:'a'}});
-function vrGen(it){const n=+it.n||4,zr=+it.zr||2,out=[];
+/* ===== Vorteilhaft rechnen und mehr ===== */
+Object.assign(TLN,{vr:'Vorteilhaft rechnen',vk:'Klammern zuerst berechnen',vl:'Rechnung vervollständigen',vp:'Probe anschreiben',vt:'Textrechnungen (Summe/Differenz)',vf:'Richtig oder falsch (Rechengesetze)',vs:'Sachaufgaben (Geld)'});
+Object.assign(TLD,{vr:{n:6,md:'pa',sm:'m',zr:2,co:2,rl:1,lab:'a'},vk:{n:4,gr:3,zr:1,co:2,rl:1,lab:'a'},vl:{n:9,ar:'mix',zr:2,co:3,lab:'a'},vp:{n:4,ar:'mix',zr:2,co:2,rl:1,lab:'a'},vt:{n:4,zr:2,rl:2,co:1,lab:'a'},vf:{n:4,zr:2,lab:'none'},vs:{n:3,rl:2,an:true,co:1,lab:'n'}});
+const VRG=zr=>zr===1?[2,20]:zr===2?[10,99]:[100,999],vS=a=>a.reduce((p,q)=>p+q,0),vJ=(a,o)=>a.map(tfm).join(o||' + ');
+function vrGen(it){const n=+it.n||4,zr=+it.zr||2,[lo,hi]=VRG(zr),out=[],ty=it.type;
  const pair=()=>{let T,a;if(zr===1){T=tpick([10,10,20]);a=kri(1,T-1);}else if(zr===2){T=tpick([50,100,100,60,70,80,90]);a=kri(2,T-2);}else{T=100*kri(3,10);a=kri(101,T-101);}return [a,T-a];};
  const sing=()=>zr===1?kri(1,9):zr===2?kri(11,49):kri(101,499);
  for(let i=0;i<n;i++){
-  if(it.type==='vk'){const g=Math.max(2,Math.min(4,+it.gr||3)),G=[];for(let j=0;j<g;j++){const m=kri(2,3);G.push(Array.from({length:m},()=>zr===1?kri(1,9):zr===2?kri(10,40):kri(100,400)));}
-   const sm=G.map(x=>x.reduce((p,q)=>p+q,0));out.push({e:G.map(x=>'('+x.map(tfm).join(' + ')+')').join(' + '),s:sm.map(tfm).join(' + ')+' = '+tfm(sm.reduce((p,q)=>p+q,0))});continue;}
+  if(ty==='vk'){const g=Math.max(2,Math.min(4,+it.gr||3)),G=[];for(let j=0;j<g;j++){const m=kri(2,3);G.push(Array.from({length:m},()=>zr===1?kri(1,9):zr===2?kri(10,40):kri(100,400)));}
+   const sm=G.map(vS);out.push({e:G.map(x=>'('+vJ(x)+')').join(' + '),s:vJ(sm)+' = '+tfm(vS(sm))});continue;}
+  if(ty==='vl'){const f=it.ar==='add'?0:it.ar==='sub'?2:kri(0,3),a=kri(lo,hi),b=kri(lo,hi),m=Math.max(a,b),l=Math.min(a,b),t=a+b,
+    A=[[tfm(a)+' + ',`=${' '}${tfm(t)}`,b],[ '',`+ ${tfm(b)} = ${tfm(t)}`,a]][0];
+   if(f===0)out.push({p:tfm(a)+' + ',q:' = '+tfm(t),x:tfm(b)});else if(f===1)out.push({p:'',q:' + '+tfm(b)+' = '+tfm(t),x:tfm(a)});
+   else if(f===2)out.push({p:tfm(t)+' − ',q:' = '+tfm(a),x:tfm(b)});else out.push({p:'',q:' − '+tfm(b)+' = '+tfm(a),x:tfm(t)});continue;}
+  if(ty==='vp'){const a=kri(lo,hi),b=kri(lo,hi),t=a+b,sub=it.ar==='sub'||(it.ar!=='add'&&kri(0,1));
+   if(sub)out.push({e:tfm(t)+' − '+tfm(a)+' = '+tfm(b),s:tfm(b)+' + '+tfm(a)+' = '+tfm(t)});else out.push({e:tfm(a)+' + '+tfm(b)+' = '+tfm(t),s:tfm(t)+' − '+tfm(b)+' = '+tfm(a)});continue;}
+  if(ty==='vf'){const R=[[12,20,3,8],[50,99,10,30],[500,999,100,300]][zr-1],a=kri(R[0],R[1]),b=kri(R[2],R[3]),c=kri(Math.max(1,Math.floor(R[2]/2)),b-1);
+   const TP=[[`${a} − ${b} − ${c}`,`${a} − (${b} + ${c})`],[`${a} − ${b} + ${c}`,`${a} − (${b} + ${c})`],[`${a} − ${b} − ${c}`,`${a} − (${b} − ${c})`],[`${a} − ${b} + ${c}`,`${a} − (${b} − ${c})`],[`${a} + ${b} − ${c}`,`${a} + (${b} − ${c})`],[`${a} + ${b} − ${c}`,`${a} − (${b} − ${c})`]];
+   const [L,Rr]=tpick(TP),ev=x=>Function('return '+x.replace(/−/g,'-'))();let l1=L,r1=Rr;if(kri(0,1)){l1=Rr;r1=L;}
+   const fm=x=>x.replace(/\d+/g,m=>tfm(m));out.push({e:fm(l1)+' = '+fm(r1),ok:ev(L)===ev(Rr)});continue;}
+  if(ty==='vt'){const a=kri(lo,hi),b=kri(lo,hi),c=kri(lo,hi),d=kri(lo,hi),H=Math.max(a,b),Lw=Math.min(a,b),H2=Math.max(c,d),L2=Math.min(c,d),F=tfm;
+   const TP=[
+    ()=>({q:`Bilde die Summe der Zahlen ${F(a)}, ${F(b)} und ${F(c)}.`,s:`${F(a)} + ${F(b)} + ${F(c)} = ${F(a+b+c)}`}),
+    ()=>({q:`Bilde die Differenz der Zahlen ${F(H)} und ${F(Lw)}.`,s:`${F(H)} − ${F(Lw)} = ${F(H-Lw)}`}),
+    ()=>{const x=a+b,y=Math.max(1,Math.min(c,x-1));return {q:`Ziehe von der Summe der Zahlen ${F(a)} und ${F(b)} die Zahl ${F(y)} ab.`,s:`(${F(a)} + ${F(b)}) − ${F(y)} = ${F(x)} − ${F(y)} = ${F(x-y)}`};},
+    ()=>({q:`Vermehre die Differenz der Zahlen ${F(H)} und ${F(Lw)} um die Summe der Zahlen ${F(c)} und ${F(d)}.`,s:`(${F(H)} − ${F(Lw)}) + (${F(c)} + ${F(d)}) = ${F(H-Lw)} + ${F(c+d)} = ${F(H-Lw+c+d)}`}),
+    ()=>({q:`Subtrahiere von der Summe der Zahlen ${F(a)} und ${F(b)} die Differenz der beiden Zahlen.`,s:`(${F(a)} + ${F(b)}) − (${F(H)} − ${F(Lw)}) = ${F(a+b)} − ${F(H-Lw)} = ${F(a+b-(H-Lw))}`}),
+    ()=>{const x=H-Lw,y=c+d;if(y>=x)return null;return {q:`Subtrahiere von der Differenz der Zahlen ${F(H)} und ${F(Lw)} die Summe der Zahlen ${F(c)} und ${F(d)}.`,s:`(${F(H)} − ${F(Lw)}) − (${F(c)} + ${F(d)}) = ${F(x)} − ${F(y)} = ${F(x-y)}`};},
+    ()=>({q:`Addiere zur Summe der Zahlen ${F(a)} und ${F(b)} die Differenz der Zahlen ${F(H2)} und ${F(L2)}.`,s:`(${F(a)} + ${F(b)}) + (${F(H2)} − ${F(L2)}) = ${F(a+b)} + ${F(H2-L2)} = ${F(a+b+H2-L2)}`}),
+    ()=>({q:`Ziehe von der Summe der Zahlen ${F(a)} und ${F(b)} ihre Differenz ab.`,s:`(${F(a)} + ${F(b)}) − (${F(H)} − ${F(Lw)}) = ${F(a+b)} − ${F(H-Lw)} = ${F(a+b-(H-Lw))}`}),
+    ()=>({q:`Addiere zur Differenz der Zahlen ${F(H)} und ${F(Lw)} ihre Summe.`,s:`(${F(H)} − ${F(Lw)}) + (${F(a)} + ${F(b)}) = ${F(H-Lw)} + ${F(a+b)} = ${F(H-Lw+a+b)}`})];
+   let r=null;while(!r)r=tpick(TP)();out.push(r);continue;}
+  if(ty==='vs'){const R5=v=>Math.max(5,Math.round(v/5)*5),sp=()=>R5(kri(3,24)*(zr===3?5:1)),F=tfm;
+   const TP=[()=>{const B=sp(),C=sp(),D=sp(),A=R5(B+C+D+kri(5,40));return {q:`Amelie bekommt von ihrer Oma im Februar ${F(A)} € Taschengeld. Davon kauft sie sich im Supermarkt Süßigkeiten um ${F(B)} €, ein Buch um ${F(C)} € und eine Zeitschrift um ${F(D)} €. Wie viel Geld bleibt Amelie nach diesem Einkauf noch übrig?`,s:`${F(A)} − (${F(B)} + ${F(C)} + ${F(D)}) = ${F(A)} − ${F(B+C+D)} = ${F(A-B-C-D)}`,a:`Amelie bleiben ${F(A-B-C-D)} € übrig.`};},
+    ()=>{const B=sp(),C=sp(),D=sp(),E=sp(),A=R5(Math.max(5,D+E-B-C+kri(5,30)));const T=A+B+C;return {q:`Alex bekommt von seiner Oma zum Geburtstag ${F(A)} €, von seiner Tante ${F(B)} € und von seinem Papa ${F(C)} €. Davon kauft er sich ein Spiel um ${F(D)} € und einen neuen Controller um ${F(E)} €. Wie viel Geld bleibt ihm übrig?`,s:`(${F(A)} + ${F(B)} + ${F(C)}) − (${F(D)} + ${F(E)}) = ${F(T)} − ${F(D+E)} = ${F(T-D-E)}`,a:`Alex bleiben ${F(T-D-E)} € übrig.`};},
+    ()=>{const B=sp(),C=sp(),D=sp(),E=sp(),G=sp(),A=R5(Math.max(5,B+C+D-E-G+kri(5,30)));const T=A+E+G;return {q:`Tom hat im Juni ${F(A)} € gespart. Er kauft ein Skateboard um ${F(B)} € und Handschuhe um ${F(C)} €. Ende Juni kauft er sich Knieschoner um ${F(D)} €. Dann bekommt er von seiner Oma ${F(E)} € und von seiner Mama ${F(G)} € Taschengeld. Wie viel Geld hat Tom jetzt?`,s:`(${F(A)} + ${F(E)} + ${F(G)}) − (${F(B)} + ${F(C)} + ${F(D)}) = ${F(T)} − ${F(B+C+D)} = ${F(T-B-C-D)}`,a:`Tom hat jetzt ${F(T-B-C-D)} €.`};},
+    ()=>{const B=sp(),C=sp(),D=sp(),G=sp(),E=sp(),A=R5(Math.max(5,B+C+D+G-E+kri(5,30)));const T=A+E,U=B+C+D+G;return {q:`Hannes bekommt von seiner Oma ${F(A)} € zum Geburtstag. Er kauft sich Handschuhe um ${F(B)} €, Knieschoner um ${F(C)} € und Ellbogenschoner um ${F(D)} €. Danach bekommt er von seiner Mutter noch ${F(E)} € dazu und kauft sich noch einen Fußball um ${F(G)} €. Wie viel Geld bleibt Hannes übrig?`,s:`(${F(A)} + ${F(E)}) − (${F(B)} + ${F(C)} + ${F(D)} + ${F(G)}) = ${F(T)} − ${F(U)} = ${F(T-U)}`,a:`Hannes bleiben ${F(T-U)} € übrig.`};}];
+   out.push(TP[(i+kri(0,3))%4]());continue;}
+  // vr
+  const md=it.md||'pa';
+  if(md==='sb'||md==='sz'){const k=it.sm==='m'?kri(4,6):(+it.sm||4);let pl,mi,tr=0;
+   if(md==='sb'){mi=Array.from({length:k-1},()=>kri(lo,hi));pl=[vS(mi)+kri(Math.max(1,lo),hi)];}
+   else{const np=Math.max(2,Math.floor(k/2)),nm=k-np;do{pl=Array.from({length:np},()=>kri(lo,hi));mi=Array.from({length:nm},()=>kri(lo,hi));tr++;}while(vS(mi)>=vS(pl)&&tr<300);if(vS(mi)>=vS(pl)){mi=mi.map(()=>1);}}
+   const tm=[{v:pl[0],p:1}],rest=tshuf(pl.slice(1).map(v=>({v,p:1})).concat(mi.map(v=>({v,p:0}))));rest.forEach(x=>tm.push(x));
+   const P=tm.filter(x=>x.p).map(x=>x.v),M=tm.filter(x=>!x.p).map(x=>x.v),sp=vS(P),sm=vS(M);
+   out.push({e:tm.map((x,j)=>(j?(x.p?' + ':' − '):'')+tfm(x.v)).join(''),s:'= '+(P.length>1?'('+vJ(P)+')':tfm(P[0]))+' − ('+vJ(M)+') = '+tfm(sp)+' − '+tfm(sm)+' = '+tfm(sp-sm)});continue;}
   const k=it.sm==='m'?kri(4,6):(+it.sm||4),np=Math.floor(k/2),P=[],el=[];
   for(let j=0;j<np;j++){const [a,b]=pair();P.push([a,b]);el.push({v:a,g:j},{v:b,g:j});}
   if(k%2)el.push({v:sing(),g:-1});
   let sh,tr=0;do{sh=tshuf(el);tr++;}while(tr<40&&sh.some((x,j)=>j&&x.g>=0&&sh[j-1].g===x.g));
   const ord=[];sh.forEach(x=>{if(x.g>=0&&!ord.includes(x.g))ord.push(x.g);});
-  const ex=sh.filter(x=>x.g<0).map(x=>x.v),sums=ord.map(g=>P[g][0]+P[g][1]),tot=sums.reduce((p,q)=>p+q,0)+ex.reduce((p,q)=>p+q,0);
+  const ex=sh.filter(x=>x.g<0).map(x=>x.v),sums=ord.map(g=>P[g][0]+P[g][1]),tot=vS(sums)+vS(ex);
   const find=g=>sh.filter(x=>x.g===g).map(x=>x.v);
   out.push({e:sh.map(x=>tfm(x.v)).join(' + '),s:'= '+ord.map(g=>'('+find(g).map(tfm).join(' + ')+')').concat(ex.map(tfm)).join(' + ')+' = '+sums.concat(ex).map(tfm).join(' + ')+' = '+tfm(tot)});}
  it.d=out;}
-function vrBlock(it){const s=tlS(it),rl=+it.rl||0;
- return `<div class="tlx" style="${kst(it)}">`+tlGrid(+it.co||1,(it.d||[]).map((t,i)=>{const sv=it.type==='vk'?'= '+t.s:t.s;
-  return `<div><b>${nlab(it,i,'a')}</b> ${t.e} =${rl?Array.from({length:rl},(_,j)=>`<div class="tlln" style="display:block;min-height:1.7em;min-width:0">${j===0&&s?`<span class="sv">${it.type==='vk'?t.s:t.s.replace(/^= /,'')}</span>`:''}</div>`).join(''):(s?` <span class="sv">${it.type==='vk'?t.s:t.s.replace(/^= /,'')}</span>`:'')}</div>`;}).join(''))+'</div>';}
+function vrBlock(it){const s=tlS(it),rl=+it.rl||0,ty=it.type,D=it.d||[],W=x=>`<div class="tlx" style="${kst(it)}">${x}</div>`;
+ const ln=(sv,j)=>`<div class="tlln" style="display:block;min-height:1.7em;min-width:0">${j===0&&s?`<span class="sv">${sv}</span>`:''}</div>`;
+ const lines=sv=>rl?Array.from({length:rl},(_,j)=>ln(sv,j)).join(''):(s?` <span class="sv">${sv}</span>`:'');
+ if(ty==='vl')return W(tlGrid(+it.co||3,D.map((t,i)=>`<div style="white-space:nowrap"><b>${nlab(it,i,'a')}</b> ${t.p}<span class="tlln" style="min-width:3.6em;text-align:center;min-height:1.3em">${tlSv(it,t.x)}</span>${t.q}</div>`).join('')));
+ if(ty==='vp')return W(tlGrid(+it.co||2,D.map((t,i)=>`<div><b>${nlab(it,i,'a')}</b> ${t.e}<div class="tlrw"><span>Probe:</span><span class="tlln" style="flex:1;min-width:0">${tlSv(it,t.s)}</span></div></div>`).join('')));
+ if(ty==='vf')return W(`<table style="border-collapse:collapse;width:100%"><tr style="background:#dde8f3"><th style="border:1px solid #444;padding:4px 8px;text-align:left">Aussage</th><th style="border:1px solid #444;width:70px">richtig</th><th style="border:1px solid #444;width:70px">falsch</th></tr>`+D.map(t=>`<tr><td style="border:1px solid #444;padding:6px 8px">${t.e}</td><td style="border:1px solid #444;text-align:center">${s&&t.ok?'<span class="sv">✗</span>':''}</td><td style="border:1px solid #444;text-align:center">${s&&!t.ok?'<span class="sv">✗</span>':''}</td></tr>`).join('')+'</table>');
+ if(ty==='vt')return W(tlGrid(+it.co||1,D.map((t,i)=>`<div><b>${nlab(it,i,'a')}</b> ${t.q}${lines(t.s)}</div>`).join('')));
+ if(ty==='vs')return W(D.map((t,i)=>`<div style="margin:0 0 1em"><b>${nlab(it,i,'n')}</b> ${t.q}${rl?Array.from({length:rl},(_,j)=>ln(t.s,j)).join(''):(s?`<div class="sv">${t.s}</div>`:'')}${it.an?`<div class="tlrw" style="margin-top:.3em"><span>Antwort:</span><span class="tlln" style="flex:1;min-width:0">${tlSv(it,t.a)}</span></div>`:''}</div>`).join(''));
+ return W(tlGrid(+it.co||1,D.map((t,i)=>`<div><b>${nlab(it,i,'a')}</b> ${t.e} =${lines(t.s.replace(/^= /,''))}</div>`).join('')));}
 function renderVr(){const g=$('#g-vr');if(!g)return;const it=items.find(i=>i.id===sel&&VRT.includes(i.type));
  if(!it){g.innerHTML='';return;}
  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-vr="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-vr="${f}"${it[f]?' checked':''}> ${t}</label>`;
- let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div><label>Anzahl der Aufgaben${sl('n',tN([2,3,4,5,6,8,10,12]))}</label>`;
- if(k==='vr')H+=`<label>Anzahl der Summanden${sl('sm',[[4,'4'],[5,'5'],[6,'6'],[7,'7'],['m','gemischt (4 bis 6)']])}</label>`;
- else H+=`<label>Anzahl der Klammern${sl('gr',tN([2,3,4]))}</label>`;
- H+=`<label>Zahlenraum${sl('zr',[[1,'bis 20 (Zehner ergänzen)'],[2,'bis 100 (auf 50 / 100 ergänzen)'],[3,'bis 1 000 (Hunderter)']])}</label><label>Aufgaben nebeneinander${sl('co',[[1,'1'],[2,'2'],[3,'3']])}</label><label>Nummerierung${sl('lab',[['a','a) b) c)'],['n','1) 2) 3)'],['none','keine']])}</label><label>Rechenzeilen${sl('rl',tN([0,1,2,3]))}</label>`+ck('show','Lösung zeigen')+'<button data-vr-act="mix">Neu mischen</button>';
+ let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div><label>Anzahl der Aufgaben${sl('n',tN(k==='vl'?[3,6,9,12,15,18]:k==='vs'?[1,2,3,4]:[2,3,4,5,6,8,10,12]))}</label>`;
+ if(k==='vr')H+=`<label>Aufgabenart${sl('md',[['pa','Teilsummen bilden (Zahlen ergänzen)'],['sz','Summanden und Subtrahenden zusammenfassen'],['sb','nur Subtrahenden: a − b − c − d']])}</label><label>Anzahl der Zahlen${sl('sm',[[4,'4'],[5,'5'],[6,'6'],[7,'7'],['m','gemischt (4 bis 6)']])}</label>`;
+ if(k==='vk')H+=`<label>Anzahl der Klammern${sl('gr',tN([2,3,4]))}</label>`;
+ if(k==='vl'||k==='vp')H+=`<label>Rechenart${sl('ar',[['add','Addition'],['sub','Subtraktion'],['mix','gemischt']])}</label>`;
+ H+=`<label>Zahlenraum${sl('zr',[[1,'bis 20'],[2,'bis 100'],[3,'bis 1 000']])}</label>`;
+ if(k!=='vf'&&k!=='vs')H+=`<label>Aufgaben nebeneinander${sl('co',[[1,'1'],[2,'2'],[3,'3']])}</label>`;
+ H+=`<label>Nummerierung${sl('lab',[['a','a) b) c)'],['n','1) 2) 3)'],['none','keine']])}</label>`;
+ if(!['vl','vf'].includes(k))H+=`<label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label>`;
+ if(k==='vs')H+=ck('an','Antwortfeld');
+ H+=ck('show','Lösung zeigen')+'<button data-vr-act="mix">Neu mischen</button>';
  g.innerHTML=H;}
 $('#rp').addEventListener('change',e=>{const t=e.target,k=t.dataset.vr;if(!k)return;const it=items.find(i=>i.id===sel&&VRT.includes(i.type));if(!it)return;rec('vr'+k);
- it[k]=t.type==='checkbox'?t.checked:(['lab'].includes(k)?t.value:(k==='sm'&&t.value==='m'?'m':+t.value));if(['n','sm','zr','gr'].includes(k))vrGen(it);render();});
+ it[k]=t.type==='checkbox'?t.checked:(['lab','md','ar'].includes(k)?t.value:(k==='sm'&&t.value==='m'?'m':+t.value));if(['n','sm','zr','gr','md','ar'].includes(k))vrGen(it);render();});
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-vr-act]');if(!b)return;const it=items.find(i=>i.id===sel&&VRT.includes(i.type));if(!it)return;rec();vrGen(it);render();});
 (function(){const P=document.querySelector('.catp[data-c="as"]');if(!P)return;
  const T=(x,y,t,z)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${z||11}" fill="#000">${t}</text>`;
- [['vr',T(50,15,'23+24+22+26',11)+T(50,32,'(23+27)+(24+26)',10)],['vk',T(50,15,'(3+4)+(2+3+1)',11)+T(50,32,'= 7 + 6',11)]].forEach(([t,sv])=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.style.marginTop='8px';d.innerHTML=`<svg viewBox="0 0 100 40">${sv}</svg><span>${TLN[t]}</span>`;
+ [['vr',T(50,15,'45+57−28−49',11)+T(50,32,'(45+57)−(28+49)',10)],['vk',T(50,15,'(3+4)+(2+3+1)',11)+T(50,32,'= 7 + 6',11)],['vl',T(50,26,'28 + __ = 75',12)],['vp',T(50,15,'45+38=83',11)+T(50,32,'Probe: 83−38',10)],['vt',T(50,15,'Bilde die Summe',10)+T(50,30,'der Zahlen …',10)],['vf',T(50,15,'14−6−3 = 14−9',10)+T(50,32,'richtig / falsch',10)],['vs',T(50,15,'Oma schenkt 25 €…',10)+T(50,30,'Wie viel bleibt?',10)]].forEach(([t,sv])=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.style.marginTop='8px';d.innerHTML=`<svg viewBox="0 0 100 40">${sv}</svg><span>${TLN[t]}</span>`;
   d.ondragstart=e=>e.dataTransfer.setData('text/plain',t);d.onclick=()=>{add(t,50,120);};P.appendChild(d);});})();
 /* ===== Prozentrechnung ===== */
 Object.assign(TLD,{prr:{n:6,fm:'tab',ka:'alle',lv:1,un:'',co:2},prd:{n:2,fm:'quad',md:'ab',lv:1,sz:140,mk:false},prg:{n:1,dg:'beide',md:'dar',lv:1,sk:true,nc:4},prw:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prs:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prk:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prm:{n:5,sz:'alle',md:'netto',lv:1,mk:false},prz:{n:5,md:'term',lv:1}});
