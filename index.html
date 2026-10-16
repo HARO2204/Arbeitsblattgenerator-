@@ -332,7 +332,8 @@ const FONTS={georgia:['Georgia (Serif)',"Georgia,'Times New Roman',serif"],times
 const def={ff:'georgia',vl:'A',sl:'a',A:true,u:true,w:230,md:'none',un:'cm',sh:false,fs:18,col:'#000000',fb:false,fi:false,fu:false,nl:2};let items=[],sel=null,uid=1,sheet=$('#sheet');
 $('#pal').innerHTML=Object.keys(SH).map(k=>`<div class="pal" draggable="true" data-t="${k}" style="margin-bottom:8px">${svgNew({type:k,vl:'none',sl:'none',md:'none',w:150}).svg}<span>${SH[k][0]}</span></div>`).join('');
 let n=0;
-function add(t,x,y){let za=null;if(t==='zs:zeichnen')t='zzk';if(t==='zs:lesen'||t==='zs:mark'){za=t.slice(3);t='zs';}let zc=null;if(String(t).startsWith('zr:')){zc=t.slice(3);t='zr';}rec();const it=t==='head'?{id:uid++,type:'text',head:true,x:40,y:y??40,w:714,text:'Überschrift',fs:30,col:def.col,fb:true,fi:false,fu:false}
+let SWAPG=null;
+function add(t,x,y){if(SWAPG!==null&&t!=='n'&&t!=='a'&&t!=='head')return doSwap(t);let za=null;if(t==='zs:zeichnen')t='zzk';if(t==='zs:lesen'||t==='zs:mark'){za=t.slice(3);t='zs';}let zc=null;if(String(t).startsWith('zr:')){zc=t.slice(3);t='zr';}rec();const it=t==='head'?{id:uid++,type:'text',head:true,x:40,y:y??40,w:714,text:'Überschrift',fs:30,col:def.col,fb:true,fi:false,fu:false}
  :t==='n'||t==='a'?{id:uid++,type:'num',kind:t,x:x??60,y:y??100,w:40,fs:def.fs,col:def.col,fb:true,fi:false,fu:false}
  :t==='text'?{id:uid++,type:'text',x:x??60,y:y??100,w:320,text:'Text hier eingeben …',fs:def.fs,col:def.col,fb:def.fb,fi:def.fi,fu:def.fu}
  :t==='st'?{id:uid++,type:'st',x:x??60,y:y??100,w:600,fs:22,col:def.col,fb:false,fi:false,fu:false,...DEFS.st,rows:stGen(DEFS.st)}
@@ -504,7 +505,7 @@ function ghBar(){sheet.querySelectorAll('.ghf').forEach(x=>x.remove());const it=
 const b1=document.createElement('button');b1.className='mv';b1.textContent='✥ ganze Aufgabe';b1.title='Ziehen: die ganze Aufgabe (Nr., Überschrift und Inhalt) verschieben';b1.onpointerdown=ev=>{ev.stopPropagation();ev.preventDefault();gMove(it,ev,b1);};
 const bu=document.createElement('button');bu.textContent='▲ nach oben';bu.title='Aufgabe mit der darüber tauschen (Nummern passen sich an)';bu.onpointerdown=ev=>ev.stopPropagation();bu.onclick=ev=>{ev.stopPropagation();gSwap(it,-1);};const bd=document.createElement('button');bd.textContent='▼ nach unten';bd.title='Aufgabe mit der darunter tauschen (Nummern passen sich an)';bd.onpointerdown=ev=>ev.stopPropagation();bd.onclick=ev=>{ev.stopPropagation();gSwap(it,1);};
 const b2=document.createElement('button');b2.textContent='↧ nächste Seite';b2.onpointerdown=ev=>ev.stopPropagation();b2.onclick=ev=>{ev.stopPropagation();gNext(it);};
-const b3=document.createElement('button');b3.textContent='🗑 ganze Aufgabe';b3.onpointerdown=ev=>ev.stopPropagation();b3.onclick=ev=>{ev.stopPropagation();gDel(it);};gh.append(b1,bu,bd,b2,b3);sheet.appendChild(gh);}
+const b3=document.createElement('button');b3.textContent='🗑 ganze Aufgabe';b3.onpointerdown=ev=>ev.stopPropagation();b3.onclick=ev=>{ev.stopPropagation();gDel(it);};const b4=document.createElement('button');b4.textContent='⇄ tauschen';b4.title='Diese Aufgabe durch eine andere ersetzen (Angabe wird mitgetauscht): danach links die neue Aufgabe anklicken';b4.onpointerdown=ev=>ev.stopPropagation();b4.onclick=ev=>{ev.stopPropagation();swStart(it);};gh.append(b1,bu,bd,b4,b2,b3);sheet.appendChild(gh);}
 function select(id){sel=id;sheet.querySelectorAll('.item').forEach(e=>e.classList.toggle('sel',+e.dataset.id===id));ghBar();sync();}
 function cur(){return items.find(i=>i.id===sel&&i.type in SH);}
 function sync(){const s=cur()||def;$('#vl').value=s.vl;$('#sl').value=s.sl;$('#cA').checked=s.A;$('#cu').checked=s.u;$('#nl').value=s.nl;$('#sz').value=s.w;
@@ -1390,6 +1391,29 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-vr-act]');
  const T=(x,y,t,z)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${z||11}" fill="#000">${t}</text>`;
  [['vr',T(50,15,'45+57−28−49',11)+T(50,32,'(45+57)−(28+49)',10)],['vk',T(50,15,'(3+4)+(2+3+1)',11)+T(50,32,'= 7 + 6',11)],['vl',T(50,26,'28 + __ = 75',12)],['vp',T(50,15,'45+38=83',11)+T(50,32,'Probe: 83−38',10)],['vt',T(50,15,'Bilde die Summe',10)+T(50,30,'der Zahlen …',10)],['vf',T(50,15,'14−6−3 = 14−9',10)+T(50,32,'richtig / falsch',10)],['vs',T(50,15,'Oma schenkt 25 €…',10)+T(50,30,'Wie viel bleibt?',10)]].forEach(([t,sv])=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.style.marginTop='8px';d.innerHTML=`<svg viewBox="0 0 100 40">${sv}</svg><span>${TLN[t]}</span>`;
   d.ondragstart=e=>e.dataTransfer.setData('text/plain',t);d.onclick=()=>{add(t,50,120);};P.appendChild(d);});})();
+
+/* ===== Aufgabe tauschen ===== */
+function swBanner(on){let d=document.getElementById('sw-banner');if(!on){if(d)d.remove();return;}
+ if(!d){d=document.createElement('div');d.id='sw-banner';d.className='no-print';d.style.cssText='position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#2f6fed;color:#fff;padding:10px 16px;border-radius:10px;font:600 14px system-ui,sans-serif;z-index:99999;box-shadow:0 4px 14px rgba(0,0,0,.25);display:flex;gap:12px;align-items:center';
+  d.innerHTML='<span>⇄ Aufgabe tauschen: Wähle jetzt links die neue Aufgabe aus (beliebiger Bereich).</span><button style="border:0;border-radius:6px;padding:4px 10px;cursor:pointer;font:inherit">Abbrechen</button>';
+  d.querySelector('button').onclick=()=>{SWAPG=null;swBanner(false);};document.body.appendChild(d);}}
+function swStart(it){const mem=gMem(it);if(!mem.length)return;
+ const minY=Math.min(...mem.map(i=>i.y));
+ if(items.some(i=>i.type==='ckf'&&i.y>=minY-45&&i.y<=minY+2)){toast('Aufgaben mit Teilaufgaben (a, b, c …) lassen sich nicht tauschen – bitte löschen und neu einfügen.');return;}
+ SWAPG=it.gid;swBanner(true);}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&SWAPG!==null){SWAPG=null;swBanner(false);}});
+function doSwap(t){const g=SWAPG;SWAPG=null;swBanner(false);const any=items.find(i=>i.gid===g&&i.type!=='frm'&&i.type!=='ckf');if(!any)return;
+ const H=i=>{const e=elOf(i.id);return e?e.offsetHeight:0;},mem=gMem(any),oldB=Math.max(...mem.map(i=>i.y+H(i)));
+ const tx=mem.find(i=>i.type==='text'),nm=mem.find(i=>i.type==='num'),ct=mem.filter(i=>i!==tx&&i!==nm);
+ if(!ct.length){toast('In dieser Aufgabe gibt es keinen Inhalt zum Tauschen.');return;}
+ const c0=ct.slice().sort((a,b)=>a.y-b.y)[0],ox=c0.x,oy=c0.y,omw=c0.mw,ofs=c0.fs;
+ add(t,ox,oy);const nit=items[items.length-1];if(!nit||nit.id===any.id)return;
+ items=items.filter(i=>!ct.includes(i));nit.gid=g;nit.x=ox;nit.y=oy;nit.w=Math.min(nit.w,794-ox-40);if(omw)nit.mw=omw;if('show' in nit)nit.show=false;if(ofs&&nit.fs>ofs)nit.fs=ofs;
+ const e=AST.flatMap(x=>x[1]).find(x=>x[0]===t||String(x[0]).startsWith(t+':'));let hd=false;if(e&&tx){tx.text=e[2];hd=true;}
+ render();const newB=Math.max(...gMem(nit).map(i=>i.y+H(i))),dl=Math.round(newB-oldB);
+ if(dl)items.forEach(i=>{if(i.gid!==g&&i.type!=='frm'&&i.y>=oldB-4)i.y+=dl;});
+ rebuildFrames();render();select(nit.id);
+ toast(hd?'Aufgabe getauscht – die Angabe wurde mitgetauscht.':'Aufgabe getauscht – die Angabe bitte selbst anpassen (für diese Aufgabe gibt es keine Standard-Angabe).');}
 /* ===== Prozentrechnung ===== */
 Object.assign(TLD,{prr:{n:6,fm:'tab',ka:'alle',lv:1,un:'',co:2},prd:{n:2,fm:'quad',md:'ab',lv:1,sz:140,mk:false},prg:{n:1,dg:'beide',md:'dar',lv:1,sk:true,nc:4},prw:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prs:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prk:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prm:{n:5,sz:'alle',md:'netto',lv:1,mk:false},prz:{n:5,md:'term',lv:1}});
 Object.assign(TLN,{prr:'Rechnungen (ohne Text)',prd:'Prozente darstellen',prg:'Diagramme (Kreis/Streifen)',prw:'Prozentwert berechnen',prs:'Prozentsatz berechnen',prk:'Grundwert berechnen',prm:'Mehrwertsteuer',prz:'Begriffe zuordnen'});
@@ -1639,6 +1663,7 @@ const AST=[
  ['wk','Winkel messen','Gib den Winkel und die Winkelart an!'],['wkk','Winkel konstruieren','Konstruiere die Winkel mit dem Geodreieck!'],['sa','Strecken messen','Gib jeweils die Länge der gezeichneten Strecke an.'],['sz','Strecken zeichnen','Zeichne folgende Strecken daneben und beschrifte sie! (mit Bleistift!)'],['sp','Gerade, Strahl, Strecke','Zeichne die angegebenen Sachverhalte in dein Heft. Beschrifte die Geraden und die Schnittpunkte.'],
  ['ke','Koordinaten ablesen','Ermittle die Koordinaten der eingezeichneten Punkte!'],['kz','Punkte einzeichnen','Zeichne folgende Punkte ein!'],['ke4','Kartesisch: ablesen','Ermittle die Koordinaten der eingezeichneten Punkte!'],['kz4','Kartesisch: einzeichnen','Zeichne folgende Punkte ein!'],['kt','Ecken, Kanten, Flächen','Zähle die Ecken, Kanten und Flächen und trage sie in die Tabelle ein!'],['ob','Oberfläche berechnen','Berechne den Oberflächeninhalt.']]]];
 const ASTOPT='<h4>Gestaltung</h4><div class="aopt"><label>Schrift <select id="ast-sz"><option value="18">normal</option><option value="22">groß</option></select></label><label>Abstand <select id="ast-gp"><option value="18">eng</option><option value="30" selected>normal</option><option value="46">weit</option></select></label><label><input type="checkbox" id="ast-ind" checked> Aufgaben einrücken</label><label>Tabelle <select id="ast-tb"><option value="0">keine</option><option value="1">Nr. | Aufgabe | Hakerl</option><option value="2">Nr. | Aufgabe</option></select></label><label><input type="checkbox" id="ast-fb" checked> Angaben fett</label><label><input type="checkbox" id="ast-nd"> Name und Datum</label><label><input type="checkbox" id="ast-un"> Unterschrift</label><label><input type="checkbox" id="ast-rh"> Rahmen</label></div><h4>Lösungsbox</h4><div class="aopt"><label><input type="checkbox" id="ast-lb"> ✅ Lösungsbox am Ende (alle Lösungen)</label><label>Form <select id="ast-lbf"><option value="tier">Schlange (Tier)</option><option value="frame">gerahmtes Rechteck</option><option value="snake">Rechenschlange</option><option value="cards">Kärtchen</option></select></label><label>Anordnung <select id="ast-lbm"><option value="mix">ungeordnet</option><option value="sort">geordnet</option></select></label></div>';
+AST.push(['Addition und Subtraktion (Schulbuch)',[['vr','Vorteilhaft rechnen','Rechne vorteilhaft!'],['vk','Klammern zuerst berechnen','Berechne! Rechne zuerst die Klammern aus.'],['vl','Rechnung vervollständigen','Vervollständige die Rechnung!'],['vp','Probe anschreiben','Schreibe für die Rechnung eine passende Probe an!'],['vt','Textrechnungen (Summe/Differenz)','Schreibe als Rechnung an und berechne anschließend!'],['vf','Richtig oder falsch (Rechengesetze)','Gib an, ob die Aussagen richtig oder falsch sind!'],['vs','Sachaufgaben (Geld)','Löse die Textaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!']]]);
 const ZRV={t:'zr',lbl:'4.0-Aufgabe',ins:'Löse die 4.0-Aufgabe!'};
 const AST_FAM={
  zs:[{t:'zs:lesen',lbl:'Zahlenstrahl ablesen',ins:'Welche Zahlen sind am Zahlenstrahl markiert? Schreibe sie unter die Kreuze!'},{t:'zs:mark',lbl:'Zahlenstrahl markieren',ins:'Markiere folgende Zahlen am Zahlenstrahl!'},'zzk',Object.assign({},ZRV,{th:'za,zm'})],
