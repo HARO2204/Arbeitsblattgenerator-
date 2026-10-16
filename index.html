@@ -3783,10 +3783,12 @@ function bubSvg(st,txt,flip,line){txt=String(txt||'Super!');const W=220,H=150;le
  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${flip?'<g transform="translate(220 0) scale(-1 1)">'+sh+'</g>':sh}${L.map((l,i)=>`<text x="${cx}" y="${(y0+i*lh).toFixed(1)}" font-size="${fs.toFixed(1)}" text-anchor="middle" font-weight="700" fill="${tc}" font-family="'Patrick Hand','Andika','Comic Sans MS',Arial,sans-serif">${l.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</text>`).join('')}</svg>`;}
 function dkLineSoft(s){return s.replace(/<(ellipse|path|circle)[^>]*data-fx="1"[^>]*\/>/g,'').replace(/<text[^>]*>[^<]*<\/text>/g,'').replace(/ fill="(url\([^)]*\)|#[0-9a-fA-F]{3,8})"/g,' fill="#fff"').replace(/ stroke="#[0-9a-fA-F]{3,8}"/g,' stroke="#2b2b2b"').replace(/(<(?:path|ellipse)[^>]*fill="none"[^>]*stroke="#2b2b2b"[^>]*) stroke-width="(?:[7-9]|1[0-9])(?:\.\d+)?"/g,'$1 stroke-width="3"');}
 function dkLine(s){return s.replace(/<ellipse[^>]*data-ch="1"[^>]*\/>/g,'').replace(/(fill|stroke)="(#[0-9a-fA-F]{3,6})"/g,(m,a,c)=>(c.toLowerCase()===DK||c.toLowerCase()==='#fff'||c.toLowerCase()==='#ffffff')?m:`${a}="#fff"`);}
+const WCDEF='<defs><filter id="wcf" x="-4%" y="-4%" width="108%" height="108%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="4" result="n1"/><feDisplacementMap in="SourceGraphic" in2="n1" scale="3.2" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation=".55" result="b"/><feComponentTransfer in="b" result="l"><feFuncR type="linear" slope=".94" intercept=".06"/><feFuncG type="linear" slope=".94" intercept=".06"/><feFuncB type="linear" slope=".94" intercept=".06"/></feComponentTransfer><feTurbulence type="fractalNoise" baseFrequency=".07" numOctaves="3" seed="9" result="n2"/><feColorMatrix in="n2" type="matrix" values="0 0 0 0 .8  0 0 0 0 .8  0 0 0 0 .8  .9 0 0 0 .1" result="g"/><feColorMatrix in="n2" type="matrix" values=".16 0 0 0 .86  .16 0 0 0 .86  .16 0 0 0 .86  0 0 0 0 1" result="g2"/><feBlend in="l" in2="g2" mode="multiply" result="m"/><feComposite in="m" in2="l" operator="in"/></filter></defs>';
 function dkSvg(it){let svg;
  if(String(it.art).startsWith('bub|')){const p=it.art.split('|');svg=bubSvg(p[1],it.txt!=null?it.txt:p.slice(2).join('|'),it.flip,it.m==='line');}
  else{const a=ART[it.art];if(!a)return '';svg=`<svg viewBox="-6 -17 212 217" xmlns="http://www.w3.org/2000/svg">${a.s()}</svg>`;}
  if(it.m==='line'){const aa=ART[it.art];svg=(aa&&aa.soft)?dkLineSoft(svg):dkLine(svg);}
+ else if(it.m==='wc'&&!String(it.art).startsWith('bub|')){svg=svg.replace(/^(<svg[^>]*>)/,'$1'+WCDEF+'<g filter="url(#wcf)">').replace(/<\/svg>$/,'</g></svg>');}
  const isB=String(it.art).startsWith('bub|'),tr=(it.rot?`rotate(${it.rot}deg)`:'')+(it.flip&&!isB?' scaleX(-1)':'');return tr?`<div style="transform:${tr}">${svg}</div>`:svg;}
 /* ===== Weiche Herbst- und Winter-Bilder (Pastell) ===== */
 let SGN=0;
@@ -4049,19 +4051,71 @@ schirm_laub:{n:'Regenschirm mit Laub',soft:1,s:()=>{const s=new SB();s.shadow(10
  mapleS(s,36,150,.26,'#f2a860',shd('#f2a860',.15),-20);mapleS(s,150,138,.24,'#e5804a',shd('#e5804a',.15),30);mapleS(s,126,178,.22,'#f6c27a',shd('#f6c27a',.15),-60);mapleS(s,172,176,.18,'#ee8a78',shd('#ee8a78',.15),40);return s.out();}},
 });
 
+/* ===== Herbst-Tiere im Stil der Maus ===== */
+function tierS(o){const s=new SB();s.raw('<g transform="translate(-6 6) scale(.95)">');
+ const B=o.body,H=o.head||B,Bl=o.belly||['#fbf3e6','#ecdcc4'],Sc=o.scarf,Pk=['#f7bcc0','#ec9ca6'],ST=shd(B[1],.2);
+ s.shadow(96,192,50,5);
+ if(o.back)o.back(s);
+ if(o.tail)o.tail(s);
+ s.p('M60 100Q50 160 78 178Q108 188 128 170Q142 140 124 104Q96 88 60 100Z',B[0],B[1]);
+ s.p('M72 128Q70 164 90 174Q110 176 118 156Q120 134 104 124Q84 120 72 128Z',Bl[0],Bl[1],{sw:.6});
+ s.fx(94,144,14,22,'#fff',.35);
+ s.e(78,183,13,6,o.paw||Pk[0],o.paw2||Pk[1]).e(118,178,13,6,o.paw||Pk[0],o.paw2||Pk[1]);
+ s.p('M64 112Q50 128 60 142Q70 140 74 124Z',B[0],B[1]);
+ s.p('M120 112Q146 102 152 78Q158 72 163 80Q160 108 128 130Z',B[0],B[1]).e(157,74,7,7,o.paw||Pk[0],o.paw2||Pk[1]);
+ if(o.hold==='acorn'){acornS(s,164,50,.42);s.l('M157 70L162 62','#a98a6a',2.2);}
+ else{s.l('M157 70L172 34','#a98a6a',2.2);if(o.hold==='maple')mapleS(s,174,22,.26,o.leaf[0],o.leaf[1],20);else leafS(s,176,6,48,20,6,o.leaf[0],o.leaf[1],28);}
+ s.p('M52 108Q92 128 130 110L134 126Q94 146 50 126Z',Sc[0],Sc[1]).p('M62 124Q48 150 58 170L76 162Q70 146 80 132Z',Sc[0],Sc[1]).l('M60 140l14 -4M58 152l14 -4',Sc[1],1.4);
+ if(o.ears)o.ears(s);
+ s.e(90,78,42,35,H[0],H[1]);
+ if(o.face)o.face(s);
+ s.fx(80,66,18,10,'#fff',.5);
+ const e1=o.eyeX||[77,105];s.eye(e1[0],76,3.6).eye(e1[1],74,3.6);
+ if(!o.nonose)s.e(92,89,4.6,3.6,o.nose||'#f4a3ab',o.nose2||'#e4929c');
+ s.l('M92 93q-4 5 -8 3M92 93q4 5 8 3','#8a6a62',1.4).blush(68,88,8).blush(114,86,8);
+ if(o.whisk)s.l('M72 90l-26 -4M72 94l-26 6M112 88l26 -6M112 92l26 4','#b5aca4',1);
+ if(o.top)o.top(s);
+ s.raw('</g>');return s.out();}
+const spikeRing=(cx,cy,rx,ry,n,a0,a1,k)=>{let d='';for(let i=0;i<=n;i++){const a=a0+(a1-a0)*i/n,r=i%2?1:k,x=cx+r*rx*Math.cos(a),y=cy+r*ry*Math.sin(a);d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1);}return d;};
+Object.assign(ART,{
+igel:{n:'Igel mit Blatt',soft:1,s:()=>tierS({body:['#f7e8d2','#dcc29c'],head:['#f9ecd9','#e2c9a4'],belly:['#fdf6ea','#efdcc0'],scarf:['#e9a06a','#cf7a40'],leaf:['#f8d3a8','#ee9f66'],nose:'#6b4a3c',nose2:'#4a3026',
+ back:s=>{s.p(spikeRing(96,116,62,66,44,0,Math.PI*2,.86)+'Z','#a8754c','#6e4529');s.p(spikeRing(96,118,48,52,30,Math.PI*.9,Math.PI*2.1,.8)+'Z','#bd8a5e','#8a5a38',{sw:.6});},
+ top:s=>{s.p('M54 62Q56 40 90 38Q124 40 128 66Q112 52 90 58Q70 52 54 62Z','#a8754c','#6e4529',{sw:.8});for(let i=0;i<7;i++){const x=58+i*11;s.p(`M${x} 56L${x+5} 36L${x+10} 56Z`,'#a8754c','#7e5033',{sw:.6});}},
+ ears:s=>{s.e(52,66,10,10,'#f0d9b6','#d9bc92').e(128,62,10,10,'#f0d9b6','#d9bc92');},nose2:'#4a3026'})},
+hase:{n:'Hase mit Blatt',soft:1,s:()=>tierS({body:['#f6efe6','#d9cdbf'],head:['#fbf6ef','#e2d8cb'],scarf:['#8fc3c9','#5fa0a8'],leaf:['#f6c27a','#e5804a'],hold:'maple',whisk:1,
+ tail:s=>{s.e(136,170,13,13,'#fbf6ef','#e2d8cb');},
+ ears:s=>{s.e(62,26,13,36,'#f6efe6','#d9cdbf',{r:-8}).e(62,28,7,26,'#f7bcc0','#ec9ca6',{r:-8,sw:0}).e(116,22,13,36,'#f6efe6','#d9cdbf',{r:10}).e(116,24,7,26,'#f7bcc0','#ec9ca6',{r:10,sw:0});}})},
+eichhoernchen:{n:'Eichhörnchen mit Eichel',soft:1,s:()=>tierS({body:['#e9a26a','#c9773e'],head:['#efb078','#d0824a'],belly:['#fdf1dc','#ecd2a8'],scarf:['#d85a5a','#b03a3f'],leaf:['#f8d3a8','#ee9f66'],hold:'acorn',whisk:1,nose:'#7a4a36',nose2:'#4a3026',paw:'#f3c9a0',paw2:'#d9a070',
+ tail:s=>{s.p('M120 176Q198 184 190 110Q186 56 150 36Q142 62 158 88Q170 130 126 142Z','#e9a26a','#bd6a34');s.p('M152 40Q186 64 188 108Q176 90 160 84Q146 64 152 40Z','#f6c89a','#e0955a',{sw:.6});},
+ ears:s=>{s.p('M40 66L34 28L66 48Z','#e9a26a','#c9773e').p('M42 58L40 38L58 49Z','#f7bcc0','#ec9ca6',{sw:0}).p('M112 44L128 14L144 52Z','#e9a26a','#c9773e').p('M117 44L128 24L137 48Z','#f7bcc0','#ec9ca6',{sw:0});s.l('M34 30l-4 -10M128 16l2 -10','#c9773e',2);},
+ face:s=>{s.e(92,92,22,15,'#fdf1dc','#ecd2a8',{sw:.6});}})},
+baer:{n:'Bär mit Blatt',soft:1,s:()=>tierS({body:['#c99a6e','#a27042'],head:['#d3a77c','#ab7a4c'],belly:['#ecd2ae','#d3b085'],scarf:['#e56a6a','#c24448'],leaf:['#f6c27a','#e5804a'],hold:'maple',nose:'#4a3228',nose2:'#2d1d17',paw:'#d3a77c',paw2:'#ab7a4c',
+ tail:s=>{s.e(132,168,9,9,'#c99a6e','#a27042');},
+ ears:s=>{s.e(52,56,17,17,'#c99a6e','#a27042').e(52,57,9,9,'#e9c9a4','#d3a77c',{sw:0}).e(128,52,17,17,'#c99a6e','#a27042').e(128,53,9,9,'#e9c9a4','#d3a77c',{sw:0});},
+ face:s=>{s.e(92,92,19,14,'#f3dcbb','#dcbd90',{sw:.6});}})},
+katze:{n:'Katze mit Blatt',soft:1,s:()=>tierS({body:['#f3b27a','#d8864a'],head:['#f7bd88','#dc8e52'],belly:['#fff3e3','#f0d5b3'],scarf:['#79b6a8','#4f968a'],leaf:['#f8d3a8','#ee9f66'],hold:'maple',whisk:1,nose:'#f08aa0',nose2:'#d86480',
+ tail:s=>{s.p('M126 172Q186 178 184 128Q184 96 166 92Q166 120 150 140Q136 152 118 152Z','#f3b27a','#d8864a');s.l('M178 112l-10 2M180 126l-12 0M176 140l-12 -4','#c4733a',2);},
+ ears:s=>{s.p('M44 70L38 26L76 50Z','#f3b27a','#d8864a').p('M46 62L43 38L64 52Z','#f7bcc0','#ec9ca6',{sw:0}).p('M110 48L142 24L138 66Z','#f3b27a','#d8864a').p('M116 48L134 34L132 58Z','#f7bcc0','#ec9ca6',{sw:0});},
+ top:s=>{s.l('M80 46l2 12M90 44v12M100 46l-2 12','#c4733a',2);s.l('M50 82l10 2M48 92l11 -1','#c4733a',1.8);}})},
+fuchs_sitz:{n:'Fuchs mit Blatt',soft:1,s:()=>tierS({body:['#f29a4a','#d4682c'],head:['#f6a458','#d8722f'],belly:['#fff4e6','#f0d9bc'],scarf:['#7fa6c9','#5381a8'],leaf:['#f8d3a8','#ee9f66'],whisk:1,nose:'#4a3026',nose2:'#2d1d17',paw:'#5a3a2e',paw2:'#3d2a22',
+ tail:s=>{s.p('M120 176Q196 184 188 114Q184 70 154 52Q148 82 160 104Q166 140 126 144Z','#f29a4a','#cf5f26').p('M152 56Q178 72 186 100Q172 92 160 100Q150 84 152 56Z','#fff7ee','#efe0d0',{sw:.6});},
+ ears:s=>{s.p('M40 62L34 18L72 46Z','#f29a4a','#d4682c').p('M42 54L40 30L60 46Z','#4a3026','#2d1d17',{sw:0}).p('M108 46L142 18L138 64Z','#f29a4a','#d4682c').p('M114 46L136 28L134 56Z','#4a3026','#2d1d17',{sw:0});},
+ face:s=>{s.p('M52 84Q92 120 132 84Q120 100 92 108Q64 100 52 84Z','#fff7ee','#efe0d0',{sw:.6});}})}
+});
+
 const DKBUB=[['rund','Super!'],['wolke','Toll gemacht!'],['stern','Klasse!'],['rund','Du schaffst das!'],['wolke','Weiter so!'],['stern','Bravo!'],['rund','Prima!'],['wolke','Ich glaub an dich!'],['comic','BOOM!'],['neon','Level up!'],['sticker','Easy!'],['eckig','Das packst du!'],['comic','Mega!'],['neon','Nice!'],['sticker','Epic!'],['eckig','Brain on!'],['comic','Krass!'],['neon','Check!'],['sticker','Boss!'],['eckig','Alles klar?'],['neon','Du rockst!'],['sticker','Respekt!'],['comic','Wow!'],['eckig','Gut gemacht!'],['neon','Weiter so!'],['sticker','Top!']];
 let dkMode='color';
 function dkNew(key){return{type:'deko',art:key,m:dkMode,w:String(key).startsWith('bub|')?190:140};}
 function dkPalette(){const g=$('#deko');
  g.style.gridTemplateColumns='repeat(2,minmax(0,1fr))';
  const th=(key,name)=>`<div draggable="true" data-m="${key.replace(/"/g,'&quot;')}" title="${name}" style="text-align:center;cursor:grab;user-select:none;border:1px solid var(--line);border-radius:6px;padding:3px;background:#fff;color:#000">${dkSvg({art:key,m:dkMode,txt:null})}<div style="font:11px Arial;margin-top:1px">${name}</div></div>`;
- g.innerHTML=`<div style="grid-column:1/-1;display:flex;gap:6px"><button data-dm="color" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='color'?'on':''}">🎨 Farbig</button><button data-dm="line" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='line'?'on':''}">✏️ Umriss</button></div>`+Object.keys(ART).map(k=>th(k,ART[k].n)).join('')+`<div style="grid-column:1/-1;font-size:12px;color:var(--mut);margin-top:4px">Sprechblasen</div>`+DKBUB.map(b=>th('bub|'+b[0]+'|'+b[1],b[1])).join('');
+ g.innerHTML=`<div style="grid-column:1/-1;display:flex;gap:6px"><button data-dm="color" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='color'?'on':''}">🎨 Farbig</button><button data-dm="line" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='line'?'on':''}">✏️ Umriss</button><button data-dm="wc" style="flex:1;font-size:12px;padding:5px 2px" class="${dkMode==='wc'?'on':''}">💧 Aquarell</button></div>`+Object.keys(ART).map(k=>th(k,ART[k].n)).join('')+`<div style="grid-column:1/-1;font-size:12px;color:var(--mut);margin-top:4px">Sprechblasen</div>`+DKBUB.map(b=>th('bub|'+b[0]+'|'+b[1],b[1])).join('');
  g.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{dkMode=b.dataset.dm;dkPalette();});
  g.querySelectorAll('[data-m]').forEach(d=>{d.ondragstart=e=>e.dataTransfer.setData('text/plain','deko:'+d.dataset.m);d.onclick=()=>addX(dkNew(d.dataset.m));});}
 function renderDk(){const g=$('#g-dk'),it=items.find(i=>i.id===sel&&i.type==='deko'&&i.art);if(!g)return;
  if(!it){g.innerHTML='';g.style.display='none';return;}g.style.display='';
  const isB=String(it.art).startsWith('bub|');
- g.innerHTML=`<label>Darstellung<select data-dk="m"><option value="color"${it.m!=='line'?' selected':''}>farbig</option><option value="line"${it.m==='line'?' selected':''}>nur Umriss (zum Ausmalen)</option></select></label><label class="ck"><input type="checkbox" data-dk="flip"${it.flip?' checked':''}> ${isB?'Pfeil auf die andere Seite':'spiegeln'}</label><label>Drehung: ${it.rot||0}°<input type="range" data-dk="rot" min="-180" max="180" step="5" value="${it.rot||0}"></label>`+(isB?`<label>Text der Sprechblase<input type="text" data-dk="txt" maxlength="40" value="${escA(it.txt!=null?it.txt:it.art.split('|').slice(2).join('|'))}"></label>`:'');}
+ g.innerHTML=`<label>Darstellung<select data-dk="m"><option value="color"${it.m!=='line'?' selected':''}>farbig</option><option value="wc"${it.m==='wc'?' selected':''}>Aquarell (weich)</option><option value="line"${it.m==='line'?' selected':''}>nur Umriss (zum Ausmalen)</option></select></label><label class="ck"><input type="checkbox" data-dk="flip"${it.flip?' checked':''}> ${isB?'Pfeil auf die andere Seite':'spiegeln'}</label><label>Drehung: ${it.rot||0}°<input type="range" data-dk="rot" min="-180" max="180" step="5" value="${it.rot||0}"></label>`+(isB?`<label>Text der Sprechblase<input type="text" data-dk="txt" maxlength="40" value="${escA(it.txt!=null?it.txt:it.art.split('|').slice(2).join('|'))}"></label>`:'');}
 $('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.dk;if(!k)return;const it=items.find(i=>i.id===sel&&i.type==='deko'&&i.art);if(!it)return;rec('dk'+k);it[k]=t.type==='checkbox'?t.checked:(k==='rot'?+t.value:t.value);render();if(k==='rot')renderDk();});
 
 dkPalette();
