@@ -239,6 +239,7 @@ body.pv .pgb{display:none}
 <div class="grp" id="g-st" data-cats="st"></div>
 <div class="grp" id="g-rd" data-cats="rd"></div>
 <div class="grp" id="g-as" data-cats="as"></div>
+<div class="grp" id="g-vr" data-cats="as"></div>
 <div class="grp" id="g-kr" data-cats="kr"></div>
 <div class="grp" id="g-tb" data-cats="tx" style="display:none"></div>
 <div class="grp" id="g-mu" data-cats="mu"></div>
@@ -1073,11 +1074,11 @@ $('#rp').addEventListener('input',raHandler);$('#rp').addEventListener('change',
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ra-act]');if(!b)return;const it=items.find(i=>i.id===sel&&(i.type==='rk'||i.type==='rw'));if(!it)return;rec();raRegen(it);render();renderProps();});
 
 /* ===== Teiler: Teilbarkeit, Primfaktoren, ggT, kgV, Sieb, Sachaufgaben ===== */
-const MDT=['mm','mv','ms','kf','ks'];
+const MDT=['mm','mv','ms','kf','ks'],VRT=['vr','vk'];
 const PRT=['prd','prg','prw','prs','prk','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
 const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const PNT=['pnk','pnb','pnz'];const SST=['ssd','ssm','ssh','ssg','ssl','ssb'];const LWT=['lw'];const CIT=['cib','ciu','cia','cit','cis','cir','cik','cix','cil','cig','cic'];const ZRT=['zr'];const K4T=['k4b','k4w','k4p','k4z','k4y','k4k','k4g','k4x','k4f'];const MBT=['mbb','mbw','mbz','mbd','mbs','mbm'];const ZNT=['znb','zni','znq','znt','znk','znr'];
-const TLT=[...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...LWT,...ZRT,...POT,...PRT,...MDT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
+const TLT=[...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...LWT,...ZRT,...POT,...PRT,...MDT,...VRT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
 const TLN={tdv:'Teiler ∣ / ∤',tpr:'Primzahlen nennen',ttr:'Teilbarkeitsregeln',tzw:'Zahlen finden',tpz:'Primfaktorzerlegung',tsv:'Sieb des Eratosthenes',ttm:'Teilermengen',tgg:'ggT',tkm:'kgV',tsa:'Sachaufgaben'};
 const TLD={tdv:{n:16,lv:1,co:4},tpr:{mx:20,ps:2},ttr:{n:5,dv:'2,3,5,9,10',lv:2,mk:'kreuz'},tzw:{n:3,dv:'3,5,9',zk:3,lv:2},tpz:{n:12,co:4,lv:2,pot:false},tsv:{mx:100,cs:36,ins:false},ttm:{n:6,lv:1,bsp:false},tgg:{n:3,gm:'tm',nz:2,lv:1},tkm:{n:3,gm:'vm',nz:2,lv:1},tsa:{n:3,ty:'beide',rl:2,an:true}};
 const tgcd=(a,b)=>b?tgcd(b,a%b):a,tlcm=(a,b)=>a/tgcd(a,b)*b;
@@ -1120,7 +1121,7 @@ const TLGGT=[
  ()=>{const [a,b]=tpick([[24,36],[18,30],[20,45],[32,48],[28,42],[15,25]]),g=tgcd(a,b);
   return [`Lea hat ${a} Äpfel und ${b} Birnen. Sie möchte möglichst viele gleiche Obstteller herrichten, ohne dass Obst übrig bleibt. Wie viele Teller kann sie höchstens machen? Was liegt auf jedem Teller?`,`ggT(${a}, ${b}) = ${g}. Sie kann ${g} Teller machen; auf jedem liegen ${a/g} Äpfel und ${b/g} Birnen.`];}
 ];
-function tlGen(it){if(it.type==='lw')return lwGen(it);if(ZNT.includes(it.type))return znGen(it);if(MBT.includes(it.type))return mbGen(it);if(K4T.includes(it.type))return k4Gen(it);if(CIT.includes(it.type))return ciGen(it);if(PNT.includes(it.type))return pnGen(it);if(SST.includes(it.type))return ssTGen(it);if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
+function tlGen(it){if(it.type==='lw')return lwGen(it);if(ZNT.includes(it.type))return znGen(it);if(MBT.includes(it.type))return mbGen(it);if(K4T.includes(it.type))return k4Gen(it);if(CIT.includes(it.type))return ciGen(it);if(PNT.includes(it.type))return pnGen(it);if(SST.includes(it.type))return ssTGen(it);if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(VRT.includes(it.type))return vrGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
  if(k==='tdv'){const o=own.filter(l=>l.length>=2);
   if(o.length)it.d=o.map(l=>[l[0],l[1]]);
   else{const mx=[0,100,1000,99999][lv];it.d=tuniq(n,()=>{const a=tpick(lv===3?[2,3,4,5,6,8,9,10,11,12]:[2,3,4,5,6,7,8,9,10,12,15,20,25]);let b;
@@ -1148,7 +1149,7 @@ const tlS=it=>it.show||SOL,tlSv=(it,s)=>tlS(it)?`<span class="sv">${s}</span>`:'
 const tlRow=(it,l,s,br)=>`<div class="tlrw"><span>${l}</span><span class="tlln" style="flex:1">${tlSv(it,s)}</span>${br?'<span>}</span>':''}</div>`;
 const tlGrid=(c,h)=>`<div style="display:grid;grid-template-columns:repeat(${c},1fr);gap:.9em 1.4em;align-items:start">${h}</div>`;
 const TLL='abcdefghijkl';
-function tlBlock(it){NUMIT=it;if(it.type==='lw')return lwBlock(it);if(ZNT.includes(it.type))return znBlock(it);if(MBT.includes(it.type))return mbBlock(it);if(K4T.includes(it.type))return k4Block(it);if(CIT.includes(it.type))return ciBlock(it);if(PNT.includes(it.type))return pnBlock(it);if(SST.includes(it.type))return ssTBlock(it);if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
+function tlBlock(it){NUMIT=it;if(it.type==='lw')return lwBlock(it);if(ZNT.includes(it.type))return znBlock(it);if(MBT.includes(it.type))return mbBlock(it);if(K4T.includes(it.type))return k4Block(it);if(CIT.includes(it.type))return ciBlock(it);if(PNT.includes(it.type))return pnBlock(it);if(SST.includes(it.type))return ssTBlock(it);if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(VRT.includes(it.type))return vrBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
  if(k==='tdv'){h=tlGrid(+it.co||4,it.d.map(([a,b])=>`<div style="white-space:nowrap">${tfm(a)} <span class="tlc">${tlSv(it,b%a===0?'∣':'∤')}</span> ${tfm(b)}</div>`).join(''));}
  else if(k==='tpr'){const mx=+it.mx||20,pr=[];for(let i=2;i<=mx;i++)if(tisP(i))pr.push(i);
   h=`<div>Nenne alle Primzahlen bis ${mx}:</div>`+Array.from({length:+it.ps||2},()=>'<div class="tlln" style="display:block;min-height:1.9em"></div>').join('')+(s?`<div class="sv" style="margin-top:.3em">${pr.join(', ')}</div>`:'');}
@@ -1184,7 +1185,7 @@ const tlSet=a=>a.join(', ');
  ['ttm',T(50,26,'T(12)={…}',13)],['tgg',T(50,26,'ggT(a, b)',14)],['tkm',T(50,26,'kgV(a, b)',14)],['tsa',T(50,16,'Jeden 3. Tag …',10)+T(50,30,'Wann wieder?',10)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 const TLRG=['n','lv','dv','gm','nz','ty','zk','own'];
-function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!PNT.includes(i.type)&&!SST.includes(i.type)&&!CIT.includes(i.type)&&!ZNT.includes(i.type)&&!MBT.includes(i.type)&&!K4T.includes(i.type)&&i.type!=='lw'&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
+function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!VRT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!PNT.includes(i.type)&&!SST.includes(i.type)&&!CIT.includes(i.type)&&!ZNT.includes(i.type)&&!MBT.includes(i.type)&&!K4T.includes(i.type)&&i.type!=='lw'&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Eine Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern die Aufgabe auf dem Blatt markieren.</div>';return;}
  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-tl="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-tl="${f}"${it[f]?' checked':''}> ${t}</label>`;
  const lvs=o=>`<label>Zahlenraum${sl('lv',o)}</label>`;
@@ -1304,6 +1305,42 @@ const mdHandler=e=>{const t=e.target,k=t.dataset.md;if(!k)return;const it=items.
 $('#rp').addEventListener('input',mdHandler);$('#rp').addEventListener('change',mdHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-md-act]');if(!b)return;const it=items.find(i=>i.id===sel&&MDT.includes(i.type));if(!it)return;rec();
  if(b.dataset.mdAct==='fw'){it.kc=Math.floor(714/((+it.ks||5)*MMPX));}mdGen(it);render();renderProps();});
+/* ===== Vorteilhaft rechnen ===== */
+Object.assign(TLN,{vr:'Vorteilhaft rechnen',vk:'Klammern zuerst berechnen'});
+Object.assign(TLD,{vr:{n:6,sm:'m',zr:2,co:2,rl:1,lab:'a'},vk:{n:4,gr:3,zr:1,co:2,rl:1,lab:'a'}});
+function vrGen(it){const n=+it.n||4,zr=+it.zr||2,out=[];
+ const pair=()=>{let T,a;if(zr===1){T=tpick([10,10,20]);a=kri(1,T-1);}else if(zr===2){T=tpick([50,100,100,60,70,80,90]);a=kri(2,T-2);}else{T=100*kri(3,10);a=kri(101,T-101);}return [a,T-a];};
+ const sing=()=>zr===1?kri(1,9):zr===2?kri(11,49):kri(101,499);
+ for(let i=0;i<n;i++){
+  if(it.type==='vk'){const g=Math.max(2,Math.min(4,+it.gr||3)),G=[];for(let j=0;j<g;j++){const m=kri(2,3);G.push(Array.from({length:m},()=>zr===1?kri(1,9):zr===2?kri(10,40):kri(100,400)));}
+   const sm=G.map(x=>x.reduce((p,q)=>p+q,0));out.push({e:G.map(x=>'('+x.map(tfm).join(' + ')+')').join(' + '),s:sm.map(tfm).join(' + ')+' = '+tfm(sm.reduce((p,q)=>p+q,0))});continue;}
+  const k=it.sm==='m'?kri(4,6):(+it.sm||4),np=Math.floor(k/2),P=[],el=[];
+  for(let j=0;j<np;j++){const [a,b]=pair();P.push([a,b]);el.push({v:a,g:j},{v:b,g:j});}
+  if(k%2)el.push({v:sing(),g:-1});
+  let sh,tr=0;do{sh=tshuf(el);tr++;}while(tr<40&&sh.some((x,j)=>j&&x.g>=0&&sh[j-1].g===x.g));
+  const ord=[];sh.forEach(x=>{if(x.g>=0&&!ord.includes(x.g))ord.push(x.g);});
+  const ex=sh.filter(x=>x.g<0).map(x=>x.v),sums=ord.map(g=>P[g][0]+P[g][1]),tot=sums.reduce((p,q)=>p+q,0)+ex.reduce((p,q)=>p+q,0);
+  const find=g=>sh.filter(x=>x.g===g).map(x=>x.v);
+  out.push({e:sh.map(x=>tfm(x.v)).join(' + '),s:'= '+ord.map(g=>'('+find(g).map(tfm).join(' + ')+')').concat(ex.map(tfm)).join(' + ')+' = '+sums.concat(ex).map(tfm).join(' + ')+' = '+tfm(tot)});}
+ it.d=out;}
+function vrBlock(it){const s=tlS(it),rl=+it.rl||0;
+ return `<div class="tlx" style="${kst(it)}">`+tlGrid(+it.co||1,(it.d||[]).map((t,i)=>{const sv=it.type==='vk'?'= '+t.s:t.s;
+  return `<div><b>${nlab(it,i,'a')}</b> ${t.e} =${rl?Array.from({length:rl},(_,j)=>`<div class="tlln" style="display:block;min-height:1.7em;min-width:0">${j===0&&s?`<span class="sv">${it.type==='vk'?t.s:t.s.replace(/^= /,'')}</span>`:''}</div>`).join(''):(s?` <span class="sv">${it.type==='vk'?t.s:t.s.replace(/^= /,'')}</span>`:'')}</div>`;}).join(''))+'</div>';}
+function renderVr(){const g=$('#g-vr');if(!g)return;const it=items.find(i=>i.id===sel&&VRT.includes(i.type));
+ if(!it){g.innerHTML='';return;}
+ const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-vr="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-vr="${f}"${it[f]?' checked':''}> ${t}</label>`;
+ let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div><label>Anzahl der Aufgaben${sl('n',tN([2,3,4,5,6,8,10,12]))}</label>`;
+ if(k==='vr')H+=`<label>Anzahl der Summanden${sl('sm',[[4,'4'],[5,'5'],[6,'6'],[7,'7'],['m','gemischt (4 bis 6)']])}</label>`;
+ else H+=`<label>Anzahl der Klammern${sl('gr',tN([2,3,4]))}</label>`;
+ H+=`<label>Zahlenraum${sl('zr',[[1,'bis 20 (Zehner ergänzen)'],[2,'bis 100 (auf 50 / 100 ergänzen)'],[3,'bis 1 000 (Hunderter)']])}</label><label>Aufgaben nebeneinander${sl('co',[[1,'1'],[2,'2'],[3,'3']])}</label><label>Nummerierung${sl('lab',[['a','a) b) c)'],['n','1) 2) 3)'],['none','keine']])}</label><label>Rechenzeilen${sl('rl',tN([0,1,2,3]))}</label>`+ck('show','Lösung zeigen')+'<button data-vr-act="mix">Neu mischen</button>';
+ g.innerHTML=H;}
+$('#rp').addEventListener('change',e=>{const t=e.target,k=t.dataset.vr;if(!k)return;const it=items.find(i=>i.id===sel&&VRT.includes(i.type));if(!it)return;rec('vr'+k);
+ it[k]=t.type==='checkbox'?t.checked:(['lab'].includes(k)?t.value:(k==='sm'&&t.value==='m'?'m':+t.value));if(['n','sm','zr','gr'].includes(k))vrGen(it);render();});
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-vr-act]');if(!b)return;const it=items.find(i=>i.id===sel&&VRT.includes(i.type));if(!it)return;rec();vrGen(it);render();});
+(function(){const P=document.querySelector('.catp[data-c="as"]');if(!P)return;
+ const T=(x,y,t,z)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${z||11}" fill="#000">${t}</text>`;
+ [['vr',T(50,15,'23+24+22+26',11)+T(50,32,'(23+27)+(24+26)',10)],['vk',T(50,15,'(3+4)+(2+3+1)',11)+T(50,32,'= 7 + 6',11)]].forEach(([t,sv])=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.style.marginTop='8px';d.innerHTML=`<svg viewBox="0 0 100 40">${sv}</svg><span>${TLN[t]}</span>`;
+  d.ondragstart=e=>e.dataTransfer.setData('text/plain',t);d.onclick=()=>{add(t,50,120);};P.appendChild(d);});})();
 /* ===== Prozentrechnung ===== */
 Object.assign(TLD,{prr:{n:6,fm:'tab',ka:'alle',lv:1,un:'',co:2},prd:{n:2,fm:'quad',md:'ab',lv:1,sz:140,mk:false},prg:{n:1,dg:'beide',md:'dar',lv:1,sk:true,nc:4},prw:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prs:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prk:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prm:{n:5,sz:'alle',md:'netto',lv:1,mk:false},prz:{n:5,md:'term',lv:1}});
 Object.assign(TLN,{prr:'Rechnungen (ohne Text)',prd:'Prozente darstellen',prg:'Diagramme (Kreis/Streifen)',prw:'Prozentwert berechnen',prs:'Prozentsatz berechnen',prk:'Grundwert berechnen',prm:'Mehrwertsteuer',prz:'Begriffe zuordnen'});
@@ -4317,7 +4354,7 @@ function cmpBlock(it){
 }
 let cat=null;
 const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',zn:'Zahlenmengen',mb:'Maßstab',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
-function catOf(it){return TLT.includes(it.type)?(PNT.includes(it.type)?'pn':SST.includes(it.type)?'ss':CIT.includes(it.type)?'ci':ZNT.includes(it.type)?'zn':MBT.includes(it.type)?'mb':K4T.includes(it.type)?'ko':it.type==='lw'?'ra':it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':PRT.includes(it.type)?'pc':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
+function catOf(it){return TLT.includes(it.type)?(VRT.includes(it.type)?'as':PNT.includes(it.type)?'pn':SST.includes(it.type)?'ss':CIT.includes(it.type)?'ci':ZNT.includes(it.type)?'zn':MBT.includes(it.type)?'mb':K4T.includes(it.type)?'ko':it.type==='lw'?'ra':it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':PRT.includes(it.type)?'pc':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
 (function(){const q=document.getElementById('lsq');if(!q)return;const nz=t=>String(t).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
  window.lsFilter=function(){const v=nz(q.value),cats=document.querySelectorAll('#left .cat');let n=0;
   cats.forEach(b=>{const p=document.querySelector('#left .catp[data-c="'+b.dataset.c+'"]'),pals=p?[...p.querySelectorAll('.pal')]:[];
@@ -4352,7 +4389,8 @@ function renderLy(){const g=$('#g-ly');if(!g)return;const it=items.find(i=>i.id=
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ly-act]');if(!b)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();const a=b.dataset.lyAct;it.z=a==='bg'?-1:a==='fg'?10:0;render();renderLy();});
 $('#rp').addEventListener('input',e=>{const t=e.target;if(t.dataset.ly!=='op')return;const it=items.find(i=>i.id===sel);if(!it)return;rec('lyop');it.op=+t.value/100;const v=$('#lyv');if(v)v.textContent=(100-t.value)+' %';const el=sheet.querySelector('[data-id="'+it.id+'"]');if(el)el.style.opacity=it.op;});
 function renderProps(){
- const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderMd();renderPr();renderPo();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderK4();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
+ const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderVr();renderMd();renderPr();renderPo();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderK4();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
+ {const _v=items.find(i=>i.id===sel);if(_v&&VRT.includes(_v.type))return;}
  const T=ptarget();if(!T)return;const it=T.o;
  const ck=(k,txt)=>`<label class="ck"><input type="checkbox" data-p="${k}"${it[k]?' checked':''}> ${txt}</label>`;
  const tx=(k,txt)=>`<label>${txt}<input type="text" inputmode="decimal" data-p="${k}" value="${escA(it[k])}"></label>`;
