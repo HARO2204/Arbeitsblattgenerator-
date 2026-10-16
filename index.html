@@ -115,7 +115,7 @@ body.pv .pgb{display:none}
 <div class="bar no-print">
 <strong>Arbeitsblatt-Generator</strong>
 <label><input type="checkbox" id="hn"> Name</label><label><input type="checkbox" id="hdt"> Datum</label><label><input type="checkbox" id="hpg"> Seite</label><label><input type="checkbox" id="hu"> Unterschrift</label>
-<label><input type="checkbox" id="rahm"> Rahmen</label><label title="Farbe des Rahmens"><input type="color" id="rahmc" value="#000000" style="width:30px;height:24px;padding:0;border:1px solid #bbb;vertical-align:middle"></label><label title="Fußzeile auf jeder Seite: links | Mitte | Schuljahr">Fußzeile <select id="ft"><option value="0">keine</option><option value="1">AHS | MS1 | Schuljahr</option><option value="2">Standard | MS1 | Schuljahr</option><option value="3">M1 | MS1 | Schuljahr</option><option value="4">frei wählbar …</option></select></label><button id="hfb" title="Kopfzeile und Fußzeile frei gestalten">✏️ Kopf-/Fußzeile</button><label title="Das Blatt wächst automatisch, wenn mehr Platz gebraucht wird. Hier kann eine Mindestzahl an Seiten festgelegt werden.">Seiten ab <select id="npg"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+<label><input type="checkbox" id="rahm"> Rahmen</label><label title="Wenn du eine Aufgabe aus der linken Spalte aufs Blatt ziehst, entsteht sie automatisch mit Nummer und Angabe (sobald das Blatt schon nummerierte Aufgaben enthält)"><input type="checkbox" id="autot" checked> Aufgabe automatisch nummerieren</label><label title="Farbe des Rahmens"><input type="color" id="rahmc" value="#000000" style="width:30px;height:24px;padding:0;border:1px solid #bbb;vertical-align:middle"></label><label title="Fußzeile auf jeder Seite: links | Mitte | Schuljahr">Fußzeile <select id="ft"><option value="0">keine</option><option value="1">AHS | MS1 | Schuljahr</option><option value="2">Standard | MS1 | Schuljahr</option><option value="3">M1 | MS1 | Schuljahr</option><option value="4">frei wählbar …</option></select></label><button id="hfb" title="Kopfzeile und Fußzeile frei gestalten">✏️ Kopf-/Fußzeile</button><label title="Das Blatt wächst automatisch, wenn mehr Platz gebraucht wird. Hier kann eine Mindestzahl an Seiten festgelegt werden.">Seiten ab <select id="npg"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
 <label><input type="checkbox" id="solpdf" checked> Lösungsblatt im PDF</label><button id="symb" type="button" title="Mathematische Symbole und griechische Buchstaben einfügen">Σ Symbole</button>
 <span class="sp"></span>
 <button id="undo" title="Rückgängig (Strg+Z)" disabled>↶ Rückgängig</button><button id="redo" title="Wiederholen (Strg+Y)" disabled>↷ Wiederholen</button><button id="del">Löschen</button><button id="clr">Blatt leeren</button><button id="pgo" title="Verschiebt Aufgaben, die über einen Seitenumbruch ragen, auf die nächste Seite">Seitenumbrüche ordnen</button><button id="qadd" title="Eine weitere Aufgabe unten am Blatt anfügen (Nummerierung läuft weiter, Tabelle wächst mit)">＋ Aufgabe anfügen</button><button id="pv">Vorschau</button><button id="pdfb">PDF speichern</button><button class="pri" id="prn">Drucken</button>
@@ -1414,6 +1414,36 @@ function doSwap(t){const g=SWAPG;SWAPG=null;swBanner(false);const any=items.find
  if(dl)items.forEach(i=>{if(i.gid!==g&&i.type!=='frm'&&i.y>=oldB-4)i.y+=dl;});
  rebuildFrames();render();select(nit.id);
  toast(hd?'Aufgabe getauscht – die Angabe wurde mitgetauscht.':'Aufgabe getauscht – die Angabe bitte selbst anpassen (für diese Aufgabe gibt es keine Standard-Angabe).');}
+
+/* ===== Aufgabe aufs Blatt ziehen: automatisch mit Nummer und Angabe ===== */
+function autoTask(t,dy){const cb=document.getElementById('autot');if(!cb||!cb.checked)return false;
+ if(['text','head','n','a'].includes(t)||String(t).startsWith('deko'))return false;
+ const H=i=>{const e=elOf(i.id);return e?e.offsetHeight:0;},G=[];
+ items.forEach(i=>{if(!i.gid||i.type==='frm'||i.type==='ckf')return;let g=G.find(x=>x.gid===i.gid);if(!g){g={gid:i.gid,y:1e9,b:0,mem:[]};G.push(g);}g.mem.push(i);g.y=Math.min(g.y,i.y);g.b=Math.max(g.b,i.y+H(i));});
+ G.forEach(g=>{g.ck=items.some(i=>i.type==='ckf'&&i.y>=g.y-45&&i.y<=g.y+2);g.tx=g.mem.find(i=>i.type==='text');g.nm=g.mem.find(i=>i.type==='num');});
+ G.sort((a,b)=>a.y-b.y);
+ const refs=G.filter(g=>!g.ck&&g.tx&&g.nm&&g.mem.length>=3);if(!refs.length)return false;
+ const ref=refs[refs.length-1],tx0=ref.tx,nm0=ref.nm,ct0=ref.mem.filter(i=>i!==tx0&&i!==nm0).sort((a,b)=>a.y-b.y)[0];
+ const gap=(()=>{const k=G.indexOf(ref);return k>0?Math.max(14,Math.min(60,Math.round(ref.y-G[k-1].b))):26;})();
+ const lastB=Math.max(...G.map(g=>g.b)),ins=G.find(g=>(g.y+g.b)/2>dy),newTop=ins?ins.y:Math.round(lastB+gap),gd=uid++;
+ rec();const R0=rec;rec=()=>{};
+ try{
+  const cl=(o,y)=>{const c=JSON.parse(JSON.stringify(o));c.id=uid++;c.gid=gd;c.y=Math.round(y);return c;};
+  const tx=cl(tx0,newTop+(tx0.y-ref.y)),nm=cl(nm0,newTop+(nm0.y-ref.y)),ent=AST.flatMap(x=>x[1]).find(x=>x[0]===t||String(x[0]).startsWith(t+':'));
+  tx.text=ent?ent[2]:'Aufgabe hier eingeben …';items.push(tx,nm);render();
+  add(t,ct0.x,Math.round(newTop+(ct0.y-ref.y)));const nit=items[items.length-1];
+  nit.gid=gd;nit.x=ct0.x;if(ct0.mw)nit.mw=ct0.mw;nit.w=Math.min(nit.w,794-ct0.x-40);if('show' in nit)nit.show=false;if(ct0.fs&&nit.fs>ct0.fs)nit.fs=ct0.fs;
+  render();const dh=H(tx)-H(tx0);if(dh)nit.y+=dh;render();
+  const mem=[tx,nm,nit],bottom=Math.max(...mem.map(i=>i.y+H(i))),bh=Math.round(bottom-newTop);
+  if(ins){items.forEach(i=>{if(i.gid!==gd&&i.type!=='frm'&&i.y>=newTop-1)i.y+=bh+gap;});}
+  else{const fr=items.find(f=>f.type==='frm'),hh=fr?(fr.hh||34)+6:6,pgEnd=(Math.floor(newTop/PH)+1)*PH-40;
+   if(bottom>pgEnd&&bh<PH-120){const tg=(Math.floor(newTop/PH)+1)*PH+TOPM+hh,d=tg-newTop;mem.forEach(i=>{i.y+=d;});}}
+  const frs=items.filter(f=>f.type==='frm');if(frs.length){let d0=-5;frs.forEach(f=>((f.fa&&f.fa.rows)||[]).forEach(r=>{if(r.id===tx0.id)d0=r.d;}));frs[0].fa=frs[0].fa||{rows:[]};frs[0].fa.rows.push({id:tx.id,d:d0});}
+  {const ix=[];items.forEach((i,k)=>{if(i.type==='num'&&i.kind==='n')ix.push(k);});const nu=ix.map(k=>items[k]).sort((x,y)=>x.y-y.y);ix.forEach((k,j)=>{items[k]=nu[j];});}
+  rebuildFrames();render();select(nit.id);
+  toast(ent?'Aufgabe hinzugefügt – mit Nummer und Angabe.':'Aufgabe hinzugefügt – die Angabe bitte selbst eintragen.');
+ }finally{rec=R0;}
+ return true;}
 /* ===== Prozentrechnung ===== */
 Object.assign(TLD,{prr:{n:6,fm:'tab',ka:'alle',lv:1,un:'',co:2},prd:{n:2,fm:'quad',md:'ab',lv:1,sz:140,mk:false},prg:{n:1,dg:'beide',md:'dar',lv:1,sk:true,nc:4},prw:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prs:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prk:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prm:{n:5,sz:'alle',md:'netto',lv:1,mk:false},prz:{n:5,md:'term',lv:1}});
 Object.assign(TLN,{prr:'Rechnungen (ohne Text)',prd:'Prozente darstellen',prg:'Diagramme (Kreis/Streifen)',prw:'Prozentwert berechnen',prs:'Prozentsatz berechnen',prk:'Grundwert berechnen',prm:'Mehrwertsteuer',prz:'Begriffe zuordnen'});
@@ -4578,7 +4608,7 @@ $('#pdfb').onclick=makePdf;$('#pvp').onclick=makePdf;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('pv'))pvOn(false);});
 sheet.ondragover=e=>e.preventDefault();
 sheet.ondrop=e=>{e.preventDefault();const t=e.dataTransfer.getData('text/plain');if(t.startsWith('deko:')){const r=sheet.getBoundingClientRect();const o=dkNew(t.slice(5));addX(o,e.clientX-r.left-o.w/2,e.clientY-r.top-o.w/2);return;}if(!t||!(t in SH||['text','head','n','a','zs','wk','cmp','nb','st','rd','as','mx','py','mq','um','tb','sa','sz','sp','sk','sv','rh','rt','rs','at','kt','ob','ke','kz','kx','ke4','kz4','bd','be','bz','rk','rw'].includes(t)||TLT.includes(t)||/^(zr|fk):/.test(t)||/^zs:/.test(t)||/^k[bn]_/.test(t)))return;
- const r=sheet.getBoundingClientRect(),sm=['text','head','n','a'].includes(t),w=t==='text'?320:t==='head'?0:sm?40:def.w;add(t,e.clientX-r.left-w/2,e.clientY-r.top-(sm?20:w*.4));};
+ const r=sheet.getBoundingClientRect(),sm=['text','head','n','a'].includes(t),w=t==='text'?320:t==='head'?0:sm?40:def.w;if(autoTask(t,e.clientY-r.top))return;add(t,e.clientX-r.left-w/2,e.clientY-r.top-(sm?20:w*.4));};
 
 /* Vorgefertigte Angaben */
 const PRE={
