@@ -70,7 +70,7 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 .nb table{width:100%;border-collapse:collapse;table-layout:fixed}.nb th,.nb td{border:1.6px solid #000;text-align:center;padding:.25em .3em;height:1.9em;font-weight:inherit;white-space:nowrap}.nb th{font-weight:700}.nb .sv{color:#c0392b;font-weight:700}
 .bl{display:inline-block;border-bottom:1.6px solid #000;min-width:2.2em;text-align:center;line-height:1.3;color:#c0392b;font-weight:700;vertical-align:baseline}
 .sx .sr{display:flex;flex-wrap:nowrap;align-items:baseline;gap:.2em .4em;margin:.75em 0}.sx .sr .bl{flex:1 1 auto;min-width:2.6em}.sx .cl{font-weight:700;min-width:1.6em}.sx .nw{white-space:nowrap}.sx svg{flex:none;width:1em;height:.8em;align-self:center;overflow:visible}
-.as{display:flex;flex-wrap:wrap;gap:1.2em 1.3em}.as .tk{display:flex;align-items:flex-start;gap:.5em}.as .cl{font-weight:700;padding-top:.1em;min-width:1.7em;flex:none}.as .gd{display:grid}
+.as{display:flex;flex-wrap:wrap;gap:1.2em 1.3em}.as .tk{display:flex;align-items:flex-start;gap:.5em;position:relative}.rr{display:none;position:absolute;top:-12px;right:-16px;width:22px;height:22px;border-radius:50%;background:#2f6fed;color:#fff;font-size:12px;line-height:22px;text-align:center;cursor:pointer;z-index:5;box-shadow:0 1px 4px rgba(0,0,0,.3)}.item.sel .rr{display:block}.tlx.mdx .tk{position:relative}.as .cl{font-weight:700;padding-top:.1em;min-width:1.7em;flex:none}.as .gd{display:grid}
 .as .c{box-sizing:border-box;height:1.2em;border:1px solid #9aa4b5;text-align:center;line-height:1.15em;overflow:visible}.as .c0{border:none;font-weight:700}.as .cu{border:1px dashed #b9c0cc}.as .rs{border-top:2.2px solid #000}.as:not(.nok) .c0{border:1px solid #9aa4b5}.as:not(.nok) .c0.rs{border-top:2.2px solid #000}.as .cf{border:1px solid #9aa4b5}.as .sv{color:#c0392b;font-weight:700}.as .c{width:auto}.as.mm5 .c{height:18.9px;line-height:17px;font-size:min(1em,16px)}.as.nok .c{border:none}.as.nok .rs{border-top:2.2px solid #000}
 .kx{display:grid;column-gap:2.2em;row-gap:.8em}.kx .kt{white-space:nowrap}.kx .cl{font-weight:700;margin-right:.4em}
 .ky,.kq{display:flex;flex-wrap:wrap;gap:1.4em 2.6em;align-items:flex-start}.py1{display:flex;flex-direction:column;align-items:center}.py1 .pr{display:flex}.py1 .pc{box-sizing:border-box;width:2.8em;height:1.9em;border:1.6px solid #000;margin:-.8px;text-align:center;line-height:1.75em}
@@ -1280,7 +1280,7 @@ function mdBlock(it){const k=it.type,s=tlS(it);
   return `<div class="tlx" style="${kst(it)}${it.xp?';padding-right:84px':''}">`+it.d.map((t,i)=>`<div data-ar="${i}" style="margin:0 0 1.1em${it.xp&&(t.pic||[]).length>1?`;min-height:${t.pic.length*62}px`:''}"><b>${nlab(it,i,'n')}</b> ${t.q}${Array.from({length:+it.rl||0},()=>'<div class="tlln" style="display:block;min-height:1.7em"></div>').join('')}${+it.kz?`<div style="margin-top:.4em">${kfSvg(cw,+it.kz,5,'heft')}</div>`:''}${it.an?`<div class="tlrw" style="margin-top:.4em"><span>Antwort:</span><span class="tlln" style="flex:1">${tlSv(it,t.calc+'. '+t.s)}</span></div>`:(s?`<div class="sv">${t.calc}. ${t.s}</div>`:'')}</div>`).join('')+'</div>';}
  return `<div class="tlx mdx" style="${kst(it)}">`+(it.ov?`<div style="flex-basis:100%;font-weight:700;margin-bottom:-.6em">${OVH}</div>`:'')+it.d.map((p,i)=>{const {W,R}=k==='mm'?mmRows(p[0],p[1]):mvRows(p[0],p[1]);
   const g=R.map(row=>row.map(c=>{const sv=c.r&&!s,txt=c.t&&!sv?(c.r?`<span class="sv">${c.t}</span>`:c.t):'';return `<div class="mdc${it.kk?' mdk':''}${c.u?' mdu':''}${c.v&&s?' mdb':''}">${txt}</div>`;}).join('')).join('');
-  return `<div class="tk">${it.lab==='none'?'':`<span class="cl">${lb(i)}</span>`}<div>${it.ov?ovLine(ovMd(k,p[0],p[1]),s):''}<div class="mdg" style="grid-template-columns:repeat(${W},1.18em)">${g}</div></div></div>`;}).join('')+'</div>';}
+  return `<div class="tk"><span class="rr no-print" data-ar="${i}" title="Nur diese Aufgabe neu würfeln" onpointerdown="event.stopPropagation()" onclick="rrRoll(this,event)">🎲</span>${it.lab==='none'?'':`<span class="cl">${lb(i)}</span>`}<div>${it.ov?ovLine(ovMd(k,p[0],p[1]),s):''}<div class="mdg" style="grid-template-columns:repeat(${W},1.18em)">${g}</div></div></div>`;}).join('')+'</div>';}
 (function(){const P=$('#mdpal'),Q=$('#kfpal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
  L=[['mm',T(50,17,'234 · 5',12)+'<path d="M20 22h60" stroke="#000"/>'+T(50,34,'1170',12)],['mv',T(50,17,'546 : 3 = 182',11)+'<path d="M16 22h22" stroke="#000"/>'+T(28,34,'24',11)],['ms',T(50,16,'Ein Kino hat 12',10)+T(50,30,'Reihen …',10)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');
@@ -4359,7 +4359,7 @@ function asGen(o){
  const n=Math.max(1,+o.n||4),mixd=o.nd==='m',nd=Math.max(1,+o.nd||3),dec=o.art==='dez'?Math.max(1,+o.dec||1):0,S=Math.pow(10,dec),gz=o.art==='ganz';
  const rnd=(l,h)=>l+Math.floor(Math.random()*(h-l+1));let cur=nd;
  const val=x=>(x.neg?-1:1)*(parseInt(x.ip,10)*S+(dec?parseInt(x.fp.padEnd(dec,'0'),10):0));
- const opd=i=>{const L=i===0?cur:rnd(mixd?1:Math.max(1,cur-2),cur);let ip=String(rnd(1,9));for(let j=1;j<L;j++)ip+=rnd(0,9);
+ const opd=i=>{const L=i===0?cur:rnd(cur<2?1:Math.max(2,cur-(mixd?3:2)),cur);let ip=String(rnd(1,9));for(let j=1;j<L;j++)ip+=rnd(0,9);
   let fp='';if(dec){const F=i===0?dec:rnd(1,dec);for(let j=0;j<F;j++)fp+=(j===F-1?rnd(1,9):rnd(0,9));}
   return{neg:gz&&Math.random()<(i===0?0.45:0.4),ip,fp};};
  const rows=[];let g=0;const seen=new Set();
@@ -4382,6 +4382,12 @@ function ovAs(t,S){const vs=t.ops.map(x=>Number((x.neg?'-':'')+x.ip+(x.fp?'.'+x.
  return r.map((x,i)=>(i?(t.op==='add'?' + ':' − '):'')+(i&&x<0?'('+ovF(x)+')':ovF(x))).join('')+' = '+ovF(res);}
 function ovMd(k,a,b){if(k==='mm'){const x=ovR(a),y=ovR(b);return ovF(x)+' · '+ovF(y)+' = '+ovF(x*y);}const d=ovR(b),q=ovR(a/d);return ovF(q*d)+' : '+ovF(d)+' = '+ovF(q);}
 function ovLine(txt,sh){return `<div style="display:flex;align-items:flex-end;gap:.35em;margin:0 0 .35em;font-size:.95em"><span>Überschlag:</span><span style="flex:1;min-width:11em;border-bottom:1.2px solid #555;min-height:1.5em;padding:0 .2em;box-sizing:border-box">${sh?`<span class="sv" style="color:#c0392b;font-weight:700">${txt}</span>`:''}</span></div>`;}
+function rrRoll(b,ev){if(ev)ev.stopPropagation();const el=b.closest('.item'),it=el&&items.find(i=>i.id===+el.dataset.id),ti=+b.dataset.ar;if(!it)return;
+ if(it.man){toast('Im manuellen Modus wird nicht neu gewürfelt.');return;}
+ rec();
+ if(it.type==='as'){const old=JSON.stringify(it.rows[ti]);let r,t=0;do{r=asGen({...it,n:1})[0];t++;}while(r&&JSON.stringify(r)===old&&t<6);if(r)it.rows[ti]=r;}
+ else if(it.type==='mm'||it.type==='mv'){const c={...it,n:1,own:''};mdGen(c);if(c.d&&c.d[0])it.d[ti]=c.d[0];}
+ render();select(it.id);}
 function asBlock(it){
  const st=`font-size:${it.fs||16}px;font-weight:${it.fb?'bold':'normal'};font-style:${it.fi?'italic':'normal'};text-decoration:${it.fu?(it.fd?'underline double':'underline'):'none'};color:${it.col||'#000'}`;
  const sh=it.show||SOL,lb=i=>it.lab==='a'?'abcdefghijklmnopqrstuvwxyz'[i%26]+')':it.lab==='n'?(i+1)+'.':'';
@@ -4404,7 +4410,7 @@ function asBlock(it){
   g+=row('',sh?rip:'',sh?rfp:'',sh&&rneg,'rs',true);
   if(fr)g+=brow();
   if(!it.nok)for(let q=t.ops.length;q<KMX;q++)g+=Array.from({length:nc+(fr?2:0)},()=>cell('','cf')).join('');
-  return `<div class="tk">${it.lab==='none'?'':'<span class="cl">'+lb(ti)+'</span>'}<div>${it.ov?ovLine(ovAs(t),sh):''}<div class="gd" style="grid-template-columns:${cols}">${g}</div></div></div>`;}).join('')+'</div>';
+  return `<div class="tk"><span class="rr no-print" data-ar="${ti}" title="Nur diese Aufgabe neu würfeln" onpointerdown="event.stopPropagation()" onclick="rrRoll(this,event)">🎲</span>${it.lab==='none'?'':'<span class="cl">'+lb(ti)+'</span>'}<div>${it.ov?ovLine(ovAs(t),sh):''}<div class="gd" style="grid-template-columns:${cols}">${g}</div></div></div>`;}).join('')+'</div>';
 }
 function rdBlock(it){
  const st=`font-size:${it.fs||22}px;font-weight:${it.fb?'bold':'normal'};font-style:${it.fi?'italic':'normal'};text-decoration:${it.fu?(it.fd?'underline double':'underline'):'none'};color:${it.col||'#000'}`;
