@@ -672,6 +672,37 @@ const V4T=[
  ()=>{const a=kri(4,8),p=kri(3,9),e=kri(2,5)*10;return{q:`${a} Freunde kaufen Pizzen um insgesamt ${a*p*2} € und Getränke um ${a*p} €. Sie teilen die Rechnung gerecht. Wie viel muss jeder bezahlen?`,calc:`(${a*p*2} + ${a*p}) : ${a} = ${p*3}`,s:`Jeder muss ${p*3} € bezahlen.`,pic:['🍕','💶']};}
 ];
 function v4Gen(n){const ord=tshuf(V4T.map((_,i)=>i)),o=[];let k=0;while(o.length<n){const f=V4T[ord[k++%ord.length]];let r;for(let i=0;i<20;i++){r=f();if(!r.bad)break;}if(!r.bad)o.push(r);}return o.map(r=>({q:r.q,s:r.s,calc:r.calc,pic:r.pic}));}
+
+/* ---- Malen nach Zahlen (Rechenbild) ---- */
+const MZC={1:['rot','#e53935'],2:['gelb','#fdd835'],3:['grün','#43a047'],4:['blau','#1e88e5'],5:['braun','#8d6e63'],6:['orange','#fb8c00']};
+const mzMir=h=>h.map(r=>r+r.split('').reverse().join(''));
+const MZP={
+ herz:['Herz',['000000000000','011100001110','111110011111','111111111111','111111111111','111111111111','011111111110','001111111100','000111111000','000011110000','000001100000','000000000000']],
+ haus:['Haus',['000000000066','000001100066','000011110000','000111111000','001111111100','011111111110','002222222200','002442244200','002442244200','002222552200','002222552200','333333333333']],
+ fisch:['Fisch',['000000000000','000000000000','000044440000','004444444066','044444444466','044244444466','044444444466','004444444066','000044440000','300000000030','330000000330','333000003333']],
+ baum:['Baum',['000033330000','000333333000','003313333300','033333333330','033333313330','003333133300','000333333000','000005500000','000005500000','000005500000','000005500000','333333333333']],
+ falter:['Schmetterling',mzMir(['001000','000100','066665','661115','661215','066115','044415','044445','004445','000445','000005','000000'])]
+};
+const mzPool=(ma,mr)=>{const r=n=>[...Array(n).keys()];
+ if(ma==='mul')return [12,16,18,20,24,28,30,32,36,40,42,45,48,54,56,63,72];
+ if(ma==='div')return [3,4,5,6,7,8,9,10,11,12];
+ return mr==1?r(15).map(i=>i+6):mr==3?r(8).map(i=>(i+2)*100+kri(0,9)*10):r(30).map(i=>i*3+14);};
+function mzExpr(R,ma,mr){
+ const ops=ma==='mix'?ksh(['add','sub','mul','div']):[ma];
+ for(const o of ops){
+  if(o==='add'){const a=kri(1,R-1);return `${tfm(a)} + ${tfm(R-a)}`;}
+  if(o==='sub'){const b=mr==3?kri(1,9)*10:kri(2,Math.max(3,Math.min(R,mr==1?12:60)));return `${tfm(R+b)} − ${tfm(b)}`;}
+  if(o==='mul'){const f=[];for(let d=2;d<=9;d++)if(R%d===0&&R/d<=12&&R/d>=2)f.push(d);if(f.length){const d=f[kri(0,f.length-1)];return Math.random()<.5?`${d} · ${R/d}`:`${R/d} · ${d}`;}}
+  if(o==='div'&&R<=40){const b=kri(2,9);return `${R*b} : ${b}`;}
+ }
+ const a=kri(1,R-1);return `${a} + ${R-a}`;}
+function mzGen(it){const P=MZP[it.pic]||MZP.haus,g=P[1],mo=it.mo||'rech',ma=it.ma||'add',mr=+it.mr||2;
+ const used=[...new Set(g.join('').replace(/0/g,'').split(''))].sort(),pool=ksh(mzPool(ma,mr)),res={};
+ used.forEach((c,i)=>{res[c]=pool[i%pool.length];});
+ it.d=[];it.mz={name:P[0],g,leg:used.map(c=>({c,n:MZC[c][0],col:MZC[c][1],res:res[c]})),cells:g.map(r=>r.split('').map(c=>c==='0'?null:{c,e:mo==='rech'?mzExpr(res[c],ma,mr):c}))};}
+function mzBlock(it){const m=it.mz;if(!m)return '';const sh=tlS(it),W=+it.mzs||50,cols=m.g[0].length,fs=Math.round(W*(it.mo==='zahl'?.42:.235));
+ const leg=m.leg.map(l=>`<span style="display:inline-flex;align-items:center;gap:6px;margin:0 14px 6px 0"><span style="display:inline-block;width:22px;height:22px;background:${l.col};border:1px solid #000;-webkit-print-color-adjust:exact;print-color-adjust:exact"></span><b>${it.mo==='zahl'?l.c:tfm(l.res)}</b> = ${l.n}</span>`).join('');
+ return `<div class="tlx" style="${kst(it)}"><div style="margin-bottom:6px">${leg}</div><div style="display:grid;grid-template-columns:repeat(${cols},${W}px);width:${cols*W}px">`+m.cells.map(r=>r.map(c=>`<div style="width:${W}px;height:${W}px;box-sizing:border-box;border:1px solid ${c?'#000':'#ddd'};display:flex;align-items:center;justify-content:center;font-size:${fs}px;white-space:nowrap;background:${c&&sh?MZC[c.c][1]:'#fff'};-webkit-print-color-adjust:exact;print-color-adjust:exact">${c?c.e:''}</div>`).join('')).join('')+`</div></div>`;}
 const ATPIC=[[/Semmel/,'🥐'],[/Äpfel/,'🍎'],[/Bus\b/,'🚌'],[/Stadion/,'⚽'],[/Graz|Huber/,'🚗'],[/Schüler|Schule/,'🏫'],[/Zug\b/,'🚆'],[/Brot|Milch/,'🍞'],[/Heft|Stift/,'✏️'],[/Paket/,'📦'],[/Saft/,'🧃'],[/läuft/,'🏃'],[/Eis\b/,'🍦'],[/Wasser|Kanister/,'💧'],[/°C|Thermometer/,'🌡️'],[/Konto|Geldschein|Rechnung/,'💶'],[/Fahrgäste/,'🚌'],[/Sitzplätze/,'🚆'],[/Brett/,'🪵'],[/Seil/,'🪢'],[/Mehl/,'🌾'],[/Flasche|Kanister/,'🥤'],[/Mädchen/,'🏫']];
 const atPicAuto=t=>{const m=ATPIC.find(a=>a[0].test(t));return m?m[1]:'';};
 function atGen(o){
@@ -1116,7 +1147,7 @@ $('#rp').addEventListener('input',raHandler);$('#rp').addEventListener('change',
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ra-act]');if(!b)return;const it=items.find(i=>i.id===sel&&(i.type==='rk'||i.type==='rw'));if(!it)return;rec();raRegen(it);render();renderProps();});
 
 /* ===== Teiler: Teilbarkeit, Primfaktoren, ggT, kgV, Sieb, Sachaufgaben ===== */
-const MDT=['mm','mv','ms','v4','kf','ks'],VRT=['vr','vk','vl','vp','vt','vf','vs'];
+const MDT=['mm','mv','ms','v4','mz','kf','ks'],VRT=['vr','vk','vl','vp','vt','vf','vs'];
 const PRT=['prd','prg','prw','prs','prk','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
 const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const PNT=['pnk','pnb','pnz'];const SST=['ssd','ssm','ssh','ssg','ssl','ssb'];const LWT=['lw'];const CIT=['cib','ciu','cia','cit','cis','cir','cik','cix','cil','cig','cic'];const ZRT=['zr'];const K4T=['k4b','k4w','k4p','k4z','k4y','k4k','k4g','k4x','k4f'];const MBT=['mbb','mbw','mbz','mbd','mbs','mbm'];const ZNT=['znb','zni','znq','znt','znk','znr'];
@@ -1260,8 +1291,8 @@ $('#rp').addEventListener('input',tlHandler);$('#rp').addEventListener('change',
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-tl-act]');if(!b)return;const it=items.find(i=>i.id===sel&&TLT.includes(i.type));if(!it)return;rec();tlGen(it);render();});
 /* ===== Multiplizieren und Dividieren, Kariertes Feld ===== */
 const KFT=['kf','ks'];
-Object.assign(TLD,{mm:{n:4,la:3,lb:1,kk:true,lab:'a'},mv:{n:4,la:3,lb:1,kk:true,rest:false,lab:'a'},ms:{n:3,ty:'beide',la:3,lb:1,rl:2,an:true,kz:0,rest:false},kf:{ks:5,kc:20,kr:12,kt:'heft'},ks:{ks:5,kc:20,kr:12,kt:'schwarz'},v4:{n:3,rl:0,an:true,kz:8,xp:false}});
-Object.assign(TLN,{mm:'Schriftlich multiplizieren',mv:'Schriftlich dividieren',ms:'Sachaufgaben',v4:'Sachaufgaben: Verbindung der 4 Grundrechnungsarten',kf:'Kariertes Feld (Heft, blau)',ks:'Kariertes Feld (schwarz)'});
+Object.assign(TLD,{mm:{n:4,la:3,lb:1,kk:true,lab:'a'},mv:{n:4,la:3,lb:1,kk:true,rest:false,lab:'a'},ms:{n:3,ty:'beide',la:3,lb:1,rl:2,an:true,kz:0,rest:false},kf:{ks:5,kc:20,kr:12,kt:'heft'},ks:{ks:5,kc:20,kr:12,kt:'schwarz'},v4:{n:3,rl:0,an:true,kz:8,xp:false},mz:{n:1,pic:'haus',mo:'rech',ma:'add',mr:2,mzs:50}});
+Object.assign(TLN,{mm:'Schriftlich multiplizieren',mv:'Schriftlich dividieren',ms:'Sachaufgaben',mz:'Malen nach Zahlen',v4:'Sachaufgaben: Verbindung der 4 Grundrechnungsarten',kf:'Kariertes Feld (Heft, blau)',ks:'Kariertes Feld (schwarz)'});
 const mdr=d=>kri(Math.pow(10,d-1),Math.pow(10,d)-1);
 const MDS={mul:[
  ['Eine Bäckerei backt jeden Tag {a} Semmeln. Wie viele Semmeln sind das in {b} Tagen?','In {b} Tagen backt die Bäckerei {r} Semmeln.'],
@@ -1299,7 +1330,7 @@ MDS.div.push(
 ['Eine Tafel Schokolade hat {a} Stücke. Sie wird unter {b} Kindern aufgeteilt. Wie viele Stücke bekommt jedes Kind?','Jedes Kind bekommt {q} Stücke.','Jedes Kind bekommt {q} Stücke, {m} bleiben übrig.','🍫']);
 const MDPIC=[[/Semmel/,'🥐'],[/Sand|Lastwagen/,'🚚'],[/Bücher|Verlag/,'📚'],[/Kartoffeln|Feld/,'🥔'],[/Flaschen/,'🍾'],[/Schwimmbad/,'🏊'],[/Äpfel/,'🍎'],[/Seiten/,'📖'],[/€/,'💶'],[/Saal|Sitzplätze/,'🪑'],[/Schule|Kinder/,'🏫']];
 const mdPicAuto=t=>{const m=MDPIC.find(a=>a[0].test(t));return m?m[1]:'🔢';};
-function mdGen(it){const k=it.type,n=+it.n||1;if(k==='v4'){it.d=v4Gen(n);return;}const lb=+it.lb||1,la=Math.max(+it.la||3,lb+1);
+function mdGen(it){const k=it.type,n=+it.n||1;if(k==='mz'){mzGen(it);return;}if(k==='v4'){it.d=v4Gen(n);return;}const lb=+it.lb||1,la=Math.max(+it.la||3,lb+1);
  const own=tlOwn(it).filter(l=>l.length>=2);
  const mulP=()=>{let b='';for(let i=0;i<lb;i++)b+=kri(i?1:2,9);return [mdr(la),+b];};
  const divP=()=>{const b=lb===1?kri(2,9):kri(11,49),lo=Math.ceil(Math.pow(10,la-1)/b),hi=Math.floor((Math.pow(10,la)-1)/b),q=kri(lo,Math.max(lo,hi));return [b*q+(it.rest?kri(1,b-1):0),b];};
@@ -1332,7 +1363,7 @@ function mvRows(a,b){const D=String(a),L=D.length,q=Math.floor(a/b),mm=a%b,Q=Str
  for(let i=start-1;i<L;i++){const qd=Math.floor(cur/b),pr=qd*b,rem=cur-pr;R.push(put(String(pr),i,true,true));
   if(i<L-1){cur=rem*10+ +D[i+1];R.push(put(String(cur),i+1,false,false));}else R.push(put(String(rem),i,false,false));}
  return {W,R};}
-function mdBlock(it){const k=it.type,s=tlS(it);
+function mdBlock(it){const k=it.type,s=tlS(it);if(k==='mz')return mzBlock(it);
  if(KFT.includes(k))return `<div>${kfSvg(+it.kc||20,+it.kr||12,+it.ks||5,it.kt)}</div>`;
  const lb=i=>it.lab==='a'?'abcdefghijklmnopqrstuvwxyz'[i%26]+')':it.lab==='n'?(i+1)+'.':'';
  if(k==='ms'||k==='v4'){const cw=Math.max(5,Math.floor((it.w||714)/(5*MMPX)));
@@ -1341,7 +1372,7 @@ function mdBlock(it){const k=it.type,s=tlS(it);
   const g=R.map(row=>row.map(c=>{const sv=c.r&&!s,txt=c.t&&!sv?(c.r?`<span class="sv">${c.t}</span>`:c.t):'';return `<div class="mdc${it.kk?' mdk':''}${c.u?' mdu':''}${c.v&&s?' mdb':''}">${txt}</div>`;}).join('')).join('');
   return `<div class="tk"><span class="rr no-print" data-ar="${i}" title="Nur diese Aufgabe neu würfeln" onpointerdown="event.stopPropagation()" onclick="rrRoll(this,event)">🎲</span><span class="rr rx no-print" data-ar="${i}" title="Diese Aufgabe löschen" onpointerdown="event.stopPropagation()" onclick="rrDel(this,event)">🗑</span>${it.lab==='none'?'':`<span class="cl">${lb(i)}</span>`}<div>${it.ov?ovLine(ovMd(k,p[0],p[1]),s):''}<div class="mdg" style="grid-template-columns:repeat(${W},1.18em)">${g}</div></div></div>`;}).join('')+'</div>';}
 (function(){const P=$('#mdpal'),Q=$('#kfpal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
- L=[['mm',T(50,17,'234 · 5',12)+'<path d="M20 22h60" stroke="#000"/>'+T(50,34,'1170',12)],['mv',T(50,17,'546 : 3 = 182',11)+'<path d="M16 22h22" stroke="#000"/>'+T(28,34,'24',11)],['ms',T(50,16,'Ein Kino hat 12',10)+T(50,30,'Reihen …',10)],['v4',T(50,14,'+ − · :',13)+T(50,29,'Sachaufgabe',10)]];
+ L=[['mm',T(50,17,'234 · 5',12)+'<path d="M20 22h60" stroke="#000"/>'+T(50,34,'1170',12)],['mv',T(50,17,'546 : 3 = 182',11)+'<path d="M16 22h22" stroke="#000"/>'+T(28,34,'24',11)],['ms',T(50,16,'Ein Kino hat 12',10)+T(50,30,'Reihen …',10)],['v4',T(50,14,'+ − · :',13)+T(50,29,'Sachaufgabe',10)],['mz','<rect x="30" y="6" width="10" height="10" fill="#e53935"/><rect x="40" y="6" width="10" height="10" fill="#fdd835"/><rect x="50" y="6" width="10" height="10" fill="#43a047"/><rect x="60" y="6" width="10" height="10" fill="#1e88e5"/>'+T(35,31,'3+4',8)+T(55,31,'5·6',8)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');
  const gr=c=>`<path d="M14 4h72v32H14zM32 4v32M50 4v32M68 4v32M14 12h72M14 20h72M14 28h72" fill="#fff" stroke="${c}"/>`;
  Q.innerHTML=`<div class="pal" draggable="true" data-t="kf" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${gr('#6e9fd6')}</svg><span>Heft, blau</span></div><div class="pal" draggable="true" data-t="ks"><svg viewBox="0 0 100 40">${gr('#000')}</svg><span>schwarz</span></div>`;})();
@@ -1354,6 +1385,7 @@ function renderMd(){const g=$('#g-md'),k2=$('#g-kf'),it=items.find(i=>i.id===sel
  const nn=a=>`<label>Anzahl der Aufgaben${sl('n',tN(a))}</label>`;
  if(k==='mm')H+=nn([2,4,6,8,10])+`<label>Stellen der 1. Zahl${sl('la',tN([2,3,4,5]))}</label><label>Stellen der 2. Zahl${sl('lb',tN([1,2,3]))}</label>`+ck('kk','Karo-Hintergrund für die Stellen');
  if(k==='mv')H+=nn([2,4,6,8,10])+`<label>Stellen der 1. Zahl (Dividend)${sl('la',tN([3,4,5,6]))}</label><label>Stellen des Divisors${sl('lb',tN([1,2]))}</label>`+ck('rest','mit Rest')+ck('kk','Karo-Hintergrund für die Stellen');
+ if(k==='mz')H+=`<label>Bild${sl('pic',Object.keys(MZP).map(x=>[x,MZP[x][0]]))}</label><label>Darstellung${sl('mo',[['rech','Rechnungen'],['zahl','Zahlen']])}</label>`+(it.mo==='zahl'?'':`<label>Rechenart${sl('ma',[['add','Plus und Minus (gemischt)'],['mul','Mal'],['div','Geteilt'],['mix','alle vier gemischt']])}</label><label>Zahlenraum (Plus/Minus)${sl('mr',[[1,'bis 20'],[2,'bis 100'],[3,'bis 1 000']])}</label>`)+`<label>Feldgröße${sl('mzs',[[40,'klein'],[46,'mittel'],[50,'normal'],[56,'groß']])}</label>`;
  if(k==='v4')H+=nn([1,2,3,4,5,6])+`<label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label><label>Karo-Rechenfeld (Zeilen)${sl('kz',tN([0,3,5,8,10,14]))}</label>`+ck('an','Antwortsatz');
  if(k==='ms')H+=nn([1,2,3,4,5,6])+`<label>Aufgabenart${sl('ty',[['beide','Multiplizieren und Dividieren'],['mul','nur Multiplizieren'],['div','nur Dividieren']])}</label><label>Stellen der großen Zahl${sl('la',tN([2,3,4]))}</label><label>Stellen der kleinen Zahl${sl('lb',tN([1,2]))}</label>`+ck('rest','Dividieren mit Rest')+`<label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label><label>Karo-Rechenfeld (Zeilen)${sl('kz',tN([0,3,5,8,10]))}</label>`+ck('an','Antwortfeld')+ck('xp','Bilder zu den Aufgaben (jedes Bild einzeln verschiebbar/löschbar)');
  if(k==='mm'||k==='mv')H+=`<label>Nummerierung${sl('lab',[['a','a) b) c)'],['n','1. 2. 3.'],['none','keine']])}</label>`+`<label>Eigene Zahlen (leer = zufällig)<textarea data-md="own" rows="3" placeholder="Je Zeile zwei Zahlen: ${k==='mm'?'234 56':'546 3'}" style="width:100%;font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:6px;background:#fff;box-sizing:border-box">${(it.own||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea></label>`;
@@ -1361,8 +1393,8 @@ function renderMd(){const g=$('#g-md'),k2=$('#g-kf'),it=items.find(i=>i.id===sel
  H+=ck('show','Lösung zeigen')+'<button data-md-act="mix">Neu mischen</button>';g.innerHTML=H;}
 const mdHandler=e=>{const t=e.target,k=t.dataset.md;if(!k)return;const it=items.find(i=>i.id===sel&&MDT.includes(i.type));if(!it)return;
  if(k==='own'&&e.type==='input')return;if(k!=='own'&&e.type==='change')return;
- let v=t.type==='checkbox'?t.checked:t.value;if(['n','la','lb','rl','kz','ks','kc','kr'].includes(k)){v=+v;if(!(v>0)&&!['rl','kz'].includes(k))return;}
- rec('md'+k);it[k]=v;if(['n','la','lb','ty','rest','own','ks','kc','kr'].includes(k))mdGen(it);render();};
+ let v=t.type==='checkbox'?t.checked:t.value;if(['n','la','lb','rl','kz','ks','kc','kr','mzs','mr'].includes(k)){v=+v;if(!(v>0)&&!['rl','kz'].includes(k))return;}
+ rec('md'+k);it[k]=v;if(['n','la','lb','ty','rest','own','ks','kc','kr','pic','mo','ma','mr'].includes(k))mdGen(it);render();};
 $('#rp').addEventListener('input',mdHandler);$('#rp').addEventListener('change',mdHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-md-act]');if(!b)return;const it=items.find(i=>i.id===sel&&MDT.includes(i.type));if(!it)return;rec();
  if(b.dataset.mdAct==='fw'){it.kc=Math.floor(714/((+it.ks||5)*MMPX));}mdGen(it);render();renderProps();});
@@ -1720,7 +1752,7 @@ const AST=[
 ['Zahlen und Rechnen',[
  ['cmp','Vergleichen < = >','Setze <, = oder > ein!'],['nb','Nachbarzahlen','Schreibe die Nachbarzahlen an!'],['ugk','Ungleichungsketten','Erstelle Ungleichungsketten mit den angegebenen Zahlen!'],['st','Dekadische Einheiten','Schreibe als Zahl bzw. in dekadischen Einheiten!'],['rd','Runden','Runde auf die angegebene Stelle!'],['zs:lesen','Zahlenstrahl ablesen','Welche Zahlen sind am Zahlenstrahl markiert? Schreibe sie unter die Kreuze!'],['zs:mark','Zahlenstrahl markieren','Markiere folgende Zahlen am Zahlenstrahl!'],['zzk','Zahlenstrahl zeichnen','Zeichne passende Zahlenstrahle und markiere die Zahlen!'],
  ['as','Schriftlich addieren und subtrahieren','Rechne schriftlich!'],['at','Sachaufgaben Plus und Minus','Löse die Textaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],['vs','Sachaufgaben Geld (Plus und Minus)','Löse die Textaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],
- ['mm','Schriftlich multiplizieren','Multipliziere schriftlich!'],['mv','Schriftlich dividieren','Dividiere schriftlich!'],['ms','Sachaufgaben Mal und Geteilt','Löse die Sachaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],['v4','Sachaufgaben: Verbindung der 4 Grundrechnungsarten','Löse die Sachaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],
+ ['mm','Schriftlich multiplizieren','Multipliziere schriftlich!'],['mv','Schriftlich dividieren','Dividiere schriftlich!'],['ms','Sachaufgaben Mal und Geteilt','Löse die Sachaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],['v4','Sachaufgaben: Verbindung der 4 Grundrechnungsarten','Löse die Sachaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],['mz','Malen nach Zahlen (Rechenbild)','Rechne und male die Felder in der passenden Farbe aus!'],
  ['mx','Einmaleins','Rechne im Kopf!'],['py','Rechenpyramiden','Vervollständige die Rechenpyramiden!'],['rh','Rechenhäuser','Vervollständige die Rechenhäuser!'],['rt','Rechentabelle','Fülle die Rechentabelle aus!'],['rs','Rechenschlange','Löse die Rechenschlange!'],['mq','Magisches Quadrat','Ergänze das magische Quadrat! In jeder Zeile, jeder Spalte und in beiden Diagonalen ist die Summe gleich.'],['um','Maßumwandlungen','Wandle um!']]],
 ['Teiler und Vielfache',[
  ['tdv','Teiler: ∣ oder ∤','Setze ∣ oder ∤ ein!'],['ttr','Teilbarkeitsregeln (Tabelle)','Kreuze an, durch welche Zahlen die Zahlen ohne Rest teilbar sind!'],['tzw','Teilbare Zahlen finden','Finde Zahlen, die teilbar sind!'],['tpr','Primzahlen nennen','Nenne die Primzahlen!'],['tsv','Sieb des Eratosthenes','Markiere mit dem Sieb des Eratosthenes alle Primzahlen!'],
