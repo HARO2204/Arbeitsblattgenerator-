@@ -431,10 +431,10 @@ function mk(it){const e=document.createElement('div');e.className='item'+(it.nh?
 /* ===== Mehrseitige Blätter, automatisches Mitwachsen ===== */
 const PH=1123,TOPM=52;let PGN=1,RF=true;
 const elOf=id=>sheet.querySelector('[data-id="'+id+'"]');
-function reflow(){let mv=false;const rf=RF&&!SOL,ch=[];
+function reflow(){let mv=false;const rf=RF,ch=[];
  items.forEach(a=>{if(a.z<0||a.type==='ckf'||a.type==='frm')return;const e=elOf(a.id);if(!e)return;const h=e.offsetHeight;
-  if(rf&&a._h!=null&&Math.abs(h-a._h)>1)ch.push({a,oh:a._h,nh:h,w:e.offsetWidth});
-  if(!SOL)a._h=h;});
+  if(SOL){if(rf&&a._hs!=null&&Math.abs(h-a._hs)>1){ch.push({a,oh:a._hs,nh:h,w:e.offsetWidth});if(a._h!=null)a._h+=h-a._hs;}a._hs=h;}
+  else{if(rf&&a._h!=null&&Math.abs(h-a._h)>1)ch.push({a,oh:a._h,nh:h,w:e.offsetWidth});a._h=h;a._hs=null;}});
  ch.sort((p,q)=>p.a.y-q.a.y);
  ch.forEach(c=>{const a=c.a,d=c.nh-c.oh,wide=c.w>=400,l=wide?Math.min(a.x,40):a.x,r=wide?Math.max(a.x+c.w,754):a.x+c.w,by=a.y+c.oh;
   items.forEach(b=>{if(b===a||b.z<0||b.type==='ckf'||b.type==='frm')return;const eb=elOf(b.id);if(!eb)return;
