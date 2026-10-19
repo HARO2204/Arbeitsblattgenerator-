@@ -1476,7 +1476,7 @@ function vrBlock(it){const s=tlS(it),rl=+it.rl||0,ty=it.type,D=it.d||[],W=x=>`<d
  if(ty==='vp')return W(tlGrid(+it.co||2,D.map((t,i)=>`<div><b>${nlab(it,i,'a')}</b> ${t.e}<div class="tlrw"><span>Probe:</span><span class="tlln" style="flex:1;min-width:0">${tlSv(it,t.s)}</span></div></div>`).join('')));
  if(ty==='vf')return W(`<table style="border-collapse:collapse;width:100%"><tr style="background:#dde8f3"><th style="border:1px solid #444;padding:4px 8px;text-align:left">Aussage</th><th style="border:1px solid #444;width:70px">richtig</th><th style="border:1px solid #444;width:70px">falsch</th></tr>`+D.map(t=>`<tr><td style="border:1px solid #444;padding:6px 8px">${t.e}</td><td style="border:1px solid #444;text-align:center">${s&&t.ok?'<span class="sv">✗</span>':''}</td><td style="border:1px solid #444;text-align:center">${s&&!t.ok?'<span class="sv">✗</span>':''}</td></tr>`).join('')+'</table>');
  if(ty==='vt')return W(tlGrid(+it.co||1,D.map((t,i)=>`<div><b>${nlab(it,i,'a')}</b> ${t.q}${lines(t.s)}</div>`).join('')));
- if(ty==='vs')return W(D.map((t,i)=>`<div style="margin:0 0 1em"><b>${nlab(it,i,'n')}</b> ${t.q}${rl?Array.from({length:rl},(_,j)=>ln(t.s,j)).join(''):(s?`<div class="sv">${t.s}</div>`:'')}${it.an?`<div class="tlrw" style="margin-top:.3em"><span>Antwort:</span><span class="tlln" style="flex:1;min-width:0">${tlSv(it,t.a)}</span></div>`:''}</div>`).join(''));
+ if(ty==='vs')return W(D.map((t,i)=>`<div style="margin:0 0 1em"><b>${nlab(it,i,'n')}</b> ${t.q}${rl?Array.from({length:rl},(_,j)=>ln(t.s,j)).join(''):(s?`<div class="sv">${t.s}</div>`:'')}${+it.bl?`<div style="height:${(+it.bl*1.7).toFixed(1)}em"></div>`:''}${it.an?`<div class="tlrw" style="margin-top:.3em"><span>Antwort:</span><span class="tlln" style="flex:1;min-width:0">${tlSv(it,t.a)}</span></div>`:''}</div>`).join(''));
  return W(tlGrid(+it.co||1,D.map((t,i)=>`<div><b>${nlab(it,i,'a')}</b> ${t.e} =${lines(t.s.replace(/^= /,''))}</div>`).join('')));}
 function renderVr(){const g=$('#g-vr');if(!g)return;const it=items.find(i=>i.id===sel&&VRT.includes(i.type));
  if(!it){g.innerHTML='';return;}
@@ -1489,7 +1489,7 @@ function renderVr(){const g=$('#g-vr');if(!g)return;const it=items.find(i=>i.id=
  if(k!=='vf'&&k!=='vs')H+=`<label>Aufgaben nebeneinander${sl('co',[[1,'1'],[2,'2'],[3,'3']])}</label>`;
  H+=`<label>Nummerierung${sl('lab',[['a','a) b) c)'],['n','1) 2) 3)'],['none','keine']])}</label>`;
  if(!['vl','vf'].includes(k))H+=`<label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label>`;
- if(k==='vs')H+=ck('an','Antwortfeld');
+ if(k==='vs')H+=`<label>Leerer Platz zum Rechnen (Zeilen)${sl('bl',tN([0,2,3,4,6,8]))}</label>`+ck('an','Antwortfeld');
  H+=ck('show','Lösung zeigen')+'<button data-vr-act="mix">Neu mischen</button>';
  g.innerHTML=H;}
 $('#rp').addEventListener('change',e=>{const t=e.target,k=t.dataset.vr;if(!k)return;const it=items.find(i=>i.id===sel&&VRT.includes(i.type));if(!it)return;rec('vr'+k);
@@ -1553,6 +1553,23 @@ function doSwap(t){if(SWSUB)return doSwapSub(t);const g=SWAPG;SWAPG=null;swBanne
  rebuildFrames();render();select(nit.id);
  toast(hd?'Aufgabe getauscht – die Angabe wurde mitgetauscht.':'Aufgabe getauscht – die Angabe bitte selbst anpassen (für diese Aufgabe gibt es keine Standard-Angabe).');}
 
+
+/* ===== Enter: leeres Feld unter der markierten Aufgabe einfügen ===== */
+document.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.ctrlKey||e.metaKey||e.altKey||e.shiftKey)return;
+ const t=e.target;if(t&&t.closest&&t.closest('[contenteditable],select,input,textarea,button,a,.modal,dialog'))return;
+ if(!sel||SWAPG!==null||document.body.classList.contains('pv'))return;const it=items.find(i=>i.id===sel);if(!it||it.type==='frm'||it.type==='ckf')return;
+ e.preventDefault();addBlank(it);});
+function addBlank(it){const H=i=>{const el=elOf(i.id);return el?el.offsetHeight:0;},BH=70,bot=it.y+H(it),cs=(it.gid&&items.some(f=>f.type==='ckf'))?ckSub(it):null;
+ rec();const R0=rec;rec=()=>{};const rf0=RF;RF=false;
+ try{add('text',it.x,Math.round(bot+4));const nb=items[items.length-1];if(!nb||nb===it)return;
+  nb.text='';nb.mh=BH;nb.w=Math.min(it.w||714,794-it.x-40);nb.nh=false;nb.fs=it.fs||16;nb.y=Math.round(bot+4);if(it.gid)nb.gid=it.gid;if(it.mw)nb.mw=it.mw;
+  render();const h=Math.max(H(nb),BH),dl=Math.round(h+4);
+  items.forEach(i=>{if(i===nb||i.type==='frm'||i.type==='ckf')return;if(i.y>=bot-4&&i!==it&&(i.gid===it.gid||true)&&i.y>=bot-4)i.y+=dl;});
+  nb.y=Math.round(bot+4);
+  if(cs){const f=items.find(x=>x.id===cs.fid);if(f&&f.fa&&f.fa.b[cs.k])f.fa.b[cs.k].ids.push(nb.id);}
+  rebuildFrames();render();select(nb.id);
+  const tb=sheet.querySelector('[data-id="'+nb.id+'"] .tb');if(tb)tb.focus();toast('Leeres Feld eingefügt (Enter). Zum Löschen: Feld markieren und Entf bzw. 🗑.');
+ }finally{rec=R0;RF=rf0;}}
 /* ===== Aufgabe aufs Blatt ziehen: automatisch mit Nummer und Angabe ===== */
 function autoTask(t,dy){const cb=document.getElementById('autot');if(!cb||!cb.checked)return false;
  if(['text','head','n','a'].includes(t)||String(t).startsWith('deko'))return false;
