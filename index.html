@@ -332,7 +332,7 @@ const FONTS={georgia:['Georgia (Serif)',"Georgia,'Times New Roman',serif"],times
 const def={ff:'georgia',vl:'A',sl:'a',A:true,u:true,w:230,md:'none',un:'cm',sh:false,fs:18,col:'#000000',fb:false,fi:false,fu:false,nl:2};let items=[],sel=null,uid=1,sheet=$('#sheet');
 $('#pal').innerHTML=Object.keys(SH).map(k=>`<div class="pal" draggable="true" data-t="${k}" style="margin-bottom:8px">${svgNew({type:k,vl:'none',sl:'none',md:'none',w:150}).svg}<span>${SH[k][0]}</span></div>`).join('');
 let n=0;
-let SWAPG=null;
+let SWAPG=null,SWSUB=null;
 function add(t,x,y){if(SWAPG!==null&&t!=='n'&&t!=='a'&&t!=='head')return doSwap(t);let za=null;if(t==='zs:zeichnen')t='zzk';if(t==='zs:lesen'||t==='zs:mark'){za=t.slice(3);t='zs';}let zc=null;if(String(t).startsWith('zr:')){zc=t.slice(3);t='zr';}rec();const it=t==='head'?{id:uid++,type:'text',head:true,x:40,y:y??40,w:714,text:'Überschrift',fs:30,col:def.col,fb:true,fi:false,fu:false}
  :t==='n'||t==='a'?{id:uid++,type:'num',kind:t,x:x??60,y:y??100,w:40,fs:def.fs,col:def.col,fb:true,fi:false,fu:false}
  :t==='text'?{id:uid++,type:'text',x:x??60,y:y??100,w:320,text:'Text hier eingeben …',fs:def.fs,col:def.col,fb:def.fb,fi:def.fi,fu:def.fu}
@@ -505,7 +505,7 @@ function ghBar(){sheet.querySelectorAll('.ghf').forEach(x=>x.remove());const it=
 const b1=document.createElement('button');b1.className='mv';b1.textContent='✥ ganze Aufgabe';b1.title='Ziehen: die ganze Aufgabe (Nr., Überschrift und Inhalt) verschieben';b1.onpointerdown=ev=>{ev.stopPropagation();ev.preventDefault();gMove(it,ev,b1);};
 const bu=document.createElement('button');bu.textContent='▲ nach oben';bu.title='Aufgabe mit der darüber tauschen (Nummern passen sich an)';bu.onpointerdown=ev=>ev.stopPropagation();bu.onclick=ev=>{ev.stopPropagation();gSwap(it,-1);};const bd=document.createElement('button');bd.textContent='▼ nach unten';bd.title='Aufgabe mit der darunter tauschen (Nummern passen sich an)';bd.onpointerdown=ev=>ev.stopPropagation();bd.onclick=ev=>{ev.stopPropagation();gSwap(it,1);};
 const b2=document.createElement('button');b2.textContent='↧ nächste Seite';b2.onpointerdown=ev=>ev.stopPropagation();b2.onclick=ev=>{ev.stopPropagation();gNext(it);};
-const b3=document.createElement('button');b3.textContent='🗑 ganze Aufgabe';b3.onpointerdown=ev=>ev.stopPropagation();b3.onclick=ev=>{ev.stopPropagation();gDel(it);};const b4=document.createElement('button');b4.textContent='⇄ tauschen';b4.title='Diese Aufgabe durch eine andere ersetzen (Angabe wird mitgetauscht): danach links die neue Aufgabe anklicken';b4.onpointerdown=ev=>ev.stopPropagation();b4.onclick=ev=>{ev.stopPropagation();swStart(it);};gh.append(b1,bu,bd,b4,b2,b3);sheet.appendChild(gh);}
+const b3=document.createElement('button');b3.textContent='🗑 ganze Aufgabe';b3.onpointerdown=ev=>ev.stopPropagation();b3.onclick=ev=>{ev.stopPropagation();gDel(it);};const b4=document.createElement('button');b4.textContent=(items.some(f=>f.type==='ckf'&&f.fa&&it.y>=f.y-2&&it.y<=f.y+f.h)?'⇄ Teilaufgabe tauschen':'⇄ tauschen');b4.title='Diese Aufgabe durch eine andere ersetzen (Angabe wird mitgetauscht): danach links die neue Aufgabe anklicken';b4.onpointerdown=ev=>ev.stopPropagation();b4.onclick=ev=>{ev.stopPropagation();swStart(it);};gh.append(b1,bu,bd,b4,b2,b3);sheet.appendChild(gh);}
 function select(id){sel=id;sheet.querySelectorAll('.item').forEach(e=>e.classList.toggle('sel',+e.dataset.id===id));ghBar();sync();}
 function cur(){return items.find(i=>i.id===sel&&i.type in SH);}
 function sync(){const s=cur()||def;$('#vl').value=s.vl;$('#sl').value=s.sl;$('#cA').checked=s.A;$('#cu').checked=s.u;$('#nl').value=s.nl;$('#sz').value=s.w;
@@ -1485,16 +1485,46 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-vr-act]');
   d.ondragstart=e=>e.dataTransfer.setData('text/plain',t);d.onclick=()=>{add(t,50,120);};const at=t==='vs'?P.querySelector('.pal[data-t="at"]'):null;if(at){d.style.marginTop='';at.style.marginBottom='8px';at.after(d);}else P.appendChild(d);});})();
 
 /* ===== Aufgabe tauschen ===== */
-function swBanner(on){let d=document.getElementById('sw-banner');if(!on){if(d)d.remove();return;}
+function swBanner(on,txt){let d=document.getElementById('sw-banner');if(!on){SWSUB=null;if(d)d.remove();return;}if(d){d.querySelector('span').textContent=txt||'⇄ Aufgabe tauschen: Wähle jetzt links die neue Aufgabe aus (beliebiger Bereich).';}
  if(!d){d=document.createElement('div');d.id='sw-banner';d.className='no-print';d.style.cssText='position:fixed;left:50%;top:70px;transform:translateX(-50%);background:#2f6fed;color:#fff;padding:10px 16px;border-radius:10px;font:600 14px system-ui,sans-serif;z-index:99999;box-shadow:0 4px 14px rgba(0,0,0,.25);display:flex;gap:12px;align-items:center';
-  d.innerHTML='<span>⇄ Aufgabe tauschen: Wähle jetzt links die neue Aufgabe aus (beliebiger Bereich).</span><button style="border:0;border-radius:6px;padding:4px 10px;cursor:pointer;font:inherit">Abbrechen</button>';
+  d.innerHTML='<span>'+(txt||'⇄ Aufgabe tauschen: Wähle jetzt links die neue Aufgabe aus (beliebiger Bereich).')+'</span><button style="border:0;border-radius:6px;padding:4px 10px;cursor:pointer;font:inherit">Abbrechen</button>';
   d.querySelector('button').onclick=()=>{SWAPG=null;swBanner(false);};document.body.appendChild(d);}}
 function swStart(it){const mem=gMem(it);if(!mem.length)return;
  const minY=Math.min(...mem.map(i=>i.y));
- if(items.some(i=>i.type==='ckf'&&i.y>=minY-45&&i.y<=minY+2)){toast('Aufgaben mit Teilaufgaben (a, b, c …) lassen sich nicht tauschen – bitte löschen und neu einfügen.');return;}
+ if(items.some(i=>i.type==='ckf'&&i.y>=minY-45&&i.y<=minY+2)){const cs=ckSub(it);if(!cs){toast('Bitte eine Teilaufgabe anklicken (a, b, c …) – nur diese wird getauscht.');return;}
+  SWSUB=cs;SWAPG=it.gid;swBanner(true,'⇄ Teilaufgabe tauschen: Wähle jetzt links die neue Aufgabe aus (beliebiger Bereich).');return;}
  SWAPG=it.gid;swBanner(true);}
+function ckSub(it){const hO=i=>{const e=elOf(i.id);return e?e.offsetHeight:0;};
+ let f=items.find(x=>x.type==='ckf'&&x.fa&&x.fa.b.some(b=>b.ids.includes(it.id)));
+ if(f){const k=f.fa.b.findIndex(b=>b.ids.includes(it.id));return k>=1?{fid:f.id,k,cid:f.fa.b[k].ids[0]}:null;}
+ const cy=it.y+Math.min(hO(it),30)/2;f=items.find(x=>x.type==='ckf'&&x.fa&&x.fa.b&&cy>=x.y&&cy<=x.y+x.h);if(!f)return null;
+ const bs=[...f.rows,f.h],r=cy-f.y;let k=-1;for(let j=1;j<bs.length;j++){if(r<bs[j]){k=r>=bs[j-1]?j:-1;break;}}
+ return k>=1&&f.fa.b[k]?{fid:f.id,k,cid:f.fa.b[k].ids[0]}:null;}
+function doSwapSub(t){const rf0=RF;RF=false;try{doSwapSub0(t);}finally{RF=rf0;}}
+function doSwapSub0(t){const cs=SWSUB;SWSUB=null;SWAPG=null;swBanner(false);
+ const f=items.find(i=>i.id===cs.fid),old=items.find(i=>i.id===cs.cid);if(!f||!old)return;
+ const E=id=>sheet.querySelector('[data-id="'+id+'"]'),H=i=>{const e=E(i.id);return e?e.offsetHeight:0;},TB=i=>{const e=E(i.id),x=e&&e.querySelector('.tb');return x?x.offsetHeight:0;};
+ const blk=f.fa.b[cs.k],oldB=old.y+H(old),subTop=f.y+(f.rows[cs.k-1]||0),gid=old.gid;
+ let ins=items.filter(i=>i.gid===gid&&i.type==='text'&&i!==old&&Math.abs(i.x-old.x)<3&&i.y>=subTop-4&&i.y<=old.y+8).sort((a,b)=>b.y-a.y)[0]||null;
+ const V0=ins?ins.y:(old.type==='zr'?old.y-5:old.y),ox=old.x,omw=old.mw,ofs=old.fs,oins=ins?{w:ins.w,fs:ins.fs}:null;
+ const ent=AST.flatMap(x=>x[1]).find(x=>x[0]===t||String(x[0]).startsWith(t+':'));
+ add(t,ox,old.y);const nit=items[items.length-1];if(!nit||nit===old){return;}
+ items=items.filter(i=>i!==old);
+ nit.gid=gid;nit.nh=true;nit.x=ox;if(omw)nit.mw=omw;nit.w=Math.min(nit.w,omw||714,794-ox-40);if('show' in nit)nit.show=false;if(ofs&&nit.fs>ofs)nit.fs=ofs;
+ try{const last=cs.k===f.fa.b.length-1;if(nit.type!=='zr'){if(nit.n>3)nit.n=3;if(last&&typeof nit.lv==='number'&&nit.lv<3)nit.lv=3;if(nit.type==='nb'&&nit.nn>3)nit.nn=3;if(TLT.includes(nit.type))tlGen(nit);else{regen(nit,'n');if(nit.type==='nb')regen(nit,'nn');}}else{nit.n=1;nit.lv=2;zrGen(nit);}}catch(e){}
+ let msg='Teilaufgabe getauscht.';
+ if(nit.type==='zr'){if(ins){items=items.filter(i=>i!==ins);ins=null;}render();nit.y=V0+5;}
+ else{
+  if(ins){if(ent){ins.text=ent[2];delete ins.html;}else msg='Teilaufgabe getauscht – die Angabe bitte selbst anpassen.';}
+  else if(ent){add('text',ox,V0);ins=items[items.length-1];ins.text=ent[2];ins.w=(oins&&oins.w)||omw||600;ins.mh=10;ins.fs=(oins&&oins.fs)||18;ins.fb=false;ins.nh=true;ins.gid=gid;ins.x=ox;ins.y=V0;}
+  render();nit.y=V0+(ins?TB(ins)+6:0);}
+ render();
+ const ids=[nit.id];blk.ids=ids;
+ const dl=Math.round(nit.y+H(nit)-oldB);
+ if(dl)items.forEach(i=>{if(i===nit||i===ins||i.type==='frm'||i.type==='ckf')return;if(i.y>=oldB-4)i.y+=dl;});
+ rebuildFrames();render();select(nit.id);toast(msg+(nit.type!=='zr'&&!ent?'':''));}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&SWAPG!==null){SWAPG=null;swBanner(false);}});
-function doSwap(t){const g=SWAPG;SWAPG=null;swBanner(false);const any=items.find(i=>i.gid===g&&i.type!=='frm'&&i.type!=='ckf');if(!any)return;
+function doSwap(t){if(SWSUB)return doSwapSub(t);const g=SWAPG;SWAPG=null;swBanner(false);const any=items.find(i=>i.gid===g&&i.type!=='frm'&&i.type!=='ckf');if(!any)return;
  const H=i=>{const e=elOf(i.id);return e?e.offsetHeight:0;},mem=gMem(any),oldB=Math.max(...mem.map(i=>i.y+H(i)));
  const tx=mem.find(i=>i.type==='text'),nm=mem.find(i=>i.type==='num'),ct=mem.filter(i=>i!==tx&&i!==nm);
  if(!ct.length){toast('In dieser Aufgabe gibt es keinen Inhalt zum Tauschen.');return;}
