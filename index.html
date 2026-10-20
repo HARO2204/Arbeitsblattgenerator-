@@ -1410,7 +1410,7 @@ function renderMd(){const g=$('#g-md'),k2=$('#g-kf'),it=items.find(i=>i.id===sel
 const mdHandler=e=>{const t=e.target,k=t.dataset.md;if(!k)return;const it=items.find(i=>i.id===sel&&MDT.includes(i.type));if(!it)return;
  if(k==='own'&&e.type==='input')return;if(k!=='own'&&e.type==='change')return;
  let v=t.type==='checkbox'?t.checked:t.value;if(['n','la','lb','rl','kz','ks','kc','kr','mzs','mr','bl','nz'].includes(k)){v=+v;if(!(v>0)&&!['rl','kz'].includes(k))return;}
- rec('md'+k);it[k]=v;if(['n','la','lb','ty','rest','own','ks','kc','kr','pic','mo','ma','mr','nz','ue'].includes(k))mdGen(it);render();};
+ rec('md'+k);it[k]=v;if(['n','la','lb','ty','rest','own','ks','kc','kr','pic','mo','ma','mr','nz','ue'].includes(k))mdGen(it);if(it.type==='ak'&&(k==='ty'||k==='ue'))akAngabe(it);render();};
 $('#rp').addEventListener('input',mdHandler);$('#rp').addEventListener('change',mdHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-md-act]');if(!b)return;const it=items.find(i=>i.id===sel&&MDT.includes(i.type));if(!it)return;rec();
  if(b.dataset.mdAct==='fw'){it.kc=Math.floor(714/((+it.ks||5)*MMPX));}mdGen(it);render();renderProps();});
@@ -1554,6 +1554,10 @@ function doSwap(t){if(SWSUB)return doSwapSub(t);const g=SWAPG;SWAPG=null;swBanne
  toast(hd?'Aufgabe getauscht – die Angabe wurde mitgetauscht.':'Aufgabe getauscht – die Angabe bitte selbst anpassen (für diese Aufgabe gibt es keine Standard-Angabe).');}
 
 
+
+function akAngabe(it){const ty=it.ty||'beide',tx=ty==='sub'?'Ziehe die kleinere von der größeren Zahl ab!':ty==='add'?(it.ue?'Schreibe stellenwertrichtig untereinander, addiere und mache eine Überschlagsrechnung!':'Schreibe stellenwertrichtig untereinander und addiere!'):'Schreibe stellenwertrichtig untereinander und rechne!';
+ const c=items.filter(i=>i.type==='text'&&i!==it&&(it.gid?i.gid===it.gid:true)&&i.y<it.y+4&&it.y-i.y<160&&Math.abs(i.x-it.x)<30&&!i.head).sort((a,b)=>b.y-a.y)[0];
+ if(c){c.text=tx;delete c.html;}}
 /* ===== Enter: leeres Feld unter der markierten Aufgabe einfügen ===== */
 document.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.ctrlKey||e.metaKey||e.altKey||e.shiftKey)return;
  const t=e.target;if(t&&t.closest&&t.closest('[contenteditable],select,input,textarea,button,a,.modal,dialog'))return;
