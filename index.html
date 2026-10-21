@@ -1648,7 +1648,21 @@ const PRS=[
  {t:'In einem Bus mit {G} Plätzen sind {P} Plätze besetzt. Wie viel Prozent der Plätze sind besetzt?',a:'{p} der Plätze sind besetzt.',r:[40,80]},
  {t:'Ein Tunnel ist {G} m lang. {P} m sind schon fertig. Wie viel Prozent sind fertig?',a:'{p} des Tunnels sind fertig.',r:[200,2000]},
  {t:'In einer Schachtel liegen {G} Eier. {P} Eier sind gebrochen. Wie viel Prozent der Eier sind gebrochen?',a:'{p} der Eier sind gebrochen.',r:[20,100]},
- {t:'Der Wocheneinkauf hätte {G} € gekostet. Mit einem Gutschein zahlt Frau Huber nur {Q} €. Wie viel Prozent hat sie gespart?',a:'Frau Huber hat {p} gespart.',r:[40,200],m:1}];
+ {t:'Ein Handy kostet {G} €. Im Angebot kostet es nur noch {Q} €. Wie viel Prozent wurden gespart?',a:'Im Angebot spart man {p}.',r:[200,900],m:1},
+ {t:'Sneaker kosten {G} €. Im Sale zahlt Lena nur {Q} €. Um wie viel Prozent sind die Sneaker billiger geworden?',a:'Die Sneaker sind um {p} billiger geworden.',r:[60,200],m:1},
+ {t:'Das Fußballteam hat {G} Spiele gespielt und {P} davon gewonnen. Wie viel Prozent der Spiele wurden gewonnen?',a:'Das Team hat {p} der Spiele gewonnen.',r:[20,40]},
+ {t:'Jonas wirft beim Basketball {G} Mal auf den Korb. {P} Würfe treffen. Wie viel Prozent der Würfe sind Treffer?',a:'Jonas trifft {p} der Würfe.',r:[20,40]},
+ {t:'Ein Spiel hat {G} MB. {P} MB sind schon heruntergeladen. Wie viel Prozent sind das?',a:'Es sind {p} heruntergeladen.',r:[400,2000]},
+ {t:'Sophie hat {G} Follower. {P} davon sind aus ihrer Klasse. Wie viel Prozent der Follower sind das?',a:'{p} der Follower sind aus ihrer Klasse.',r:[100,500]},
+ {t:'Der Handy-Akku hat {G} mAh. Nach der Schule sind noch {P} mAh übrig. Wie viel Prozent des Akkus sind noch übrig?',a:'Es sind noch {p} übrig.',r:[3000,5000]},
+ {t:'In der Klasse sind {G} Kinder. {P} Kinder fahren mit dem Fahrrad in die Schule. Wie viel Prozent sind das?',a:'{p} der Kinder fahren mit dem Fahrrad.',r:[20,30]},
+ {t:'Ein Kinoticket kostet {G} €. Mit der Schülerkarte zahlt man {Q} €. Wie viel Prozent spart man?',a:'Man spart {p}.',r:[10,20],m:1},
+ {t:'Ein Schulball hat {G} Besucher. {P} davon sind Lehrerinnen und Lehrer. Wie viel Prozent der Besucher sind das?',a:'{p} der Besucher sind Lehrerinnen und Lehrer.',r:[100,500]},
+ {t:'Mara hat {G} Minuten für ihr Training geplant. {P} Minuten ist sie schon gelaufen. Wie viel Prozent sind das?',a:'Sie hat {p} geschafft.',r:[20,100]},
+ {t:'Bei einer Umfrage mit {G} Jugendlichen nutzen {P} täglich ein Smartphone. Wie viel Prozent sind das?',a:'{p} der Jugendlichen nutzen täglich ein Smartphone.',r:[100,500]},
+ {t:'Eine Pizza hat {G} g. Leon isst {P} g davon. Wie viel Prozent der Pizza sind das?',a:'Leon isst {p} der Pizza.',r:[300,600]},
+ {t:'Beim Vokabeltest gibt es {G} Wörter. Mia weiß {P} davon. Wie viel Prozent sind das?',a:'Mia weiß {p} der Wörter.',r:[20,100]},
+ {t:'Eine Klassenparty kostet {G} €. Die Eltern übernehmen {P} €. Wie viel Prozent der Kosten sind das?',a:'Die Eltern übernehmen {p} der Kosten.',r:[100,400],m:1}];
 const PRK=[
  {t:'Tobias hilft beim Abladen von Sand. {P} kg haben sie schon geschafft. Das sind {p}. Wie viel kg Sand waren insgesamt auf dem LKW?',a:'Auf dem LKW waren {G} kg Sand.',r:[200,1000]},
  {t:'Philipp hat beim Kauf eines Computerspiels {p} gespart, das sind {P} €. Wie teuer war das Spiel vorher?',a:'Das Spiel hat vorher {G} € gekostet.',r:[20,100],m:1},
@@ -1656,7 +1670,20 @@ const PRK=[
  {t:'In einer Stadt sprechen {P} Personen eine zweite Sprache. Das sind {p} der Einwohner. Wie viele Einwohner hat die Stadt?',a:'Die Stadt hat {G} Einwohner.',r:[2000,20000]},
  {t:'Beim Training sind {P} Kinder anwesend. Das sind {p} aller Kinder im Verein. Wie viele Kinder hat der Verein?',a:'Der Verein hat {G} Kinder.',r:[40,200]},
  {t:'Laufschuhe wurden um {p} verbilligt. Die Ersparnis beträgt {P} €. Wie teuer waren die Schuhe vorher?',a:'Die Schuhe haben vorher {G} € gekostet.',r:[40,200],m:1},
- {t:'Beim Einkauf spart Tim mit einem Gutschein {P} €. Das sind {p} des Einkaufs. Wie teuer war der Einkauf ohne Gutschein?',a:'Der Einkauf hat ohne Gutschein {G} € gekostet.',r:[40,200],m:1}];
+ {t:'Eine Jacke wurde um {p} billiger. Emma spart dadurch {P} €. Was hat die Jacke vorher gekostet?',a:'Die Jacke hat vorher {G} € gekostet.',r:[40,200],m:1},
+ {t:'Das Handy von Ben hat noch {p} Akku. Das sind {P} mAh. Wie viele mAh hat der Akku insgesamt?',a:'Der Akku hat insgesamt {G} mAh.',r:[3000,5000]},
+ {t:'{P} Follower von Sophie sind in ihrer Klasse. Das sind {p} aller Follower. Wie viele Follower hat Sophie insgesamt?',a:'Sophie hat insgesamt {G} Follower.',r:[100,500]},
+ {t:'Das Team hat {P} Spiele gewonnen. Das sind {p} aller Spiele. Wie viele Spiele hat das Team gespielt?',a:'Das Team hat {G} Spiele gespielt.',r:[20,40]},
+ {t:'Bei einem Download sind {P} MB geladen. Das sind {p} der Datei. Wie groß ist die Datei insgesamt?',a:'Die Datei hat {G} MB.',r:[400,2000]},
+ {t:'Beim Vokabeltest hat Mia {P} Wörter richtig. Das sind {p} aller Wörter. Wie viele Wörter waren im Test?',a:'Im Test waren {G} Wörter.',r:[20,100]},
+ {t:'Auf dem Schulball sind {P} Schülerinnen und Schüler. Das sind {p} aller Besucher. Wie viele Besucher sind es insgesamt?',a:'Es sind insgesamt {G} Besucher.',r:[100,500]},
+ {t:'Elias hat {P} € für ein Konzert gespart. Das sind {p} des Ticketpreises. Wie viel kostet das Ticket?',a:'Das Ticket kostet {G} €.',r:[40,200],m:1},
+ {t:'{P} Kinder der Klasse fahren mit dem Bus zur Schule. Das sind {p} der Klasse. Wie viele Kinder sind in der Klasse?',a:'In der Klasse sind {G} Kinder.',r:[20,30]},
+ {t:'Eine Schülerin gibt {P} € für Snacks aus. Das sind {p} ihres Taschengelds. Wie viel Taschengeld hat sie?',a:'Sie hat {G} € Taschengeld.',r:[20,100],m:1},
+ {t:'Bei einem Lauf hat Noah schon {P} m geschafft. Das sind {p} der Strecke. Wie lang ist die ganze Strecke?',a:'Die Strecke ist {G} m lang.',r:[400,2000]},
+ {t:'Ein Streaming-Abo wird mit dem Schülerrabatt um {P} € billiger. Das sind {p} vom normalen Preis. Wie viel kostet es normalerweise?',a:'Es kostet normalerweise {G} €.',r:[10,20],m:1},
+ {t:'Im Schwimmbad sind {P} Jugendliche. Das sind {p} aller Besucher. Wie viele Besucher sind im Schwimmbad?',a:'Im Schwimmbad sind {G} Besucher.',r:[200,1000]},
+ {t:'Für die Klassenfahrt hat die Klasse {P} € gesammelt. Das sind {p} der Gesamtkosten. Wie hoch sind die Gesamtkosten?',a:'Die Gesamtkosten betragen {G} €.',r:[200,1000],m:1}];
 const PRI=[['Buch',10],['Zeitung',10],['Brot',10],['Zeitschrift',10],['Fernseher',20],['Jeans',20],['Handy',20],['Fahrrad',20],['Laptop',20],['Sessel',20],['Schuhe',20],['Lampe',20]];
 const PRTH=[
  {n:'Lieblingssport',i:'Die Kinder einer Klasse wurden nach ihrem Lieblingssport gefragt:',c:['Fußball','Schwimmen','Tanzen','Radfahren','Reiten'],l:'Die übrigen mögen am liebsten'},
