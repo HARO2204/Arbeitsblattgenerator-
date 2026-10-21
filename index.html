@@ -1858,7 +1858,7 @@ function pbGen(it){const n=+it.n||6,lv=+it.lv||1,md=it.md||'tab';
  const one=()=>{const p=lv===3?(Math.random()<.2?tpick([110,120,125,150,175,200,250]):kri(1,99)):tpick(PBP[lv]),gg=tgcd(p,100),nn=p/gg,dd=100/gg,k=md==='mix'?tpick(['pb','bp','pd','dp']):md;return {p,n:nn,d:dd,dec:pn(p/100),k,g:tpick(['p','b','d'])};};
  const seen=new Set(),o=[];let gd=0;while(o.length<n&&gd++<400){const r=one();if(!seen.has(r.p)){seen.add(r.p);o.push(r);}}it.d=o;}
 function pbBlock(it){const s=tlS(it),lb=i=>nlab(it,i,'a'),F=r=>r.d===1?String(r.n):frc(r.n,r.d),b=v=>`<span class="tlln" style="display:inline-block;min-width:4.5em;min-height:1.5em;text-align:center">${tlSv(it,v)}</span>`;let h;
- if(it.md==='tab'){const cell=(r,c)=>{const v=c==='p'?r.p+' %':c==='b'?F(r):r.dec;return r.g===c?v:`<span class="tlln" style="display:block;min-height:1.6em;text-align:center">${tlSv(it,v)}</span>`;};
+ if(it.md==='tab'){const cell=(r,c)=>{const v=c==='p'?r.p+' %':c==='b'?F(r):r.dec;return r.g===c?v:`<span style="display:block;min-height:1.6em;text-align:center">${tlSv(it,v)}</span>`;};
   h=`<table class="tltb"><tr><th>Prozent</th><th>Bruch</th><th>Dezimalzahl</th></tr>${it.d.map(r=>`<tr style="height:2.4em"><td style="text-align:center">${cell(r,'p')}</td><td style="text-align:center">${cell(r,'b')}</td><td style="text-align:center">${cell(r,'d')}</td></tr>`).join('')}</table>`;}
  else h=tlGrid(+it.co||2,it.d.map((r,i)=>{const L={pb:[r.p+' %',F(r)],bp:[F(r),r.p+' %'],pd:[r.p+' %',r.dec],dp:[r.dec,r.p+' %']}[r.k];return `<div class="tlrw"><b>${lb(i)}</b><span>${L[0]} =</span><span class="tlln" style="flex:1;min-width:4em;text-align:center">${tlSv(it,L[1])}</span></div>`;}).join(''));
  return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
