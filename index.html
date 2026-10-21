@@ -26,6 +26,7 @@ main{flex:1;overflow:auto;padding:20px}
 #hd{position:absolute;left:40px;right:40px;top:30px;font-size:17px;display:none;justify-content:space-between}
 .item{position:absolute;cursor:move}
 .item.sel{outline:2px dashed var(--acc);outline-offset:3px}
+.pxb{display:none;position:absolute;left:-32px;top:-2px;flex-direction:column;gap:3px;z-index:7}.item.sel .pxb{display:flex}.pxb button{font:13px system-ui,sans-serif;line-height:1;padding:3px 6px;border:1px solid var(--acc);background:#fff;color:var(--acc);border-radius:6px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.2)}.pxb button:hover{background:var(--acc);color:#fff}
 .trash{display:none;position:absolute;top:2px;right:2px;z-index:5;width:26px;height:26px;padding:0;border:1px solid #c33;border-radius:50%;background:#fff;font-size:14px;line-height:1;cursor:pointer}
 .item.sel .trash{display:block}
 .gh{display:flex;position:absolute;z-index:30;gap:4px;white-space:nowrap}body.pv .gh{display:none}@media print{.gh{display:none!important}}.gh button{font:12px system-ui,sans-serif;padding:3px 7px;border:1px solid #2f6fed;background:#fff;color:#2f6fed;border-radius:5px;cursor:pointer}.gh button.mv{cursor:grab;background:#2f6fed;color:#fff}
@@ -1700,16 +1701,22 @@ const PRRO=[
  {t:'Von {G} Schülern sind {p} begeistert. Das sind {P} Schüler.',u:['Schüler','Schüler'],r:[40,200]},
  {t:'Ein LKW hat {G} kg Sand geladen. {p} sind abgeladen. Das sind {P} kg.',u:['kg','kg'],r:[200,800]}];
 function prSplit(n,lv,nc){const st=lv===3?1:lv===2?5:10,tot=100/st;if(nc>tot)nc=tot;let c;do{c=Array(nc).fill(1);for(let i=0;i<tot-nc;i++)c[kri(0,nc-1)]++;}while(lv===1&&Math.max(...c)>6&&false);return c.map(x=>x*st);}
+const PRL={prw:()=>PRW,prs:()=>PRS,prk:()=>PRK};
+function prMk1(k,lv,t){const p=prP(lv),G=prG(p,t.r[0],t.r[1],t.m,lv),P=Math.round(G*p)/100,fm=t.m?pe:pn;
+   const f=s=>s.replace(/\{G\}/g,fm(G)).replace(/\{P\}/g,fm(P)).replace(/\{Q\}/g,fm(G-P)).replace(/\{p\}/g,p+' %');
+   const calc=k==='prw'?(t.rest?`${fm(G)} : 100 · ${p} = ${fm(P)}; ${fm(G)} − ${fm(P)} = ${fm(G-P)}`:`${fm(G)} : 100 · ${p} = ${fm(P)}`):k==='prs'?`${fm(P)} : ${fm(G)} · 100 = ${p} %`:`${fm(P)} : ${p} · 100 = ${fm(G)}`;
+   return {q:f(t.t),s:calc+'. '+f(t.a),tk:t.t};}
+function prAct(id,i,w){const it=items.find(x=>x.id===id);if(!it||!it.d||!it.d[i])return;rec();
+ if(w==='del'){if(it.d.length<=1){gDel(it);return;}it.d.splice(i,1);it.n=it.d.length;}
+ else{const used=new Set(it.d.map(d=>d.tk)),all=PRL[it.type](),fr=all.filter(t=>!used.has(t.t));it.d[i]=prMk1(it.type,+it.lv||1,tpick(fr.length?fr:all));}
+ render();if(sel===id)renderPr();}
 function prGen(it){const k=it.type,n=+it.n||1,lv=+it.lv||1;
  if(k==='prd'){const N=it.fm==='str'?20:100;it.d=tuniq(n,()=>{let p=lv===1?10*kri(1,9):prP(lv);if(N===20)p=Math.max(5,Math.round(p/5)*5);return p;});}
  else if(k==='prg'){const nc=Math.max(3,Math.min(5,+it.nc||4)),th=tshuf(PRTH);
   it.d=Array.from({length:n},(_,i)=>{const T=th[i%th.length],cats=T.c.slice(0,nc).length<nc?T.c:tshuf(T.c).slice(0,nc);return {th:T.n,i:T.i,l:T.l,c:cats,v:prSplit(100,lv,cats.length)};});}
  else if(k==='prw'||k==='prs'||k==='prk'){const pool=tshuf({prw:PRW,prs:PRS,prk:PRK}[k]);
   if(it.fm==='rech'){it.d=tuniq(n,()=>{const p=prP(lv),G=prG(p,20,500,false,lv===3?2:lv),P=G*p/100;return k==='prw'?{l:`${p} % von ${pn(G)} =`,s:pn(P),u:''}:k==='prs'?{l:`${pn(P)} von ${pn(G)} =`,s:String(p),u:' %'}:{l:`${pn(P)} sind ${p} %. Grundwert:`,s:pn(G),u:''};});}
-  else it.d=Array.from({length:n},(_,i)=>{const t=pool[i%pool.length],p=prP(lv),G=prG(p,t.r[0],t.r[1],t.m,lv),P=Math.round(G*p)/100,fm=t.m?pe:pn;
-   const f=s=>s.replace(/\{G\}/g,fm(G)).replace(/\{P\}/g,fm(P)).replace(/\{Q\}/g,fm(G-P)).replace(/\{p\}/g,p+' %');
-   const calc=k==='prw'?(t.rest?`${fm(G)} : 100 · ${p} = ${fm(P)}; ${fm(G)} − ${fm(P)} = ${fm(G-P)}`:`${fm(G)} : 100 · ${p} = ${fm(P)}`):k==='prs'?`${fm(P)} : ${fm(G)} · 100 = ${p} %`:`${fm(P)} : ${p} · 100 = ${fm(G)}`;
-   return {q:f(t.t),s:calc+'. '+f(t.a)};});}
+  else it.d=Array.from({length:n},(_,i)=>prMk1(k,lv,pool[i%pool.length]));}
  else if(k==='prr'){it.d=Array.from({length:n},()=>{const kk=it.ka==='alle'?tpick(['w','s','g']):it.ka,p=prP(lv),G=prG(p,20,500,it.un==='€',lv),A=Math.round(G*p)/100;return {k:kk,p,G,A};});}
  else if(k==='prm'){const lst=PRI.filter(x=>it.sz==='alle'||x[1]===+it.sz),nm=tshuf(lst);
   it.d=Array.from({length:n},(_,i)=>{const [name,sz]=nm[i%nm.length],net=lv===1?10*kri(1,100):lv===2?kri(5,500):kri(5,2000)/10,gro=Math.round(net*(100+sz))/100,tax=Math.round((gro-net)*100)/100;
@@ -1747,7 +1754,7 @@ function prBlock(it){const k=it.type,s=tlS(it),lb=i=>nlab(it,i,'a');let h='';
    return `<div style="margin:0 0 1.2em"><b>${it.d.length>1?nlab(it,ti,'n')+' ':''}</b>${txt}<div style="display:flex;gap:1em;align-items:center;margin-top:.5em">${dg!=='streifen'?kr:''}${dg!=='kreis'?st:''}</div>${leg}</div>`;}).join('');}
  else if(k==='prw'||k==='prs'||k==='prk'){
   if(it.fm==='rech')h=tlGrid(+it.co||3,it.d.map((t,i)=>`<div class="tlrw"><b>${lb(i)}</b><span>${t.l}</span><span class="tlln" style="flex:1;min-width:3em">${tlSv(it,t.s)}</span>${t.u?`<span>${t.u}</span>`:''}</div>`).join(''));
-  else{const cw=Math.max(5,Math.floor((it.w||714)/(5*MMPX)));h=it.d.map((t,i)=>{const pc=prPicHtml(it,t,i);return `<div style="margin:0 0 1.1em${pc?';display:flex;gap:.8em;align-items:flex-start':''}">${pc?'<div style="flex:1;min-width:0">':''}<b>${nlab(it,i,'n')}</b> ${t.q}${Array.from({length:+it.rl||0},()=>'<div class="tlln" style="display:block;min-height:1.7em"></div>').join('')}${+it.kz?`<div style="margin-top:.4em">${kfSvg(cw,+it.kz,5,'heft')}</div>`:''}${it.an?`<div class="tlrw" style="margin-top:.4em"><span>Antwort:</span><span class="tlln" style="flex:1">${tlSv(it,t.s)}</span></div>`:(s?`<div class="sv">${t.s}</div>`:'')}${pc?'</div>'+pc:''}</div>`;}).join('');}}
+  else{const cw=Math.max(5,Math.floor((it.w||714)/(5*MMPX)));h=it.d.map((t,i)=>{const pc=prPicHtml(it,t,i);return `<div style="position:relative;margin:0 0 1.1em${pc?';display:flex;gap:.8em;align-items:flex-start':''}"><span class="pxb no-print"><button type="button" title="Diese Aufgabe durch eine andere ersetzen" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();prAct(${it.id},${i},'sw')">⇄</button><button type="button" title="Diese Aufgabe löschen" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();prAct(${it.id},${i},'del')">🗑</button></span>${pc?'<div style="flex:1;min-width:0">':''}<b>${nlab(it,i,'n')}</b> ${t.q}${Array.from({length:+it.rl||0},()=>'<div class="tlln" style="display:block;min-height:1.7em"></div>').join('')}${+it.kz?`<div style="margin-top:.4em">${kfSvg(cw,+it.kz,5,'heft')}</div>`:''}${it.an?`<div class="tlrw" style="margin-top:.4em"><span>Antwort:</span><span class="tlln" style="flex:1">${tlSv(it,t.s)}</span></div>`:(s?`<div class="sv">${t.s}</div>`:'')}${pc?'</div>'+pc:''}</div>`;}).join('');}}
  else if(k==='prr'){const U=it.un?' '+it.un:'',fm=it.un==='€'?pe:pn,sv=v=>tlSv(it,v);
   if(it.fm==='tab')h='<table class="tltb"><tr><th>Grundwert (G)</th><th>Prozentsatz (p)</th><th>Prozentwert (W)</th></tr>'+it.d.map(r=>`<tr><td>${r.k==='g'?sv(fm(r.G)+U):fm(r.G)+U}</td><td>${r.k==='s'?sv(r.p+' %'):r.p+' %'}</td><td>${r.k==='w'?sv(fm(r.A)+U):fm(r.A)+U}</td></tr>`).join('')+'</table>';
   else h=tlGrid(+it.co||2,it.d.map((r,i)=>{const tx=r.k==='w'?`Berechne den Prozentwert: ${r.p} % von ${fm(r.G)}${U}`:r.k==='s'?`Berechne den Prozentsatz: ${fm(r.A)}${U} von ${fm(r.G)}${U}`:`Berechne den Grundwert: ${r.p} % sind ${fm(r.A)}${U}`,sym=r.k==='w'?'W':r.k==='s'?'p':'G',res=r.k==='w'?fm(r.A)+U:r.k==='s'?r.p+' %':fm(r.G)+U;
@@ -1765,7 +1772,7 @@ function prBlock(it){const k=it.type,s=tlS(it),lb=i=>nlab(it,i,'a');let h='';
 function renderPr(){const g=$('#g-pc'),it=items.find(i=>i.id===sel&&PRT.includes(i.type));if(!g)return;
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern auf dem Blatt markieren.</div>';return;}
  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-pr="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-pr="${f}"${it[f]?' checked':''}> ${t}</label>`;
- const nn=a=>`<label>Anzahl der Aufgaben${sl('n',tN(a))}</label>`,lv=(a,t)=>`<label>${t||'Schwierigkeit'}${sl('lv',a)}</label>`;
+ const nn=a=>`<label>Anzahl der Aufgaben${sl('n',tN(a.includes(+it.n)||!(+it.n>0)?a:[...a,+it.n].sort((x,y)=>x-y)))}</label>`,lv=(a,t)=>`<label>${t||'Schwierigkeit'}${sl('lv',a)}</label>`;
  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
  if(k==='prd')H+=nn([1,2,3,4,6,8])+`<label>Darstellung${sl('fm',[['quad','Hunderterfeld (10 × 10)'],['str','Streifen (20 Felder)']])}</label><label>Aufgabe${sl('md',[['ab','Prozentsatz ablesen'],['ein','Prozentsatz einfärben']])}</label>`+lv([[1,'Zehnerprozente'],[2,'Fünferprozente'],[3,'beliebig']])+`<label>Größe${sl('sz',[[110,'klein'],[140,'mittel'],[170,'groß']])}</label>`+ck('mk','Merkkasten (100 % = das Ganze) anzeigen');
  if(k==='prg')H+=nn([1,2,3])+`<label>Diagramm${sl('dg',[['beide','Streifen und Kreis'],['kreis','nur Kreis'],['streifen','nur Streifen']])}</label><label>Aufgabe${sl('md',[['dar','Darstellen (Prozente gegeben)'],['ab','Prozente ablesen']])}</label><label>Anzahl der Gruppen${sl('nc',tN([3,4,5]))}</label>`+lv([[1,'Zehnerprozente'],[2,'Fünferprozente'],[3,'beliebig']],'Prozentsätze')+ck('sk','Skala (Teilstriche)');
