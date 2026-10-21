@@ -1164,7 +1164,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ra-act]');
 
 /* ===== Teiler: Teilbarkeit, Primfaktoren, ggT, kgV, Sieb, Sachaufgaben ===== */
 const MDT=['mm','mv','ms','v4','mz','ak','kf','ks'],VRT=['vr','vk','vl','vp','vt','vf','vs'];
-const PRT=['prd','prg','prw','prs','prk','prx','prr','prm','prz'];
+const PRT=['prd','prg','prw','prs','prk','prx','prn','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
 const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const PNT=['pnk','pnb','pnz'];const SST=['ssd','ssm','ssh','ssg','ssl','ssb'];const LWT=['lw'];const CIT=['cib','ciu','cia','cit','cis','cir','cik','cix','cil','cig','cic'];const ZRT=['zr'];const K4T=['k4b','k4w','k4p','k4z','k4y','k4k','k4g','k4x','k4f'];const MBT=['mbb','mbw','mbz','mbd','mbs','mbm'];const ZNT=['znb','zni','znq','znt','znk','znr'];
 const TLT=[...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...LWT,...ZRT,...POT,...PRT,...MDT,...VRT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
@@ -1611,8 +1611,8 @@ function autoTask(t,dy){const cb=document.getElementById('autot');if(!cb||!cb.ch
  }finally{rec=R0;}
  return true;}
 /* ===== Prozentrechnung ===== */
-Object.assign(TLD,{prr:{n:6,fm:'tab',ka:'alle',lv:1,un:'',co:2},prd:{n:2,fm:'quad',md:'ab',lv:1,sz:140,mk:false},prg:{n:1,dg:'beide',md:'dar',lv:1,sk:true,nc:4},prw:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prs:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prk:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prx:{n:6,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prm:{n:5,sz:'alle',md:'netto',lv:1,mk:false},prz:{n:5,md:'term',lv:1}});
-Object.assign(TLN,{prr:'Rechnungen (ohne Text)',prd:'Prozente darstellen',prg:'Diagramme (Kreis/Streifen)',prw:'Prozentwert berechnen',prs:'Prozentsatz berechnen',prk:'Grundwert berechnen',prx:'Prozentrechnung gemischt (W, p, G)',prm:'Mehrwertsteuer',prz:'Begriffe zuordnen'});
+Object.assign(TLD,{prr:{n:6,fm:'tab',ka:'alle',lv:1,un:'',co:2},prd:{n:2,fm:'quad',md:'ab',lv:1,sz:140,mk:false},prg:{n:1,dg:'beide',md:'dar',lv:1,sk:true,nc:4},prw:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prs:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prk:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prx:{n:6,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prn:{n:4,ar:'mix',lv:1,co:2,hh:8,mk:true},prm:{n:5,sz:'alle',md:'netto',lv:1,mk:false},prz:{n:5,md:'term',lv:1}});
+Object.assign(TLN,{prr:'Rechnungen (ohne Text)',prd:'Prozente darstellen',prg:'Diagramme (Kreis/Streifen)',prw:'Prozentwert berechnen',prs:'Prozentsatz berechnen',prk:'Grundwert berechnen',prx:'Prozentrechnung gemischt (W, p, G)',prn:'Skonto und Rabatt',prm:'Mehrwertsteuer',prz:'Begriffe zuordnen'});
 const pn=v=>{v=Math.round(v*100)/100;const s=Number.isInteger(v)?String(v):v.toFixed(2).replace(/0$/,'');const [i,d]=s.split('.');return tfm(i)+(d?','+d:'');};
 const pe=v=>{v=Math.round(v*100)/100;return Number.isInteger(v)?tfm(v):tfm(Math.trunc(v))+','+v.toFixed(2).split('.')[1];};
 const prP=lv=>lv===1?tpick([10,20,25,50,75,5,40,60,30,80]):lv===2?5*kri(1,19):kri(1,99);
@@ -1659,7 +1659,12 @@ const PRW=[
  {t:'Ein Buch kostet {G} € ohne Versand. Der Versand kostet {p} vom Buchpreis zusätzlich. Wie viel Euro muss man insgesamt zahlen?',a:'Man muss insgesamt {R} € zahlen.',pm:20,r:[10,40],m:1,plus:1},
  {t:'Bei der Produktion von Schrauben entstehen üblicherweise {p} Ausschuss. Es werden {G} Schrauben hergestellt. Wie viele Schrauben sind Ausschuss?',a:'{P} Schrauben sind Ausschuss.',pm:10,r:[1000,5000]},
  {t:'Bei einer Wahl wurden {G} Stimmen abgegeben. Eine Partei erhielt {p} der Stimmen. Wie viele Stimmen waren das?',a:'Die Partei erhielt {P} Stimmen.',pm:60,r:[2000,20000]},
- {t:'Eine Klasse mit {G} Kindern schreibt einen Test. {p} der Kinder haben mindestens eine 3. Wie viele Kinder sind das?',a:'{P} Kinder haben mindestens eine 3.',r:[20,30]}];
+ {t:'Eine Klasse mit {G} Kindern schreibt einen Test. {p} der Kinder haben mindestens eine 3. Wie viele Kinder sind das?',a:'{P} Kinder haben mindestens eine 3.',r:[20,30]},
+ {t:'Von den {G} Beschäftigten einer Firma sind {p} Frauen. Wie viele Frauen und wie viele Männer arbeiten in dieser Firma?',a:'Es arbeiten {P} Frauen und {Q} Männer in der Firma.',pm:60,r:[100,500],rest:1},
+ {t:'In einer Klasse mit {G} Schülerinnen und Schülern sind {p} Mädchen. Wie viele Mädchen und wie viele Buben gehen in diese Klasse?',a:'Es gehen {P} Mädchen und {Q} Buben in die Klasse.',pm:60,r:[20,30],rest:1},
+ {t:'Familie Huber hat ein Nettoeinkommen von {G} € im Monat. {p} davon braucht sie für Nahrungsmittel. Wie viel Euro sind das?',a:'Sie braucht {P} € für Nahrungsmittel.',pm:40,r:[2000,4000],m:1},
+ {t:'Ein Landwirt besitzt {G} ha Land. {p} davon sind Wald. Wie viel ha Wald sind das?',a:'Es sind {P} ha Wald.',pm:60,r:[20,100]},
+ {t:'Ein Fahrrad kostet {G} €. Da das Modell aufgelassen wird, bekommt Gerhard {p} Preisnachlass. Wie viel Euro wird ihm nachgelassen?',a:'Ihm werden {P} € nachgelassen.',pm:30,r:[200,600],m:1}];
 const PRS=[
  {t:'In Minas Klasse tragen {P} von {G} Kindern eine Brille. Welchem Prozentsatz entspricht das?',a:'{p} der Kinder tragen eine Brille.',r:[20,30]},
  {t:'Ein Skateboard kostet {G} €. Jetzt kostet es nur noch {Q} €. Um wie viel Prozent ist es billiger geworden?',a:'Das Skateboard ist um {p} billiger geworden.',r:[40,200],m:1},
@@ -1686,7 +1691,11 @@ const PRS=[
  {t:'Ein Metzger verkauft Fleisch um {G} €. Der Kunde bekommt {P} € Rabatt. Wie viel Prozent Rabatt sind das?',a:'Der Rabatt beträgt {p}.',pm:30,r:[40,200],m:1},
  {t:'Ein Verein nimmt {G} € ein und muss davon {P} € Steuer bezahlen. Wie viel Prozent sind das?',a:'Die Steuer beträgt {p}.',pm:30,r:[1000,3000],m:1},
  {t:'Ein Gast gibt bei einer Rechnung von {G} € genau {P} € Trinkgeld. Wie viel Prozent der Rechnung sind das?',a:'Das Trinkgeld beträgt {p}.',pm:20,r:[20,100],m:1},
- {t:'Bei der Produktion von {G} Schrauben sind {P} unbrauchbar. Wie viel Prozent Ausschuss sind das?',a:'Der Ausschuss beträgt {p}.',pm:10,r:[1000,5000]}];
+ {t:'Bei der Produktion von {G} Schrauben sind {P} unbrauchbar. Wie viel Prozent Ausschuss sind das?',a:'Der Ausschuss beträgt {p}.',pm:10,r:[1000,5000]},
+ {t:'Ein Fahrrad kostet {G} €. Da das Modell aufgelassen wird, bekommt Gerhard einen Preisnachlass von {P} €. Wie viel Prozent des Preises wird ihm nachgelassen?',a:'Ihm werden {p} des Preises nachgelassen.',pm:40,r:[200,600],m:1},
+ {t:'Tamara erreicht bei einem Test {P} von {G} möglichen Punkten. Wie viel Prozent der Punkte sind das?',a:'Tamara erreicht {p} der Punkte.',r:[20,60]},
+ {t:'Familie Eder verbraucht für Nahrungsmittel monatlich {P} € von ihrem Nettoeinkommen von {G} €. Wie viel Prozent des Einkommens sind das?',a:'Das sind {p} des Nettoeinkommens.',pm:40,r:[2000,4000],m:1},
+ {t:'Von {G} Beschäftigten einer Firma sind {P} Frauen. Wie viel Prozent der Beschäftigten sind Frauen?',a:'{p} der Beschäftigten sind Frauen.',r:[100,500]}];
 const PRK=[
  {t:'Tobias hilft beim Abladen von Sand. {P} kg haben sie schon geschafft. Das sind {p}. Wie viel kg Sand waren insgesamt auf dem LKW?',a:'Auf dem LKW waren {G} kg Sand.',r:[200,1000]},
  {t:'Philipp hat beim Kauf eines Computerspiels {p} gespart, das sind {P} €. Wie teuer war das Spiel vorher?',a:'Das Spiel hat vorher {G} € gekostet.',r:[20,100],m:1},
@@ -1712,7 +1721,11 @@ const PRK=[
  {t:'Bei der Produktion von Schrauben waren {P} unbrauchbar. Das sind {p} Ausschuss. Wie viele Schrauben wurden produziert?',a:'Es wurden {G} Schrauben produziert.',pm:10,r:[1000,5000]},
  {t:'Ein Verein muss {P} € Steuer bezahlen. Das sind {p} der Einnahmen. Wie hoch waren die Einnahmen?',a:'Die Einnahmen waren {G} €.',pm:30,r:[1000,3000],m:1},
  {t:'Ein Gast gibt {P} € Trinkgeld. Das sind {p} der Rechnung. Wie hoch war die Rechnung?',a:'Die Rechnung betrug {G} €.',pm:20,r:[20,100],m:1},
- {t:'Das Korbgewicht beträgt {P} kg. Das sind {p} des Gesamtgewichts. Wie schwer ist der Korb mit den Äpfeln insgesamt?',a:'Der Korb mit den Äpfeln wiegt {G} kg.',pm:10,r:[10,40]}];
+ {t:'Das Korbgewicht beträgt {P} kg. Das sind {p} des Gesamtgewichts. Wie schwer ist der Korb mit den Äpfeln insgesamt?',a:'Der Korb mit den Äpfeln wiegt {G} kg.',pm:10,r:[10,40]},
+ {t:'Familie Eder verbraucht für Nahrungsmittel monatlich {P} €, das sind {p} des monatlichen Nettoeinkommens. Wie hoch ist das monatliche Nettoeinkommen?',a:'Das Nettoeinkommen beträgt {G} €.',pm:40,r:[2000,4000],m:1},
+ {t:'Landwirt Baumgartner besitzt {P} ha Wald. Das sind {p} seines gesamten Besitzes. Wie viel ha besitzt Herr Baumgartner insgesamt?',a:'Herr Baumgartner besitzt insgesamt {G} ha.',r:[20,100]},
+ {t:'In einer Firma sind {P} Frauen beschäftigt. Das sind {p} aller Beschäftigten. Wie viele Beschäftigte hat die Firma?',a:'Die Firma hat {G} Beschäftigte.',pm:60,r:[100,500]},
+ {t:'Gerhard bekommt {P} € Preisnachlass auf ein Fahrrad. Das sind {p} des Preises. Wie viel kostet das Fahrrad ohne Nachlass?',a:'Das Fahrrad kostet ohne Nachlass {G} €.',pm:30,r:[200,600],m:1}];
 const PRI=[['Buch',10],['Zeitung',10],['Brot',10],['Zeitschrift',10],['Fernseher',20],['Jeans',20],['Handy',20],['Fahrrad',20],['Laptop',20],['Sessel',20],['Schuhe',20],['Lampe',20]];
 const PRTH=[
  {n:'Lieblingssport',i:'Die Kinder einer Klasse wurden nach ihrem Lieblingssport gefragt:',c:['Fußball','Schwimmen','Tanzen','Radfahren','Reiten'],l:'Die übrigen mögen am liebsten'},
@@ -1729,16 +1742,41 @@ const PRRO=[
  {t:'Von {G} Schülern sind {p} begeistert. Das sind {P} Schüler.',u:['Schüler','Schüler'],r:[40,200]},
  {t:'Ein LKW hat {G} kg Sand geladen. {p} sind abgeladen. Das sind {P} kg.',u:['kg','kg'],r:[200,800]}];
 function prSplit(n,lv,nc){const st=lv===3?1:lv===2?5:10,tot=100/st;if(nc>tot)nc=tot;let c;do{c=Array(nc).fill(1);for(let i=0;i<tot-nc;i++)c[kri(0,nc-1)]++;}while(lv===1&&Math.max(...c)>6&&false);return c.map(x=>x*st);}
+const PRN=[
+ ['s','Eine Halskette kostet {G} €. Bei Bezahlung in bar werden {p} Skonto abgezogen.','kostet die Halskette',[200,900]],
+ ['s','Eine Autoreparatur kostet {G} €. Zahlt man sofort in bar, so werden {p} Skonto abgezogen.','kostet die Autoreparatur',[500,3000]],
+ ['s','Ein Handy kostet {G} €. Bei Barzahlung bekommt man {p} Skonto.','kostet das Handy',[200,900]],
+ ['s','Eine Spielkonsole kostet {G} €. Wer sofort bezahlt, bekommt {p} Skonto.','kostet die Spielkonsole',[200,600]],
+ ['s','Ein Fahrrad kostet {G} €. Bei Zahlung innerhalb von 8 Tagen werden {p} Skonto abgezogen.','kostet das Fahrrad',[300,1200]],
+ ['s','Eine Klassenfahrt kostet {G} €. Bei rascher Überweisung gibt es {p} Skonto.','kostet die Klassenfahrt',[200,600]],
+ ['s','Ein Gaming-PC kostet {G} €. Wenn man sofort in bar zahlt, werden {p} Skonto abgezogen.','kostet der Gaming-PC',[600,2000]],
+ ['s','Ein Sofa kostet {G} €. Bei sofortiger Zahlung gibt es {p} Skonto.','kostet das Sofa',[400,1500]],
+ ['r','Eine Jacke um {G} € wird im Winterschlussverkauf um {p} verbilligt.','kostet die Jacke',[60,300]],
+ ['r','Ein Laptop um {G} € wird im Abverkauf um {p} ermäßigt.','kostet der Laptop',[400,1500]],
+ ['r','Sneaker um {G} € werden im Schlussverkauf um {p} billiger.','kosten die Sneaker',[60,200]],
+ ['r','Ein Skateboard um {G} € wird im Sommerschlussverkauf um {p} reduziert.','kostet das Skateboard',[50,150]],
+ ['r','Eine Kopfhörer-Box um {G} € bekommt im Abverkauf {p} Rabatt.','kostet die Kopfhörer-Box',[40,300]],
+ ['r','Ein Schulrucksack um {G} € wird zu Schulbeginn um {p} verbilligt.','kostet der Schulrucksack',[40,120]],
+ ['r','Ein Fernseher um {G} € wird wegen eines Ausstellungsstücks um {p} ermäßigt.','kostet der Fernseher',[300,1200]],
+ ['r','Ein Paar Skischuhe um {G} € wird am Saisonende um {p} reduziert.','kosten die Skischuhe',[150,500]]];
+function prnMk1(it,t){const lv=+it.lv||1,sk=t[0]==='s',p=sk?tpick(lv===1?[2,3]:[2,3,4,5]):tpick(lv===1?[10,20,25,50]:lv===2?[10,15,20,25,30,40]:[8,12,15,18,23,28,35]);
+ const st=lv===1?100:lv===2?10:1,G=st*kri(Math.ceil(t[3][0]/st),Math.floor(t[3][1]/st)),Q=Math.round(G*(100-p))/100,P=Math.round((G-Q)*100)/100,f=((100-p)/100).toFixed(2).replace('.',',');
+ return {tk:t[1],q:t[1].replace('{G}',pe(G)).replace('{p}',p+' %')+`<br>Wie viel ${t[2]} ${sk?'danach':'nun'}?<br>Wie viel € wurden nachgelassen?`,s:`${pe(G)} · ${f} = ${pe(Q)} €. Nachlass: ${pe(G)} − ${pe(Q)} = ${pe(P)} €`};}
+function prnGen(it){const n=+it.n||2,ar=it.ar||'mix',lst=PRN.filter(t=>ar==='mix'||(ar==='sk'?t[0]==='s':t[0]==='r'));
+ if(ar==='mix'){const a=tshuf(PRN.filter(t=>t[0]==='s')),b=tshuf(PRN.filter(t=>t[0]==='r')),o=[];for(let i=0;i<n;i++)o.push(i%2?b[(i>>1)%b.length]:a[(i>>1)%a.length]);it.d=o.map(t=>prnMk1(it,t));}
+ else{const a=tshuf(lst);it.d=Array.from({length:n},(_,i)=>prnMk1(it,a[i%a.length]));}}
 const PRL={prw:()=>PRW,prs:()=>PRS,prk:()=>PRK,prx:()=>PRW.concat(PRS,PRK)};
 function prMk1(k,lv,t){if(k==='prx')k=PRW.includes(t)?'prw':PRS.includes(t)?'prs':'prk';let p=prP(lv);if(t.pm){for(let i=0;i<60&&p>t.pm;i++)p=prP(lv);if(p>t.pm)p=lv===1?10:5;}const G=prG(p,t.r[0],t.r[1],t.m,lv),P=Math.round(G*p)/100,fm=t.m?pe:pn;
    const f=s=>s.replace(/\{G\}/g,fm(G)).replace(/\{P\}/g,fm(P)).replace(/\{Q\}/g,fm(G-P)).replace(/\{R\}/g,fm(G+P)).replace(/\{p\}/g,p+' %');
    const calc=k==='prw'?(t.plus?`${fm(G)} : 100 · ${p} = ${fm(P)}; ${fm(G)} + ${fm(P)} = ${fm(G+P)}`:t.rest?`${fm(G)} : 100 · ${p} = ${fm(P)}; ${fm(G)} − ${fm(P)} = ${fm(G-P)}`:`${fm(G)} : 100 · ${p} = ${fm(P)}`):k==='prs'?`${fm(P)} : ${fm(G)} · 100 = ${p} %`:`${fm(P)} : ${p} · 100 = ${fm(G)}`;
    return {q:f(t.t),s:calc+'. '+f(t.a),tk:t.t};}
 function prAct(id,i,w){const it=items.find(x=>x.id===id);if(!it||!it.d||!it.d[i])return;rec();
+ if(w==='sw'&&it.type==='prn'){const used=new Set(it.d.map(d=>d.tk)),ar=it.ar||'mix',all=PRN.filter(t=>ar==='mix'||(ar==='sk'?t[0]==='s':t[0]==='r')),fr=all.filter(t=>!used.has(t[1])),cur=it.d[i],kind=PRN.find(t=>t[1]===cur.tk),pool=(fr.length?fr:all).filter(t=>!kind||ar!=='mix'||t[0]===kind[0]);it.d[i]=prnMk1(it,tpick(pool.length?pool:(fr.length?fr:all)));render();if(sel===id)renderPr();return;}
  if(w==='del'){if(it.d.length<=1){gDel(it);return;}it.d.splice(i,1);it.n=it.d.length;}
  else{const used=new Set(it.d.map(d=>d.tk)),all=PRL[it.type](),fr=all.filter(t=>!used.has(t.t));it.d[i]=prMk1(it.type,+it.lv||1,tpick(fr.length?fr:all));}
  render();if(sel===id)renderPr();}
 function prGen(it){const k=it.type,n=+it.n||1,lv=+it.lv||1;
+ if(k==='prn'){prnGen(it);return;}
  if(k==='prd'){const N=it.fm==='str'?20:100;it.d=tuniq(n,()=>{let p=lv===1?10*kri(1,9):prP(lv);if(N===20)p=Math.max(5,Math.round(p/5)*5);return p;});}
  else if(k==='prg'){const nc=Math.max(3,Math.min(5,+it.nc||4)),th=tshuf(PRTH);
   it.d=Array.from({length:n},(_,i)=>{const T=th[i%th.length],cats=T.c.slice(0,nc).length<nc?T.c:tshuf(T.c).slice(0,nc);return {th:T.n,i:T.i,l:T.l,c:cats,v:prSplit(100,lv,cats.length)};});}
@@ -1787,6 +1825,8 @@ function prBlock(it){const k=it.type,s=tlS(it),lb=i=>nlab(it,i,'a');let h='';
   if(it.fm==='tab')h='<table class="tltb"><tr><th>Grundwert (G)</th><th>Prozentsatz (p)</th><th>Prozentwert (W)</th></tr>'+it.d.map(r=>`<tr><td>${r.k==='g'?sv(fm(r.G)+U):fm(r.G)+U}</td><td>${r.k==='s'?sv(r.p+' %'):r.p+' %'}</td><td>${r.k==='w'?sv(fm(r.A)+U):fm(r.A)+U}</td></tr>`).join('')+'</table>';
   else h=tlGrid(+it.co||2,it.d.map((r,i)=>{const tx=r.k==='w'?`Berechne den Prozentwert: ${r.p} % von ${fm(r.G)}${U}`:r.k==='s'?`Berechne den Prozentsatz: ${fm(r.A)}${U} von ${fm(r.G)}${U}`:`Berechne den Grundwert: ${r.p} % sind ${fm(r.A)}${U}`,sym=r.k==='w'?'W':r.k==='s'?'p':'G',res=r.k==='w'?fm(r.A)+U:r.k==='s'?r.p+' %':fm(r.G)+U;
    return `<div><b>${lb(i)}</b> ${tx}<div class="tlrw"><span>Rechnung:</span><span class="tlln" style="flex:1"></span></div><div class="tlrw"><span>${sym} =</span><span class="tlln" style="flex:1">${sv(res)}</span></div></div>`;}).join(''));}
+ else if(k==='prn'){const co=+it.co||2,hh=+it.hh||0,box=(t,i)=>`<div style="position:relative;border:1.4px solid #000;padding:.5em .7em;min-height:${(hh*1.7+5).toFixed(1)}em;break-inside:avoid"><span class="pxb no-print"><button type="button" title="Diese Aufgabe durch eine andere ersetzen" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();prAct(${it.id},${i},'sw')">⇄</button><button type="button" title="Diese Aufgabe löschen" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();prAct(${it.id},${i},'del')">🗑</button></span>${t.q}${s?`<div class="sv" style="margin-top:.5em">${t.s}</div>`:''}</div>`;
+  h=(it.mk?'<div style="border:1px solid #333;background:#c9d8f0;padding:.7em 1em;margin:0 0 1em;line-height:1.7"><b>Skonto:</b><br>Kleiner Preisnachlass bei (sofortiger) Zahlung oder bei Einhaltung einer kurzen Zahlungsfrist.<br>z. B. −3 % → Änderungsfaktor 0,97 → Preis · 0,97 =<div style="height:.7em"></div><b>Rabatt:</b><br>Großer Preisnachlass unter bestimmten Bedingungen (z. B. Schlussverkauf).<br>z. B. −20 % → Änderungsfaktor 0,80 → Preis · 0,80 =</div>':'')+`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:1em">${it.d.map(box).join('')}</div>`;}
  else if(k==='prm'){const f=(v,g)=>g?pe(v)+' €':'';
   h=(it.mk?'<div style="border:1.4px solid #000;border-radius:4px;padding:.5em .8em;margin:0 0 1em"><b>Merke: Mehrwertsteuer</b><br>Bei jedem Einkauf wird ein Anteil des Preises als Mehrwertsteuer an den Staat bezahlt. Den Preis <b>mit</b> Mehrwertsteuer nennt man <b>Bruttopreis</b>, den Preis <b>ohne</b> Mehrwertsteuer <b>Nettopreis</b>. Es gilt: Nettopreis + Mehrwertsteuer = Bruttopreis. In Österreich zahlt man z. B. für Bücher, Zeitungen und Brot 10 % Mehrwertsteuer, für Kleidung, Möbel, Handys und Fernseher 20 %.</div>':'')+
   `<table class="tltb"><tr><th style="width:22%">Artikel</th><th>MwSt-Satz</th><th>Nettopreis</th>${it.ct===false?'':'<th>Mehrwertsteuer</th>'}<th>Bruttopreis</th></tr>`+it.d.map(r=>`<tr><td>${r.nm}</td><td>${r.sz} %</td><td>${r.g==='n'?pe(r.net)+' €':tlSv(it,pe(r.net)+' €')}</td>${it.ct===false?'':`<td>${tlSv(it,pe(r.tax)+' €')}</td>`}<td>${r.g==='b'?pe(r.gro)+' €':tlSv(it,pe(r.gro)+' €')}</td></tr>`).join('')+'</table>';}
@@ -1806,18 +1846,19 @@ function renderPr(){const g=$('#g-pc'),it=items.find(i=>i.id===sel&&PRT.includes
  if(k==='prg')H+=nn([1,2,3])+`<label>Diagramm${sl('dg',[['beide','Streifen und Kreis'],['kreis','nur Kreis'],['streifen','nur Streifen']])}</label><label>Aufgabe${sl('md',[['dar','Darstellen (Prozente gegeben)'],['ab','Prozente ablesen']])}</label><label>Anzahl der Gruppen${sl('nc',tN([3,4,5]))}</label>`+lv([[1,'Zehnerprozente'],[2,'Fünferprozente'],[3,'beliebig']],'Prozentsätze')+ck('sk','Skala (Teilstriche)');
  if(k==='prw'||k==='prs'||k==='prk'||k==='prx')H+=nn([1,2,3,4,5,6,8,9,12])+`<label>Form${sl('fm',[['text','Sachaufgaben'],['rech','Rechenaufgaben']])}</label>`+lv([[1,'leicht (runde Zahlen)'],[2,'mittel'],[3,'schwer (auch Dezimalzahlen)']])+(it.fm==='rech'?`<label>Spalten${sl('co',tN([2,3,4]))}</label>`:`<label>Bilder${sl('pimg',[['none','keine'],['pct','Buntes Prozentzeichen'],['bild','Bild zum Thema']])}</label><label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label><label>Karo-Rechenfeld (Zeilen)${sl('kz',tN([0,3,5,8,10]))}</label>`+ck('an','Antwortfeld'));
  if(k==='prr')H+=nn([2,4,6,8,10,12])+`<label>Form${sl('fm',[['tab','Tabelle (G, p, W)'],['zeil','Einzelne Rechnungen']])}</label><label>Gesucht ist${sl('ka',[['alle','gemischt'],['w','Prozentwert (W)'],['s','Prozentsatz (p)'],['g','Grundwert (G)']])}</label>`+lv([[1,'leicht (runde Zahlen)'],[2,'mittel'],[3,'schwer']])+`<label>Einheit${sl('un',[['','keine'],['€','€'],['kg','kg'],['m','m'],['g','g']])}</label>`+(it.fm==='zeil'?`<label>Spalten${sl('co',tN([1,2,3]))}</label>`:'');
+ if(k==='prn')H+=nn([1,2,3,4,6,8])+`<label>Aufgabenart${sl('ar',[['mix','Skonto und Rabatt'],['sk','nur Skonto'],['ra','nur Rabatt']])}</label>`+lv([[1,'leicht (runde Preise, wenige Prozent)'],[2,'mittel'],[3,'schwer (beliebige Preise)']])+`<label>Spalten${sl('co',tN([1,2]))}</label><label>Platz zum Rechnen${sl('hh',tN([0,4,6,8,10,12]))}</label>`+ck('mk','Merkkasten (Skonto und Rabatt) anzeigen');
  if(k==='prm')H+=nn([3,4,5,6,8])+`<label>Steuersatz${sl('sz',[['alle','10 % und 20 %'],['10','nur 10 %'],['20','nur 20 %']])}</label><label>Gegeben ist${sl('md',[['netto','Nettopreis (MwSt und Brutto gesucht)'],['brutto','Bruttopreis (Netto und MwSt gesucht)'],['mix','gemischt']])}</label>`+lv([[1,'runde Preise'],[2,'ganze Euro'],[3,'mit Cent']],'Preise')+`<label class="ck"><input type="checkbox" data-pr="ct"${it.ct!==false?' checked':''}> Spalte „Mehrwertsteuer“ anzeigen</label>`+ck('mk','Merkkasten anzeigen');
  if(k==='prz')H+=`<label>Aufgabe${sl('md',[['term','Begriffe mit Erklärungen verbinden'],['rolle','Zahlen in Sachaufgaben zuordnen (G, p, W)'],['unter','Farbig unterstreichen (G, p, W)']])}</label>`+nn([3,4,5,6,7,8])+(it.md!=='term'?lv([[1,'leicht'],[2,'mittel'],[3,'schwer']]):'')+ck('mk','Kasten „Wichtige Begriffe“ anzeigen');
  H+=ck('show','Lösung zeigen')+'<button data-pr-act="mix">Neu mischen</button>';g.innerHTML=H;}
 const prHandler=e=>{const t=e.target,k=t.dataset.pr;if(!k)return;const it=items.find(i=>i.id===sel&&PRT.includes(i.type));if(!it)return;if(e.type==='change')return;
  rec('pr'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','lv','sz','nc','rl','kz','co'].includes(k)&&!(k==='sz'&&it.type==='prm'))v=+v;it[k]=v;
- if((['n','lv','fm','md','nc','ka','un'].includes(k)||(k==='sz'&&it.type==='prm')))prGen(it);render();if(['fm','md'].includes(k))renderProps();};
+ if((['n','lv','fm','md','nc','ka','un','ar'].includes(k)||(k==='sz'&&it.type==='prm')))prGen(it);render();if(['fm','md'].includes(k))renderProps();};
 $('#rp').addEventListener('input',prHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-pr-act]');if(!b)return;const it=items.find(i=>i.id===sel&&PRT.includes(i.type));if(!it)return;rec();prGen(it);render();});
 (function(){const P=$('#prpal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
  L=[['prd','<rect x="30" y="4" width="40" height="32" fill="#fff" stroke="#000"/><rect x="30" y="4" width="40" height="13" fill="#f4b183" stroke="#000"/><path d="M40 4v32M50 4v32M60 4v32M30 14h40M30 24h40" stroke="#888"/>'],
   ['prg','<circle cx="35" cy="20" r="15" fill="#fff" stroke="#000"/><path d="M35 20V5A15 15 0 0 1 48 28Z" fill="#6fa8dc" stroke="#000"/><rect x="58" y="12" width="34" height="14" fill="#f6b26b" stroke="#000"/><path d="M72 12v14" stroke="#000"/>'],
-  ['prr',T(50,17,'G = ?  p = 25 %',10)+T(50,32,'A = 30',11)],['prw',T(50,17,'20 % von 80',12)+T(50,32,'= ?',12)],['prs',T(50,17,'16 von 24',12)+T(50,32,'= ? %',12)],['prk',T(50,17,'15 % = 75',12)+T(50,32,'100 % = ?',12)],['prx',T(50,17,'W · p · G',12)+T(50,32,'gemischt',11)],
+  ['prr',T(50,17,'G = ?  p = 25 %',10)+T(50,32,'A = 30',11)],['prw',T(50,17,'20 % von 80',12)+T(50,32,'= ?',12)],['prs',T(50,17,'16 von 24',12)+T(50,32,'= ? %',12)],['prk',T(50,17,'15 % = 75',12)+T(50,32,'100 % = ?',12)],['prx',T(50,17,'W · p · G',12)+T(50,32,'gemischt',11)],['prn',T(50,17,'Skonto −3 %',11)+T(50,32,'Rabatt −20 %',11)],
   ['prm',T(50,17,'Netto + MwSt',11)+T(50,32,'= Brutto',11)],['prz',T(22,16,'Grundwert',8)+T(78,16,'das Ganze',8)+T(22,32,'Prozentwert',8)+T(78,32,'der Teil',8)+'<path d="M40 14L60 30M40 31L60 15" stroke="#c0392b"/>']];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 
@@ -1910,7 +1951,7 @@ const AST=[
  ['tpz','Primfaktorzerlegung','Zerlege in Primfaktoren!'],['ttm','Teilermengen','Gib die Teilermengen an!'],['tgg','ggT','Bestimme den ggT!'],['tkm','kgV','Bestimme das kgV!'],['tsa','Sachaufgaben ggT und kgV','Löse die Sachaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!']]],
 ['Brüche und Prozent',[
  ['bd','Bruchdarstellung','Welcher Bruchteil ist gefärbt? Schreibe als Bruch!'],['be','Erweitern und Kürzen','Erweitere bzw. kürze die Brüche!'],['bz','Rechnen mit Brüchen','Berechne und kürze das Ergebnis, wenn möglich!'],
- ['prd','Prozente darstellen','Wie viel Prozent sind gefärbt?'],['prg','Kreis- und Streifendiagramm','Stelle den Sachverhalt in einem Streifen- und in einem Kreisdiagramm dar!'],['prw','Prozentwert berechnen','Berechne den Prozentwert!'],['prs','Prozentsatz berechnen','Berechne den Prozentsatz!'],['prk','Grundwert berechnen','Berechne den Grundwert!'],['prx','Prozentrechnung gemischt (W, p, G)','Löse die Aufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],['prr','Prozentrechnungen (ohne Text)','Berechne!'],['prm','Mehrwertsteuer','Berechne die Mehrwertsteuer und den Bruttopreis!'],['prz','Begriffe der Prozentrechnung','Ordne die Begriffe zu!']]],
+ ['prd','Prozente darstellen','Wie viel Prozent sind gefärbt?'],['prg','Kreis- und Streifendiagramm','Stelle den Sachverhalt in einem Streifen- und in einem Kreisdiagramm dar!'],['prw','Prozentwert berechnen','Berechne den Prozentwert!'],['prs','Prozentsatz berechnen','Berechne den Prozentsatz!'],['prk','Grundwert berechnen','Berechne den Grundwert!'],['prx','Prozentrechnung gemischt (W, p, G)','Löse die Aufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],['prn','Skonto und Rabatt','Berechne den neuen Preis und den Nachlass!'],['prr','Prozentrechnungen (ohne Text)','Berechne!'],['prm','Mehrwertsteuer','Berechne die Mehrwertsteuer und den Bruttopreis!'],['prz','Begriffe der Prozentrechnung','Ordne die Begriffe zu!']]],
 ['4.0-Aufgaben',[
  ['zr','4.0 gemischt','Löse die 4.0-Aufgabe!'],['zr:zs','4.0 Zahlenstrahl','Löse die 4.0-Aufgabe!'],['zr:cp','4.0 Vergleichen, Nachbarzahlen','Löse die 4.0-Aufgabe!'],['zr:st','4.0 Dekadische Einheiten, Stellenwerte','Löse die 4.0-Aufgabe!'],['zr:rd','4.0 Runden','Löse die 4.0-Aufgabe!'],['zr:as','4.0 Addieren und Subtrahieren','Löse die 4.0-Aufgabe!'],['zr:kr','4.0 Rechnen (+ − · :)','Löse die 4.0-Aufgabe!'],['zr:tl','4.0 Teiler und Vielfache','Löse die 4.0-Aufgabe!'],['zr:po','4.0 Potenzen','Löse die 4.0-Aufgabe!'],['zr:br','4.0 Brüche','Löse die 4.0-Aufgabe!'],['zr:pc','4.0 Prozent','Löse die 4.0-Aufgabe!'],['zr:wk','4.0 Winkel','Löse die 4.0-Aufgabe!'],['zr:sg','4.0 Strecke, Strahl, Gerade','Löse die 4.0-Aufgabe!'],['zr:kd','4.0 Koordinatensystem','Löse die 4.0-Aufgabe!'],['zr:kk','Koordinatensystem: Aussagen ankreuzen','Kreuze die richtigen Aussagen an!']]],
 ['Satz des Pythagoras',[
