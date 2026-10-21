@@ -1647,7 +1647,19 @@ const PRW=[
  {t:'Eine Schulpause dauert {G} Minuten. Lena verbringt {p} davon am Handy. Wie viele Minuten sind das?',a:'Lena ist {P} Minuten am Handy.',r:[20,40]},
  {t:'Ein Schwimmbad hat {G} Besucher am Tag. {p} sind Jugendliche. Wie viele Jugendliche sind das?',a:'{P} Besucher sind Jugendliche.',r:[200,1000]},
  {t:'Ein Fitnessarmband zählt {G} Schritte als Tagesziel. Nach der Schule hat Nina {p} davon geschafft. Wie viele Schritte sind das?',a:'Nina hat {P} Schritte geschafft.',r:[8000,12000]},
- {t:'Für die Klassenparty kauft die Klasse Getränke um {G} €. Auf die Rechnung gibt es {p} Rabatt. Wie viel Euro spart die Klasse?',a:'Die Klasse spart {P} €.',r:[40,200],m:1}];
+ {t:'Für die Klassenparty kauft die Klasse Getränke um {G} €. Auf die Rechnung gibt es {p} Rabatt. Wie viel Euro spart die Klasse?',a:'Die Klasse spart {P} €.',r:[40,200],m:1},
+ {t:'Ein Verein nimmt bei seinem Sommerfest {G} € ein. Er muss davon {p} Vergnügungssteuer bezahlen. Welcher Betrag verbleibt dem Verein?',a:'Dem Verein verbleiben {Q} €.',pm:30,r:[1000,3000],m:1,rest:1},
+ {t:'Auf einer Rechnung im Restaurant stehen insgesamt {G} €. Der Gast will {p} Trinkgeld geben. Wie viel muss er insgesamt bezahlen?',a:'Er muss {R} € bezahlen.',pm:20,r:[20,100],m:1,plus:1},
+ {t:'Ein Metzger gibt auf einen Fleischverkauf von {G} € einen Rabatt von {p}. Wie viel muss der Kunde bezahlen?',a:'Der Kunde muss {Q} € bezahlen.',pm:30,r:[40,200],m:1,rest:1},
+ {t:'Ein Korb Äpfel wiegt {G} kg. Das Korbgewicht beträgt {p} des Gesamtgewichts. Wie viel kg wiegen die Äpfel?',a:'Die Äpfel wiegen {Q} kg.',pm:10,r:[10,40],m:1,rest:1},
+ {t:'Eine Jause beim Bäcker kostet {G} €. Mit {p} Trinkgeld rundet Anna auf. Wie viel Euro zahlt sie insgesamt?',a:'Anna zahlt {R} €.',pm:20,r:[5,20],m:1,plus:1},
+ {t:'Gestreifte Schlaghosen kosten {G} €. Der Klamottenladen senkt den Preis um {p}. Was kostet eine gestreifte Schlaghose jetzt?',a:'Die Schlaghose kostet jetzt {Q} €.',pm:40,r:[40,120],m:1,rest:1},
+ {t:'Ein Gemüsehändler verkauft {G} kg Kartoffeln. {p} davon sind schon verkauft. Wie viel kg sind noch übrig?',a:'Es sind noch {Q} kg übrig.',r:[100,500],rest:1},
+ {t:'Ein Computerspiel kostet im Geschäft {G} €. Online ist es um {p} billiger. Wie viel kostet es online?',a:'Online kostet es {Q} €.',pm:30,r:[20,80],m:1,rest:1},
+ {t:'Ein Buch kostet {G} € ohne Versand. Der Versand kostet {p} vom Buchpreis zusätzlich. Wie viel Euro muss man insgesamt zahlen?',a:'Man muss insgesamt {R} € zahlen.',pm:20,r:[10,40],m:1,plus:1},
+ {t:'Bei der Produktion von Schrauben entstehen üblicherweise {p} Ausschuss. Es werden {G} Schrauben hergestellt. Wie viele Schrauben sind Ausschuss?',a:'{P} Schrauben sind Ausschuss.',pm:10,r:[1000,5000]},
+ {t:'Bei einer Wahl wurden {G} Stimmen abgegeben. Eine Partei erhielt {p} der Stimmen. Wie viele Stimmen waren das?',a:'Die Partei erhielt {P} Stimmen.',pm:60,r:[2000,20000]},
+ {t:'Eine Klasse mit {G} Kindern schreibt einen Test. {p} der Kinder haben mindestens eine 3. Wie viele Kinder sind das?',a:'{P} Kinder haben mindestens eine 3.',r:[20,30]}];
 const PRS=[
  {t:'In Minas Klasse tragen {P} von {G} Kindern eine Brille. Welchem Prozentsatz entspricht das?',a:'{p} der Kinder tragen eine Brille.',r:[20,30]},
  {t:'Ein Skateboard kostet {G} €. Jetzt kostet es nur noch {Q} €. Um wie viel Prozent ist es billiger geworden?',a:'Das Skateboard ist um {p} billiger geworden.',r:[40,200],m:1},
@@ -1669,7 +1681,12 @@ const PRS=[
  {t:'Bei einer Umfrage mit {G} Jugendlichen nutzen {P} täglich ein Smartphone. Wie viel Prozent sind das?',a:'{p} der Jugendlichen nutzen täglich ein Smartphone.',r:[100,500]},
  {t:'Eine Pizza hat {G} g. Leon isst {P} g davon. Wie viel Prozent der Pizza sind das?',a:'Leon isst {p} der Pizza.',r:[300,600]},
  {t:'Beim Vokabeltest gibt es {G} Wörter. Mia weiß {P} davon. Wie viel Prozent sind das?',a:'Mia weiß {p} der Wörter.',r:[20,100]},
- {t:'Eine Klassenparty kostet {G} €. Die Eltern übernehmen {P} €. Wie viel Prozent der Kosten sind das?',a:'Die Eltern übernehmen {p} der Kosten.',r:[100,400],m:1}];
+ {t:'Eine Klassenparty kostet {G} €. Die Eltern übernehmen {P} €. Wie viel Prozent der Kosten sind das?',a:'Die Eltern übernehmen {p} der Kosten.',r:[100,400],m:1},
+ {t:'Von den {G} Schülern einer Klasse sind {P} krank. Wie viel Prozent der Schüler sind das?',a:'{p} der Schüler sind krank.',r:[20,30]},
+ {t:'Ein Metzger verkauft Fleisch um {G} €. Der Kunde bekommt {P} € Rabatt. Wie viel Prozent Rabatt sind das?',a:'Der Rabatt beträgt {p}.',pm:30,r:[40,200],m:1},
+ {t:'Ein Verein nimmt {G} € ein und muss davon {P} € Steuer bezahlen. Wie viel Prozent sind das?',a:'Die Steuer beträgt {p}.',pm:30,r:[1000,3000],m:1},
+ {t:'Ein Gast gibt bei einer Rechnung von {G} € genau {P} € Trinkgeld. Wie viel Prozent der Rechnung sind das?',a:'Das Trinkgeld beträgt {p}.',pm:20,r:[20,100],m:1},
+ {t:'Bei der Produktion von {G} Schrauben sind {P} unbrauchbar. Wie viel Prozent Ausschuss sind das?',a:'Der Ausschuss beträgt {p}.',pm:10,r:[1000,5000]}];
 const PRK=[
  {t:'Tobias hilft beim Abladen von Sand. {P} kg haben sie schon geschafft. Das sind {p}. Wie viel kg Sand waren insgesamt auf dem LKW?',a:'Auf dem LKW waren {G} kg Sand.',r:[200,1000]},
  {t:'Philipp hat beim Kauf eines Computerspiels {p} gespart, das sind {P} €. Wie teuer war das Spiel vorher?',a:'Das Spiel hat vorher {G} € gekostet.',r:[20,100],m:1},
@@ -1690,7 +1707,12 @@ const PRK=[
  {t:'Bei einem Lauf hat Noah schon {P} m geschafft. Das sind {p} der Strecke. Wie lang ist die ganze Strecke?',a:'Die Strecke ist {G} m lang.',r:[400,2000]},
  {t:'Ein Streaming-Abo wird mit dem Schülerrabatt um {P} € billiger. Das sind {p} vom normalen Preis. Wie viel kostet es normalerweise?',a:'Es kostet normalerweise {G} €.',r:[10,20],m:1},
  {t:'Im Schwimmbad sind {P} Jugendliche. Das sind {p} aller Besucher. Wie viele Besucher sind im Schwimmbad?',a:'Im Schwimmbad sind {G} Besucher.',r:[200,1000]},
- {t:'Für die Klassenfahrt hat die Klasse {P} € gesammelt. Das sind {p} der Gesamtkosten. Wie hoch sind die Gesamtkosten?',a:'Die Gesamtkosten betragen {G} €.',r:[200,1000],m:1}];
+ {t:'Für die Klassenfahrt hat die Klasse {P} € gesammelt. Das sind {p} der Gesamtkosten. Wie hoch sind die Gesamtkosten?',a:'Die Gesamtkosten betragen {G} €.',r:[200,1000],m:1},
+ {t:'In einer Klasse sind {P} Mädchen, das sind {p} der Schüler. Wie viele Schüler sind insgesamt in der Klasse?',a:'In der Klasse sind {G} Schüler.',r:[20,30]},
+ {t:'Bei der Produktion von Schrauben waren {P} unbrauchbar. Das sind {p} Ausschuss. Wie viele Schrauben wurden produziert?',a:'Es wurden {G} Schrauben produziert.',pm:10,r:[1000,5000]},
+ {t:'Ein Verein muss {P} € Steuer bezahlen. Das sind {p} der Einnahmen. Wie hoch waren die Einnahmen?',a:'Die Einnahmen waren {G} €.',pm:30,r:[1000,3000],m:1},
+ {t:'Ein Gast gibt {P} € Trinkgeld. Das sind {p} der Rechnung. Wie hoch war die Rechnung?',a:'Die Rechnung betrug {G} €.',pm:20,r:[20,100],m:1},
+ {t:'Das Korbgewicht beträgt {P} kg. Das sind {p} des Gesamtgewichts. Wie schwer ist der Korb mit den Äpfeln insgesamt?',a:'Der Korb mit den Äpfeln wiegt {G} kg.',pm:10,r:[10,40]}];
 const PRI=[['Buch',10],['Zeitung',10],['Brot',10],['Zeitschrift',10],['Fernseher',20],['Jeans',20],['Handy',20],['Fahrrad',20],['Laptop',20],['Sessel',20],['Schuhe',20],['Lampe',20]];
 const PRTH=[
  {n:'Lieblingssport',i:'Die Kinder einer Klasse wurden nach ihrem Lieblingssport gefragt:',c:['Fußball','Schwimmen','Tanzen','Radfahren','Reiten'],l:'Die übrigen mögen am liebsten'},
@@ -1708,9 +1730,9 @@ const PRRO=[
  {t:'Ein LKW hat {G} kg Sand geladen. {p} sind abgeladen. Das sind {P} kg.',u:['kg','kg'],r:[200,800]}];
 function prSplit(n,lv,nc){const st=lv===3?1:lv===2?5:10,tot=100/st;if(nc>tot)nc=tot;let c;do{c=Array(nc).fill(1);for(let i=0;i<tot-nc;i++)c[kri(0,nc-1)]++;}while(lv===1&&Math.max(...c)>6&&false);return c.map(x=>x*st);}
 const PRL={prw:()=>PRW,prs:()=>PRS,prk:()=>PRK,prx:()=>PRW.concat(PRS,PRK)};
-function prMk1(k,lv,t){if(k==='prx')k=PRW.includes(t)?'prw':PRS.includes(t)?'prs':'prk';const p=prP(lv),G=prG(p,t.r[0],t.r[1],t.m,lv),P=Math.round(G*p)/100,fm=t.m?pe:pn;
-   const f=s=>s.replace(/\{G\}/g,fm(G)).replace(/\{P\}/g,fm(P)).replace(/\{Q\}/g,fm(G-P)).replace(/\{p\}/g,p+' %');
-   const calc=k==='prw'?(t.rest?`${fm(G)} : 100 · ${p} = ${fm(P)}; ${fm(G)} − ${fm(P)} = ${fm(G-P)}`:`${fm(G)} : 100 · ${p} = ${fm(P)}`):k==='prs'?`${fm(P)} : ${fm(G)} · 100 = ${p} %`:`${fm(P)} : ${p} · 100 = ${fm(G)}`;
+function prMk1(k,lv,t){if(k==='prx')k=PRW.includes(t)?'prw':PRS.includes(t)?'prs':'prk';let p=prP(lv);if(t.pm){for(let i=0;i<60&&p>t.pm;i++)p=prP(lv);if(p>t.pm)p=lv===1?10:5;}const G=prG(p,t.r[0],t.r[1],t.m,lv),P=Math.round(G*p)/100,fm=t.m?pe:pn;
+   const f=s=>s.replace(/\{G\}/g,fm(G)).replace(/\{P\}/g,fm(P)).replace(/\{Q\}/g,fm(G-P)).replace(/\{R\}/g,fm(G+P)).replace(/\{p\}/g,p+' %');
+   const calc=k==='prw'?(t.plus?`${fm(G)} : 100 · ${p} = ${fm(P)}; ${fm(G)} + ${fm(P)} = ${fm(G+P)}`:t.rest?`${fm(G)} : 100 · ${p} = ${fm(P)}; ${fm(G)} − ${fm(P)} = ${fm(G-P)}`:`${fm(G)} : 100 · ${p} = ${fm(P)}`):k==='prs'?`${fm(P)} : ${fm(G)} · 100 = ${p} %`:`${fm(P)} : ${p} · 100 = ${fm(G)}`;
    return {q:f(t.t),s:calc+'. '+f(t.a),tk:t.t};}
 function prAct(id,i,w){const it=items.find(x=>x.id===id);if(!it||!it.d||!it.d[i])return;rec();
  if(w==='del'){if(it.d.length<=1){gDel(it);return;}it.d.splice(i,1);it.n=it.d.length;}
