@@ -1164,7 +1164,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ra-act]');
 
 /* ===== Teiler: Teilbarkeit, Primfaktoren, ggT, kgV, Sieb, Sachaufgaben ===== */
 const MDT=['mm','mv','ms','v4','mz','ak','kf','ks'],VRT=['vr','vk','vl','vp','vt','vf','vs'];
-const PRT=['prd','prg','prw','prs','prk','prr','prm','prz'];
+const PRT=['prd','prg','prw','prs','prk','prx','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
 const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const PNT=['pnk','pnb','pnz'];const SST=['ssd','ssm','ssh','ssg','ssl','ssb'];const LWT=['lw'];const CIT=['cib','ciu','cia','cit','cis','cir','cik','cix','cil','cig','cic'];const ZRT=['zr'];const K4T=['k4b','k4w','k4p','k4z','k4y','k4k','k4g','k4x','k4f'];const MBT=['mbb','mbw','mbz','mbd','mbs','mbm'];const ZNT=['znb','zni','znq','znt','znk','znr'];
 const TLT=[...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...LWT,...ZRT,...POT,...PRT,...MDT,...VRT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
@@ -1294,8 +1294,8 @@ function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes
   H+=`<label>Eigene Zahlen (leer = zufällig)<textarea data-tl="own" rows="4" placeholder="${ph}" style="width:100%;font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:6px;background:#fff;box-sizing:border-box">${(it.own||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea></label>`;}
  H+=ck('show','Lösung zeigen')+(k==='tsv'?'':'<button data-tl-act="mix">Neu mischen</button>');
  g.innerHTML=H;}
-const NUMT=['sv','pys','pyb','cit','lw','prd','prg','prw','prs','prk','prr','ms','v4','v4','tzw','tgg','tkm','tsa','pob','poz','pog','pom','pov','pot','zr'];
-const numDef=it=>({pys:'n',lw:'n',prg:'n',prw:it.fm==='rech'?'a':'n',prs:it.fm==='rech'?'a':'n',prk:it.fm==='rech'?'a':'n',ms:'n',tsa:'n',zr:'n'})[it.type]||'a';
+const NUMT=['sv','pys','pyb','cit','lw','prd','prg','prw','prs','prk','prx','prr','ms','v4','v4','tzw','tgg','tkm','tsa','pob','poz','pog','pom','pov','pot','zr'];
+const numDef=it=>({pys:'n',lw:'n',prg:'n',prw:it.fm==='rech'?'a':'n',prs:it.fm==='rech'?'a':'n',prk:it.fm==='rech'?'a':'n',prx:it.fm==='rech'?'a':'n',ms:'n',tsa:'n',zr:'n'})[it.type]||'a';
 function renderNum(){const g=$('#g-num');if(!g)return;const it=items.find(i=>i.id===sel&&NUMT.includes(i.type));if(!it){g.innerHTML='';g.style.display='none';return;}
  g.style.display='';const v=it.lab||numDef(it);g.innerHTML=`<label>Nummerierung<select data-num="lab">${[['a','a) b) c) d)'],['n','1) 2) 3) 4)'],['none','keine']].map(([a,t])=>`<option value="${a}"${v===a?' selected':''}>${t}</option>`).join('')}</select></label>`;}
 $('#rp').addEventListener('change',e=>{const t=e.target;if(t.dataset.num!=='lab')return;const it=items.find(i=>i.id===sel&&NUMT.includes(i.type));if(!it)return;rec('numlab');it.lab=t.value;render();});
@@ -1611,8 +1611,8 @@ function autoTask(t,dy){const cb=document.getElementById('autot');if(!cb||!cb.ch
  }finally{rec=R0;}
  return true;}
 /* ===== Prozentrechnung ===== */
-Object.assign(TLD,{prr:{n:6,fm:'tab',ka:'alle',lv:1,un:'',co:2},prd:{n:2,fm:'quad',md:'ab',lv:1,sz:140,mk:false},prg:{n:1,dg:'beide',md:'dar',lv:1,sk:true,nc:4},prw:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prs:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prk:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prm:{n:5,sz:'alle',md:'netto',lv:1,mk:false},prz:{n:5,md:'term',lv:1}});
-Object.assign(TLN,{prr:'Rechnungen (ohne Text)',prd:'Prozente darstellen',prg:'Diagramme (Kreis/Streifen)',prw:'Prozentwert berechnen',prs:'Prozentsatz berechnen',prk:'Grundwert berechnen',prm:'Mehrwertsteuer',prz:'Begriffe zuordnen'});
+Object.assign(TLD,{prr:{n:6,fm:'tab',ka:'alle',lv:1,un:'',co:2},prd:{n:2,fm:'quad',md:'ab',lv:1,sz:140,mk:false},prg:{n:1,dg:'beide',md:'dar',lv:1,sk:true,nc:4},prw:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prs:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prk:{n:4,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prx:{n:6,fm:'text',lv:1,rl:2,kz:0,an:true,co:3},prm:{n:5,sz:'alle',md:'netto',lv:1,mk:false},prz:{n:5,md:'term',lv:1}});
+Object.assign(TLN,{prr:'Rechnungen (ohne Text)',prd:'Prozente darstellen',prg:'Diagramme (Kreis/Streifen)',prw:'Prozentwert berechnen',prs:'Prozentsatz berechnen',prk:'Grundwert berechnen',prx:'Prozentrechnung gemischt (W, p, G)',prm:'Mehrwertsteuer',prz:'Begriffe zuordnen'});
 const pn=v=>{v=Math.round(v*100)/100;const s=Number.isInteger(v)?String(v):v.toFixed(2).replace(/0$/,'');const [i,d]=s.split('.');return tfm(i)+(d?','+d:'');};
 const pe=v=>{v=Math.round(v*100)/100;return Number.isInteger(v)?tfm(v):tfm(Math.trunc(v))+','+v.toFixed(2).split('.')[1];};
 const prP=lv=>lv===1?tpick([10,20,25,50,75,5,40,60,30,80]):lv===2?5*kri(1,19):kri(1,99);
@@ -1707,8 +1707,8 @@ const PRRO=[
  {t:'Von {G} Schülern sind {p} begeistert. Das sind {P} Schüler.',u:['Schüler','Schüler'],r:[40,200]},
  {t:'Ein LKW hat {G} kg Sand geladen. {p} sind abgeladen. Das sind {P} kg.',u:['kg','kg'],r:[200,800]}];
 function prSplit(n,lv,nc){const st=lv===3?1:lv===2?5:10,tot=100/st;if(nc>tot)nc=tot;let c;do{c=Array(nc).fill(1);for(let i=0;i<tot-nc;i++)c[kri(0,nc-1)]++;}while(lv===1&&Math.max(...c)>6&&false);return c.map(x=>x*st);}
-const PRL={prw:()=>PRW,prs:()=>PRS,prk:()=>PRK};
-function prMk1(k,lv,t){const p=prP(lv),G=prG(p,t.r[0],t.r[1],t.m,lv),P=Math.round(G*p)/100,fm=t.m?pe:pn;
+const PRL={prw:()=>PRW,prs:()=>PRS,prk:()=>PRK,prx:()=>PRW.concat(PRS,PRK)};
+function prMk1(k,lv,t){if(k==='prx')k=PRW.includes(t)?'prw':PRS.includes(t)?'prs':'prk';const p=prP(lv),G=prG(p,t.r[0],t.r[1],t.m,lv),P=Math.round(G*p)/100,fm=t.m?pe:pn;
    const f=s=>s.replace(/\{G\}/g,fm(G)).replace(/\{P\}/g,fm(P)).replace(/\{Q\}/g,fm(G-P)).replace(/\{p\}/g,p+' %');
    const calc=k==='prw'?(t.rest?`${fm(G)} : 100 · ${p} = ${fm(P)}; ${fm(G)} − ${fm(P)} = ${fm(G-P)}`:`${fm(G)} : 100 · ${p} = ${fm(P)}`):k==='prs'?`${fm(P)} : ${fm(G)} · 100 = ${p} %`:`${fm(P)} : ${p} · 100 = ${fm(G)}`;
    return {q:f(t.t),s:calc+'. '+f(t.a),tk:t.t};}
@@ -1720,8 +1720,8 @@ function prGen(it){const k=it.type,n=+it.n||1,lv=+it.lv||1;
  if(k==='prd'){const N=it.fm==='str'?20:100;it.d=tuniq(n,()=>{let p=lv===1?10*kri(1,9):prP(lv);if(N===20)p=Math.max(5,Math.round(p/5)*5);return p;});}
  else if(k==='prg'){const nc=Math.max(3,Math.min(5,+it.nc||4)),th=tshuf(PRTH);
   it.d=Array.from({length:n},(_,i)=>{const T=th[i%th.length],cats=T.c.slice(0,nc).length<nc?T.c:tshuf(T.c).slice(0,nc);return {th:T.n,i:T.i,l:T.l,c:cats,v:prSplit(100,lv,cats.length)};});}
- else if(k==='prw'||k==='prs'||k==='prk'){const pool=tshuf({prw:PRW,prs:PRS,prk:PRK}[k]);
-  if(it.fm==='rech'){it.d=tuniq(n,()=>{const p=prP(lv),G=prG(p,20,500,false,lv===3?2:lv),P=G*p/100;return k==='prw'?{l:`${p} % von ${pn(G)} =`,s:pn(P),u:''}:k==='prs'?{l:`${pn(P)} von ${pn(G)} =`,s:String(p),u:' %'}:{l:`${pn(P)} sind ${p} %. Grundwert:`,s:pn(G),u:''};});}
+ else if(k==='prw'||k==='prs'||k==='prk'||k==='prx'){let pool;if(k==='prx'){const a=tshuf(PRW),b=tshuf(PRS),c=tshuf(PRK);pool=[];for(let i=0;i<Math.max(a.length,b.length,c.length);i++)pool.push(a[i%a.length],b[i%b.length],c[i%c.length]);pool=tshuf(pool.slice(0,Math.max(3*n,3)));}else pool=tshuf({prw:PRW,prs:PRS,prk:PRK}[k]);
+  if(it.fm==='rech'){let kq=0;const kord=tshuf(['prw','prs','prk']);it.d=tuniq(n,()=>{const kk=k==='prx'?kord[kq++%3]:k,p=prP(lv),G=prG(p,20,500,false,lv===3?2:lv),P=G*p/100;return kk==='prw'?{l:`${p} % von ${pn(G)} =`,s:pn(P),u:''}:kk==='prs'?{l:`${pn(P)} von ${pn(G)} =`,s:String(p),u:' %'}:{l:`${pn(P)} sind ${p} %. Grundwert:`,s:pn(G),u:''};});}
   else it.d=Array.from({length:n},(_,i)=>prMk1(k,lv,pool[i%pool.length]));}
  else if(k==='prr'){it.d=Array.from({length:n},()=>{const kk=it.ka==='alle'?tpick(['w','s','g']):it.ka,p=prP(lv),G=prG(p,20,500,it.un==='€',lv),A=Math.round(G*p)/100;return {k:kk,p,G,A};});}
  else if(k==='prm'){const lst=PRI.filter(x=>it.sz==='alle'||x[1]===+it.sz),nm=tshuf(lst);
@@ -1758,7 +1758,7 @@ function prBlock(it){const k=it.type,s=tlS(it),lb=i=>nlab(it,i,'a');let h='';
    mode=ab?(s?'sol':'full'):(s?'sol':'blank'),kr=prKr(t,mode,80,it.sk),st=prSt(t,mode,dg==='beide'?470:560,it.sk);
    const leg=(ab||s)?`<div style="display:flex;flex-wrap:wrap;gap:.3em 1.4em;margin-top:.5em">${t.c.map((c,i)=>`<span style="white-space:nowrap"><span style="display:inline-block;width:.9em;height:.9em;background:${PRC[i]};border:1px solid #000;vertical-align:-.1em"></span> ${c}${ab?` <span class="tlln" style="min-width:3em;text-align:center">${tlSv(it,t.v[i])}</span> %`:''}</span>`).join('')}</div>`:'';
    return `<div style="margin:0 0 1.2em"><b>${it.d.length>1?nlab(it,ti,'n')+' ':''}</b>${txt}<div style="display:flex;gap:1em;align-items:center;margin-top:.5em">${dg!=='streifen'?kr:''}${dg!=='kreis'?st:''}</div>${leg}</div>`;}).join('');}
- else if(k==='prw'||k==='prs'||k==='prk'){
+ else if(k==='prw'||k==='prs'||k==='prk'||k==='prx'){
   if(it.fm==='rech')h=tlGrid(+it.co||3,it.d.map((t,i)=>`<div class="tlrw"><b>${lb(i)}</b><span>${t.l}</span><span class="tlln" style="flex:1;min-width:3em">${tlSv(it,t.s)}</span>${t.u?`<span>${t.u}</span>`:''}</div>`).join(''));
   else{const cw=Math.max(5,Math.floor((it.w||714)/(5*MMPX)));h=it.d.map((t,i)=>{const pc=prPicHtml(it,t,i);return `<div style="position:relative;margin:0 0 1.1em${pc?';display:flex;gap:.8em;align-items:flex-start':''}"><span class="pxb no-print"><button type="button" title="Diese Aufgabe durch eine andere ersetzen" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();prAct(${it.id},${i},'sw')">⇄</button><button type="button" title="Diese Aufgabe löschen" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();prAct(${it.id},${i},'del')">🗑</button></span>${pc?'<div style="flex:1;min-width:0">':''}<b>${nlab(it,i,'n')}</b> ${t.q}${Array.from({length:+it.rl||0},()=>'<div class="tlln" style="display:block;min-height:1.7em"></div>').join('')}${+it.kz?`<div style="margin-top:.4em">${kfSvg(cw,+it.kz,5,'heft')}</div>`:''}${it.an?`<div class="tlrw" style="margin-top:.4em"><span>Antwort:</span><span class="tlln" style="flex:1">${tlSv(it,t.s)}</span></div>`:(s?`<div class="sv">${t.s}</div>`:'')}${pc?'</div>'+pc:''}</div>`;}).join('');}}
  else if(k==='prr'){const U=it.un?' '+it.un:'',fm=it.un==='€'?pe:pn,sv=v=>tlSv(it,v);
@@ -1782,7 +1782,7 @@ function renderPr(){const g=$('#g-pc'),it=items.find(i=>i.id===sel&&PRT.includes
  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
  if(k==='prd')H+=nn([1,2,3,4,6,8])+`<label>Darstellung${sl('fm',[['quad','Hunderterfeld (10 × 10)'],['str','Streifen (20 Felder)']])}</label><label>Aufgabe${sl('md',[['ab','Prozentsatz ablesen'],['ein','Prozentsatz einfärben']])}</label>`+lv([[1,'Zehnerprozente'],[2,'Fünferprozente'],[3,'beliebig']])+`<label>Größe${sl('sz',[[110,'klein'],[140,'mittel'],[170,'groß']])}</label>`+ck('mk','Merkkasten (100 % = das Ganze) anzeigen');
  if(k==='prg')H+=nn([1,2,3])+`<label>Diagramm${sl('dg',[['beide','Streifen und Kreis'],['kreis','nur Kreis'],['streifen','nur Streifen']])}</label><label>Aufgabe${sl('md',[['dar','Darstellen (Prozente gegeben)'],['ab','Prozente ablesen']])}</label><label>Anzahl der Gruppen${sl('nc',tN([3,4,5]))}</label>`+lv([[1,'Zehnerprozente'],[2,'Fünferprozente'],[3,'beliebig']],'Prozentsätze')+ck('sk','Skala (Teilstriche)');
- if(k==='prw'||k==='prs'||k==='prk')H+=nn([1,2,3,4,5,6,8,9,12])+`<label>Form${sl('fm',[['text','Sachaufgaben'],['rech','Rechenaufgaben']])}</label>`+lv([[1,'leicht (runde Zahlen)'],[2,'mittel'],[3,'schwer (auch Dezimalzahlen)']])+(it.fm==='rech'?`<label>Spalten${sl('co',tN([2,3,4]))}</label>`:`<label>Bilder${sl('pimg',[['none','keine'],['pct','Buntes Prozentzeichen'],['bild','Bild zum Thema']])}</label><label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label><label>Karo-Rechenfeld (Zeilen)${sl('kz',tN([0,3,5,8,10]))}</label>`+ck('an','Antwortfeld'));
+ if(k==='prw'||k==='prs'||k==='prk'||k==='prx')H+=nn([1,2,3,4,5,6,8,9,12])+`<label>Form${sl('fm',[['text','Sachaufgaben'],['rech','Rechenaufgaben']])}</label>`+lv([[1,'leicht (runde Zahlen)'],[2,'mittel'],[3,'schwer (auch Dezimalzahlen)']])+(it.fm==='rech'?`<label>Spalten${sl('co',tN([2,3,4]))}</label>`:`<label>Bilder${sl('pimg',[['none','keine'],['pct','Buntes Prozentzeichen'],['bild','Bild zum Thema']])}</label><label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label><label>Karo-Rechenfeld (Zeilen)${sl('kz',tN([0,3,5,8,10]))}</label>`+ck('an','Antwortfeld'));
  if(k==='prr')H+=nn([2,4,6,8,10,12])+`<label>Form${sl('fm',[['tab','Tabelle (G, p, W)'],['zeil','Einzelne Rechnungen']])}</label><label>Gesucht ist${sl('ka',[['alle','gemischt'],['w','Prozentwert (W)'],['s','Prozentsatz (p)'],['g','Grundwert (G)']])}</label>`+lv([[1,'leicht (runde Zahlen)'],[2,'mittel'],[3,'schwer']])+`<label>Einheit${sl('un',[['','keine'],['€','€'],['kg','kg'],['m','m'],['g','g']])}</label>`+(it.fm==='zeil'?`<label>Spalten${sl('co',tN([1,2,3]))}</label>`:'');
  if(k==='prm')H+=nn([3,4,5,6,8])+`<label>Steuersatz${sl('sz',[['alle','10 % und 20 %'],['10','nur 10 %'],['20','nur 20 %']])}</label><label>Gegeben ist${sl('md',[['netto','Nettopreis (MwSt und Brutto gesucht)'],['brutto','Bruttopreis (Netto und MwSt gesucht)'],['mix','gemischt']])}</label>`+lv([[1,'runde Preise'],[2,'ganze Euro'],[3,'mit Cent']],'Preise')+`<label class="ck"><input type="checkbox" data-pr="ct"${it.ct!==false?' checked':''}> Spalte „Mehrwertsteuer“ anzeigen</label>`+ck('mk','Merkkasten anzeigen');
  if(k==='prz')H+=`<label>Aufgabe${sl('md',[['term','Begriffe mit Erklärungen verbinden'],['rolle','Zahlen in Sachaufgaben zuordnen (G, p, W)'],['unter','Farbig unterstreichen (G, p, W)']])}</label>`+nn([3,4,5,6,7,8])+(it.md!=='term'?lv([[1,'leicht'],[2,'mittel'],[3,'schwer']]):'')+ck('mk','Kasten „Wichtige Begriffe“ anzeigen');
@@ -1795,7 +1795,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-pr-act]');
 (function(){const P=$('#prpal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
  L=[['prd','<rect x="30" y="4" width="40" height="32" fill="#fff" stroke="#000"/><rect x="30" y="4" width="40" height="13" fill="#f4b183" stroke="#000"/><path d="M40 4v32M50 4v32M60 4v32M30 14h40M30 24h40" stroke="#888"/>'],
   ['prg','<circle cx="35" cy="20" r="15" fill="#fff" stroke="#000"/><path d="M35 20V5A15 15 0 0 1 48 28Z" fill="#6fa8dc" stroke="#000"/><rect x="58" y="12" width="34" height="14" fill="#f6b26b" stroke="#000"/><path d="M72 12v14" stroke="#000"/>'],
-  ['prr',T(50,17,'G = ?  p = 25 %',10)+T(50,32,'A = 30',11)],['prw',T(50,17,'20 % von 80',12)+T(50,32,'= ?',12)],['prs',T(50,17,'16 von 24',12)+T(50,32,'= ? %',12)],['prk',T(50,17,'15 % = 75',12)+T(50,32,'100 % = ?',12)],
+  ['prr',T(50,17,'G = ?  p = 25 %',10)+T(50,32,'A = 30',11)],['prw',T(50,17,'20 % von 80',12)+T(50,32,'= ?',12)],['prs',T(50,17,'16 von 24',12)+T(50,32,'= ? %',12)],['prk',T(50,17,'15 % = 75',12)+T(50,32,'100 % = ?',12)],['prx',T(50,17,'W · p · G',12)+T(50,32,'gemischt',11)],
   ['prm',T(50,17,'Netto + MwSt',11)+T(50,32,'= Brutto',11)],['prz',T(22,16,'Grundwert',8)+T(78,16,'das Ganze',8)+T(22,32,'Prozentwert',8)+T(78,32,'der Teil',8)+'<path d="M40 14L60 30M40 31L60 15" stroke="#c0392b"/>']];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 
@@ -1888,7 +1888,7 @@ const AST=[
  ['tpz','Primfaktorzerlegung','Zerlege in Primfaktoren!'],['ttm','Teilermengen','Gib die Teilermengen an!'],['tgg','ggT','Bestimme den ggT!'],['tkm','kgV','Bestimme das kgV!'],['tsa','Sachaufgaben ggT und kgV','Löse die Sachaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!']]],
 ['Brüche und Prozent',[
  ['bd','Bruchdarstellung','Welcher Bruchteil ist gefärbt? Schreibe als Bruch!'],['be','Erweitern und Kürzen','Erweitere bzw. kürze die Brüche!'],['bz','Rechnen mit Brüchen','Berechne und kürze das Ergebnis, wenn möglich!'],
- ['prd','Prozente darstellen','Wie viel Prozent sind gefärbt?'],['prg','Kreis- und Streifendiagramm','Stelle den Sachverhalt in einem Streifen- und in einem Kreisdiagramm dar!'],['prw','Prozentwert berechnen','Berechne den Prozentwert!'],['prs','Prozentsatz berechnen','Berechne den Prozentsatz!'],['prk','Grundwert berechnen','Berechne den Grundwert!'],['prr','Prozentrechnungen (ohne Text)','Berechne!'],['prm','Mehrwertsteuer','Berechne die Mehrwertsteuer und den Bruttopreis!'],['prz','Begriffe der Prozentrechnung','Ordne die Begriffe zu!']]],
+ ['prd','Prozente darstellen','Wie viel Prozent sind gefärbt?'],['prg','Kreis- und Streifendiagramm','Stelle den Sachverhalt in einem Streifen- und in einem Kreisdiagramm dar!'],['prw','Prozentwert berechnen','Berechne den Prozentwert!'],['prs','Prozentsatz berechnen','Berechne den Prozentsatz!'],['prk','Grundwert berechnen','Berechne den Grundwert!'],['prx','Prozentrechnung gemischt (W, p, G)','Löse die Aufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],['prr','Prozentrechnungen (ohne Text)','Berechne!'],['prm','Mehrwertsteuer','Berechne die Mehrwertsteuer und den Bruttopreis!'],['prz','Begriffe der Prozentrechnung','Ordne die Begriffe zu!']]],
 ['4.0-Aufgaben',[
  ['zr','4.0 gemischt','Löse die 4.0-Aufgabe!'],['zr:zs','4.0 Zahlenstrahl','Löse die 4.0-Aufgabe!'],['zr:cp','4.0 Vergleichen, Nachbarzahlen','Löse die 4.0-Aufgabe!'],['zr:st','4.0 Dekadische Einheiten, Stellenwerte','Löse die 4.0-Aufgabe!'],['zr:rd','4.0 Runden','Löse die 4.0-Aufgabe!'],['zr:as','4.0 Addieren und Subtrahieren','Löse die 4.0-Aufgabe!'],['zr:kr','4.0 Rechnen (+ − · :)','Löse die 4.0-Aufgabe!'],['zr:tl','4.0 Teiler und Vielfache','Löse die 4.0-Aufgabe!'],['zr:po','4.0 Potenzen','Löse die 4.0-Aufgabe!'],['zr:br','4.0 Brüche','Löse die 4.0-Aufgabe!'],['zr:pc','4.0 Prozent','Löse die 4.0-Aufgabe!'],['zr:wk','4.0 Winkel','Löse die 4.0-Aufgabe!'],['zr:sg','4.0 Strecke, Strahl, Gerade','Löse die 4.0-Aufgabe!'],['zr:kd','4.0 Koordinatensystem','Löse die 4.0-Aufgabe!'],['zr:kk','Koordinatensystem: Aussagen ankreuzen','Kreuze die richtigen Aussagen an!']]],
 ['Satz des Pythagoras',[
@@ -5309,7 +5309,7 @@ const PRE={
  as:['Berechne!','Rechne schriftlich!','Löse die Textaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!'],
  sw:['Trage die Zahlen in die Stellenwerttabelle ein!','Schreibe die Zahlen aus der Stellenwerttabelle auf!','Trage die Zahlen in die Tabelle ein!'],
  po:['Berechne den Wert der Potenzen!','Schreibe als Zehnerpotenz!','Schreibe in Gleitkommadarstellung!','Schreibe als Potenz mit einer Hochzahl!','Multipliziere bzw. dividiere die Potenzen!','Berechne!'],
- pc:['Berechne den Prozentwert!','Berechne den Prozentsatz!','Berechne den Grundwert!','Stelle im Streifen- und im Kreisdiagramm dar!','Berechne die Mehrwertsteuer und den Bruttopreis!','Ordne die Begriffe zu!','Wie viel Prozent sind eingefärbt?'],
+ pc:['Löse die Aufgaben! Schreibe die Rechnung und einen Antwortsatz auf!','Berechne den Prozentwert!','Berechne den Prozentsatz!','Berechne den Grundwert!','Stelle im Streifen- und im Kreisdiagramm dar!','Berechne die Mehrwertsteuer und den Bruttopreis!','Ordne die Begriffe zu!','Wie viel Prozent sind eingefärbt?'],
  md:['Rechne schriftlich!','Multipliziere schriftlich!','Dividiere schriftlich!','Löse die Sachaufgaben!'],
  tl:['Setze ∣ oder ∤ ein!','Kreuze an, durch welche Teiler die Zahlen ohne Rest teilbar sind!','Zerlege in Primfaktoren!','Bestimme den ggT!','Bestimme das kgV!','Gib die Teilermenge an!','Markiere alle Primzahlen!','Löse die Sachaufgaben!'],
  ra:['Löse das Kreuzworträtsel!','Finde die versteckten Wörter im Gitter und kreise sie ein!'],
@@ -5573,12 +5573,12 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-fk-act]');
 
 /* ---- Lösungsbox: Ergebnisse einer Aufgabe zur Selbstkontrolle ---- */
 CATS.lb='Lösungsbox';
-const LBT=['at','as','mx','mm','mv','ms','v4','um','rd','nb','prr','prm','pob','pyb','prw','prs','prk','pot','pos'],LBN={pos:'Potenzen: Sachaufgaben',nb:'Nachbarzahlen',prr:'Prozent: Rechnen',prm:'Prozent: Rechnen',pob:'Potenzen: Werte',pyb:'Pythagoras: Berechnungen',prw:'Prozent: Prozentwert',prs:'Prozent: Prozentsatz',prk:'Prozent: Grundwert',pot:'Potenzen: Rechnen',at:'Sachaufgaben Plus/Minus',as:'Schriftlich addieren/subtrahieren',mx:'Einmaleins',mm:'Schriftlich multiplizieren',mv:'Schriftlich dividieren',ms:'Sachaufgaben Mal/Geteilt',v4:'Sachaufgaben: Verbindung der 4 Grundrechnungsarten',um:'Maßumwandlungen',rd:'Runden'};
+const LBT=['at','as','mx','mm','mv','ms','v4','um','rd','nb','prr','prm','pob','pyb','prw','prs','prk','prx','pot','pos'],LBN={pos:'Potenzen: Sachaufgaben',nb:'Nachbarzahlen',prr:'Prozent: Rechnen',prm:'Prozent: Rechnen',pob:'Potenzen: Werte',pyb:'Pythagoras: Berechnungen',prw:'Prozent: Prozentwert',prs:'Prozent: Prozentsatz',prk:'Prozent: Grundwert',pot:'Potenzen: Rechnen',at:'Sachaufgaben Plus/Minus',as:'Schriftlich addieren/subtrahieren',mx:'Einmaleins',mm:'Schriftlich multiplizieren',mv:'Schriftlich dividieren',ms:'Sachaufgaben Mal/Geteilt',v4:'Sachaufgaben: Verbindung der 4 Grundrechnungsarten',um:'Maßumwandlungen',rd:'Runden'};
 const lbNum=v=>parseFloat(String(v).replace(/−/g,'-').replace(/[\s ]/g,'').replace(',','.'));
 function lbDom(it){const old=SOL;let sv=[];try{SOL=true;mk(it);const el=sheet.lastElementChild;sv=[...el.querySelectorAll('.sv')].map(e=>e.textContent.replace(/\s+/g,' ').trim()).filter(Boolean);el.remove();}finally{SOL=old;}return sv;}
 function lbVals(s){const o=[],last=c=>String(c).split('= ').pop().trim();
  if(['nb','prr','prm','pob','pyb'].includes(s.type))return lbDom(s).filter(x=>/^[−-]?[\d ]+(,\d+)?( ?(%|€|m|cm|km|kg|g|l|°|m²|cm²|h|min|s))?$/.test(x));
- if(['prw','prs','prk','pot'].includes(s.type))return lbDom(s).map(x=>last(x.split('. ')[0])).filter(x=>x);
+ if(['prw','prs','prk','prx','pot'].includes(s.type))return lbDom(s).map(x=>last(x.split('. ')[0])).filter(x=>x);
  if(s.type==='pos')(s.d||[]).forEach(t=>o.push(last(String(t.c).replace(/<sup>(.*?)<\/sup>/g,(m,x)=>poS?poS(x):x).replace(/<[^>]+>/g,''))));
  else if(s.type==='at')(s.rows||[]).forEach(r=>o.push(last(r.calc)));
  else if(s.type==='as'){const dec=s.art==='dez'?Math.max(1,+s.dec||1):0,S=Math.pow(10,dec);(s.rows||[]).forEach(r=>o.push(kgr(r.res/S,dec||undefined)));}
