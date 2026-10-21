@@ -214,7 +214,7 @@ body.pv .pgb{display:none}
 <div class="catp" data-c="kf" id="kfpal"></div>
 <p style="font-size:12px;color:var(--mut);margin:6px 0">Ziehen oder anklicken. Löschen: 🗑️ am markierten Element oder Entf-/Rücktaste. „echt in cm“ druckt maßstabsgetreu: im Druckdialog Skalierung 100 % wählen.</p>
 </aside>
-<main><div id="sheet"><div id="fr"></div><div id="solmark" style="position:absolute;right:36px;bottom:26px;font:bold 20px Georgia,serif;color:#c0392b;display:none">Lösung</div><div id="hd"><span id="sn">Name: ______________________</span><span id="sd">Datum: ____________</span><span id="spg" style="display:none;margin-left:24px"></span></div><div id="sg">Unterschrift: ______________________</div></div></main>
+<main><div id="sheet"><div id="fr"></div><div id="solmark" style="position:absolute;right:36px;bottom:26px;font:bold 20px Arial,Helvetica,sans-serif;color:#c0392b;display:none">Lösung</div><div id="hd"><span id="sn">Name: ______________________</span><span id="sd">Datum: ____________</span><span id="spg" style="display:none;margin-left:24px"></span></div><div id="sg">Unterschrift: ______________________</div></div></main>
 <div id="rp" class="no-print" style="display:none">
 <h3 id="rp-title"></h3><div id="rp-sub" class="sub"></div>
 <div class="grp" data-cats="vk">
@@ -328,8 +328,8 @@ function svgNew(it){const T=it.type,real=it.md==='real'&&T!=='viereck',fict=it.m
   if(T==='trapez'){const F=[Q[3][0],Q[0][1]],s='h = '+fx(par.h)+' '+un,m=mix(Q[3],F,.5);o+=ln(Q[3],F)+tx(m[0]+hw(s)+6,m[1],s);}
   if(T==='deltoid'){const se='e = '+fx(par.e)+' '+un,sf='f = '+fx(par.f)+' '+un,pe=mix(Q[0],Q[2],.8),pf=mix(Q[3],Q[1],.88);o+=ln(Q[0],Q[2])+ln(Q[3],Q[1])+tx(pe[0]+hw(se)+6,pe[1],se)+tx(pf[0],pf[1]-14,sf);}}
  return{svg:o+'</svg>',W:Math.round(W)};}
-const FONTS={georgia:['Georgia (Serif)',"Georgia,'Times New Roman',serif"],times:['Times New Roman',"'Times New Roman',Times,serif"],arial:['Arial (serifenlos)','Arial,Helvetica,sans-serif'],verdana:['Verdana','Verdana,Geneva,sans-serif'],trebuchet:['Trebuchet MS',"'Trebuchet MS',Arial,sans-serif"],nunito:['Nunito (rund)','Nunito,Arial,sans-serif'],andika:['Andika (Schulschrift-nah)',"Andika,'Comic Sans MS',sans-serif"],comic:['Comic Sans',"'Comic Sans MS','Comic Neue',cursive"],hand:['Patrick Hand (Handschrift)',"'Patrick Hand','Comic Sans MS',cursive"],courier:['Courier (Schreibmaschine)',"'Courier New',Courier,monospace"]};const FF=o=>(FONTS[o.ff]||FONTS.georgia)[1];
-const def={ff:'georgia',vl:'A',sl:'a',A:true,u:true,w:230,md:'none',un:'cm',sh:false,fs:18,col:'#000000',fb:false,fi:false,fu:false,nl:2};let items=[],sel=null,uid=1,sheet=$('#sheet');
+const FONTS={georgia:['Arial (serifenlos)','Arial,Helvetica,sans-serif'],times:['Times New Roman',"'Times New Roman',Times,serif"],arial:['Arial (serifenlos)','Arial,Helvetica,sans-serif'],verdana:['Verdana','Verdana,Geneva,sans-serif'],trebuchet:['Trebuchet MS',"'Trebuchet MS',Arial,sans-serif"],nunito:['Nunito (rund)','Nunito,Arial,sans-serif'],andika:['Andika (Schulschrift-nah)',"Andika,'Comic Sans MS',sans-serif"],comic:['Comic Sans',"'Comic Sans MS','Comic Neue',cursive"],hand:['Patrick Hand (Handschrift)',"'Patrick Hand','Comic Sans MS',cursive"],courier:['Courier (Schreibmaschine)',"'Courier New',Courier,monospace"]};const FF=o=>(FONTS[o.ff]||FONTS.georgia)[1];
+const def={ff:'arial',vl:'A',sl:'a',A:true,u:true,w:230,md:'none',un:'cm',sh:false,fs:18,col:'#000000',fb:false,fi:false,fu:false,nl:2};let items=[],sel=null,uid=1,sheet=$('#sheet');
 $('#pal').innerHTML=Object.keys(SH).map(k=>`<div class="pal" draggable="true" data-t="${k}" style="margin-bottom:8px">${svgNew({type:k,vl:'none',sl:'none',md:'none',w:150}).svg}<span>${SH[k][0]}</span></div>`).join('');
 let n=0;
 let SWAPG=null,SWSUB=null;
@@ -463,10 +463,10 @@ function fitPages(){let mb=0;sheet.querySelectorAll('.item').forEach(e=>{mb=Math
  for(let k=0;k<n;k++){
   const FT=ftTxt();
   if(fr)add('pgf','top:'+(k*PH+18)+'px;height:'+(PH-36-(FT?14:0))+'px;border-color:'+(($('#rahmc')||{}).value||'#000'));
-  if(FT)add('pgfoot','position:absolute;top:'+((k+1)*PH-32)+'px;left:40px;right:40px;display:grid;grid-template-columns:1fr auto 1fr;font:14px Georgia,serif;color:#333;pointer-events:none',hfRow(FT));
-  const HT=hdTxt();if(HT)add('pgfoot','position:absolute;top:'+(k*PH+8)+'px;left:40px;right:40px;display:grid;grid-template-columns:1fr auto 1fr;font:14px Georgia,serif;color:#333;pointer-events:none',hfRow(HT));
+  if(FT)add('pgfoot','position:absolute;top:'+((k+1)*PH-32)+'px;left:40px;right:40px;display:grid;grid-template-columns:1fr auto 1fr;font:14px Arial,Helvetica,sans-serif;color:#333;pointer-events:none',hfRow(FT));
+  const HT=hdTxt();if(HT)add('pgfoot','position:absolute;top:'+(k*PH+8)+'px;left:40px;right:40px;display:grid;grid-template-columns:1fr auto 1fr;font:14px Arial,Helvetica,sans-serif;color:#333;pointer-events:none',hfRow(HT));
   if(k>0){add('pgb no-print','top:'+(k*PH)+'px','<span>Seite '+(k+1)+'</span>');if(pg)add('pgt','top:'+(k*PH+26)+'px;right:40px;font-size:15px','Seite '+(k+1)+' von '+n);}
-  if(SOL&&k<n-1)add('pgt','right:36px;top:'+((k+1)*PH-26-24)+'px;font:bold 20px Georgia,serif;color:#c0392b','Lösung');}
+  if(SOL&&k<n-1)add('pgt','right:36px;top:'+((k+1)*PH-26-24)+'px;font:bold 20px Arial,Helvetica,sans-serif;color:#c0392b','Lösung');}
  const sp=$('#spg');if(sp)sp.textContent='Seite 1 von '+n;}
 function render(){sheet.querySelectorAll('.item').forEach(e=>e.remove());items.forEach(mk);
  const m=reflow(),c=frameFit();if(m||c){sheet.querySelectorAll('.item').forEach(e=>e.remove());items.forEach(mk);}
@@ -540,7 +540,7 @@ function hfOpen(){let m=document.getElementById('hfm');if(m)m.remove();m=documen
 $('#hfb').onclick=hfOpen;
 $('#rahm').onchange=fitPages;
 function setf(k,v){def[k]=v;const s=items.find(i=>i.id===sel&&(i.type==='text'||i.type==='num'||i.type==='cmp'||i.type==='nb'||i.type==='st'||i.type==='rd'||i.type==='as'||i.type==='mx'||i.type==='py'||i.type==='mq'||i.type==='um'||i.type==='at'||i.type==='lb'||i.type==='kb'||i.type==='kt'||i.type==='ob'||i.type==='ke'||i.type==='kz'||i.type==='kx'||i.type==='bd'||i.type==='be'||i.type==='bz'||i.type==='rk'||i.type==='rw'||TLT.includes(i.type)||i.type==='tb'||i.type==='sa'||i.type==='sz'||i.type==='sp'||i.type==='sk'||i.type==='sv'||i.type==='rh'||i.type==='rt'||i.type==='rs'||i.type in SH));if(s){rec('f'+k);s[k]=v;render();}}
-$('#ff').innerHTML=Object.entries(FONTS).map(([k,v])=>`<option value="${k}" style="font-family:${v[1]}">${v[0]}</option>`).join('');$('#ff').onchange=e=>setf('ff',e.target.value);
+$('#ff').innerHTML=Object.entries(FONTS).map(([k,v])=>`<option value="${k}" style="font-family:${v[1]}"${k==='georgia'?' hidden':''}>${v[0]}</option>`).join('');$('#ff').onchange=e=>setf('ff',e.target.value);
 $('#fs').oninput=e=>{const v=parseInt(e.target.value);if(v>=8&&v<=80)setf('fs',v);};
 $('#fc').oninput=e=>setf('col',e.target.value);
 $('#del').onclick=()=>{if(!sel)return;rec();items=items.filter(i=>i.id!==sel);sel=null;render();};
@@ -3284,7 +3284,7 @@ const piCon=(cx,y,rx,ry,h,f)=>`<path d="M${cx-rx},${y+h} L${cx},${y} L${cx+rx},$
 const piPyr=(cx,y,w,h,f,s)=>{const L=[cx-w/2,y+h],F=[cx+w*.08,y+h+9],R=[cx+w/2,y+h-3],B=[cx-w*.08,y+h-12];return `<path d="M${cx},${y}L${B[0]},${B[1]}M${B[0]},${B[1]}L${L[0]},${L[1]}M${B[0]},${B[1]}L${R[0]},${R[1]}" stroke="#333" stroke-width="1" stroke-dasharray="3 2" fill="none"/><polygon points="${cx},${y} ${L} ${F}" fill="${f}" ${PIS}/><polygon points="${cx},${y} ${F} ${R}" fill="${s}" ${PIS}/>`;};
 const piSph=(cx,cy,r,f)=>`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${f}" ${PIS}/><ellipse cx="${cx-r*.35}" cy="${cy-r*.4}" rx="${r*.2}" ry="${r*.12}" fill="#fff" opacity=".7" transform="rotate(-35 ${cx-r*.35} ${cy-r*.4})"/>`;
 const piPrism=(x,y,w,h,d,f,t,s,mid)=>{const m=mid==null?w/2:mid;return `<polygon points="${x},${y+h} ${x+m},${y} ${x+m+d},${y-d*.5} ${x+w+d},${y+h-d*.5} ${x+w},${y+h}" fill="${t}" ${PIS}/><polygon points="${x+w},${y+h} ${x+m},${y} ${x+m+d},${y-d*.5}" fill="none"/><polygon points="${x+m},${y} ${x+w},${y+h} ${x+w+d},${y+h-d*.5} ${x+m+d},${y-d*.5}" fill="${s}" ${PIS}/><polygon points="${x},${y+h} ${x+m},${y} ${x+w},${y+h}" fill="${f}" ${PIS}/>`;};
-const piT=(x,y,t,s,c)=>`<text x="${x}" y="${y}" font-size="${s||10}" font-weight="700" text-anchor="middle" fill="${c||'#333'}" font-family="Georgia,serif">${t}</text>`;
+const piT=(x,y,t,s,c)=>`<text x="${x}" y="${y}" font-size="${s||10}" font-weight="700" text-anchor="middle" fill="${c||'#333'}" font-family="Arial,Helvetica,sans-serif">${t}</text>`;
 const PIC={
  aquarium:()=>piCub(14,28,56,40,22,'#d8eefa','#eaf6fd','#bfdff2')+`<rect x="15" y="44" width="54" height="23" fill="#7cc4ec" opacity=".75"/><ellipse cx="36" cy="55" rx="9" ry="5" fill="#f58231" ${PIS}/><path d="M45 55l8-5v10z" fill="#f58231" ${PIS}/><circle cx="31" cy="54" r="1.2" fill="#333"/><ellipse cx="55" cy="60" rx="5" ry="3" fill="#ffd23f" ${PIS}/><path d="M60 60l5-3v6z" fill="#ffd23f" ${PIS}/><path d="M20 67q2-8 4 0M26 67q2-10 4 0" stroke="#2e8b57" fill="none" stroke-width="1.6"/>`,
  geschenk:()=>piCub(16,30,50,36,20,'#e8798f','#f4a6b6','#c95d75')+`<rect x="37" y="30" width="8" height="36" fill="#ffd23f" ${PIS}/><polygon points="37,30 45,30 57,18 49,18" fill="#ffe27a" ${PIS}/><path d="M41 30q-12-14-4-16q8 0 4 16Q45 14 53 14q8 2-12 16Z" fill="#ffd23f" ${PIS}/>`,
@@ -3367,7 +3367,7 @@ Object.assign(PIC,{
 const PICP=['#e8553b','#4a90d9','#4caf7d','#f58231','#9b6ad8','#d63384'];
 const piPct=i=>{const c=PICP[i%PICP.length];return `<circle cx="40" cy="40" r="34" fill="${c}" ${PIS}/><ellipse cx="28" cy="24" rx="12" ry="5" fill="#fff" opacity=".28" transform="rotate(-30 28 24)"/><text x="40" y="58" font-size="52" font-weight="900" text-anchor="middle" fill="#fff" stroke="#333" stroke-width="1" font-family="Arial Black,Arial,sans-serif">%</text>`;};
 /* Skizzen mit Buchstaben */
-const SKL=(x,y,t,a)=>`<text x="${x}" y="${y}" font-size="12" font-style="italic" font-weight="700" text-anchor="${a||'middle'}" fill="#c0392b" font-family="Georgia,serif">${t}</text>`;
+const SKL=(x,y,t,a)=>`<text x="${x}" y="${y}" font-size="12" font-style="italic" font-weight="700" text-anchor="${a||'middle'}" fill="#c0392b" font-family="Arial,Helvetica,sans-serif">${t}</text>`;
 const SKD='stroke="#000" stroke-width="1.5" stroke-linejoin="round" fill="none"';
 const PSK={
  qu:()=>`<polygon points="14,34 24,24 76,24 66,34" ${SKD}/><polygon points="66,34 76,24 76,56 66,66" ${SKD}/><rect x="14" y="34" width="52" height="32" ${SKD}/><path d="M14 24L24 24" stroke="none"/>`+SKL(40,76,'a')+SKL(86,48,'b','middle')+SKL(8,53,'c')+SKL(70,22,'')+`<path d="M66 70L76 60" stroke="none"/>`,
