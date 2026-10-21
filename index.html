@@ -5702,4 +5702,27 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-lb-act]');
  const dkp=document.querySelector('.catp[data-c="dk"]');(dkp||$('#kfpal')).after(b);b.after(P);
  b.onclick=()=>{cat=(cat==='lb'&&!sel)?null:'lb';select(null);};
  let n=0;P.querySelectorAll('.pal').forEach(d=>{d.ondragstart=e=>e.dataTransfer.setData('text/plain',d.dataset.t);d.onclick=()=>{n++;add(d.dataset.t,50+(n%6)*30,100+(n%6)*30);};});})();
+
+/* ===== Namen in Textaufgaben variieren ===== */
+(function(){
+ const F0='Lena Mia Anna Sophie Emma Nina Mara Lea Hanna Sarah Eva Marie Jana Ida Tamara Maria Mina'.split(' '),M0='Alex Jonas Leon Lukas Elias Noah Ben Tim Paul Felix David Luca Tobias Philipp Gerhard Tom Jan Stefan Ali Emir Luka'.split(' ');
+ const FP='Anna Lena Mia Sophie Emma Nina Mara Lea Hanna Sarah Eva Marie Jana Ida Lara Julia Laura Klara Elena Mila Amira Selina Leonie Nora Paula Lisa Zoe Elif Ela Lilly Alina'.split(' '),MP='Leon Elias Noah Ben Tim Paul Felix David Luca Tobias Philipp Tom Jan Stefan Emir Luka Jakob Nico Simon Daniel Moritz Matteo Jonas Lukas Finn Theo Emil Ali Mehmet Yusuf'.split(' '),SP='Eder Huber Gruber Bauer Wagner Pichler Moser Steiner Mayer Hofer Leitner Berger Fuchs Winkler Schmid Mair Brunner Aigner Wolf Kern Maier'.split(' ');
+ const SUR=['Berger','Eder','Huber','Wagner','Wolf','Kern','Maier','Merin','Pichler','Schmidt','Gruber','Baumgartner'];
+ const rxT=new RegExp('(?<![\\p{L}])(Familie|Frau|Herrn|Herr|Landwirt) ('+SUR.join('|')+')(?![\\p{L}])','gu');
+ const all=F0.concat(M0).sort((a,b)=>b.length-a.length);
+ const rxN=new RegExp('(?<![\\p{L}\\-])('+all.join('|')+")(s|')?(?![\\p{L}])",'gu');
+ const fs=new Set(F0);
+ const pick=(pool,used)=>{const a=pool.filter(x=>!used.has(x));return a.length?a[Math.floor(Math.random()*a.length)]:pool[Math.floor(Math.random()*pool.length)];};
+ window.nmVar=function(arr){const mp={},used=new Set();
+  const rep=x=>typeof x!=='string'?x:x.replace(rxT,(m,t,n)=>{const k='S'+n;if(!mp[k]){mp[k]=pick(SP,used);used.add(mp[k]);}return t+' '+mp[k];}).replace(rxN,(m,n,suf)=>{const k='N'+n;if(!mp[k]){mp[k]=pick(fs.has(n)?FP:MP,used);used.add(mp[k]);}const nn=mp[k];return nn+(suf==='s'&&/[sxz]$/.test(nn)?"'":(suf||''));});
+  return arr.map(rep);};
+ const fix=e=>{if(!e||typeof e!=='object'||Array.isArray(e))return;const ks=Object.keys(e).filter(k=>typeof e[k]==='string'&&k!=='tk');if(!ks.length)return;const r=nmVar(ks.map(k=>e[k]));ks.forEach((k,i)=>e[k]=r[i]);};
+ window.nmFix=function(it){if(it&&Array.isArray(it.d))it.d.forEach(fix);};
+ const w=(name,fn)=>{window[name]=fn;};
+ const _tl=tlGen,_md=mdGen,_pr=prMk1,_v4=v4Gen;
+ tlGen=function(it){const r=_tl.apply(this,arguments);nmFix(it);return r;};
+ mdGen=function(it){const r=_md.apply(this,arguments);nmFix(it);return r;};
+ prMk1=function(){const e=_pr.apply(this,arguments);fix(e);return e;};
+ v4Gen=function(){const a=_v4.apply(this,arguments);a.forEach(fix);return a;};
+})();
 </script></body></html>
