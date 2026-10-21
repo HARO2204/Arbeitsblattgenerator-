@@ -5846,7 +5846,7 @@ $('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.lb;if(!k)retu
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-lb-act]');if(!b)return;const it=items.find(i=>i.id===sel&&i.type==='lb');if(!it)return;rec();it.seed=1+Math.floor(Math.random()*1e9);render();});
 {const addO=add;add=function(t,x,y){const m=/^lb:(\w+)$/.exec(String(t));if(!m)return addO(t,x,y);const r=addO('lb',x,y),it=items[items.length-1];
  if(it&&it.type==='lb'){const sup=items.filter(i=>LBT.includes(i.type)),ab=sup.filter(i=>i.y<=it.y).sort((a,b)=>b.y-a.y)[0]||sup[sup.length-1];
-  Object.assign(it,{w:714,fs:20,fi:false,fb:false,fu:false,form:m[1],mo:'mix',src:ab?ab.id:'all',ti:'Zur Kontrolle:',seed:1+Math.floor(Math.random()*1e9)});it.x=Math.max(0,Math.min(it.x,794-it.w));render();sync();}
+  Object.assign(it,{w:714,fs:20,fi:false,fb:false,fu:false,form:m[1],mo:'mix',src:'all',ti:'Zur Kontrolle:',seed:1+Math.floor(Math.random()*1e9)});it.x=Math.max(0,Math.min(it.x,794-it.w));render();sync();}
  return r;};}
 (function(){const b=document.createElement('button');b.className='cat';b.dataset.c='lb';b.textContent='✅ Lösungsbox';
  const P=document.createElement('div');P.className='catp';P.dataset.c='lb';
