@@ -86,7 +86,7 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 .item.txt.nohd{min-width:0}.item.nohd .h{position:absolute;left:0;top:-17px;z-index:6;display:none;white-space:nowrap}.item.nohd:hover .h,.item.nohd.sel .h{display:block}
 .rzh{display:none;position:absolute;right:-10px;bottom:-10px;width:16px;height:16px;background:var(--acc);border:2px solid #fff;border-radius:4px;cursor:nwse-resize;z-index:5;touch-action:none}.item.sel .rzh{display:block}body.pv .rzh{display:none!important}.item.txt{resize:horizontal;overflow:hidden;min-width:120px}
 .h{background:#e8ecf5;color:#556;font-size:11px;padding:2px 6px;cursor:move;user-select:none}
-.tb{font-size:17px;font-family:inherit;padding:6px;min-height:50px;outline:none;border:1px solid #cfd5e2;white-space:pre-wrap;cursor:text}
+.tb[data-nl]::before{content:attr(data-nl) " ";font-weight:bold;white-space:pre}.tb{font-size:17px;font-family:inherit;padding:6px;min-height:50px;outline:none;border:1px solid #cfd5e2;white-space:pre-wrap;cursor:text}
 .bar input[type=number]{width:62px;font:inherit;padding:4px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)}
 @media print{@page{size:A4;margin:0}html,body{height:auto;background:#fff}.no-print,.trash{display:none!important}.wrap{display:block}main{padding:0;overflow:visible}
 #sheet{box-shadow:none;margin:0}.item.sel{outline:none}.h{visibility:hidden}.tb{border-color:transparent}.item.txt{resize:none}}
@@ -372,9 +372,11 @@ function add(t,x,y){if(SWAPG!==null&&t!=='n'&&t!=='a'&&t!=='head')return doSwap(
  :{id:uid++,type:t,x:x??60,y:y??100,vl:def.vl,sl:def.sl,A:def.A,u:def.u,w:def.w,md:def.md,un:def.un,sh:def.sh,fs:def.fs,col:def.col,fb:false,fi:true,fu:false,nl:def.nl,par:{...PAR[t]}};
  if(!it.ff)it.ff=def.ff;it.x=Math.max(0,Math.min(it.x,794-it.w));it.y=Math.max(0,it.y);items.push(it);sel=it.id;render();if(x===undefined){try{const e=elOf(it.id),w=e?e.offsetWidth:0;if(w>=600&&w<=794){const nx=Math.round((794-w)/2);if(Math.abs(nx-it.x)>1){it.x=nx;render();const w2=elOf(it.id).offsetWidth;if(w2!==w){it.x=Math.round((794-w2)/2);render();}}}}catch(_){}}sync();}
 const MANX=['text','num','deko','img','tb','zs','wk','kb','frm','ckf','lb'];
+let ANK='n';
+function nkLab(it){const a=items.filter(i=>i.type==='text'&&i.nk===it.nk).sort((x,y)=>x.y-y.y||x.x-y.x),k=a.indexOf(it);return it.nk==='a'?'abcdefghijklmnopqrstuvwxyz'[k%26]+')':(k+1)+'.';}
 function mk(it){const e=document.createElement('div');e.className='item'+(it.nh?' nohd':'')+(it.type==='text'?' txt':'')+(it.type==='num'?' num':'')+(it.id===sel?' sel':'');e.dataset.id=it.id;
  e.style.cssText=`left:${it.x}px;top:${it.y}px;width:${it.w}px;font-family:${FF(it)}`;
- if(it.type==='text'){e.innerHTML='<div class="h">⠿ '+(it.head?'Überschrift':'Textfeld')+' (hier ziehen)</div><div class="tb" contenteditable="true"></div>';const tb=e.querySelector('.tb');if(it.mh)tb.style.minHeight=it.mh+'px';if(it.html!=null)tb.innerHTML=it.html;else tb.textContent=it.text;tb.style.fontSize=(it.fs||18)+'px';tb.style.color=it.col||'#000';tb.style.fontWeight=it.fb?'bold':'normal';tb.style.fontStyle=it.fi?'italic':'normal';tb.style.textDecoration=it.fu?(it.fd?'underline double':'underline'):'none';if(it.head)tb.style.textAlign='center';tb.onpaste=ev=>{ev.preventDefault();document.execCommand('insertText',false,ev.clipboardData.getData('text/plain'));};tb.oninput=()=>{rec('t'+it.id);it.html=tb.innerHTML;};}
+ if(it.type==='text'){e.innerHTML='<div class="h">⠿ '+(it.head?'Überschrift':'Textfeld')+' (hier ziehen)</div><div class="tb" contenteditable="true"></div>';const tb=e.querySelector('.tb');if(it.mh)tb.style.minHeight=it.mh+'px';if(it.html!=null)tb.innerHTML=it.html;else tb.textContent=it.text;if(it.nk&&!it.head)tb.dataset.nl=nkLab(it);tb.style.fontSize=(it.fs||18)+'px';tb.style.color=it.col||'#000';tb.style.fontWeight=it.fb?'bold':'normal';tb.style.fontStyle=it.fi?'italic':'normal';tb.style.textDecoration=it.fu?(it.fd?'underline double':'underline'):'none';if(it.head)tb.style.textAlign='center';tb.onpaste=ev=>{ev.preventDefault();document.execCommand('insertText',false,ev.clipboardData.getData('text/plain'));};tb.oninput=()=>{rec('t'+it.id);it.html=tb.innerHTML;};}
  else if(it.type==='num'){const k=items.filter(i=>i.type==='num'&&i.kind===it.kind).indexOf(it);e.style.width='auto';e.innerHTML=`<div style="font-size:${it.fs||18}px;font-weight:${it.fb?'bold':'normal'};font-style:${it.fi?'italic':'normal'};text-decoration:${it.fu?(it.fd?'underline double':'underline'):'none'};color:${it.col||'#000'};white-space:nowrap;padding:0 4px">${it.kind==='n'?(k+1)+'.':'abcdefghijklmnopqrstuvwxyz'[k%26]+')'}</div>`;}
  else if(it.type==='cmp'){if((+it.co||1)>1){let cw=Math.min(714,754-it.x);if(cw<560){it.x=40;e.style.left='40px';cw=714;}if(it.mw)cw=Math.min(cw,it.mw);e.style.width=cw+'px';}else e.style.width=it.w+'px';e.innerHTML=cmpBlock(it);}
  else if(it.type==='nb'){e.style.width=it.w+'px';e.innerHTML=nbBlock(it);}
@@ -1296,9 +1298,9 @@ function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes
  g.innerHTML=H;}
 const NUMT=['sv','pys','pyb','cit','lw','prd','prg','prw','prs','prk','prx','prr','ms','v4','v4','tzw','tgg','tkm','tsa','pob','poz','pog','pom','pov','pot','zr'];
 const numDef=it=>({pys:'n',lw:'n',prg:'n',prw:it.fm==='rech'?'a':'n',prs:it.fm==='rech'?'a':'n',prk:it.fm==='rech'?'a':'n',prx:it.fm==='rech'?'a':'n',ms:'n',tsa:'n',zr:'n'})[it.type]||'a';
-function renderNum(){const g=$('#g-num');if(!g)return;const it=items.find(i=>i.id===sel&&NUMT.includes(i.type));if(!it){g.innerHTML='';g.style.display='none';return;}
+function renderNum(){const g=$('#g-num');if(!g)return;const tx=items.find(i=>i.id===sel&&i.type==='text'&&!i.head);if(tx){g.style.display='';g.innerHTML=`<label>Nummerierung der Angabe<select data-num="nk">${[['','keine'],['n','1. 2. 3.'],['a','a) b) c)']].map(([a,t])=>`<option value="${a}"${(tx.nk||'')===a?' selected':''}>${t}</option>`).join('')}</select></label>`;return;}const it=items.find(i=>i.id===sel&&NUMT.includes(i.type));if(!it){g.innerHTML='';g.style.display='none';return;}
  g.style.display='';const v=it.lab||numDef(it);g.innerHTML=`<label>Nummerierung<select data-num="lab">${[['a','a) b) c) d)'],['n','1) 2) 3) 4)'],['none','keine']].map(([a,t])=>`<option value="${a}"${v===a?' selected':''}>${t}</option>`).join('')}</select></label>`;}
-$('#rp').addEventListener('change',e=>{const t=e.target;if(t.dataset.num!=='lab')return;const it=items.find(i=>i.id===sel&&NUMT.includes(i.type));if(!it)return;rec('numlab');it.lab=t.value;render();});
+$('#rp').addEventListener('change',e=>{const t=e.target;if(t.dataset.num==='nk'){const x=items.find(i=>i.id===sel&&i.type==='text');if(!x)return;rec('numnk');if(t.value)x.nk=t.value;else delete x.nk;render();return;}if(t.dataset.num!=='lab')return;const it=items.find(i=>i.id===sel&&NUMT.includes(i.type));if(!it)return;rec('numlab');it.lab=t.value;render();});
 const tlHandler=e=>{const t=e.target,k=t.dataset.tl;if(!k)return;const it=items.find(i=>i.id===sel&&TLT.includes(i.type));if(!it)return;
  if(k==='own'&&e.type==='input')return;if(k!=='own'&&e.type==='change')return;
  rec('tl'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','lv','co','mx','ps','zk','nz','cs','rl'].includes(k))v=+v;it[k]=v;
@@ -5525,11 +5527,13 @@ Object.entries(PRE).forEach(([c,list])=>{const box=document.querySelector('#left
  const lab=document.createElement('label');lab.className='pre';lab.style.cssText='display:block;font-size:12px;color:var(--mut);margin-bottom:8px';
  lab.innerHTML='Angabe einfügen (frei änderbar)<select style="width:100%;font:inherit;padding:5px;margin-top:2px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)"><option value="">– auswählen –</option>'+list.map((t,i)=>'<option value="'+i+'">'+t.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</option>').join('')+'</select>';
  const sl=lab.querySelector('select');
+ const nsel=document.createElement('label');nsel.style.cssText='display:block;font-size:12px;color:var(--mut);margin:4px 0 8px';nsel.innerHTML='Nummerierung der Angabe<select style="width:100%;font:inherit;padding:5px;margin-top:2px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink)"><option value="n">1. 2. 3.</option><option value="a">a) b) c)</option><option value="">keine</option></select>';
+ nsel.querySelector('select').value=ANK;nsel.querySelector('select').onchange=e=>{ANK=e.target.value;document.querySelectorAll('.pre-nk select').forEach(x=>x.value=ANK);};nsel.className='pre-nk';
  sl.onchange=()=>{const t=list[+sl.value];sl.value='';if(t==null)return;
   const ps=sel,pc=cat,ref=items.find(i=>i.id===ps),y=ref?Math.max(10,ref.y-56):60;
-  add('text',40,y);const it=items[items.length-1];it.w=714;it.x=40;it.text=t;delete it.html;it.fb=true;render();
+  add('text',40,y);const it=items[items.length-1];it.w=714;it.x=40;it.text=t;delete it.html;it.fb=true;if(ANK)it.nk=ANK;render();
   cat=pc;select(ps);};
- box.insertBefore(lab,box.firstChild);});
+ box.insertBefore(nsel,box.firstChild);box.insertBefore(lab,box.firstChild);});
 
 /* ===== 4.0-Aufgaben in jedem Thema ===== */
 (function(){const TX={vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',tl:'Teiler',md:'Multiplizieren und Dividieren',sw:'Stellenwerttabelle',po:'Potenzen',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',zn:'Zahlenmengen',mb:'Maßstab',pc:'Prozentrechnung'};
