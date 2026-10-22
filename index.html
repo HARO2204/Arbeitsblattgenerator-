@@ -471,7 +471,7 @@ function hfRow(a){return a.map((t,i)=>'<span'+(i===2?' style="text-align:right"'
 function leafBorder(k,FT){const W=794,H=PH;let sd=7+k*13;const R=()=>{sd=(sd*16807)%2147483647;return sd/2147483647;};
  const LP=['M0,-10C7,-5 7,5 0,9C-7,5-7,-5 0,-10Z','M0,-10L2,-5L6,-8L5,-2L10,-3L6,2L8,6L2,5L0,9L-2,5L-8,6L-6,2L-10,-3L-5,-2L-6,-8L-2,-5Z','M0,-10C3,-10 3,-7 5,-6C8,-6 7,-3 5,-2C8,0 7,3 4,3C6,5 4,8 1,7L0,9L-1,7C-4,8 -6,5 -4,3C-7,3 -8,0 -5,-2C-7,-3 -8,-6 -5,-6C-3,-7 -3,-10 0,-10Z'];
  const CO=['#c0392b','#d35400','#e67e22','#f1a722','#e8c33a','#a0522d','#8e3b1f','#b5651d','#d9822b','#9c2f1e','#7d8f2a'];
- const x0=22,y0=22,x1=W-22,y1=H-(FT?54:22),pts=[];
+ const x0=22,y0=22,x1=W-22,y1=H-(FT?62:22),pts=[];
  const step=26;const seg=(ax,ay,bx,by)=>{const L=Math.hypot(bx-ax,by-ay),n=Math.round(L/step);for(let i=0;i<n;i++){const t=i/n;pts.push([ax+(bx-ax)*t,ay+(by-ay)*t,Math.atan2(by-ay,bx-ax)*180/Math.PI+90]);}};
  seg(x0,y0,x1,y0);seg(x1,y0,x1,y1);seg(x1,y1,x0,y1);seg(x0,y1,x0,y0);
  let o='';const lay=(pt,sz,off)=>{const j=(R()-.5)*8,a=pt[2]+(R()-.5)*120,c=CO[Math.floor(R()*CO.length)],ty=Math.floor(R()*3),sc=sz*(.8+R()*.5)/10;
@@ -494,7 +494,7 @@ function decoBorder(k,FT,th){const W=794,H=PH;let sd=11+k*17;const R=()=>{sd=(sd
   for(let i=0;i<5;i++)o+=`<path d="M${(-3.5+R()*7).toFixed(1)},${(-8+R()*4).toFixed(1)}l1.4,.6" stroke="${pk(['#e53935','#1e88e5','#fdd835','#43a047','#fff'])}" stroke-width=".9" stroke-linecap="round"/>`;
   if(R()<.5)o+=`<circle cy="-11" r="1.9" fill="#d32f2f" stroke="#7f1010" stroke-width=".5"/><path d="M0,-12.5Q1,-14.5 2.5,-14.6" stroke="#2e7d32" stroke-width=".7" fill="none"/>`;return o;}]]},
  p:{step:13,rot:'up',L:[[16,0,()=>`<circle r="${(3+R()*5).toFixed(1)}" fill="${pk(['#e74c3c','#f39c12','#f1c40f','#2ecc71','#3498db','#9b59b6','#e91e8c','#1abc9c','#ff7043'])}"/>`],[12,5,()=>`<circle r="${(2+R()*3.5).toFixed(1)}" fill="${pk(['#e74c3c','#f39c12','#f1c40f','#2ecc71','#3498db','#9b59b6','#e91e8c','#1abc9c','#ff7043'])}"/>`]]}}[th];
- const x0=22,y0=22,x1=W-22,y1=H-(FT?54:22),pts=[];
+ const x0=22,y0=22,x1=W-22,y1=H-(FT?62:22),pts=[];
  const seg=(ax,ay,bx,by)=>{const L=Math.hypot(bx-ax,by-ay),n=Math.round(L/T.step);for(let i=0;i<n;i++){const t=i/n;pts.push([ax+(bx-ax)*t,ay+(by-ay)*t,Math.atan2(by-ay,bx-ax)*180/Math.PI+90]);}};
  seg(x0,y0,x1,y0);seg(x1,y0,x1,y1);seg(x1,y1,x0,y1);seg(x0,y1,x0,y0);
  let o='';
@@ -512,8 +512,8 @@ function fitPages(){let mb=0;sheet.querySelectorAll('.item').forEach(e=>{mb=Math
  for(let k=0;k<n;k++){
   const FT=ftTxt();
   if(fr&&$('#rst')&&$('#rst').value!=='l'){const rv=$('#rst').value;add('pgleaf','left:0;top:'+(k*PH)+'px;width:794px;height:'+PH+'px;pointer-events:none',rv==='b'?leafBorder(k,!!FT):decoBorder(k,!!FT,rv));}
-  else if(fr)add('pgf','top:'+(k*PH+18)+'px;height:'+(PH-36-(FT?14:0))+'px;border-color:'+(($('#rahmc')||{}).value||'#000'));
-  if(FT)add('pgfoot','position:absolute;top:'+((k+1)*PH-32)+'px;left:40px;right:40px;display:grid;grid-template-columns:1fr auto 1fr;font:14px Arial,Helvetica,sans-serif;color:#333;pointer-events:none',hfRow(FT));
+  else if(fr)add('pgf','top:'+(k*PH+18)+'px;height:'+(PH-36-(FT?22:0))+'px;border-color:'+(($('#rahmc')||{}).value||'#000'));
+  if(FT)add('pgfoot','position:absolute;top:'+((k+1)*PH-40)+'px;left:40px;right:40px;display:grid;grid-template-columns:1fr auto 1fr;font:14px Arial,Helvetica,sans-serif;color:#333;pointer-events:none',hfRow(FT));
   const HT=hdTxt();if(HT)add('pgfoot','position:absolute;top:'+(k*PH+8)+'px;left:40px;right:40px;display:grid;grid-template-columns:1fr auto 1fr;font:14px Arial,Helvetica,sans-serif;color:#333;pointer-events:none',hfRow(HT));
   if(k>0){add('pgb no-print','top:'+(k*PH)+'px','<span>Seite '+(k+1)+'</span>');if(pg)add('pgt','top:'+(k*PH+26)+'px;right:40px;font-size:15px','Seite '+(k+1)+' von '+n);}
   if(SOL&&k<n-1)add('pgt','right:36px;top:'+((k+1)*PH-26-24)+'px;font:bold 20px Arial,Helvetica,sans-serif;color:#c0392b','Lösung');}
