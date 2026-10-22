@@ -96,7 +96,9 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 .fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.25;margin:0 .15em}.fr>span{display:block;padding:0 .3em;min-width:1ch;text-align:center}.fr>span:first-child{border-bottom:1.6px solid currentColor}
 .fr.fk>span{padding:0;border:none!important}.bx{display:inline-block;box-sizing:border-box;min-width:1.8em;height:1.45em;border:1.2px solid #666;vertical-align:middle;text-align:center;line-height:1.3em;font-style:normal}.fr.fk>span+span .bx{margin-top:-1.2px}
 .tlx .tlc{display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;border:1.4px solid #000;border-radius:50%;vertical-align:middle;margin:0 .15em;box-sizing:border-box}
-.tlx .tlln{display:inline-block;border-bottom:1.2px solid #555;min-width:6em;min-height:1.35em;vertical-align:bottom;text-align:left;padding:0 .2em;box-sizing:border-box}
+.tlx .item.zfk [style*="repeating-linear-gradient"]{background:linear-gradient(#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm,linear-gradient(90deg,#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm!important;min-height:15mm!important;border:1px solid #9cc3e6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.item.zfk .tlln[style*="display:block"],.item.zfk [style*="flex:1"]>.ln,.item.zfk [style*="border-bottom:1.2px solid #bbb"]{border:none!important;min-height:10mm!important;height:auto;background:linear-gradient(#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm,linear-gradient(90deg,#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.tlln{display:inline-block;border-bottom:1.2px solid #555;min-width:6em;min-height:1.35em;vertical-align:bottom;text-align:left;padding:0 .2em;box-sizing:border-box}
 .tlx .sv{color:#c0392b;font-weight:700}.tlx .tlrw{display:flex;align-items:flex-end;gap:.35em;margin:.3em 0}
 .tlx table.tltb{border-collapse:collapse;width:100%;table-layout:fixed}.tlx .tltb th,.tlx .tltb td{border:1.5px solid #000;text-align:center;height:1.9em;padding:.15em .3em;font-weight:inherit}.tlx .tltb th{font-weight:700}
 .tlx .tlp{display:inline-block;min-width:1.7em;padding:.1em 0;border-radius:50%;background:#fde3e0;color:#c0392b;font-weight:700}
@@ -273,6 +275,7 @@ body.pv .pgb{display:none}
 <div class="grp" id="g-sw" data-cats="sw"></div>
 <div class="grp" id="g-dk" data-cats="dk"></div>
 <div class="grp" id="g-lb" data-cats="lb"></div>
+<div class="grp" id="g-zf" data-cats="tl as md br pc po ge pl ci"></div>
 <div class="grp" id="g-ly" data-cats="vk tx cp st rd as kr mu sg ko kd br ra tl md pc po sw pl zr kf dk"></div>
 <div class="grp" id="g-man" data-cats="vk tx cp st rd as kr mu sg ko kd br ra tl md pc po sw pl zr"></div>
 <div class="grp" data-cats="vk wk dk cp st rd as kr mu sg ko kd br">
@@ -380,7 +383,7 @@ function add(t,x,y){if(SWAPG!==null&&t!=='n'&&t!=='a'&&t!=='head')return doSwap(
 const MANX=['text','num','deko','img','tb','zs','wk','kb','frm','ckf','lb'];
 let ANK='n';
 function nkLab(it){const a=items.filter(i=>i.type==='text'&&i.nk===it.nk).sort((x,y)=>x.y-y.y||x.x-y.x),k=a.indexOf(it);return it.nk==='a'?'abcdefghijklmnopqrstuvwxyz'[k%26]+')':(k+1)+'.';}
-function mk(it){const e=document.createElement('div');e.className='item'+(it.nh?' nohd':'')+(it.type==='text'?' txt':'')+(it.type==='num'?' num':'')+(it.id===sel?' sel':'');e.dataset.id=it.id;
+function mk(it){const e=document.createElement('div');e.className='item'+(it.nh?' nohd':'')+(it.type==='text'?' txt':'')+(it.type==='num'?' num':'')+(it.zf==='karo'&&ZFT.includes(it.type)?' zfk':'')+(it.id===sel?' sel':'');e.dataset.id=it.id;
  e.style.cssText=`left:${it.x}px;top:${it.y}px;width:${it.w}px;font-family:${FF(it)}`;
  if(it.type==='text'){e.innerHTML='<div class="h">⠿ '+(it.head?'Überschrift':'Textfeld')+' (hier ziehen)</div><div class="tb" contenteditable="true"></div>';const tb=e.querySelector('.tb');if(it.mh)tb.style.minHeight=it.mh+'px';if(it.html!=null)tb.innerHTML=it.html;else tb.textContent=it.text;if(it.nk&&!it.head)tb.dataset.nl=nkLab(it);tb.style.fontSize=(it.fs||18)+'px';tb.style.color=it.col||'#000';tb.style.fontWeight=it.fb?'bold':'normal';tb.style.fontStyle=it.fi?'italic':'normal';tb.style.textDecoration=it.fu?(it.fd?'underline double':'underline'):'none';if(it.head)tb.style.textAlign='center';tb.onpaste=ev=>{ev.preventDefault();document.execCommand('insertText',false,ev.clipboardData.getData('text/plain'));};tb.oninput=()=>{rec('t'+it.id);it.html=tb.innerHTML;};}
  else if(it.type==='num'){const k=items.filter(i=>i.type==='num'&&i.kind===it.kind).indexOf(it);e.style.width='auto';e.innerHTML=`<div style="font-size:${it.fs||18}px;font-weight:${it.fb?'bold':'normal'};font-style:${it.fi?'italic':'normal'};text-decoration:${it.fu?(it.fd?'underline double':'underline'):'none'};color:${it.col||'#000'};white-space:nowrap;padding:0 4px">${it.kind==='n'?(k+1)+'.':'abcdefghijklmnopqrstuvwxyz'[k%26]+')'}</div>`;}
@@ -5291,6 +5294,7 @@ function rdGen0(o){
   rows.push({s:f(N,dd),c,a:f(R,k),m:rm});}
  return rows;
 }
+const ZFT=['tsa','ms','v4','vs','bs','pos','ges','pys','cis','sk','at'];
 const kst=it=>`font-size:${it.fs||20}px;font-weight:${it.fb?'bold':'normal'};font-style:${it.fi?'italic':'normal'};text-decoration:${it.fu?(it.fd?'underline double':'underline'):'none'};color:${it.col||'#000'}`;
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const MU={l:[['mm',1],['cm',10],['dm',100],['m',1000],['km',1e6]],h:[['ml',1],['cl',10],['dl',100],['l',1000],['hl',1e5]],m:[['mg',1],['g',1000],['dag',1e4],['kg',1e6],['t',1e9]],z:[['s',1],['min',60],['h',3600],['d',86400]]};
@@ -5750,8 +5754,13 @@ function renderLy(){const g=$('#g-ly');if(!g)return;const it=items.find(i=>i.id=
  g.innerHTML=`<div style="font-weight:700;margin:6px 0 4px">Ebene</div><div class="row" style="flex-wrap:wrap"><button data-ly-act="bg"${bg?' class="on"':''} title="Hinter alle anderen Elemente legen (z. B. kariertes Feld als Hintergrund)">⤓ Hintergrund</button><button data-ly-act="fg"${it.z>0?' class="on"':''} title="Vor alle anderen Elemente legen">⤒ Vordergrund</button><button data-ly-act="norm" title="Normale Ebene">Normal</button></div>`+(LYO.includes(it.type)?`<label>Transparenz: <span id="lyv">${100-op} %</span><input type="range" data-ly="op" min="10" max="100" step="5" value="${op}"></label><div style="font-size:11px;color:var(--mut)">links = durchsichtig, rechts = deckend</div>`:'');}
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ly-act]');if(!b)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();const a=b.dataset.lyAct;it.z=a==='bg'?-1:a==='fg'?10:0;render();renderLy();});
 $('#rp').addEventListener('input',e=>{const t=e.target;if(t.dataset.ly!=='op')return;const it=items.find(i=>i.id===sel);if(!it)return;rec('lyop');it.op=+t.value/100;const v=$('#lyv');if(v)v.textContent=(100-t.value)+' %';const el=sheet.querySelector('[data-id="'+it.id+'"]');if(el)el.style.opacity=it.op;});
+
+function renderZf(){const g=$('#g-zf');if(!g)return;const it=items.find(i=>i.id===sel&&ZFT.includes(i.type));
+ g.innerHTML=it?`<label>Platz zum Rechnen<select data-zf="1"><option value="lin"${it.zf!=='karo'?' selected':''}>Linien</option><option value="karo"${it.zf==='karo'?' selected':''}>Karokästchen</option></select></label>`:'';}
+$('#rp').addEventListener('change',e=>{const t=e.target;if(!t.dataset.zf)return;const it=items.find(i=>i.id===sel&&ZFT.includes(i.type));if(!it)return;rec('zf');it.zf=t.value;render();});
+
 function renderProps(){
- const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderVr();renderMd();renderPr();renderPo();renderGe();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderK4();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
+ const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderVr();renderMd();renderPr();renderPo();renderGe();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderZf();renderK4();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
  {const _v=items.find(i=>i.id===sel);if(_v&&VRT.includes(_v.type))return;}
  const T=ptarget();if(!T)return;const it=T.o;
  const ck=(k,txt)=>`<label class="ck"><input type="checkbox" data-p="${k}"${it[k]?' checked':''}> ${txt}</label>`;
