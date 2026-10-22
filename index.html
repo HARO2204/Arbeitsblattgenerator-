@@ -198,6 +198,8 @@ body.pv .pgb{display:none}
 <div class="catp" data-c="sw" id="swpal"></div>
 <button class="cat" data-c="po">xⁿ Potenzen</button>
 <div class="catp" data-c="po" id="popal"></div>
+<button class="cat" data-c="ge">⚖️ Gleichungen</button>
+<div class="catp" data-c="ge" id="gepal"></div>
 <button class="cat" data-c="pl">📐 Satz des Pythagoras</button>
 <div class="catp" data-c="pl" id="plpal"></div>
 <button class="cat" data-c="pn">∥ Parallele und Normale</button>
@@ -257,6 +259,7 @@ body.pv .pgb{display:none}
 <div class="grp" id="g-kf" data-cats="kf"></div>
 <div class="grp" id="g-pc" data-cats="pc br"></div>
 <div class="grp" id="g-po" data-cats="po"></div>
+<div class="grp" id="g-ge" data-cats="ge"></div>
 <div class="grp" id="g-pl" data-cats="pl"></div>
 <div class="grp" id="g-pn" data-cats="pn"></div>
 <div class="grp" id="g-ss" data-cats="ss"></div>
@@ -1213,7 +1216,7 @@ const MDT=['mm','mv','ms','v4','mz','ak','kf','ks'],VRT=['vr','vk','vl','vp','vt
 const PRT=['prd','prg','prw','prs','prk','prx','prn','prq','prb','prt','bs','bq','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
 const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const PNT=['pnk','pnb','pnz'];const SST=['ssd','ssm','ssh','ssg','ssl','ssb'];const LWT=['lw'];const CIT=['cib','ciu','cia','cit','cis','cir','cik','cix','cil','cig','cic'];const ZRT=['zr'];const K4T=['k4b','k4w','k4p','k4z','k4y','k4k','k4g','k4x','k4f'];const MBT=['mbb','mbw','mbz','mbd','mbs','mbm'];const ZNT=['znb','zni','znq','znt','znk','znr'];
-const TLT=[...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...LWT,...ZRT,...POT,...PRT,...MDT,...VRT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
+const TLT=['gel','gez','ges','gep',...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...LWT,...ZRT,...POT,...PRT,...MDT,...VRT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
 const TLN={tdv:'Teiler ∣ / ∤',tpr:'Primzahlen nennen',ttr:'Teilbarkeitsregeln',tzw:'Zahlen finden',tpz:'Primfaktorzerlegung',tsv:'Sieb des Eratosthenes',ttm:'Teilermengen',tgg:'ggT',tkm:'kgV',tsa:'Sachaufgaben'};
 const TLD={tdv:{n:16,lv:1,co:4},tpr:{mx:20,ps:2},ttr:{n:5,dv:'2,3,5,9,10',lv:2,mk:'kreuz'},tzw:{n:3,dv:'3,5,9',zk:3,lv:2},tpz:{n:12,co:4,lv:2,pot:false},tsv:{mx:100,cs:36,ins:false},ttm:{n:6,lv:1,bsp:false},tgg:{n:3,gm:'tm',nz:2,lv:1},tkm:{n:3,gm:'vm',nz:2,lv:1},tsa:{n:3,ty:'beide',rl:2,an:true}};
 const tgcd=(a,b)=>b?tgcd(b,a%b):a,tlcm=(a,b)=>a/tgcd(a,b)*b;
@@ -1256,7 +1259,7 @@ const TLGGT=[
  ()=>{const [a,b]=tpick([[24,36],[18,30],[20,45],[32,48],[28,42],[15,25]]),g=tgcd(a,b);
   return [`Lea hat ${a} Äpfel und ${b} Birnen. Sie möchte möglichst viele gleiche Obstteller herrichten, ohne dass Obst übrig bleibt. Wie viele Teller kann sie höchstens machen? Was liegt auf jedem Teller?`,`ggT(${a}, ${b}) = ${g}. Sie kann ${g} Teller machen; auf jedem liegen ${a/g} Äpfel und ${b/g} Birnen.`];}
 ];
-function tlGen(it){if(it.type==='lw')return lwGen(it);if(ZNT.includes(it.type))return znGen(it);if(MBT.includes(it.type))return mbGen(it);if(K4T.includes(it.type))return k4Gen(it);if(CIT.includes(it.type))return ciGen(it);if(PNT.includes(it.type))return pnGen(it);if(SST.includes(it.type))return ssTGen(it);if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(VRT.includes(it.type))return vrGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
+function tlGen(it){if(it.type==='lw')return lwGen(it);if(ZNT.includes(it.type))return znGen(it);if(MBT.includes(it.type))return mbGen(it);if(K4T.includes(it.type))return k4Gen(it);if(CIT.includes(it.type))return ciGen(it);if(PNT.includes(it.type))return pnGen(it);if(SST.includes(it.type))return ssTGen(it);if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(GET.includes(it.type))return geGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(VRT.includes(it.type))return vrGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
  if(k==='tdv'){const o=own.filter(l=>l.length>=2);
   if(o.length)it.d=o.map(l=>[l[0],l[1]]);
   else{const mx=[0,100,1000,99999][lv];it.d=tuniq(n,()=>{const a=tpick(lv===3?[2,3,4,5,6,8,9,10,11,12]:[2,3,4,5,6,7,8,9,10,12,15,20,25]);let b;
@@ -1284,7 +1287,7 @@ const tlS=it=>it.show||SOL,tlSv=(it,s)=>tlS(it)?`<span class="sv">${s}</span>`:'
 const tlRow=(it,l,s,br)=>`<div class="tlrw"><span>${l}</span><span class="tlln" style="flex:1">${tlSv(it,s)}</span>${br?'<span>}</span>':''}</div>`;
 const tlGrid=(c,h)=>`<div style="display:grid;grid-template-columns:repeat(${c},1fr);gap:.9em 1.4em;align-items:start">${h}</div>`;
 const TLL='abcdefghijkl';
-function tlBlock(it){NUMIT=it;if(it.type==='lw')return lwBlock(it);if(ZNT.includes(it.type))return znBlock(it);if(MBT.includes(it.type))return mbBlock(it);if(K4T.includes(it.type))return k4Block(it);if(CIT.includes(it.type))return ciBlock(it);if(PNT.includes(it.type))return pnBlock(it);if(SST.includes(it.type))return ssTBlock(it);if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(VRT.includes(it.type))return vrBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
+function tlBlock(it){NUMIT=it;if(it.type==='lw')return lwBlock(it);if(ZNT.includes(it.type))return znBlock(it);if(MBT.includes(it.type))return mbBlock(it);if(K4T.includes(it.type))return k4Block(it);if(CIT.includes(it.type))return ciBlock(it);if(PNT.includes(it.type))return pnBlock(it);if(SST.includes(it.type))return ssTBlock(it);if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(GET.includes(it.type))return geBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(VRT.includes(it.type))return vrBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
  if(k==='tdv'){h=tlGrid(+it.co||4,it.d.map(([a,b])=>`<div style="white-space:nowrap">${tfm(a)} <span class="tlc">${tlSv(it,b%a===0?'∣':'∤')}</span> ${tfm(b)}</div>`).join(''));}
  else if(k==='tpr'){const mx=+it.mx||20,pr=[];for(let i=2;i<=mx;i++)if(tisP(i))pr.push(i);
   h=`<div>Nenne alle Primzahlen bis ${mx}:</div>`+Array.from({length:+it.ps||2},()=>'<div class="tlln" style="display:block;min-height:1.9em"></div>').join('')+(s?`<div class="sv" style="margin-top:.3em">${pr.join(', ')}</div>`:'');}
@@ -1320,7 +1323,7 @@ const tlSet=a=>a.join(', ');
  ['ttm',T(50,26,'T(12)={…}',13)],['tgg',T(50,26,'ggT(a, b)',14)],['tkm',T(50,26,'kgV(a, b)',14)],['tsa',T(50,16,'Jeden 3. Tag …',10)+T(50,30,'Wann wieder?',10)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 const TLRG=['n','lv','dv','gm','nz','ty','zk','own'];
-function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!VRT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!PNT.includes(i.type)&&!SST.includes(i.type)&&!CIT.includes(i.type)&&!ZNT.includes(i.type)&&!MBT.includes(i.type)&&!K4T.includes(i.type)&&i.type!=='lw'&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
+function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!VRT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!GET.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!PNT.includes(i.type)&&!SST.includes(i.type)&&!CIT.includes(i.type)&&!ZNT.includes(i.type)&&!MBT.includes(i.type)&&!K4T.includes(i.type)&&i.type!=='lw'&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Eine Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern die Aufgabe auf dem Blatt markieren.</div>';return;}
  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-tl="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-tl="${f}"${it[f]?' checked':''}> ${t}</label>`;
  const lvs=o=>`<label>Zahlenraum${sl('lv',o)}</label>`;
@@ -1340,7 +1343,7 @@ function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes
   H+=`<label>Eigene Zahlen (leer = zufällig)<textarea data-tl="own" rows="4" placeholder="${ph}" style="width:100%;font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:6px;background:#fff;box-sizing:border-box">${(it.own||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea></label>`;}
  H+=ck('show','Lösung zeigen')+(k==='tsv'?'':'<button data-tl-act="mix">Neu mischen</button>');
  g.innerHTML=H;}
-const NUMT=['bs','sv','pys','pyb','cit','lw','prd','prg','prw','prs','prk','prx','prr','ms','v4','v4','tzw','tgg','tkm','tsa','pob','poz','pog','pom','pov','pot','zr'];
+const NUMT=['bs','sv','pys','pyb','cit','lw','prd','prg','prw','prs','prk','prx','prr','ms','v4','v4','tzw','tgg','tkm','tsa','pob','poz','pog','pom','pov','pot','zr','gel','gez','ges','gep'];
 const numDef=it=>({pys:'n',lw:'n',prg:'n',prw:it.fm==='rech'?'a':'n',prs:it.fm==='rech'?'a':'n',prk:it.fm==='rech'?'a':'n',prx:it.fm==='rech'?'a':'n',ms:'n',tsa:'n',zr:'n'})[it.type]||'a';
 function renderNum(){const g=$('#g-num');if(!g)return;const tx=items.find(i=>i.id===sel&&i.type==='text'&&!i.head);if(tx){g.style.display='';g.innerHTML=`<label>Nummerierung der Angabe<select data-num="nk">${[['','keine'],['n','1. 2. 3.'],['a','a) b) c)']].map(([a,t])=>`<option value="${a}"${(tx.nk||'')===a?' selected':''}>${t}</option>`).join('')}</select></label>`;return;}const it=items.find(i=>i.id===sel&&NUMT.includes(i.type));if(!it){g.innerHTML='';g.style.display='none';return;}
  g.style.display='';const v=it.lab||numDef(it);g.innerHTML=`<label>Nummerierung<select data-num="lab">${[['a','a) b) c) d)'],['n','1) 2) 3) 4)'],['none','keine']].map(([a,t])=>`<option value="${a}"${v===a?' selected':''}>${t}</option>`).join('')}</select></label>`;}
@@ -2230,6 +2233,8 @@ const AST=[
  ['swt','Stellenwerttabelle','Trage die Zahlen in die Stellenwerttabelle ein!'],['swl','Stellenwerttabelle (leer)','Trage die Zahlen in die Stellenwerttabelle ein!']]],
 ['Potenzen',[
  ['pob','Potenzen berechnen','Berechne den Wert der Potenzen!'],['poz','Zehnerpotenzen','Schreibe als Zehnerpotenz!'],['pog','Gleitkommadarstellung','Schreibe in Gleitkommadarstellung!'],['pom','Potenzen mit gleicher Basis','Schreibe als Potenz mit einer Hochzahl!'],['pov','Rechnen mit Variablen','Multipliziere bzw. dividiere die Potenzen!'],['pov:m0','Potenzen multiplizieren (nur Variablen)','Multipliziere die Potenzen!'],['pov:m1','Potenzen multiplizieren (mit Zahlen)','Multipliziere zuerst die Zahlen, dann die Potenz!'],['pov:d0','Potenzen dividieren (Hochzahlen subtrahieren)','Achte auf die Subtraktion der Hochzahlen!'],['pov:d1','Potenzen dividieren (mit Zahlen)','Dividiere die Potenzen!'],['pot','Potenzterme','Berechne!'],['pos','Potenzen: Sachaufgaben','Löse die Sachaufgaben! Schreibe die Rechnung als Potenz und einen Antwortsatz auf!']]],
+['Gleichungen',[
+ ['gel','Gleichungen lösen','Löse die Gleichungen!'],['gez','Text → Gleichung','Stelle zu jedem Text eine Gleichung auf und löse sie!'],['ges','Sachaufgaben mit Gleichungen','Stelle eine Gleichung auf und löse die Sachaufgabe!'],['gep','Probe: Stimmt die Lösung?','Mache die Probe: Ist die angegebene Zahl die Lösung der Gleichung?']]],
 ['Funktionen',[
  ['fk:ja','Funktion ja oder nein?','Kreuze an: Bei welchen Darstellungen handelt es sich um eine Funktion?'],['fk:wt','Wertetabelle zur Gleichung','Berechne die y-Werte und vervollständige die Wertetabelle!'],['fk:tx','Text → Funktionsgleichung','Schreibe zu jedem Text die passende Funktionsgleichung!'],['fk:sk','Sachaufgabe: Gleichung und Tabelle','Stelle die Funktionsgleichung auf und vervollständige die Wertetabelle!'],
  ['fk:ab','Gleichung am Graphen ablesen','Bestimme jeweils k (und d) und gib die Funktionsgleichung an!'],['fk:zg','Graph zeichnen','Zeichne die Graphen der Funktionen mithilfe der Wertetabelle!'],['fk:dg','Diagramm lesen','Lies die Antworten aus dem Diagramm ab!'],['fk:wm','Funktionsmaschine','Erforsche, wie die Funktionsmaschine rechnet, und ergänze die Tabelle!'],['fk:gi','Sachaufgabe mit Graph','Lies aus dem Diagramm ab und beantworte die Fragen!']]],
@@ -2471,6 +2476,105 @@ $('#rp').addEventListener('input',poHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-po-act]');if(!b)return;const it=items.find(i=>i.id===sel&&POT.includes(i.type));if(!it)return;rec();poGen(it);render();});
 (function(){const P=$('#popal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
  L=[['pob',T(50,17,'2⁴ = ?',14)+T(50,33,'(−5)³ = ?',12)],['poz',T(50,17,'10⁶ =',13)+T(50,33,'1 000 000',12)],['pog',T(50,18,'2,43 · 10⁸',13)+T(50,33,'243 000 000',10)],['pom',T(50,17,'a³ · a² = a⁵',12)+T(50,33,'3⁵ : 3² = 3³',11)],['pov',T(50,17,'3x² · 7x³',12)+T(50,33,'= 21x⁵',12)],['pot',T(50,17,'4² + 3³ − 5²',11)+T(50,33,'= 18',12)],['pos',T(50,16,'3 Personen, je 3 …',10)+T(50,32,'3⁴ = 81',12)]];
+ P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
+/* ===== Gleichungen ===== */
+const GET=['gel','gez','ges','gep'];
+Object.assign(TLD,{gel:{n:8,ty:'mix',lv:1,fm:'kurz',pr:false,va:'x',co:2,mk:false},gez:{n:5,lv:1,so:true,va:'x',co:1,mk:false},ges:{n:4,lv:1,gl:true,rl:true,al:true,va:'x'},gep:{n:6,ty:'mix',lv:1,pl:true,va:'x',co:2}});
+Object.assign(TLN,{gel:'Gleichungen lösen',gez:'Text → Gleichung',ges:'Sachaufgaben mit Gleichungen',gep:'Probe: Stimmt die Lösung?'});
+const GEN=['Lena','Tim','Mia','Ben','Anna','Jonas','Sara','Luca','Emma','Noah'];
+const geEv=s=>{try{return Function('"use strict";return ('+s.replace(/·/g,'*').replace(/:/g,'/').replace(/−/g,'-')+')')();}catch(e){return NaN;}};
+const geSym=(it,t)=>{const w=it.va||'x',s=w==='mix'?(t&&t.m)||'x':w;return s==='box'?'<span style="display:inline-block;width:1.05em;height:1.05em;border:1.4px solid #000;vertical-align:-.18em;margin:0 .05em"></span>':s;};
+const geF=(it,t,str)=>String(str).replace(/\{v\}/g,geSym(it,t));
+function geProbe(q,x){const [L,R]=q.split(' = '),sub=s=>s.replace(/\{v\}/g,String(x)),lv=geEv(sub(L)),rn=/^\d+$/.test(R.trim());
+ if(rn)return `${sub(L)} = ${lv}${lv===+R?'':' ≠ '+R}`;const rv=geEv(sub(R));return `${sub(L)} = ${lv} und ${sub(R)} = ${rv}`;}
+function geOne(ty,lv){const S=[20,100,1000][lv-1]||20,F=[5,9,12][lv-1]||5,X=[10,12,20][lv-1]||10,B=[15,30,50][lv-1]||15;
+ if(ty==='mix')ty=tpick(lv===1?['pm','pm','md']:['pm','md','zw']);
+ const tm=c=>c===1?'{v}':`${c} · {v}`;let q,st,x;
+ if(ty==='pm'){const r=kri(0,3);
+  if(r===0||r===2){x=kri(1,S-2);const a=kri(1,S-x),b=x+a;q=r===0?`{v} + ${a} = ${b}`:`${a} + {v} = ${b}`;st=[`{v} = ${b} − ${a}`,`{v} = ${x}`];}
+  else if(r===1){x=kri(2,S);const a=kri(1,x-1),b=x-a;q=`{v} − ${a} = ${b}`;st=[`{v} = ${b} + ${a}`,`{v} = ${x}`];}
+  else{x=kri(1,S-2);const b=kri(1,S-x),a=b+x;q=`${a} − {v} = ${b}`;st=[`{v} = ${a} − ${b}`,`{v} = ${x}`];}}
+ else if(ty==='md'){const r=kri(0,3),a=kri(2,F);
+  if(r<2){x=kri(2,X);const b=a*x;q=r===0?`${a} · {v} = ${b}`:`{v} · ${a} = ${b}`;st=[`{v} = ${b} : ${a}`,`{v} = ${x}`];}
+  else if(r===2){const b=kri(2,X);x=a*b;q=`{v} : ${a} = ${b}`;st=[`{v} = ${b} · ${a}`,`{v} = ${x}`];}
+  else{x=kri(2,X);const P=a*x;q=`${P} : {v} = ${a}`;st=[`{v} = ${P} : ${a}`,`{v} = ${x}`];}}
+ else if(ty==='zw'){const r=kri(0,4),a=kri(2,F);
+  if(r===0){x=kri(1,X);const b=kri(1,B),c=a*x+b;q=`${a} · {v} + ${b} = ${c}`;st=[`${a} · {v} = ${c-b}`,`{v} = ${c-b} : ${a}`,`{v} = ${x}`];}
+  else if(r===1){x=kri(2,X);const b=kri(1,a*x-1),c=a*x-b;q=`${a} · {v} − ${b} = ${c}`;st=[`${a} · {v} = ${c+b}`,`{v} = ${c+b} : ${a}`,`{v} = ${x}`];}
+  else if(r===2){const k=kri(2,X),b=kri(1,B);x=a*k;const c=k+b;q=`{v} : ${a} + ${b} = ${c}`;st=[`{v} : ${a} = ${c-b}`,`{v} = ${c-b} · ${a}`,`{v} = ${x}`];}
+  else if(r===3){x=kri(1,X);const a2=kri(1,10),b=kri(2,F),c=(x+a2)*b;q=`({v} + ${a2}) · ${b} = ${c}`;st=[`{v} + ${a2} = ${c} : ${b}`,`{v} = ${c/b} − ${a2}`,`{v} = ${x}`];st[0]=`{v} + ${a2} = ${x+a2}`;}
+  else{x=kri(1,X);const b=kri(1,B),c=b+a*x;q=`${b} + ${a} · {v} = ${c}`;st=[`${a} · {v} = ${c-b}`,`{v} = ${c-b} : ${a}`,`{v} = ${x}`];}}
+ else{const a=kri(3,9),c=kri(1,a-2),b=kri(0,9);x=kri(1,X);const d=b+(a-c)*x,k=a-c;
+  q=`${tm(a)}${b?' + '+b:''} = ${tm(c)} + ${d}`;
+  st=[`${tm(a)} − ${tm(c)} = ${d}${b?' − '+b:''}`,`${k} · {v} = ${d-b}`,`{v} = ${d-b} : ${k}`,`{v} = ${x}`];}
+ return {q,st,s:x,pr:geProbe(q,x),m:tpick(['x','y','a','n','z'])};}
+const geMulW={2:'Doppelte',3:'Dreifache',4:'Vierfache',5:'Fünffache',10:'Zehnfache'},geDivW={2:'Hälfte',3:'ein Drittel',4:'ein Viertel'};
+function geText(lv){const S=[20,60,200][lv-1]||20,r=kri(0,lv===1?7:lv===2?10:10);
+ if(lv===2&&Math.random()<.45)return geText(1);
+ const a=kri(2,Math.max(3,S/2|0)),m=tpick([2,3,4,5,10]);let x,b,t,q;
+ if(r===0||r===4){x=kri(2,S);b=x+a;t=r===0?`Eine Zahl vermehrt um ${a} ergibt ${b}.`:`Die Summe aus einer Zahl und ${a} ist ${b}.`;q=`{v} + ${a} = ${b}`;}
+ else if(r===1){x=kri(a+1,S+a);b=x-a;t=`Eine Zahl vermindert um ${a} ergibt ${b}.`;q=`{v} − ${a} = ${b}`;}
+ else if(r===2){x=kri(2,12);b=x*m;t=`Das ${geMulW[m]} einer Zahl ist ${b}.`;q=`${m} · {v} = ${b}`;}
+ else if(r===3){const d=tpick([2,3,4]);b=kri(2,12);x=b*d;t=d===2?`Die Hälfte einer Zahl ist ${b}.`:`${geDivW[d][0].toUpperCase()+geDivW[d].slice(1)} einer Zahl ist ${b}.`;q=`{v} : ${d} = ${b}`;}
+ else if(r===5){x=kri(1,S);b=kri(1,S);const aa=x+b;t=`Die Differenz aus ${aa} und einer Zahl ist ${b}.`;q=`${aa} − {v} = ${b}`;}
+ else if(r===6){x=kri(2,12);const aa=kri(2,9);b=aa*x;t=`Das Produkt aus ${aa} und einer Zahl ist ${b}.`;q=`${aa} · {v} = ${b}`;}
+ else if(r===7){const aa=kri(2,9);b=kri(2,12);x=aa*b;t=`Der Quotient aus einer Zahl und ${aa} ist ${b}.`;q=`{v} : ${aa} = ${b}`;}
+ else if(r===8){x=kri(2,15);const c=kri(1,12),mm=tpick([2,3,4,5]);b=mm*x+c;t=`Das ${geMulW[mm]} einer Zahl, vermehrt um ${c}, ergibt ${b}.`;q=`${mm} · {v} + ${c} = ${b}`;}
+ else if(r===9){x=kri(3,15);const mm=tpick([2,3,4,5]),c=kri(1,mm*x-1);b=mm*x-c;t=`Das ${geMulW[mm]} einer Zahl, vermindert um ${c}, ergibt ${b}.`;q=`${mm} · {v} − ${c} = ${b}`;}
+ else{x=kri(1,12);const c=kri(1,9),mm=tpick([2,3,4,5]);b=(x+c)*mm;t=`Addiert man zu einer Zahl ${c} und multipliziert die Summe mit ${mm}, erhält man ${b}.`;q=`({v} + ${c}) · ${mm} = ${b}`;}
+ return {t,q,s:x,m:tpick(['x','y','a','n','z'])};}
+function geSach(lv){const f=lv===1?1:lv===2?2:3,N=tpick(GEN);let M=tpick(GEN);while(M===N)M=tpick(GEN);const r=kri(0,8);let t,q,st,a,x;
+ if(r===0){const p=kri(5,15)*f,u=kri(5,25)*f,b=p+u;t=`${N} und ${M} haben zusammen ${b} Sticker. ${N} hat ${p} Sticker. Wie viele Sticker hat ${M}?`;q=`${p} + {v} = ${b}`;st=[`{v} = ${b} − ${p}`,`{v} = ${u}`];a=`${M} hat ${u} Sticker.`;x=u;}
+ else if(r===1){const p=kri(2,9),n=kri(2,10),b=p*n;t=`Ein Heft kostet ${p} €. ${N} bezahlt insgesamt ${b} €. Wie viele Hefte hat ${N} gekauft?`;q=`${p} · {v} = ${b}`;st=[`{v} = ${b} : ${p}`,`{v} = ${n}`];a=`${N} hat ${n} Hefte gekauft.`;x=n;}
+ else if(r===2){const w=kri(3,9),e=kri(2,12),b=w*e;t=`${N} spart jede Woche gleich viel. Nach ${w} Wochen hat ${N} ${b} € gespart. Wie viel Euro spart ${N} pro Woche?`;q=`${w} · {v} = ${b}`;st=[`{v} = ${b} : ${w}`,`{v} = ${e}`];a=`${N} spart ${e} € pro Woche.`;x=e;}
+ else if(r===3){const g=kri(5,12),p=kri(2,5),n=kri(2,10),b=g+p*n;t=`Ein Handytarif kostet ${g} € Grundgebühr und ${p} € pro Gigabyte (GB). ${N} zahlt im Monat ${b} €. Wie viele GB hat ${N} verbraucht?`;q=`${g} + ${p} · {v} = ${b}`;st=[`${p} · {v} = ${b-g}`,`{v} = ${b-g} : ${p}`,`{v} = ${n}`];a=`${N} hat ${n} GB verbraucht.`;x=n;}
+ else if(r===4){const m=kri(2,6),c=kri(1,15),n=kri(2,12),b=m*n+c;t=`Ich denke mir eine Zahl, multipliziere sie mit ${m} und addiere ${c}. Das Ergebnis ist ${b}. Welche Zahl habe ich mir gedacht?`;q=`${m} · {v} + ${c} = ${b}`;st=[`${m} · {v} = ${b-c}`,`{v} = ${b-c} : ${m}`,`{v} = ${n}`];a=`Ich habe mir die Zahl ${n} gedacht.`;x=n;}
+ else if(r===5){const c=kri(1,12),n=kri(c+1,c+12),m=tpick([2,3,4]),b=(n-c)*m;t=`Ich denke mir eine Zahl, subtrahiere ${c} und multipliziere das Ergebnis mit ${m}. Ich erhalte ${b}. Welche Zahl habe ich mir gedacht?`;q=`({v} − ${c}) · ${m} = ${b}`;st=[`{v} − ${c} = ${b/m}`,`{v} = ${b/m} + ${c}`,`{v} = ${n}`];a=`Ich habe mir die Zahl ${n} gedacht.`;x=n;}
+ else if(r===6){const k=kri(2,5),m=tpick([10,20,50]);let e=kri(1,Math.floor((m-1)/k));const rr=m-k*e;t=`${N} kauft ${k} gleiche Stifte und zahlt mit einem ${m}-€-Schein. ${N} bekommt ${rr} € Wechselgeld zurück. Wie viel kostet ein Stift?`;q=`${k} · {v} + ${rr} = ${m}`;st=[`${k} · {v} = ${m-rr}`,`{v} = ${m-rr} : ${k}`,`{v} = ${e}`];a=`Ein Stift kostet ${e} €.`;x=e;}
+ else if(r===7){const d=kri(1,6),e=kri(8,14),b=2*e+d;t=`${N} ist ${d} Jahre älter als ${M}. Zusammen sind die beiden ${b} Jahre alt. Wie alt ist ${M}?`;q=`{v} + ({v} + ${d}) = ${b}`;st=[`2 · {v} + ${d} = ${b}`,`2 · {v} = ${b-d}`,`{v} = ${e}`];a=`${M} ist ${e} Jahre alt.`;x=e;}
+ else{const n=kri(3,8),e=kri(2,6),b=n*e;t=`${n} Kinder teilen sich einen Kuchen gleichmäßig. Jedes Kind bekommt ${e} Stück. Aus wie vielen Stücken besteht der Kuchen?`;q=`{v} : ${n} = ${e}`;st=[`{v} = ${e} · ${n}`,`{v} = ${b}`];a=`Der Kuchen besteht aus ${b} Stücken.`;x=b;}
+ return {t,q,st,a,s:x,m:tpick(['x','y','a','n','z'])};}
+function geGen(it){const k=it.type,n=+it.n||1,lv=+it.lv||1;
+ if(k==='gel')it.d=tuniq(n,()=>geOne(it.ty||'mix',lv));
+ else if(k==='gez')it.d=tuniq(n,()=>geText(lv));
+ else if(k==='ges')it.d=tuniq(n,()=>geSach(lv));
+ else it.d=tuniq(n,()=>{const t=geOne(it.ty||'mix',lv),ok=Math.random()<.5;let v=t.s;if(!ok){v=t.s+tpick([-3,-2,-1,1,2,3]);if(v<1)v=t.s+tpick([1,2,3]);}t.v=v;t.ok=v===t.s;t.pr2=geProbe(t.q,v);return t;});}
+const geMk=h=>`<div style="border:1.4px solid #000;border-radius:4px;padding:.5em .8em;margin:0 0 1em"><b>Merke:</b> ${h}</div>`;
+function geBlock(it){NUMIT=it;const k=it.type,co=+it.co||1;let h='';
+ const lnr=(lab,sol,mw)=>`<div class="tlrw" style="margin:.35em 0 0 1.7em"><span style="white-space:nowrap">${lab}</span><span class="tlln" style="flex:1;min-width:${mw||8}em">${tlSv(it,sol)}</span></div>`;
+ if(k==='gel'){
+  h=(it.mk?geMk(`Eine <b>Gleichung</b> besteht aus zwei Termen, die durch „=“ verbunden sind. Die Gleichung wird mit der <b>Umkehroperation</b> gelöst (+ ↔ −, · ↔ :). Was man auf der einen Seite rechnet, muss man auch auf der anderen Seite rechnen. Mit der <b>Probe</b> (Lösung einsetzen) kontrolliert man das Ergebnis.`):'')+
+  tlGrid(co,it.d.map((t,i)=>{const F=s=>geF(it,t,s),eq=`<div class="tlrw"><b>${poL(i)}</b><span style="white-space:nowrap">${F(t.q)}</span>`;
+   if(it.fm==='weg')return `<div>${eq}</div>`+t.st.map(s=>`<div class="tlln" style="display:block;min-height:1.45em;margin:.35em 0 0 1.7em">${tlSv(it,F(s))}</div>`).join('')+(it.pr?lnr('Probe:',F(t.pr),8):'')+'</div>';
+   return `<div>${eq}<span style="white-space:nowrap;margin-left:1.4em">${F('{v}')} =</span><span class="tlln" style="min-width:3em">${tlSv(it,t.s)}</span></div>${it.pr?lnr('Probe:',F(t.pr),8):''}</div>`;}).join(''));}
+ else if(k==='gez'){
+  h=(it.mk?geMk(`Die unbekannte Zahl nennt man <b>Variable</b> (zum Beispiel x). „vermehrt um“, „Summe“ → <b>+</b>; „vermindert um“, „Differenz“ → <b>−</b>; „das Doppelte, Dreifache …“, „Produkt“ → <b>·</b>; „die Hälfte“, „Quotient“ → <b>:</b>.`):'')+
+  tlGrid(co,it.d.map((t,i)=>{const F=s=>geF(it,t,s);return `<div><div><b>${poL(i)}</b> ${t.t}</div>${lnr('Gleichung:',F(t.q),8)}${it.so?lnr('Lösung:',F('{v}')+' = '+t.s,6):''}</div>`;}).join(''));}
+ else if(k==='ges'){
+  h=it.d.map((t,i)=>{const F=s=>geF(it,t,s);return `<div style="margin-bottom:1em"><div><b>${poL(i)}</b> ${t.t}</div>${it.gl?lnr('Gleichung:',F(t.q),12):''}${it.rl?lnr('Rechnung:',t.st.map(F).join(' ; '),12):''}${it.al?lnr('Antwort:',t.a,12):''}</div>`;}).join('');}
+ else{const bx=(on)=>on?'<span class="sv">☒</span>':'☐';
+  h=tlGrid(co,it.d.map((t,i)=>{const F=s=>geF(it,t,s),S=tlS(it);return `<div><div class="tlrw"><b>${poL(i)}</b><span style="white-space:nowrap">${F(t.q)}</span><span style="white-space:nowrap;margin-left:1.2em">${F('{v}')} = ${t.v}</span><span style="white-space:nowrap;margin-left:1.2em">${bx(S&&t.ok)} ja &nbsp; ${bx(S&&!t.ok)} nein</span></div>${it.pl?lnr('Probe:',F(t.pr2),8):''}</div>`;}).join(''));}
+ return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+function renderGe(){const g=$('#g-ge'),it=items.find(i=>i.id===sel&&GET.includes(i.type));if(!g)return;
+ if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern auf dem Blatt markieren.</div>';return;}
+ const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-ge="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-ge="${f}"${it[f]?' checked':''}> ${t}</label>`;
+ const nn=a=>`<label>Anzahl der Aufgaben${sl('n',tN(a))}</label>`,co=a=>`<label>Spalten${sl('co',tN(a))}</label>`;
+ const va=`<label>Variable${sl('va',[['x','x'],['y','y'],['n','n'],['a','a'],['box','Platzhalter □'],['mix','gemischt (x, y, a, n, z)']])}</label>`,
+  ty=`<label>Gleichungsart${sl('ty',[['mix','gemischt'],['pm','+ und −'],['md','· und :'],['zw','zweistufig (2x + 3 = 13)'],['bs','Variable auf beiden Seiten']])}</label>`,
+  lvl=(t)=>`<label>${t||'Zahlengröße'}${sl('lv',[[1,'klein'],[2,'mittel'],[3,'groß']])}</label>`;
+ let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+ if(k==='gel')H+=nn([2,4,6,8,10,12])+ty+lvl()+va+`<label>Darstellung${sl('fm',[['kurz','nur Ergebnis (x = __)'],['weg','mit Rechenzeilen']])}</label>`+co([1,2,3])+ck('pr','Probe-Zeile')+ck('mk','Merkkasten');
+ if(k==='gez')H+=nn([1,2,3,4,5,6,8])+`<label>Aufgaben${sl('lv',[[1,'einfach (eine Rechenart)'],[2,'auch zweistufig'],[3,'schwer (mehr Zahlenraum)']])}</label>`+va+co([1,2])+ck('so','Lösungszeile (Zahl berechnen)')+ck('mk','Merkkasten (Wörter → Rechenzeichen)');
+ if(k==='ges')H+=nn([1,2,3,4,5,6])+`<label>Zahlen${sl('lv',[[1,'klein'],[2,'mittel'],[3,'groß']])}</label>`+va+ck('gl','Zeile „Gleichung“')+ck('rl','Zeile „Rechnung“')+ck('al','Zeile „Antwort“');
+ if(k==='gep')H+=nn([2,4,6,8,10,12])+ty+lvl()+va+co([1,2])+ck('pl','Probe-Zeile');
+ H+=`<label>Nummerierung${sl('lab',[['a','a) b) c) d)'],['n','1) 2) 3) 4)'],['none','keine']])}</label>`+ck('show','Lösung zeigen')+'<button data-ge-act="mix">Neu mischen</button>';g.innerHTML=H;}
+const geHandler=e=>{const t=e.target,k=t.dataset.ge;if(!k)return;const it=items.find(i=>i.id===sel&&GET.includes(i.type));if(!it)return;if(e.type==='change')return;
+ rec('ge'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','lv','co'].includes(k))v=+v;it[k]=v;
+ if(['n','lv','ty'].includes(k))geGen(it);render();};
+$('#rp').addEventListener('input',geHandler);
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ge-act]');if(!b)return;const it=items.find(i=>i.id===sel&&GET.includes(i.type));if(!it)return;rec();geGen(it);render();});
+(function(){const P=$('#gepal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
+ L=[['gel',T(50,17,'x + 7 = 15',14)+T(50,33,'x = 8',12)],['gez',T(50,16,'Eine Zahl plus 7 ist 15.',9)+T(50,32,'x + 7 = 15',12)],['ges',T(50,16,'Lena hat 8 Sticker …',9.5)+T(50,32,'8 + x = 15',12)],['gep',T(50,17,'3 · x = 12, x = 5',11)+T(50,33,'☐ ja ☐ nein',11)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 /* ===== Satz des Pythagoras ===== */
 Object.assign(TLD,{pys:{bi:'ja',n:4,th:'mix',gs:'tr',rd:2,pl:4,an:true,co:1,mk:false},pyb:{rw:true,n:6,ge:'mix',zm:'mix',gs:'tr',rd:2,bz:'abc',un:'cm',pl:2,co:2,mk:false}});
@@ -5502,8 +5606,8 @@ function cmpBlock(it){
  return `<div class="cmp cmg" style="${st};display:grid;grid-template-columns:repeat(${nc},${n0?'auto auto auto':'auto auto auto auto'});justify-content:space-between;column-gap:.7em;row-gap:.6em;align-items:center">${cells}</div>`;
 }
 let cat=null;
-const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',zn:'Zahlenmengen',mb:'Maßstab',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
-function catOf(it){return TLT.includes(it.type)?(VRT.includes(it.type)?'as':PNT.includes(it.type)?'pn':SST.includes(it.type)?'ss':CIT.includes(it.type)?'ci':ZNT.includes(it.type)?'zn':MBT.includes(it.type)?'mb':K4T.includes(it.type)?'ko':it.type==='lw'?'ra':it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':(it.type==='bs'||it.type==='bq')?'br':PRT.includes(it.type)?'pc':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
+const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',zn:'Zahlenmengen',mb:'Maßstab',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',ge:'Gleichungen',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
+function catOf(it){return TLT.includes(it.type)?(VRT.includes(it.type)?'as':PNT.includes(it.type)?'pn':SST.includes(it.type)?'ss':CIT.includes(it.type)?'ci':ZNT.includes(it.type)?'zn':MBT.includes(it.type)?'mb':K4T.includes(it.type)?'ko':it.type==='lw'?'ra':it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':(it.type==='bs'||it.type==='bq')?'br':PRT.includes(it.type)?'pc':GET.includes(it.type)?'ge':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
 (function(){const q=document.getElementById('lsq');if(!q)return;const nz=t=>String(t).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
  window.lsFilter=function(){const v=nz(q.value),cats=document.querySelectorAll('#left .cat');let n=0;
   cats.forEach(b=>{const p=document.querySelector('#left .catp[data-c="'+b.dataset.c+'"]'),pals=p?[...p.querySelectorAll('.pal')]:[];
@@ -5538,7 +5642,7 @@ function renderLy(){const g=$('#g-ly');if(!g)return;const it=items.find(i=>i.id=
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ly-act]');if(!b)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();const a=b.dataset.lyAct;it.z=a==='bg'?-1:a==='fg'?10:0;render();renderLy();});
 $('#rp').addEventListener('input',e=>{const t=e.target;if(t.dataset.ly!=='op')return;const it=items.find(i=>i.id===sel);if(!it)return;rec('lyop');it.op=+t.value/100;const v=$('#lyv');if(v)v.textContent=(100-t.value)+' %';const el=sheet.querySelector('[data-id="'+it.id+'"]');if(el)el.style.opacity=it.op;});
 function renderProps(){
- const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderVr();renderMd();renderPr();renderPo();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderK4();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
+ const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderVr();renderMd();renderPr();renderPo();renderGe();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderK4();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
  {const _v=items.find(i=>i.id===sel);if(_v&&VRT.includes(_v.type))return;}
  const T=ptarget();if(!T)return;const it=T.o;
  const ck=(k,txt)=>`<label class="ck"><input type="checkbox" data-p="${k}"${it[k]?' checked':''}> ${txt}</label>`;
@@ -5681,7 +5785,7 @@ Object.entries(PRE).forEach(([c,list])=>{const box=document.querySelector('#left
  box.insertBefore(nsel,box.firstChild);box.insertBefore(lab,box.firstChild);});
 
 /* ===== 4.0-Aufgaben in jedem Thema ===== */
-(function(){const TX={vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',tl:'Teiler',md:'Multiplizieren und Dividieren',sw:'Stellenwerttabelle',po:'Potenzen',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',zn:'Zahlenmengen',mb:'Maßstab',pc:'Prozentrechnung'};
+(function(){const TX={vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',tl:'Teiler',md:'Multiplizieren und Dividieren',sw:'Stellenwerttabelle',po:'Potenzen',ge:'Gleichungen',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',zn:'Zahlenmengen',mb:'Maßstab',pc:'Prozentrechnung'};
  Object.keys(TX).forEach(c=>{const P=document.querySelector('#left .catp[data-c="'+c+'"]');if(!P)return;[['zr:'+c,'4.0-Aufgabe']].forEach(([tk,lb])=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=tk;d.style.marginTop='8px';d.style.borderColor='#c9a227';
   d.innerHTML='<svg viewBox="0 0 100 40"><text x="50" y="28" text-anchor="middle" font-size="22" font-weight="700" fill="#b8860b">4.0</text></svg><span>'+lb+'</span>';
   d.ondragstart=e=>e.dataTransfer.setData('text/plain',d.dataset.t);d.onclick=()=>{n++;add(d.dataset.t,60+(n%6)*30,100+(n%6)*30);};P.appendChild(d);});});})();
