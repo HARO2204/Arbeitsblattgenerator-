@@ -201,7 +201,7 @@ body.pv .pgb{display:none}
 <div class="catp" data-c="sw" id="swpal"></div>
 <button class="cat" data-c="po">xⁿ Potenzen</button>
 <div class="catp" data-c="po" id="popal"></div>
-<button class="cat" data-c="ge">⚖️ Gleichungen</button>
+<button class="cat" data-c="te">🔤 Terme</button> <div class="catp" data-c="te" id="tepal"></div> <button class="cat" data-c="ge">⚖️ Gleichungen</button>
 <div class="catp" data-c="ge" id="gepal"></div>
 <button class="cat" data-c="pl">📐 Satz des Pythagoras</button>
 <div class="catp" data-c="pl" id="plpal"></div>
@@ -262,6 +262,7 @@ body.pv .pgb{display:none}
 <div class="grp" id="g-kf" data-cats="kf"></div>
 <div class="grp" id="g-pc" data-cats="pc br"></div>
 <div class="grp" id="g-po" data-cats="po"></div>
+<div class="grp" id="g-te" data-cats="te"></div>
 <div class="grp" id="g-ge" data-cats="ge"></div>
 <div class="grp" id="g-pl" data-cats="pl"></div>
 <div class="grp" id="g-pn" data-cats="pn"></div>
@@ -1220,7 +1221,7 @@ const MDT=['mm','mv','ms','v4','mz','ak','kf','ks'],VRT=['vr','vk','vl','vp','vt
 const PRT=['prd','prg','prw','prs','prk','prx','prn','prq','prb','prt','bs','bq','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
 const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const PNT=['pnk','pnb','pnz','pns'];const SST=['ssd','ssm','ssh','ssg','ssl','ssb'];const LWT=['lw'];const CIT=['cib','ciu','cia','cit','cis','cir','cik','cix','cil','cig','cic'];const ZRT=['zr'];const K4T=['k4b','k4w','k4p','k4z','k4y','k4k','k4g','k4x','k4f'];const MBT=['mbb','mbw','mbz','mbd','mbs','mbm'];const ZNT=['znb','zni','znq','znt','znk','znr'];
-const TLT=['gel','gez','ges','gep',...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...LWT,...ZRT,...POT,...PRT,...MDT,...VRT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
+const TLT=['tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw','gel','gez','ges','gep',...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...LWT,...ZRT,...POT,...PRT,...MDT,...VRT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
 const TLN={tdv:'Teiler ∣ / ∤',tpr:'Primzahlen nennen',ttr:'Teilbarkeitsregeln',tzw:'Zahlen finden',tpz:'Primfaktorzerlegung',tsv:'Sieb des Eratosthenes',ttm:'Teilermengen',tgg:'ggT',tkm:'kgV',tsa:'Sachaufgaben'};
 const TLD={tdv:{n:16,lv:1,co:4},tpr:{mx:20,ps:2},ttr:{n:5,dv:'2,3,5,9,10',lv:2,mk:'kreuz'},tzw:{n:3,dv:'3,5,9',zk:3,lv:2},tpz:{n:12,co:4,lv:2,pot:false},tsv:{mx:100,cs:36,ins:false},ttm:{n:6,lv:1,bsp:false},tgg:{n:3,gm:'tm',nz:2,lv:1},tkm:{n:3,gm:'vm',nz:2,lv:1},tsa:{n:3,ty:'beide',rl:2,an:true}};
 const tgcd=(a,b)=>b?tgcd(b,a%b):a,tlcm=(a,b)=>a/tgcd(a,b)*b;
@@ -1263,7 +1264,7 @@ const TLGGT=[
  ()=>{const [a,b]=tpick([[24,36],[18,30],[20,45],[32,48],[28,42],[15,25]]),g=tgcd(a,b);
   return [`Lea hat ${a} Äpfel und ${b} Birnen. Sie möchte möglichst viele gleiche Obstteller herrichten, ohne dass Obst übrig bleibt. Wie viele Teller kann sie höchstens machen? Was liegt auf jedem Teller?`,`ggT(${a}, ${b}) = ${g}. Sie kann ${g} Teller machen; auf jedem liegen ${a/g} Äpfel und ${b/g} Birnen.`];}
 ];
-function tlGen(it){if(it.type==='lw')return lwGen(it);if(ZNT.includes(it.type))return znGen(it);if(MBT.includes(it.type))return mbGen(it);if(K4T.includes(it.type))return k4Gen(it);if(CIT.includes(it.type))return ciGen(it);if(PNT.includes(it.type))return pnGen(it);if(SST.includes(it.type))return ssTGen(it);if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(GET.includes(it.type))return geGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(VRT.includes(it.type))return vrGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
+function tlGen(it){if(it.type==='lw')return lwGen(it);if(ZNT.includes(it.type))return znGen(it);if(MBT.includes(it.type))return mbGen(it);if(K4T.includes(it.type))return k4Gen(it);if(CIT.includes(it.type))return ciGen(it);if(PNT.includes(it.type))return pnGen(it);if(SST.includes(it.type))return ssTGen(it);if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(TET.includes(it.type))return teGen(it);if(GET.includes(it.type))return geGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(VRT.includes(it.type))return vrGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
  if(k==='tdv'){const o=own.filter(l=>l.length>=2);
   if(o.length)it.d=o.map(l=>[l[0],l[1]]);
   else{const mx=[0,100,1000,99999][lv];it.d=tuniq(n,()=>{const a=tpick(lv===3?[2,3,4,5,6,8,9,10,11,12]:[2,3,4,5,6,7,8,9,10,12,15,20,25]);let b;
@@ -1291,7 +1292,7 @@ const tlS=it=>it.show||SOL,tlSv=(it,s)=>tlS(it)?`<span class="sv">${s}</span>`:'
 const tlRow=(it,l,s,br)=>`<div class="tlrw"><span>${l}</span><span class="tlln" style="flex:1">${tlSv(it,s)}</span>${br?'<span>}</span>':''}</div>`;
 const tlGrid=(c,h)=>`<div style="display:grid;grid-template-columns:repeat(${c},1fr);gap:.9em 1.4em;align-items:start">${h}</div>`;
 const TLL='abcdefghijkl';
-function tlBlock(it){NUMIT=it;if(it.type==='lw')return lwBlock(it);if(ZNT.includes(it.type))return znBlock(it);if(MBT.includes(it.type))return mbBlock(it);if(K4T.includes(it.type))return k4Block(it);if(CIT.includes(it.type))return ciBlock(it);if(PNT.includes(it.type))return pnBlock(it);if(SST.includes(it.type))return ssTBlock(it);if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(GET.includes(it.type))return geBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(VRT.includes(it.type))return vrBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
+function tlBlock(it){NUMIT=it;if(it.type==='lw')return lwBlock(it);if(ZNT.includes(it.type))return znBlock(it);if(MBT.includes(it.type))return mbBlock(it);if(K4T.includes(it.type))return k4Block(it);if(CIT.includes(it.type))return ciBlock(it);if(PNT.includes(it.type))return pnBlock(it);if(SST.includes(it.type))return ssTBlock(it);if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(TET.includes(it.type))return teBlock(it);if(GET.includes(it.type))return geBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(VRT.includes(it.type))return vrBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
  if(k==='tdv'){h=tlGrid(+it.co||4,it.d.map(([a,b])=>`<div style="white-space:nowrap">${tfm(a)} <span class="tlc">${tlSv(it,b%a===0?'∣':'∤')}</span> ${tfm(b)}</div>`).join(''));}
  else if(k==='tpr'){const mx=+it.mx||20,pr=[];for(let i=2;i<=mx;i++)if(tisP(i))pr.push(i);
   h=`<div>Nenne alle Primzahlen bis ${mx}:</div>`+Array.from({length:+it.ps||2},()=>'<div class="tlln" style="display:block;min-height:1.9em"></div>').join('')+(s?`<div class="sv" style="margin-top:.3em">${pr.join(', ')}</div>`:'');}
@@ -1327,7 +1328,7 @@ const tlSet=a=>a.join(', ');
  ['ttm',T(50,26,'T(12)={…}',13)],['tgg',T(50,26,'ggT(a, b)',14)],['tkm',T(50,26,'kgV(a, b)',14)],['tsa',T(50,16,'Jeden 3. Tag …',10)+T(50,30,'Wann wieder?',10)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 const TLRG=['n','lv','dv','gm','nz','ty','zk','own'];
-function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!VRT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!GET.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!PNT.includes(i.type)&&!SST.includes(i.type)&&!CIT.includes(i.type)&&!ZNT.includes(i.type)&&!MBT.includes(i.type)&&!K4T.includes(i.type)&&i.type!=='lw'&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
+function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!VRT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!GET.includes(i.type)&&!TET.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!PNT.includes(i.type)&&!SST.includes(i.type)&&!CIT.includes(i.type)&&!ZNT.includes(i.type)&&!MBT.includes(i.type)&&!K4T.includes(i.type)&&i.type!=='lw'&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Eine Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern die Aufgabe auf dem Blatt markieren.</div>';return;}
  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-tl="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-tl="${f}"${it[f]?' checked':''}> ${t}</label>`;
  const lvs=o=>`<label>Zahlenraum${sl('lv',o)}</label>`;
@@ -2536,6 +2537,169 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-po-act]');
 (function(){const P=$('#popal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
  L=[['pob',T(50,17,'2⁴ = ?',14)+T(50,33,'(−5)³ = ?',12)],['poz',T(50,17,'10⁶ =',13)+T(50,33,'1 000 000',12)],['pog',T(50,18,'2,43 · 10⁸',13)+T(50,33,'243 000 000',10)],['pom',T(50,17,'a³ · a² = a⁵',12)+T(50,33,'3⁵ : 3² = 3³',11)],['pov',T(50,17,'3x² · 7x³',12)+T(50,33,'= 21x⁵',12)],['pot',T(50,17,'4² + 3³ − 5²',11)+T(50,33,'= 18',12)],['pos',T(50,16,'3 Personen, je 3 …',10)+T(50,32,'3⁴ = 81',12)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
+/* ===== Terme ===== */
+const TET=['tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw'];
+Object.assign(TLD,{tea:{n:6,md:'wert',lv:1,co:2,mk:false},tez:{n:6,lv:1,nt:5,pr:false,co:1,mk:false},tek:{n:6,lv:1,zw:true,co:2,mk:false},tem:{n:8,md:'mix',lv:1,zw:false,co:2,mk:false},teh:{n:6,lv:1,pr:false,co:2,mk:false},tbf:{n:6,md:'mix',lv:1,zw:true,co:2,mk:false},tbr:{n:6,md:'mix',lv:1,co:2,mk:false},tbk:{n:6,md:'mix',zw:true,co:1,mk:false},tbw:{n:6,lv:1,ko:false,co:1,mk:false}});
+Object.assign(TLN,{tea:'Terme: Wert, Art und Schreibweise',tez:'Terme zusammenfassen (Addition / Subtraktion)',tek:'Klammern auflösen (Plus / Minus)',tem:'Terme multiplizieren / ausmultiplizieren',teh:'Herausheben (Faktorisieren)',tbf:'Binomische Formeln: Ausmultiplizieren',tbr:'Binomische Formeln: Rückwärts und Ergänzen',tbk:'Binomische Formeln: Kopfrechnen',tbw:'Binomische Formeln: Richtig oder falsch?'});
+/* Polynom-Rechnung: Glied = {c:Koeffizient, e:{Variable:Exponent}} */
+const teKey=e=>Object.keys(e).filter(k=>e[k]).sort().map(k=>k+e[k]).join('');
+const teCmp=(a,b)=>{const vs=[...new Set([...Object.keys(a.e),...Object.keys(b.e)])].sort();for(const v of vs){const d=(b.e[v]||0)-(a.e[v]||0);if(d)return d;}return 0;};
+const teN=L=>{const m=new Map();L.forEach(t=>{const k=teKey(t.e),o=m.get(k);if(o)o.c+=t.c;else m.set(k,{c:t.c,e:Object.fromEntries(Object.entries(t.e).filter(x=>x[1]))});});return [...m.values()].filter(t=>t.c).sort(teCmp);};
+const teMul=(A,B)=>teN(A.flatMap(a=>B.map(b=>{const e={...a.e};Object.keys(b.e).forEach(k=>e[k]=(e[k]||0)+b.e[k]);return{c:a.c*b.c,e};})));
+const teNeg=A=>A.map(t=>({c:-t.c,e:t.e}));
+const teEv=(P,v)=>P.reduce((s,t)=>s+t.c*Object.keys(t.e).reduce((p,k)=>p*Math.pow(v[k],t.e[k]),1),0);
+const teSup=n=>n>1?`<sup>${n}</sup>`:'';
+const teMo=t=>{const vs=Object.keys(t.e).filter(k=>t.e[k]).sort(),v=vs.map(k=>k+teSup(t.e[k])).join(''),n=Math.abs(t.c);return v?(n===1?'':n)+v:String(n);};
+const teS=L=>L.length?L.map((t,i)=>(i?(t.c<0?' − ':' + '):(t.c<0?'−':''))+teMo(t)).join(''):'0';
+const teLen=h=>h.replace(/<[^>]+>/g,'').length;
+const tePar=(t,sq)=>{const s=teMo(t);return (t.c<0?'('+'−'+s+')':(sq&&teLen(s)>1?'('+s+')':s));};
+const teC=(c,v,e)=>({c,e:v?{[v]:e||1}:{}});
+const teBox='<span style="display:inline-block;width:1.05em;height:1.05em;border:1.4px solid #000;vertical-align:-.18em;margin:0 .05em"></span>';
+const teGcd=(a,b)=>b?teGcd(b,a%b):Math.abs(a);
+const teVP=()=>tpick([['x','y'],['a','b'],['m','n'],['p','q'],['r','s'],['x','y'],['a','b'],['u','v'],['c','d']]);
+const teMk=h=>`<div style="border:1.4px solid #000;border-radius:4px;padding:.5em .8em;margin:0 0 1em;break-inside:avoid"><b>Merke:</b> ${h}</div>`;
+const teBF3=`<div style="margin-top:.2em">1. Formel: &nbsp;(a + b)<sup>2</sup> = a<sup>2</sup> + 2ab + b<sup>2</sup></div><div>2. Formel: &nbsp;(a − b)<sup>2</sup> = a<sup>2</sup> − 2ab + b<sup>2</sup></div><div>3. Formel: &nbsp;(a + b) · (a − b) = a<sup>2</sup> − b<sup>2</sup></div><div style="margin-top:.2em">Quadrat des ersten Gliedes ± doppeltes Produkt + Quadrat des zweiten Gliedes. Achtung: (a + b)<sup>2</sup> ≠ a<sup>2</sup> + b<sup>2</sup>!</div>`;
+/* Binom A ± B erzeugen */
+function teAB(lv,ty){const[v1,v2]=teVP();const num=()=>kri(2,12);let A,B;
+ if(lv===1){A=teC(1,v1);B=Math.random()<.6?teC(kri(1,12),''):teC(1,v2);}
+ else if(lv===2){const w=kri(0,2);if(w===0){A=teC(kri(2,5),v1);B=teC(kri(1,9),'');}else if(w===1){A=teC(kri(2,5),v1);B=teC(1,v2);}else{A=teC(1,v1);B=teC(kri(2,5),v2);}}
+ else{const w=kri(0,3);A=teC(kri(2,7),v1);B=w===0?teC(kri(2,9),''):teC(kri(2,7),v2);if(lv===4){if(Math.random()<.4)A=teC(A.c,v1,2);if(ty!=='pm'&&Math.random()<.4)A.c=-A.c;if(B.e[v2]&&Math.random()<.25)B=teC(B.c,v2,2);}}
+ if(ty==='pm'&&A.c<0)A.c=-A.c;
+ return{A,B};}
+const teBin=(A,B,op)=>teS([A])+' '+op+' '+teMo(B);
+/* Ausmultiplizieren der binomischen Formeln */
+function teBF(it,lv){let md=it.md||'mix',ty=md==='mix'?tpick(['p','m','pm']):md==='q'?tpick(['p','m']):md;
+ const{A,B}=teAB(lv,ty),nB={c:-B.c,e:B.e};let L,R,q,w;
+ if(ty==='pm'){L=teMul([A,B],[A,nB]);q=`(${teBin(A,B,'+')}) · (${teBin(A,B,'−')})`;w=`${tePar(A,1)}<sup>2</sup> − ${tePar(B,1)}<sup>2</sup>`;}
+ else{const s=ty==='p'?1:-1;L=teMul([A,s>0?B:nB],[A,s>0?B:nB]);q=`(${teBin(A,B,ty==='p'?'+':'−')})<sup>2</sup>`;w=`${tePar(A,1)}<sup>2</sup> ${ty==='p'?'+':'−'} 2 · ${tePar(A,0)} · ${tePar(B,0)} + ${tePar(B,1)}<sup>2</sup>`;}
+ return{q,w,a:teS(L),_l:ty==='pm'?teMul([A,B],[A,nB]):L,t:ty};}
+/* Rückwärts und Ergänzen */
+function teBR(it,lv){let md=it.md||'mix';if(md==='mix')md=tpick(['prod','prod','erg','erg','dif']);
+ const ty=md==='dif'?'pm':tpick(['p','m']),{A,B}=teAB(Math.max(lv,1),ty);A.c=Math.abs(A.c);
+ const A2=teMul([A],[A]),B2=teMul([B],[B]),sg=ty==='m'?-1:1,M=teMul([{c:2*sg,e:{}}],teMul([A],[B])),Ms=t=>(t.c<0?'− ':'+ ')+teMo(t);
+ if(md==='prod'||md==='dif'){const tri=md==='dif'?teS(A2)+' − '+teS(B2):teS(A2)+' '+Ms(M[0])+' + '+teS(B2);
+  return{k:'p',q:tri+' =',a:md==='dif'?`(${teBin(A,B,'+')}) · (${teBin(A,B,'−')})`:`(${teBin(A,B,ty==='p'?'+':'−')})<sup>2</sup>`};}
+ const op=ty==='p'?'+':'−',sq=`(${teBin(A,B,op)})<sup>2</sup>`,w=tpick([0,1,2,3,4]);
+ if(w===0)return{k:'e',q:`(${teS([A])} ${op} ${teBox})<sup>2</sup> = ${teS(A2)} ${Ms(M[0])} + ${teS(B2)}`,a:teS(B2).length&&teMo(B)};
+ if(w===1)return{k:'e',q:`${teS(A2)} ${teBox} + ${teS(B2)} = ${sq}`,a:(M[0].c<0?'−':'+')+' '+teMo(M[0])};
+ if(w===2)return{k:'e',q:`${teS(A2)} ${Ms(M[0])} + ${teBox} = ${sq}`,a:teS(B2)};
+ if(w===3)return{k:'e',q:`${teBox} ${Ms(M[0])} + ${teS(B2)} = ${sq}`,a:teS(A2)};
+ return Math.random()<.5?{k:'e',q:`${teS(A2)} − ${teBox} = (${teBin(A,B,'+')}) · (${teBin(A,B,'−')})`,a:teS(B2)}:{k:'e',q:`${teBox} − ${teS(B2)} = (${teBin(A,B,'+')}) · (${teBin(A,B,'−')})`,a:teS(A2)};}
+/* Kopfrechnen */
+function teBK(it){let md=it.md||'mix';if(md==='mix')md=tpick(['q','q','p']);const nf=n=>tfm(n);
+ if(md==='q'){const b=tpick([10,20,30,40,50,60,100,100,200]),d=kri(1,b>=100?4:b>=50?3:2),pl=Math.random()<.5,n=pl?b+d:b-d,r=n*n;
+  return{q:`${nf(n)}<sup>2</sup> =`,w:`(${b} ${pl?'+':'−'} ${d})<sup>2</sup> = ${nf(b*b)} ${pl?'+':'−'} ${nf(2*b*d)} + ${d*d}`,a:nf(r)};}
+ const b=tpick([10,20,30,40,50,60,100,100,200]),d=kri(1,b>=100?4:b>=50?3:2),n1=b-d,n2=b+d;
+ return{q:`${nf(n1)} · ${nf(n2)} =`,w:`(${b} − ${d}) · (${b} + ${d}) = ${nf(b*b)} − ${d*d}`,a:nf(n1*n2)};}
+/* Richtig oder falsch */
+function teBW(it,lv){const ty=tpick(['p','m','pm']),{A,B}=teAB(Math.min(lv+1,3)>lv?lv:lv,ty),nB={c:-B.c,e:B.e};if(A.c<0)A.c=-A.c;
+ const A2=teMul([A],[A]),B2=teMul([B],[B]),AB=teMul([A],[B]),twoAB=teMul([{c:2,e:{}}],AB),L=ty==='p'?`(${teBin(A,B,'+')})<sup>2</sup>`:ty==='m'?`(${teBin(A,B,'−')})<sup>2</sup>`:`(${teBin(A,B,'+')}) · (${teBin(A,B,'−')})`;
+ const ok=teS(ty==='pm'?teMul([A,B],[A,nB]):teMul([A,ty==='p'?B:nB],[A,ty==='p'?B:nB]));
+ const V=[];if(ty==='p'){V.push(teS(teN([...A2,...B2])),teS(teN([...A2,...AB,...B2])),teS(teN([...A2,...teNeg(twoAB),...B2])));}
+ else if(ty==='m'){V.push(teS(teN([...A2,...teNeg(B2)])),teS(teN([...A2,...B2])),teS(teN([...A2,...twoAB,...B2])),teS(teN([...A2,...teNeg(AB),...B2])));}
+ else{V.push(teS(teN([...A2,...B2])),teS(teN([...A2,...teNeg(twoAB),...B2])),teS(teN([...A2,...twoAB,...teNeg(B2)])));}
+ const good=Math.random()<.45,bad=tpick(V.filter(x=>x!==ok)),r=good?ok:bad;return{q:L+' = '+r,ok:good,a:ok,l:L};}
+/* Einführung */
+const teSh=(P)=>teS(P);
+function teA(it,lv){const md=it.md||'wert';
+ if(md==='art'){const nt=tpick([1,1,2,2,2,3,3,4]),[v1,v2]=teVP(),sh=tshuf([teC(1,v1),teC(1,v2),teC(1,v1,2),teC(1,v2,2),{c:1,e:{[v1]:1,[v2]:1}},teC(1,'')]).slice(0,nt),L=sh.map(t=>({c:(Math.random()<.3?-1:1)*kri(1,9),e:t.e}));if(L[0].c<0&&Math.random()<.5)L[0].c=-L[0].c;return{k:'a',q:teS(L),a:nt===1?'Monom':nt===2?'Binom':'Polynom',nt};}
+ if(md==='sch'){const[v1,v2]=teVP(),f=[];const nf=lv===1?2:lv===2?3:4;const pool=lv===1?[()=>kri(2,9),()=>v1]:[()=>kri(2,9),()=>v1,()=>v2,()=>v1];
+  for(let i=0;i<nf;i++)f.push(i===0?kri(1,9):tpick(pool)());if(!f.some(x=>typeof x==='string'))f[nf-1]=v1;
+  const L=[{c:f.filter(x=>typeof x==='number').reduce((p,x)=>p*x,1),e:{}}];f.filter(x=>typeof x==='string').forEach(v=>L[0].e[v]=(L[0].e[v]||0)+1);
+  return{k:'s',q:f.join(' · ')+' =',a:teMo(L[0])};}
+ const two=lv>=2&&Math.random()<.5,[v1,v2]=teVP();let P,vs,vals;
+ if(lv===1){P=teN([teC(kri(2,9),v1),teC((Math.random()<.7?1:-1)*kri(1,12),'')]);vs=[v1];vals=tshuf([1,2,3,4,5,6]).slice(0,2).map(x=>[x]);}
+ else if(two||lv===3&&Math.random()<.3){P=teN([teC(kri(2,6),v1),teC((Math.random()<.5?1:-1)*kri(1,6),v2),...(Math.random()<.5?[teC(kri(1,9),'')]:[])]);vs=[v1,v2];vals=[[kri(1,5),kri(1,5)],[kri(0,4),kri(1,5)]];}
+ else{P=teN([teC(kri(1,3),v1,2),teC((Math.random()<.5?1:-1)*kri(1,7),v1),...(Math.random()<.6?[teC((Math.random()<.5?1:-1)*kri(1,9),'')]:[])]);vs=[v1];vals=lv===3?[[kri(-3,-1)],[kri(0,3)]]:[[kri(1,5)],[kri(0,4)]];if(vals[0][0]===vals[1][0])vals[1][0]+=1;}
+ const sub=v=>P.map((t,i)=>{const vsx=Object.keys(t.e).sort(),pc=[];if(Math.abs(t.c)!==1||!vsx.length)pc.push(Math.abs(t.c));vsx.forEach(k=>{const x=v[vs.indexOf(k)];pc.push((x<0?'('+String(x).replace('-','−')+')':x)+teSup(t.e[k]));});return(i?(t.c<0?' − ':' + '):(t.c<0?'−':''))+pc.join(' · ');}).join('');
+ const nm=`T(${vs.join('; ')})`;
+ return{k:'w',T:`${nm} = ${teS(P)}`,rows:vals.map(v=>({q:`T(${v.map(x=>String(x).replace('-','−')).join('; ')}) =`,a:`${sub(v)} = ${String(teEv(P,Object.fromEntries(vs.map((k,i)=>[k,v[i]])))).replace('-','−')}`}))};}
+/* Zusammenfassen */
+function teZ(it,lv){const nt=Math.max(3,+it.nt||5),[v1,v2]=teVP(),sh=lv===1?[teC(1,v1)]:lv===2?[teC(1,v1),teC(1,v2)]:tshuf([teC(1,v1),teC(1,v2),teC(1,v1,2),teC(1,'')]).slice(0,3);
+ let L,R,g=0;do{L=[];for(let i=0;i<nt;i++){const t=i<sh.length?sh[i]:tpick(sh),c=kri(1,lv===1?9:8);L.push({c:(Math.random()<(i?.45:.2)?-1:1)*c,e:t.e});}L=tshuf(L);R=teN(L);g++;}while((!R.length||R.length>=L.length||(lv>1&&R.length<2&&g<40))&&g<80);
+ const pv={[v1]:kri(1,4),[v2]:kri(1,4),};return{q:teS(L)+' =',a:teS(R),pv:`${v1} = ${pv[v1]}${lv>1?'; '+v2+' = '+pv[v2]:''}`,p1:String(teEv(L,pv)).replace('-','−'),p2:String(teEv(R,pv)).replace('-','−'),_l:L,_r:R};}
+/* Klammern */
+function teK2(it,lv){const[v1,v2]=teVP();let segs=[];const sg=()=>Math.random()<.5?1:-1,T=(c,v)=>({c,e:v?{[v]:1}:{}}),ct=()=>kri(1,9);
+ if(lv===1){segs=[{s:1,t:[Math.random()<.5?T(ct()+1,''):T(kri(2,5),v1)]},{s:sg(),b:[T(Math.random()<.5?kri(1,5):1,v1),T(sg()*ct(),'')]}];if(segs[0].t[0].e[v1]===undefined&&segs[1].b[0].c===0)segs[1].b[0].c=1;}
+ else if(lv===2){const c=kri(2,7);segs=[{s:1,t:[T(c,v1)]},{s:sg(),b:[T(kri(1,c+2),v1),T(sg()*ct(),'')]}];if(Math.random()<.4)segs[1].b=[T(kri(1,6),v1),T(sg()*kri(1,6),v2)];}
+ else{segs=[{s:1,t:[T(kri(3,9),v1)]},{s:sg(),b:[T(kri(1,5),v1),T(sg()*kri(1,6),v2)]},{s:sg(),b:[T(kri(1,5),v1),T(sg()*kri(1,7),v2)]}];}
+ const q=segs.map((g,i)=>{const body=g.b?`(${teS(g.b)})`:teS(g.t);return i===0?body:(g.s<0?' − ':' + ')+body;}).join('');
+ const L=segs.flatMap(g=>g.b?g.b.map(t=>({c:g.s*t.c,e:t.e})):g.t.map(t=>({c:t.c,e:t.e})));
+ return{q:q+' =',w:teS(L),a:teS(teN(L)),_l:L};}
+/* Multiplizieren */
+function teRT(vs,cm,ex){const v=tpick(vs),e=ex&&Math.random()<.35?2:1;return{c:(Math.random()<.35?-1:1)*kri(1,cm),e:{[v]:e}};}
+function teM(it,lv){let md=it.md||'mix';if(md==='mix')md=tpick(['mm','mb','mb','mp','bb']);const[v1,v2]=teVP(),vs=[v1,v2],pos=t=>({c:Math.abs(t.c),e:t.e});
+ if(md==='mm'){const nf=lv>=3?3:2,F=[];
+  for(let i=0;i<nf;i++){let t;if(lv===1)t=i===0?teC(kri(2,9),v1):teC(kri(2,12),'');else if(lv===2)t=i===0?teC(kri(2,9),v1):i===1&&Math.random()<.6?teC(kri(2,9),v2):teC(kri(2,9),Math.random()<.5?v1:'');else{t=Math.random()<.5?teC(kri(2,9),tpick(vs),lv===4&&Math.random()<.4?2:1):teC(kri(2,9),'');if(Math.random()<(lv===4?.5:.3))t.c=-t.c;}F.push(t);}
+  if(lv>=3&&!F.some(f=>Object.keys(f.e).length))F[0]=teC(F[0].c,v1);let P=[F[0]];for(let i=1;i<F.length;i++)P=teMul(P,[F[i]]);
+  return{q:F.map(f=>tePar(f,0)).join(' · ')+' =',w:'',a:teS(P),_l:P};}
+ const cm=lv===1?5:lv===2?7:9;let M,Q,Q2;
+ if(md==='mb'||md==='mp'){const nT=md==='mp'?kri(3,4):2;
+  M=lv===1?teC(kri(2,9),''):lv===2?(Math.random()<.5?teC(1,v1):teC(kri(2,6),v1)):teRT([v1,v2],8,lv===4);
+  if(lv>=3&&md==='mp'&&Object.keys(M.e).length===0)M=teC(M.c,v1);
+  const pool=lv===1?[teC(1,v1),teC(1,''),teC(1,v2)]:[teC(1,v2),teC(1,v1),teC(1,''),teC(1,v2,2),teC(1,v1,2)];let sh=tshuf(pool);if(lv===1&&nT>3)sh=[...sh,teC(1,'y')];
+  Q=sh.slice(0,nT).map((t,i)=>({c:(i&&Math.random()<.5?-1:1)*kri(1,cm),e:t.e}));
+  if(lv===1)Q=Q.map(t=>({c:Math.abs(t.c),e:t.e}));
+  if(lv===1&&md==='mb'){Q[1].c=Q[1].c*(Math.random()<.4?-1:1);}
+  const first=Math.random()<.5,qs=`(${teS(Q)})`,ms=tePar(M,0),P=teMul([M],Q);
+  return{q:(first?ms+' · '+qs:qs+' · '+ms)+' =',w:Q.map(t=>first?`${ms} · ${tePar(t,0)}`:`${tePar(t,0)} · ${ms}`).join(' + '),a:teS(P),_l:P,_m:M,_q:Q};}
+ const cmx=lv===1?4:lv===2?6:8,A1=[teC(lv>=2?kri(1,cmx):1,v1),teC((Math.random()<(lv===1?.3:.5)?-1:1)*kri(1,cmx),lv>=3&&Math.random()<.6?v2:'')],B1=[teC(lv>=3?kri(1,5):1,lv>=3&&Math.random()<.5?v2:v1),teC((Math.random()<.5?-1:1)*kri(1,cmx),lv===4&&Math.random()<.5?v2:'')];
+ if(lv===1)B1[0]=teC(1,v1);if(lv>=2&&Object.keys(A1[1].e).length===0&&Object.keys(B1[1].e).length===0&&Math.random()<.0)A1[1].e={};
+ const P=teMul(A1,B1);return{q:`(${teS(A1)}) · (${teS(B1)}) =`,w:A1.flatMap(a=>B1.map(b=>`${tePar(a,0)} · ${tePar(b,0)}`)).join(' + '),a:teS(P),_l:P,_a:A1,_b:B1};}
+/* Herausheben */
+function teH(lv){const[v1,v2]=teVP(),V=['x','y','a','b','z','m'];let G,F,g=0;
+ do{const vv=tshuf(V).slice(0,4),w=vv[0];
+  if(lv===1){G=teC(kri(2,9),'');F=tshuf([teC(1,vv[1]),teC(1,vv[2]),teC(1,'')]).slice(0,kri(2,3)).map(t=>({c:(Math.random()<.35?-1:1)*(Math.random()<.5?1:kri(1,5)),e:t.e}));}
+  else if(lv===2){G=teC(1,w);F=tshuf([teC(1,vv[1]),teC(1,vv[2]),teC(1,'')]).slice(0,kri(2,3)).map(t=>({c:(Math.random()<.3?-1:1)*kri(1,4),e:t.e}));}
+  else if(lv===3){G=teC(kri(2,6),w);F=tshuf([teC(1,vv[1]),teC(1,vv[2]),teC(1,'')]).slice(0,kri(2,3)).map(t=>({c:(Math.random()<.3?-1:1)*kri(1,6),e:t.e}));}
+  else{const k=kri(1,2);G=teC(Math.random()<.5?1:kri(2,4),w,k);F=tshuf([teC(1,w,kri(1,2)),teC(1,vv[1]),teC(1,''),teC(1,vv[2])]).slice(0,kri(2,3)).map(t=>({c:(Math.random()<.4?-1:1)*kri(1,5),e:t.e}));}
+  g++;}while(g<200&&!(teN(F).length===F.length&&F.length>=2&&F.reduce((x,t)=>teGcd(x,t.c),0)===1&&(lv===1?true:!Object.keys(G.e).every(k=>F.every(t=>t.e[k]))) &&(lv<2||true)&&!(lv===1&&F.every(t=>Object.keys(t.e).length&&false))));
+ F=teN(F);const E=teMul([G],F);if(lv>=2&&Object.keys(G.e).some(k=>F.every(t=>(t.e[k]||0)>=1)))return teH(lv);
+ if(lv===1&&F.every(t=>t.c%1===0)&&F.reduce((x,t)=>teGcd(x,t.c),0)!==1)return teH(lv);
+ return{q:teS(E)+' =',a:`${teMo(G)} · (${teS(F)})`,_l:E,_G:G,_F:F};}
+function teGen(it){const n=Math.max(1,+it.n||1),k=it.type,lv=+it.lv||1,F={tea:()=>teA(it,lv),tez:()=>teZ(it,lv),tek:()=>teK2(it,lv),tem:()=>teM(it,lv),teh:()=>teH(lv),tbf:()=>teBF(it,lv),tbr:()=>teBR(it,lv),tbk:()=>teBK(it),tbw:()=>teBW(it,lv)}[k];it.d=tuniq(n,F);}
+function teBlock(it){NUMIT=it;const k=it.type,co=+it.co||1,D=it.d||[],S=tlS(it);let h='';
+ const row=(i,q,sol,mw)=>`<div class="tlrw"><b>${poL(i)}</b><span style="white-space:nowrap">${q}</span><span class="tlln" style="flex:1;min-width:${mw||6}em">${tlSv(it,sol)}</span></div>`;
+ const sub=(lab,sol,mw)=>`<div class="tlrw" style="margin:.35em 0 0 1.7em"><span style="white-space:nowrap">${lab}</span><span class="tlln" style="flex:1;min-width:${mw||6}em">${tlSv(it,sol)}</span></div>`;
+ const th='border:1.6px solid #000;padding:.15em .5em;',bx=on=>`<td style="${th}text-align:center;width:4.5em;height:1.9em">${on?'<span class="sv" style="font-weight:700">✕</span>':''}</td>`;
+ const H1=t=>`<div style="font-weight:700;margin-bottom:.4em">${t}</div>`;
+ if(k==='tea'){const md=it.md||'wert';
+  if(md==='wert')h=(it.mk?teMk('<b>Term</b>: sinnvoller Rechenausdruck aus Zahlen, Variablen, Rechenzeichen und Klammern. <b>Wert des Terms</b>: Man setzt für die Variable eine Zahl ein und rechnet aus, z. B. T(x) = 4x + 5 → T(3) = 4 · 3 + 5 = 17.'):'')+H1('Berechne den Wert des Terms für die angegebenen Zahlen!')+tlGrid(co,D.map((t,i)=>`<div style="break-inside:avoid"><div><b>${poL(i)}</b> ${t.T}</div>${t.rows.map(r=>sub(r.q,S?r.a:'',8)).join('')}</div>`).join(''));
+  else if(md==='art')h=(it.mk?teMk('<b>Monom</b> (eingliedrig): 4a · <b>Binom</b> (zweigliedrig): 2a + b · <b>Polynom</b> (mehrgliedrig): 4k + 1,5m − 3. Die Glieder sind durch + oder − getrennt.'):'')+H1('Kreuze an: Monom, Binom oder Polynom?')+`<table style="border-collapse:collapse;width:100%"><tr><th style="${th}">Nr.</th><th style="${th}">Term</th><th style="${th}">Monom</th><th style="${th}">Binom</th><th style="${th}">Polynom</th></tr>${D.map((t,i)=>`<tr><td style="${th}text-align:center">${i+1}</td><td style="${th}">${t.q}</td>${bx(S&&t.nt===1)}${bx(S&&t.nt===2)}${bx(S&&t.nt>2)}</tr>`).join('')}</table>`;
+  else h=(it.mk?teMk('Den Malpunkt zwischen Koeffizient und Variable lässt man weg. Die Zahl 1 vor der Variablen wird weggelassen (1x = x). Erst die Zahl, dann die Variablen, geordnet nach dem Alphabet: y · 5 · x = 5xy.'):'')+H1('Schreibe als Term in der kürzesten Form! Beachte die Schreibregeln.')+tlGrid(co,D.map((t,i)=>row(i,t.q,t.a,5)).join(''));}
+ else if(k==='tez')h=(it.mk?teMk('Nur <b>gleichartige Glieder</b> (gleiche Variable mit gleichem Exponenten) dürfen zusammengefasst werden: 4x + 7y − 3x + 2y = x + 9y. Zahlen ohne Variable fasst man für sich zusammen.'):'')+H1('Fasse die Terme so weit wie möglich zusammen!')+tlGrid(co,D.map((t,i)=>`<div style="break-inside:avoid">${row(i,t.q,t.a,6)}${it.pr?`<div class="tlrw" style="margin:.35em 0 0 1.7em;flex-wrap:wrap"><span style="white-space:nowrap">Probe (${t.pv}):</span><span style="white-space:nowrap;margin-left:.5em">Anfangsterm =</span><span class="tlln" style="min-width:3em">${tlSv(it,t.p1)}</span><span style="white-space:nowrap;margin-left:.5em">Endterm =</span><span class="tlln" style="min-width:3em">${tlSv(it,t.p2)}</span></div>`:''}</div>`).join(''));
+ else if(k==='tek')h=(it.mk?teMk('Vor der Klammer steht <b>+</b>: Die Klammer darf weggelassen werden, die Vorzeichen bleiben. a + (b − c) = a + b − c. &nbsp; Vor der Klammer steht <b>−</b>: Alle Rechenzeichen in der Klammer ändern sich! a − (b − c) = a − b + c.'):'')+H1('Löse die Klammern auf und fasse zusammen!')+tlGrid(co,D.map((t,i)=>`<div style="break-inside:avoid">${row(i,t.q,it.zw?'':t.a,6)}${it.zw?sub('=',t.w,6)+sub('=',t.a,6):''}</div>`).join(''));
+ else if(k==='tem')h=(it.mk?teMk('Man multipliziert das Monom mit jedem Glied in der Klammer: a · (b + c) = ab + ac. Zwei Klammern: (a + b) · (c + d) = ac + ad + bc + bd. „Minus mal Minus“ ergibt Plus, „Plus mal Minus“ ergibt Minus. Gleiche Variablen: x · x = x<sup>2</sup>.'):'')+H1('Multipliziere und vereinfache!')+tlGrid(co,D.map((t,i)=>`<div style="break-inside:avoid">${row(i,t.q,it.zw&&t.w?'':t.a,6)}${it.zw&&t.w?sub('=',t.w,6)+sub('=',t.a,6):''}</div>`).join(''));
+ else if(k==='teh')h=(it.mk?teMk('Herausheben ist die Umkehrung des Ausmultiplizierens: ac + bc = c · (a + b). Suche die gemeinsamen Faktoren aller Glieder (Zahlen in Faktoren zerlegen!), schreibe sie vor die Klammer und in die Klammer, was übrig bleibt.'):'')+H1('Hebe die gemeinsamen Faktoren heraus!')+tlGrid(co,D.map((t,i)=>`<div style="break-inside:avoid">${row(i,t.q,t.a,8)}${it.pr?sub('Probe:',teS(t._l),6):''}</div>`).join(''));
+ else if(k==='tbf')h=(it.mk?teMk(teBF3):'')+H1('Berechne mithilfe der binomischen Formeln!')+tlGrid(co,D.map((t,i)=>`<div style="break-inside:avoid">${row(i,t.q+' =',it.zw?'':t.a,6)}${it.zw?sub('=',t.w,6)+sub('=',t.a,6):''}</div>`).join(''));
+ else if(k==='tbr'){const hasE=D.some(t=>t.k==='e'),hasP=D.some(t=>t.k==='p');h=(it.mk?teMk(teBF3):'')+H1(hasP&&!hasE?'Schreibe als Quadrat oder als Produkt (binomische Formel rückwärts)!':hasE&&!hasP?'Ergänze das fehlende Glied (□)!':'Schreibe als Quadrat bzw. Produkt oder ergänze das fehlende Glied (□)!')+tlGrid(co,D.map((t,i)=>t.k==='p'?`<div style="break-inside:avoid">${row(i,t.q,t.a,8)}</div>`:`<div style="break-inside:avoid"><div><b>${poL(i)}</b> ${t.q}</div>${sub(teBox+' =',t.a,6)}</div>`).join(''));}
+ else if(k==='tbk')h=(it.mk?teMk('Zahlen so zerlegen, dass man die binomischen Formeln im Kopf anwenden kann: 102<sup>2</sup> = (100 + 2)<sup>2</sup> = 10 000 + 400 + 4 = 10 404 · 49 · 51 = (50 − 1) · (50 + 1) = 2 500 − 1 = 2 499.'):'')+H1('Rechne geschickt mit den binomischen Formeln im Kopf!')+tlGrid(co,D.map((t,i)=>`<div style="break-inside:avoid">${row(i,t.q,it.zw?'':t.a,6)}${it.zw?sub('=',t.w,6)+sub('=',t.a,6):''}</div>`).join(''));
+ else if(k==='tbw')h=(it.mk?teMk(teBF3):'')+H1('Sind die Aussagen richtig oder falsch? Kreuze an'+(it.ko?' und korrigiere die falschen Aussagen!':'!'))+`<table style="border-collapse:collapse;width:100%"><tr><th style="${th}">Nr.</th><th style="${th}">Aussage</th><th style="${th}">richtig</th><th style="${th}">falsch</th></tr>${D.map((t,i)=>`<tr><td style="${th}text-align:center">${i+1}</td><td style="${th}">${t.q}${it.ko?`<div class="tlrw" style="margin-top:.3em"><span style="white-space:nowrap;font-size:.9em">richtig:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,t.ok?'':t.l+' = '+t.a)}</span></div>`:''}</td>${bx(S&&t.ok)}${bx(S&&!t.ok)}</tr>`).join('')}</table>`;
+ return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+function renderTe(){const g=$('#g-te'),it=items.find(i=>i.id===sel&&TET.includes(i.type));if(!g)return;
+ if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern auf dem Blatt markieren.</div>';return;}
+ const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-te="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-te="${f}"${it[f]?' checked':''}> ${t}</label>`;
+ const nn=a=>`<label>Anzahl der Aufgaben${sl('n',tN(a))}</label>`,co=a=>`<label>Spalten${sl('co',tN(a))}</label>`,lv=o=>`<label>Schwierigkeit${sl('lv',o)}</label>`;
+ let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+ const L4=[[1,'1 · einfach'],[2,'2 · mittel'],[3,'3 · schwerer'],[4,'4 · knifflig']];
+ if(k==='tea')H+=`<label>Aufgabenart${sl('md',[['wert','Wert eines Terms berechnen'],['art','Monom, Binom oder Polynom?'],['sch','Kürzeste Schreibweise']])}</label>`+nn([2,4,6,8,10])+(it.md==='art'?'':lv([[1,'1 · eine Variable, linear'],[2,'2 · zwei Variablen / x²'],[3,'3 · auch negative Zahlen']]))+co([1,2,3])+ck('mk','Merkkasten');
+ if(k==='tez')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · eine Variable'],[2,'2 · zwei Variablen'],[3,'3 · Potenzen und Zahlen']])+`<label>Anzahl der Glieder${sl('nt',tN([3,4,5,6,7,8]))}</label>`+co([1,2])+ck('pr','Probe mit Zahlen')+ck('mk','Merkkasten');
+ if(k==='tek')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · Zahl und Variable'],[2,'2 · Variablen, auch zwei'],[3,'3 · zwei Klammern']])+co([1,2])+ck('zw','Zwischenzeile (Klammern aufgelöst)')+ck('mk','Merkkasten (Klammerregeln)');
+ if(k==='tem')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['mm','Monom · Monom'],['mb','Monom · Binom'],['mp','Monom · Polynom'],['bb','Binom · Binom']])}</label>`+nn([2,4,6,8,10,12,14,16])+lv(L4)+co([1,2,3])+ck('zw','Zwischenzeile (jedes Glied einzeln)')+ck('mk','Merkkasten');
+ if(k==='teh')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · nur Zahlen herausheben'],[2,'2 · nur Variable herausheben'],[3,'3 · Zahl und Variable'],[4,'4 · auch Potenzen']])+co([1,2])+ck('pr','Probe (Ausmultiplizieren)')+ck('mk','Merkkasten');
+ if(k==='tbf')H+=`<label>Formel${sl('md',[['mix','alle drei gemischt'],['p','(a + b)²'],['m','(a − b)²'],['q','(a + b)² und (a − b)²'],['pm','(a + b) · (a − b)']])}</label>`+nn([2,4,6,8,10,12,14,16])+lv([[1,'1 · x + 3 oder a + b'],[2,'2 · mit einem Koeffizienten'],[3,'3 · mit zwei Koeffizienten'],[4,'4 · auch −x + 3y und Potenzen']])+co([1,2,3])+ck('zw','Zwischenzeile (Formel einsetzen)')+ck('mk','Merkkasten (Formeln)');
+ if(k==='tbr')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['prod','Quadrat erkennen (a ± b)²'],['dif','Produkt erkennen (a + b)(a − b)'],['erg','fehlendes Glied ergänzen □']])}</label>`+nn([2,4,6,8,10,12])+lv(L4.slice(0,3))+co([1,2])+ck('mk','Merkkasten (Formeln)');
+ if(k==='tbk')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['q','Quadrate (z. B. 102²)'],['p','Produkte (z. B. 49 · 51)']])}</label>`+nn([2,3,4,6,8,10])+co([1,2])+ck('zw','Zwischenzeile (Rechenweg)')+ck('mk','Merkkasten');
+ if(k==='tbw')H+=nn([3,4,5,6,8,10])+lv(L4.slice(0,3))+ck('ko','Falsche Aussagen korrigieren')+ck('mk','Merkkasten (Formeln)');
+ H+=ck('show','Lösung zeigen')+'<button data-te-act="mix">Neu mischen</button>';g.innerHTML=H;}
+const teHandler=e=>{const t=e.target,k=t.dataset.te;if(!k)return;const it=items.find(i=>i.id===sel&&TET.includes(i.type));if(!it)return;if(e.type==='change')return;
+ rec('te'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','lv','co','nt'].includes(k))v=+v;it[k]=v;
+ if(['n','lv','md','nt'].includes(k))teGen(it);render();if(['md'].includes(k))renderProps();};
+$('#rp').addEventListener('input',teHandler);
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-te-act]');if(!b)return;const it=items.find(i=>i.id===sel&&TET.includes(i.type));if(!it)return;rec();teGen(it);render();});
+(function(){const P=$('#tepal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
+ G=[['Terme',[['tea',T(50,17,'T(x) = 4x + 5',12)+T(50,33,'T(3) = 17',12)]]],['Rechnen mit Termen',[['tez',T(50,17,'4x + 7y − 3x + 2y',10)+T(50,33,'= x + 9y',11)],['tek',T(50,17,'3x − (2x − 4)',12)+T(50,33,'= x + 4',12)],['tem',T(50,17,'3a · (3b + 4c)',12)+T(50,33,'= 9ab + 12ac',11)],['teh',T(50,17,'18a + 24b',12)+T(50,33,'= 6 · (3a + 4b)',10)]]],['Binomische Formeln',[['tbf',T(50,17,'(a + b)² =',13)+T(50,33,'a² + 2ab + b²',11)],['tbr',T(50,17,'x² + 6x + 9',12)+T(50,33,'= (x + 3)²',12)],['tbk',T(50,17,'102² = (100 + 2)²',9.5)+T(50,33,'= 10 404',12)],['tbw',T(50,17,'(a + b)² = a² + b²',10)+T(50,33,'☐ richtig ☐ falsch',9.5)]]]];
+ P.innerHTML=G.map(([h,L])=>`<div style="font-weight:700;font-size:12px;color:#555;margin:10px 0 5px;padding-left:2px">${h}</div>`+L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('')).join('');})();
 /* ===== Gleichungen ===== */
 const GET=['gel','gez','ges','gep'];
 Object.assign(TLD,{gel:{n:8,ty:'mix',lv:1,fm:'kurz',pr:false,va:'x',co:2,mk:false},gez:{n:5,lv:1,so:true,va:'x',co:1,mk:false},ges:{n:4,lv:1,gl:true,rl:true,al:true,va:'x'},gep:{n:6,ty:'mix',lv:1,pl:true,va:'x',co:2}});
@@ -5719,8 +5883,8 @@ function cmpBlock(it){
  return `<div class="cmp cmg" style="${st};display:grid;grid-template-columns:repeat(${nc},${n0?'auto auto auto':'auto auto auto auto'});justify-content:space-between;column-gap:.7em;row-gap:.6em;align-items:center">${cells}</div>`;
 }
 let cat=null;
-const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',zn:'Zahlenmengen',mb:'Maßstab',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',ge:'Gleichungen',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
-function catOf(it){return TLT.includes(it.type)?(VRT.includes(it.type)?'as':PNT.includes(it.type)?'pn':SST.includes(it.type)?'ss':CIT.includes(it.type)?'ci':ZNT.includes(it.type)?'zn':MBT.includes(it.type)?'mb':K4T.includes(it.type)?'ko':it.type==='lw'?'ra':it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':(it.type==='bs'||it.type==='bq')?'br':PRT.includes(it.type)?'pc':GET.includes(it.type)?'ge':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
+const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',zn:'Zahlenmengen',mb:'Maßstab',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',ge:'Gleichungen',te:'Terme',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
+function catOf(it){return TLT.includes(it.type)?(VRT.includes(it.type)?'as':PNT.includes(it.type)?'pn':SST.includes(it.type)?'ss':CIT.includes(it.type)?'ci':ZNT.includes(it.type)?'zn':MBT.includes(it.type)?'mb':K4T.includes(it.type)?'ko':it.type==='lw'?'ra':it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':(it.type==='bs'||it.type==='bq')?'br':PRT.includes(it.type)?'pc':GET.includes(it.type)?'ge':TET.includes(it.type)?'te':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
 (function(){const q=document.getElementById('lsq');if(!q)return;const nz=t=>String(t).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
  window.lsFilter=function(){const v=nz(q.value),cats=document.querySelectorAll('#left .cat');let n=0;
   cats.forEach(b=>{const p=document.querySelector('#left .catp[data-c="'+b.dataset.c+'"]'),pals=p?[...p.querySelectorAll('.pal')]:[];
@@ -5760,7 +5924,7 @@ function renderZf(){const g=$('#g-zf');if(!g)return;const it=items.find(i=>i.id=
 $('#rp').addEventListener('change',e=>{const t=e.target;if(!t.dataset.zf)return;const it=items.find(i=>i.id===sel&&ZFT.includes(i.type));if(!it)return;rec('zf');it.zf=t.value;render();});
 
 function renderProps(){
- const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderVr();renderMd();renderPr();renderPo();renderGe();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderZf();renderK4();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
+ const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderVr();renderMd();renderPr();renderPo();renderGe();renderTe();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderZf();renderK4();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
  {const _v=items.find(i=>i.id===sel);if(_v&&VRT.includes(_v.type))return;}
  const T=ptarget();if(!T)return;const it=T.o;
  const ck=(k,txt)=>`<label class="ck"><input type="checkbox" data-p="${k}"${it[k]?' checked':''}> ${txt}</label>`;
