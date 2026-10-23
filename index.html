@@ -177,7 +177,14 @@ body.pv .pgb{display:none}
 <div class="catp" data-c="dk"><div id="deko" style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px"></div>
 <button id="upl" style="margin-top:8px;width:100%;font:inherit;padding:6px;border:1px dashed var(--line);border-radius:6px;background:var(--panel);color:var(--ink);cursor:pointer">Eigenes Bild …</button><input type="file" id="fi" accept="image/*" hidden></div>
 <button class="cat" data-c="vk">📐 Vierecke</button>
-<div class="catp" data-c="vk"><div id="pal"></div></div>
+<div class="catp" data-c="vk">
+<div class="vkh" data-k="kon" style="font-weight:700;font-size:13px;cursor:pointer;margin:4px 0 6px;padding:3px 2px;border-bottom:1.5px solid #c9d1de;user-select:none"><span class="ssar">▾</span> ✏️ Konstruieren</div>
+<div class="vkg" data-k="kon"><div id="pal"></div></div>
+<div class="vkh" data-k="sa" style="font-weight:700;font-size:13px;cursor:pointer;margin:10px 0 6px;padding:3px 2px;border-bottom:1.5px solid #c9d1de;user-select:none"><span class="ssar">▾</span> 📖 Sachaufgaben</div>
+<div class="vkg" data-k="sa"><div class="pal" draggable="true" data-t="vsa"><svg viewBox="0 0 100 40"><rect x="8" y="8" width="38" height="24" fill="none" stroke="#000" stroke-width="1.6"/><text x="27" y="23" text-anchor="middle" font-size="8">u, A</text><path d="M56 14H94M56 22H94M56 30H84" stroke="#000" stroke-width="1.2"/></svg><span>Sachaufgaben: Umfang und Fläche</span></div></div>
+<div class="vkh" data-k="ra" style="font-weight:700;font-size:13px;cursor:pointer;margin:10px 0 6px;padding:3px 2px;border-bottom:1.5px solid #c9d1de;user-select:none"><span class="ssar">▾</span> 🔢 Rechenaufgaben</div>
+<div class="vkg" data-k="ra"><div class="pal" draggable="true" data-t="vra"><svg viewBox="0 0 100 40"><text x="50" y="16" text-anchor="middle" font-size="9">a = 12, b = 7</text><text x="50" y="31" text-anchor="middle" font-size="9" fill="#c0392b">u = 38, A = 84</text></svg><span>Rechenaufgaben: Umfang und Fläche</span></div></div>
+</div>
 <button class="cat" data-c="zs">📏 Zahlenstrahl</button>
 <div class="catp" data-c="zs"><div class="pal" draggable="true" data-t="zs:mark"><svg viewBox="0 0 100 40"><line x1="8" y1="22" x2="92" y2="22" stroke="#000" stroke-width="1.5"/><path d="M8 17v10M29 19v6M50 17v10M71 19v6M92 17v10" stroke="#000" stroke-width="1.2" fill="none"/><path d="M58 8l8 8M66 8l-8 8" stroke="#c0272d" stroke-width="1.6" fill="none"/></svg><span>Zahlenstrahl markieren</span></div><div class="pal" draggable="true" data-t="zs:lesen"><svg viewBox="0 0 100 40"><line x1="8" y1="22" x2="92" y2="22" stroke="#000" stroke-width="1.5"/><path d="M8 17v10M29 19v6M50 17v10M71 19v6M92 17v10" stroke="#000" stroke-width="1.2" fill="none"/><path d="M58 8l8 8M66 8l-8 8" stroke="#c0272d" stroke-width="1.6" fill="none"/></svg><span>Zahlenstrahl ablesen</span></div><div class="pal" draggable="true" data-t="zs:zeichnen"><svg viewBox="0 0 100 40"><line x1="8" y1="26" x2="92" y2="26" stroke="#000" stroke-width="1.5" stroke-dasharray="4 2"/><path d="M8 22v8M29 24v4M50 22v8M71 24v4M92 22v8" stroke="#000" stroke-width="1.2" fill="none"/><path d="M60 6l10 10l-4 4l-10 -10z" fill="#e0a800" stroke="#000" stroke-width="1"/></svg><span>Zahlenstrahl zeichnen</span></div></div>
 <button class="cat" data-c="wk">∠ Winkel</button>
@@ -267,6 +274,8 @@ body.pv .pgb{display:none}
 <label>Seiten <select id="sl"><option value="a">a b c d</option><option value="A">A B C D</option><option value="none">keine</option></select></label>
 <label class="ck"><input type="checkbox" id="cA" checked> A = (Fläche berechnen)</label>
 <label class="ck"><input type="checkbox" id="cu" checked> u = (Umfang berechnen)</label>
+<label>Diagonalen einzeichnen <select id="dg"><option value="none">keine</option><option value="e">e (A–C)</option><option value="f">f (B–D)</option><option value="both">beide (e und f)</option></select></label>
+<label class="ck"><input type="checkbox" id="dgl"> Diagonalen beschriften (e, f)</label>
 <label>Linien darunter <select id="nl"><option>0</option><option>1</option><option selected>2</option><option>3</option></select></label>
 </div>
 <div class="grp" data-cats="vk">
@@ -309,6 +318,7 @@ body.pv .pgb{display:none}
 <div class="grp" id="g-zn" data-cats="zn"></div>
 <div class="grp" id="g-mb" data-cats="mb"></div>
 <div class="grp" id="g-k4" data-cats="ko"></div>
+<div class="grp" id="g-vq" data-cats="vk"></div>
 <div class="grp" id="g-num" style="display:none"></div>
 <div class="grp" id="g-zr" data-cats="zr"></div>
 <div class="grp" id="g-sw" data-cats="sw"></div>
@@ -366,6 +376,8 @@ function svgNew(it){const T=it.type,real=it.md==='real'&&T!=='viereck',fict=it.m
  const ln=(a,b)=>`<line x1="${f1(a[0])}" y1="${f1(a[1])}" x2="${f1(b[0])}" y2="${f1(b[1])}" stroke="#000" stroke-width="1" stroke-dasharray="5 4"/>`;
  const mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],hw=s=>s.length*4.3*fz;
  let o=`<svg width="${f1(W)}" height="${f1(H)}" viewBox="0 0 ${f1(W)} ${f1(H)}" xmlns="http://www.w3.org/2000/svg"><polygon points="${Q.map(p=>p.map(f1).join(',')).join(' ')}" fill="none" stroke="#000" stroke-width="1.6" stroke-linejoin="round"/>`;
+ {const dg=it.dg||'none',dl=(a,b,s)=>{const m=mix(a,b,.72),dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1;return `<line x1="${f1(a[0])}" y1="${f1(a[1])}" x2="${f1(b[0])}" y2="${f1(b[1])}" stroke="#000" stroke-width="1.2"/>`+(it.dgl?tx(m[0]-dy/l*10*fz,m[1]+dx/l*10*fz,s):'');};
+  if(dg==='e'||dg==='both')o+=dl(Q[0],Q[2],'e');if(dg==='f'||dg==='both')o+=dl(Q[1],Q[3],'f');}
  Q.forEach((p,i)=>{const q=Q[(i+1)%4];
   o+=`<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="2" fill="#000"/>`;
   const a=away(p,15*fz);o+=tx(a[0],a[1],lab(it.vl,i),'font-style="italic"');
@@ -602,7 +614,7 @@ const b2=document.createElement('button');b2.textContent='↧ nächste Seite';b2
 const b3=document.createElement('button');b3.textContent='🗑 ganze Aufgabe';b3.onpointerdown=ev=>ev.stopPropagation();b3.onclick=ev=>{ev.stopPropagation();gDel(it);};const b4=document.createElement('button');b4.textContent=(items.some(f=>f.type==='ckf'&&f.fa&&it.y>=f.y-2&&it.y<=f.y+f.h)?'⇄ Teilaufgabe tauschen':'⇄ tauschen');b4.title='Diese Aufgabe durch eine andere ersetzen (Angabe wird mitgetauscht): danach links die neue Aufgabe anklicken';b4.onpointerdown=ev=>ev.stopPropagation();b4.onclick=ev=>{ev.stopPropagation();swStart(it);};gh.append(b1,bu,bd,b4,b2,b3);sheet.appendChild(gh);}
 function select(id){sel=id;sheet.querySelectorAll('.item').forEach(e=>e.classList.toggle('sel',+e.dataset.id===id));ghBar();sync();}
 function cur(){return items.find(i=>i.id===sel&&i.type in SH);}
-function sync(){const s=cur()||def;$('#vl').value=s.vl;$('#sl').value=s.sl;$('#cA').checked=s.A;$('#cu').checked=s.u;$('#nl').value=s.nl;$('#sz').value=s.w;
+function sync(){const s=cur()||def;$('#vl').value=s.vl;$('#sl').value=s.sl;$('#cA').checked=s.A;$('#cu').checked=s.u;$('#nl').value=s.nl;$('#dg').value=s.dg||'none';$('#dgl').checked=!!s.dgl;$('#sz').value=s.w;
  $('#md').value=s.md;$('#un').value=s.un;$('#sh').checked=s.sh;$('#un').disabled=s.md==='real';$('#sz').disabled=s.md==='real';$('#sh').disabled=s.md!=='real';
  const si=items.find(i=>i.id===sel);if(si&&(si.type==='deko'||si.type==='img'||si.type==='wk'||(si.type==='cmp'||si.type==='nb'||si.type==='st'||si.type==='rd'||si.type==='as'||si.type==='mx'||si.type==='py'||si.type==='mq'||si.type==='um'||si.type==='at'||si.type==='lb'||si.type==='kb'||si.type==='kt'||si.type==='ob'||si.type==='ke'||si.type==='kz'||si.type==='kx'||si.type==='bd'||si.type==='be'||si.type==='bz'||si.type==='rk'||si.type==='rw'||TLT.includes(si.type)||si.type==='tb'||si.type==='sa'||si.type==='sz'||si.type==='sp'||si.type==='sk'||si.type==='sv'||si.type==='rh'||si.type==='rt'||si.type==='rs'))){$('#sz').value=si.w;$('#sz').disabled=false;}
  $('#ff').value=((si&&(si.type==='text'||si.type==='num'||si.type==='cmp'||si.type==='nb'||si.type==='st'||si.type==='rd'||si.type==='as'||si.type==='mx'||si.type==='py'||si.type==='mq'||si.type==='um'||si.type==='at'||si.type==='lb'||si.type==='kb'||si.type==='kt'||si.type==='ob'||si.type==='ke'||si.type==='kz'||si.type==='kx'||si.type==='bd'||si.type==='be'||si.type==='bz'||si.type==='rk'||si.type==='rw'||TLT.includes(si.type)||si.type==='tb'||si.type==='sa'||si.type==='sz'||si.type==='sp'||si.type==='sk'||si.type==='sv'||si.type==='rh'||si.type==='rt'||si.type==='rs'||si.type in SH)?si:(cur()||def)).ff)||def.ff;const fsrc=(si&&(si.type==='text'||si.type==='num'||(si.type==='cmp'||si.type==='nb'||si.type==='st'||si.type==='rd'||si.type==='as'||si.type==='mx'||si.type==='py'||si.type==='mq'||si.type==='um'||si.type==='at'||si.type==='lb'||si.type==='kb'||si.type==='kt'||si.type==='ob'||si.type==='ke'||si.type==='kz'||si.type==='kx'||si.type==='bd'||si.type==='be'||si.type==='bz'||si.type==='rk'||si.type==='rw'||TLT.includes(si.type)||si.type==='tb'||si.type==='sa'||si.type==='sz'||si.type==='sp'||si.type==='sk'||si.type==='sv'||si.type==='rh'||si.type==='rt'||si.type==='rs')))?si:(cur()||def);$('#fs').value=fsrc.fs||def.fs;$('#fc').value=fsrc.col||def.col;
@@ -610,7 +622,7 @@ function sync(){const s=cur()||def;$('#vl').value=s.vl;$('#sl').value=s.sl;$('#c
  if(si&&(si.type==='kn'||si.type==='rk'||si.type==='rw'))$('#sz').disabled=true;const c=cur();$('#pf').innerHTML=c&&c.md!=='none'?Object.keys(c.par).map(k=>`<label>${k}<input type="number" step="0.1" min="0.1" data-k="${k}" value="${c.par[k]}"></label>`).join(''):'';{const it0=items.find(i=>i.id===sel);if(it0)cat=catOf(it0);}applyCat();renderProps();}
 function setv(k,v){def[k]=v;const s=cur();if(s){rec('s'+k);s[k]=v;render();}sync();}
 $('#vl').onchange=e=>setv('vl',e.target.value);$('#sl').onchange=e=>setv('sl',e.target.value);
-$('#cA').onchange=e=>setv('A',e.target.checked);$('#cu').onchange=e=>setv('u',e.target.checked);$('#nl').onchange=e=>setv('nl',+e.target.value);
+$('#cA').onchange=e=>setv('A',e.target.checked);$('#cu').onchange=e=>setv('u',e.target.checked);$('#nl').onchange=e=>setv('nl',+e.target.value);$('#dg').onchange=e=>setv('dg',e.target.value);$('#dgl').onchange=e=>setv('dgl',e.target.checked);
 $('#sz').oninput=e=>{const si=items.find(i=>i.id===sel);if(si&&(si.type==='deko'||si.type==='img'||si.type==='wk'||(si.type==='cmp'||si.type==='nb'||si.type==='st'||si.type==='rd'||si.type==='as'||si.type==='mx'||si.type==='py'||si.type==='mq'||si.type==='um'||si.type==='at'||si.type==='lb'||si.type==='kb'||si.type==='kt'||si.type==='ob'||si.type==='ke'||si.type==='kz'||si.type==='kx'||si.type==='bd'||si.type==='be'||si.type==='bz'||si.type==='rk'||si.type==='rw'||TLT.includes(si.type)||si.type==='tb'||si.type==='sa'||si.type==='sz'||si.type==='sp'||si.type==='sk'||si.type==='sv'||si.type==='rh'||si.type==='rt'||si.type==='rs'))){rec('sz');si.w=+e.target.value;render();}else setv('w',+e.target.value);};
 $('#md').onchange=e=>setv('md',e.target.value);$('#un').onchange=e=>setv('un',e.target.value);$('#sh').onchange=e=>setv('sh',e.target.checked);
 $('#pf').oninput=e=>{const s=cur(),v=parseFloat(e.target.value);if(s&&v>0){rec('p'+e.target.dataset.k);s.par[e.target.dataset.k]=v;render();}};
@@ -1260,7 +1272,7 @@ const MDT=['mm','mv','ms','v4','mz','ak','kf','ks'],VRT=['vr','vk','vl','vp','vt
 const PRT=['prd','prg','prw','prs','prk','prx','prn','prq','prb','prt','bs','bq','prr','prm','prz'];
 const POT=['pob','poz','pog','pom','pov','pot','pos'];
 const SWT=['swt','swl'];const PYT=['pys','pyb','pyt'];const PNT=['pnk','pnb','pnz','pns'];const SST=['ssd','ssm','ssh','ssg','ssl','ssb'];const LWT=['lw'];const CIT=['cib','ciu','cia','cit','cis','cir','cik','cix','cil','cig','cic'];const ZRT=['zr'];const K4T=['k4b','k4w','k4p','k4z','k4y','k4k','k4g','k4x','k4f'];const MBT=['mbb','mbw','mbz','mbd','mbs','mbm'];const ZNT=['znb','zni','znq','znt','znk','znr'];
-const TLT=['vhw','vhs','vhk','vhg','vhd','vhr','tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw','gel','gez','ges','gep',...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...LWT,...ZRT,...POT,...PRT,...MDT,...VRT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
+const VQT=['vsa','vra'];const TLT=['vhw','vhs','vhk','vhg','vhd','vhr','tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw','gel','gez','ges','gep',...SWT,...PYT,...PNT,...SST,...CIT,...ZNT,...MBT,...K4T,...VQT,...LWT,...ZRT,...POT,...PRT,...MDT,...VRT,'ugk','wkk','zzk','tdv','tpr','ttr','tzw','tpz','tsv','ttm','tgg','tkm','tsa'];
 const TLN={tdv:'Teiler ∣ / ∤',tpr:'Primzahlen nennen',ttr:'Teilbarkeitsregeln',tzw:'Zahlen finden',tpz:'Primfaktorzerlegung',tsv:'Sieb des Eratosthenes',ttm:'Teilermengen',tgg:'ggT',tkm:'kgV',tsa:'Sachaufgaben'};
 const TLD={tdv:{n:16,lv:1,co:4},tpr:{mx:20,ps:2},ttr:{n:5,dv:'2,3,5,9,10',lv:2,mk:'kreuz'},tzw:{n:3,dv:'3,5,9',zk:3,lv:2},tpz:{n:12,co:4,lv:2,pot:false},tsv:{mx:100,cs:36,ins:false},ttm:{n:6,lv:1,bsp:false},tgg:{n:3,gm:'tm',nz:2,lv:1},tkm:{n:3,gm:'vm',nz:2,lv:1},tsa:{n:3,ty:'beide',rl:2,an:true}};
 const tgcd=(a,b)=>b?tgcd(b,a%b):a,tlcm=(a,b)=>a/tgcd(a,b)*b;
@@ -1303,7 +1315,7 @@ const TLGGT=[
  ()=>{const [a,b]=tpick([[24,36],[18,30],[20,45],[32,48],[28,42],[15,25]]),g=tgcd(a,b);
   return [`Lea hat ${a} Äpfel und ${b} Birnen. Sie möchte möglichst viele gleiche Obstteller herrichten, ohne dass Obst übrig bleibt. Wie viele Teller kann sie höchstens machen? Was liegt auf jedem Teller?`,`ggT(${a}, ${b}) = ${g}. Sie kann ${g} Teller machen; auf jedem liegen ${a/g} Äpfel und ${b/g} Birnen.`];}
 ];
-function tlGen(it){if(it.type==='lw')return lwGen(it);if(ZNT.includes(it.type))return znGen(it);if(MBT.includes(it.type))return mbGen(it);if(K4T.includes(it.type))return k4Gen(it);if(CIT.includes(it.type))return ciGen(it);if(PNT.includes(it.type))return pnGen(it);if(SST.includes(it.type))return ssTGen(it);if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(VHT.includes(it.type))return vhGen(it);if(TET.includes(it.type))return teGen(it);if(GET.includes(it.type))return geGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(VRT.includes(it.type))return vrGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
+function tlGen(it){if(VQT.includes(it.type))return vqGen(it);if(it.type==='lw')return lwGen(it);if(ZNT.includes(it.type))return znGen(it);if(MBT.includes(it.type))return mbGen(it);if(K4T.includes(it.type))return k4Gen(it);if(CIT.includes(it.type))return ciGen(it);if(PNT.includes(it.type))return pnGen(it);if(SST.includes(it.type))return ssTGen(it);if(it.type==='zzk')return zzGen(it);if(it.type==='ugk')return ugGen(it);if(it.type==='wkk')return wkGen(it);if(SWT.includes(it.type))return swGen(it);if(PYT.includes(it.type))return it.type==='pyb'?pybGen(it):it.type==='pyt'?pytGen(it):pysGen(it);if(ZRT.includes(it.type))return zrGen(it);if(VHT.includes(it.type))return vhGen(it);if(TET.includes(it.type))return teGen(it);if(GET.includes(it.type))return geGen(it);if(POT.includes(it.type))return poGen(it);if(PRT.includes(it.type))return prGen(it);if(VRT.includes(it.type))return vrGen(it);if(MDT.includes(it.type))return mdGen(it);const k=it.type,n=+it.n||0,lv=+it.lv||1,own=tlOwn(it),nz=+it.nz||2;
  if(k==='tdv'){const o=own.filter(l=>l.length>=2);
   if(o.length)it.d=o.map(l=>[l[0],l[1]]);
   else{const mx=[0,100,1000,99999][lv];it.d=tuniq(n,()=>{const a=tpick(lv===3?[2,3,4,5,6,8,9,10,11,12]:[2,3,4,5,6,7,8,9,10,12,15,20,25]);let b;
@@ -1331,7 +1343,7 @@ const tlS=it=>it.show||SOL,tlSv=(it,s)=>tlS(it)?`<span class="sv">${s}</span>`:'
 const tlRow=(it,l,s,br)=>`<div class="tlrw"><span>${l}</span><span class="tlln" style="flex:1">${tlSv(it,s)}</span>${br?'<span>}</span>':''}</div>`;
 const tlGrid=(c,h)=>`<div style="display:grid;grid-template-columns:repeat(${c},1fr);gap:.9em 1.4em;align-items:start">${h}</div>`;
 const TLL='abcdefghijkl';
-function tlBlock(it){NUMIT=it;if(it.type==='lw')return lwBlock(it);if(ZNT.includes(it.type))return znBlock(it);if(MBT.includes(it.type))return mbBlock(it);if(K4T.includes(it.type))return k4Block(it);if(CIT.includes(it.type))return ciBlock(it);if(PNT.includes(it.type))return pnBlock(it);if(SST.includes(it.type))return ssTBlock(it);if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(VHT.includes(it.type))return vhBlock(it);if(TET.includes(it.type))return teBlock(it);if(GET.includes(it.type))return geBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(VRT.includes(it.type))return vrBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
+function tlBlock(it){NUMIT=it;if(VQT.includes(it.type))return vqBlock(it);if(it.type==='lw')return lwBlock(it);if(ZNT.includes(it.type))return znBlock(it);if(MBT.includes(it.type))return mbBlock(it);if(K4T.includes(it.type))return k4Block(it);if(CIT.includes(it.type))return ciBlock(it);if(PNT.includes(it.type))return pnBlock(it);if(SST.includes(it.type))return ssTBlock(it);if(it.type==='zzk')return zzBl(it);if(it.type==='ugk')return ugBlock(it);if(it.type==='wkk')return wkBl(it);if(SWT.includes(it.type))return swBlock(it);if(PYT.includes(it.type))return it.type==='pyb'?pybBlock(it):it.type==='pyt'?pytBlock(it):pysBlock(it);if(ZRT.includes(it.type))return zrBlock(it);if(VHT.includes(it.type))return vhBlock(it);if(TET.includes(it.type))return teBlock(it);if(GET.includes(it.type))return geBlock(it);if(POT.includes(it.type))return poBlock(it);if(PRT.includes(it.type))return prBlock(it);if(VRT.includes(it.type))return vrBlock(it);if(MDT.includes(it.type))return mdBlock(it);const k=it.type,s=tlS(it);let h='';
  if(k==='tdv'){h=tlGrid(+it.co||4,it.d.map(([a,b])=>`<div style="white-space:nowrap">${tfm(a)} <span class="tlc">${tlSv(it,b%a===0?'∣':'∤')}</span> ${tfm(b)}</div>`).join(''));}
  else if(k==='tpr'){const mx=+it.mx||20,pr=[];for(let i=2;i<=mx;i++)if(tisP(i))pr.push(i);
   h=`<div>Nenne alle Primzahlen bis ${mx}:</div>`+Array.from({length:+it.ps||2},()=>'<div class="tlln" style="display:block;min-height:1.9em"></div>').join('')+(s?`<div class="sv" style="margin-top:.3em">${pr.join(', ')}</div>`:'');}
@@ -1367,7 +1379,7 @@ const tlSet=a=>a.join(', ');
  ['ttm',T(50,26,'T(12)={…}',13)],['tgg',T(50,26,'ggT(a, b)',14)],['tkm',T(50,26,'kgV(a, b)',14)],['tsa',T(50,16,'Jeden 3. Tag …',10)+T(50,30,'Wann wieder?',10)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
 const TLRG=['n','lv','dv','gm','nz','ty','zk','own'];
-function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!VRT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!GET.includes(i.type)&&!TET.includes(i.type)&&!VHT.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!PNT.includes(i.type)&&!SST.includes(i.type)&&!CIT.includes(i.type)&&!ZNT.includes(i.type)&&!MBT.includes(i.type)&&!K4T.includes(i.type)&&i.type!=='lw'&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
+function renderTl(){const g=$('#g-tl'),it=items.find(i=>i.id===sel&&TLT.includes(i.type)&&!VRT.includes(i.type)&&!MDT.includes(i.type)&&!PRT.includes(i.type)&&!POT.includes(i.type)&&!GET.includes(i.type)&&!TET.includes(i.type)&&!VHT.includes(i.type)&&!SWT.includes(i.type)&&!PYT.includes(i.type)&&!PNT.includes(i.type)&&!SST.includes(i.type)&&!CIT.includes(i.type)&&!ZNT.includes(i.type)&&!MBT.includes(i.type)&&!K4T.includes(i.type)&&!VQT.includes(i.type)&&i.type!=='lw'&&!ZRT.includes(i.type)&&i.type!=='ugk'&&i.type!=='wkk'&&i.type!=='zzk');if(!g)return;
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Eine Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern die Aufgabe auf dem Blatt markieren.</div>';return;}
  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-tl="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-tl="${f}"${it[f]?' checked':''}> ${t}</label>`;
  const lvs=o=>`<label>Zahlenraum${sl('lv',o)}</label>`;
@@ -6156,7 +6168,7 @@ function cmpBlock(it){
 }
 let cat=null;
 const CATS={zr:'4.0-Aufgabe',pl:'Satz des Pythagoras',pn:'Parallele und Normale',ss:'Statistik',ci:'Kreis',zn:'Zahlenmengen',mb:'Maßstab',vk:'Vierecke',zs:'Zahlenstrahl',wk:'Winkel',cp:'Vergleichen',st:'Dekadische Einheiten',rd:'Runden',as:'Addieren und Subtrahieren',kr:'Kopfrechnen',mu:'Maßumwandlungen',sg:'Strecke, Strahl, Gerade',ko:'Körper',kd:'Koordinatensystem',br:'Brüche',ra:'Rätsel',tl:'Teiler',md:'Multiplizieren und Dividieren',kf:'Kariertes Feld',pc:'Prozentrechnung',po:'Potenzen',ge:'Gleichungen',te:'Terme',vh:'Verhältnisse',sw:'Stellenwerttabelle',tx:'Text und Nummern',dk:'Bilder'};
-function catOf(it){return TLT.includes(it.type)?(VRT.includes(it.type)?'as':PNT.includes(it.type)?'pn':SST.includes(it.type)?'ss':CIT.includes(it.type)?'ci':ZNT.includes(it.type)?'zn':MBT.includes(it.type)?'mb':K4T.includes(it.type)?'ko':it.type==='lw'?'ra':it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':(it.type==='bs'||it.type==='bq')?'br':PRT.includes(it.type)?'pc':GET.includes(it.type)?'ge':TET.includes(it.type)?'te':VHT.includes(it.type)?'vh':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
+function catOf(it){return TLT.includes(it.type)?(VRT.includes(it.type)?'as':PNT.includes(it.type)?'pn':SST.includes(it.type)?'ss':CIT.includes(it.type)?'ci':ZNT.includes(it.type)?'zn':MBT.includes(it.type)?'mb':VQT.includes(it.type)?'vk':K4T.includes(it.type)?'ko':it.type==='lw'?'ra':it.type==='ugk'?'cp':it.type==='zzk'?'zs':it.type==='wkk'?'wk':KFT.includes(it.type)?'kf':MDT.includes(it.type)?'md':(it.type==='bs'||it.type==='bq')?'br':PRT.includes(it.type)?'pc':GET.includes(it.type)?'ge':TET.includes(it.type)?'te':VHT.includes(it.type)?'vh':POT.includes(it.type)?'po':PYT.includes(it.type)?'pl':ZRT.includes(it.type)?'zr':SWT.includes(it.type)?'sw':'tl'):it.type in SH?'vk':it.type==='zs'?'zs':it.type==='wk'?'wk':(it.type==='cmp'||it.type==='nb')?'cp':it.type==='st'?'st':it.type==='rd'?'rd':(it.type==='ke'||it.type==='kz'||it.type==='kx')?'kd':(it.type==='bd'||it.type==='be'||it.type==='bz')?'br':(it.type==='rk'||it.type==='rw')?'ra':(it.type==='as'||it.type==='at')?'as':(it.type==='kb'||it.type==='kn'||it.type==='kt'||it.type==='ob')?'ko':(it.type==='mx'||it.type==='py'||it.type==='mq'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'kr':it.type==='um'?'mu':it.type==='tb'?'tx':(it.type==='sa'||it.type==='sz'||it.type==='sp'||it.type==='sk'||it.type==='sv'||it.type==='rh'||it.type==='rt'||it.type==='rs')?'sg':(it.type==='text'||it.type==='num')?'tx':'dk';}
 (function(){const q=document.getElementById('lsq');if(!q)return;const nz=t=>String(t).toLowerCase().replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
  window.lsFilter=function(){const v=nz(q.value),cats=document.querySelectorAll('#left .cat');let n=0;
   cats.forEach(b=>{const p=document.querySelector('#left .catp[data-c="'+b.dataset.c+'"]'),pals=p?[...p.querySelectorAll('.pal')]:[];
@@ -6174,6 +6186,7 @@ function applyCat(){
  rp.style.display=cat?'flex':'none';$('#rp-title').textContent=cat?CATS[cat]:'';
  $('#rp-sub').textContent=!cat?'':(it&&catOf(it)===cat?'Das markierte Element wird geändert.':'Einstellungen für neue Elemente.');
  rp.querySelectorAll('[data-cats]').forEach(g=>g.style.display=cat&&g.dataset.cats.split(' ').includes(cat)?'':'none');
+ if(cat==='vk'&&it&&VQT.includes(it.type))rp.querySelectorAll('[data-cats="vk"]').forEach(g=>{if(g.id!=='g-vq')g.style.display='none';});
 }
 function ptarget(){const it=items.find(i=>i.id===sel);if(it&&(it.type==='ugk'||it.type==='wkk'||it.type==='zzk'))return null;const m={zs:'zs',wk:'wk',cmp:'cp',nb:'cp',st:'st',rd:'rd',as:'as',at:'as',ke:'kd',kz:'kd',kx:'kd',bd:'br',be:'br',bz:'br',mx:'kr',py:'kr',mq:'kr',rh:'kr',rt:'kr',rs:'kr',um:'mu',sa:'sg',sz:'sg',sp:'sg',sk:'sg',sv:'sg'};if(it&&m[it.type])return{o:it,item:true,t:m[it.type]};if(cat==='zs'||cat==='wk'||cat==='cp'||cat==='st'||cat==='rd'||cat==='as'||cat==='kr'||cat==='mu'||cat==='sg'||cat==='kd'||cat==='br')return{o:DEFS[cat],item:false,t:cat};return null;}
 function zsKey(o,k,v){if(k==='aufg'){if(v==='mark'){o.show=false;zsRoll(o,o.zrs);}return true;}if(k==='zk'){zsRoll(o,false);return true;}if(k==='zrs'&&v){zsRoll(o,true);return true;}return false;}
@@ -6196,7 +6209,7 @@ function renderZf(){const g=$('#g-zf');if(!g)return;const it=items.find(i=>i.id=
 $('#rp').addEventListener('change',e=>{const t=e.target;if(!t.dataset.zf)return;const it=items.find(i=>i.id===sel&&ZFT.includes(i.type));if(!it)return;rec('zf');it.zf=t.value;render();});
 
 function renderProps(){
- const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderVr();renderMd();renderPr();renderPo();renderGe();renderTe();renderVh();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderZf();renderK4();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
+ const gz=$('#g-zs'),gw=$('#g-wk'),gc=$('#g-cp'),gs=$('#g-st'),gr=$('#g-rd'),ga=$('#g-as'),gk=$('#g-kr'),gm=$('#g-mu'),gg=$('#g-sg');gg.innerHTML='';gm.innerHTML='';renderTb();renderKo();renderRa();renderTl();renderVr();renderMd();renderPr();renderPo();renderGe();renderTe();renderVh();renderPl();renderPn();renderSs();renderCi();renderZn();renderMb();renderZf();renderK4();renderVq();renderLw();renderNum();renderZr();renderSw();renderLy();renderMan();renderDk();renderUg();renderWkk();renderZzk();$('#g-kd').innerHTML='';$('#g-br').innerHTML='';gk.innerHTML='';ga.innerHTML='';gs.innerHTML='';gr.innerHTML='';gz.innerHTML='';gw.innerHTML='';gc.innerHTML='';
  {const _v=items.find(i=>i.id===sel);if(_v&&VRT.includes(_v.type))return;}
  const T=ptarget();if(!T)return;const it=T.o;
  const ck=(k,txt)=>`<label class="ck"><input type="checkbox" data-p="${k}"${it[k]?' checked':''}> ${txt}</label>`;
@@ -6910,4 +6923,126 @@ window.vhPicHtml=(it,t,i)=>{if(it.vb==='nein')return '';const q=((t.T||'')+' '+(
  const _r=render;render=function(){const r=_r.apply(this,arguments);apply();return r;};
  apply();
 })();
+
+/* ===== Vierecke: Sachaufgaben und Rechenaufgaben (Umfang, Fläche, Umkehraufgaben) ===== */
+Object.assign(TLN,{vsa:'Sachaufgaben: Umfang und Fläche',vra:'Rechenaufgaben: Umfang und Fläche'});
+Object.assign(TLD,{vsa:{md:'mix',fm:'rq',n:4,co:1,lab:'a',ill:'none',mk:false},vra:{md:'ua',fm:'rq',n:6,co:2,lab:'a',un:'cm',mk:false}});
+const vqF=v=>{let s=String(+(+v).toFixed(2));let [i,d]=s.split('.');i=i.replace(/\B(?=(\d{3})+(?!\d))/g,' ');return d?i+','+d:i;};
+const VQ_RT=[[6,8,10],[5,12,13],[8,15,17],[9,12,15],[12,16,20]];
+const VQ_DT=[[12,5,13,9,15],[12,9,15,16,20],[20,15,25,21,29],[15,8,17,20,25]];
+const VQ_TT=[[8,15,17],[6,8,10],[9,12,15],[5,12,13],[12,16,20]];
+const VQS=[
+/* Rechteck: Umfang */
+{s:'r',k:'u',f:R=>{const a=R(12,40),b=R(6,a-3),u=2*(a+b);return{t:`Ein rechteckiger Garten ist ${a} m lang und ${b} m breit. Er soll rundherum mit einem Zaun eingezäunt werden. Wie viel Meter Zaun werden benötigt?`,a:`u = 2 · (${a} + ${b}) = ${u} m. Es werden ${u} m Zaun benötigt.`};}},
+{s:'r',k:'u',f:R=>{const a=R(20,60),b=R(15,a-5),u=2*(a+b);return{t:`Für einen rechteckigen Bilderrahmen (${a} cm × ${b} cm) wird eine Holzleiste um das Bild gelegt. Wie lang muss die Leiste mindestens sein?`,a:`u = 2 · (${a} + ${b}) = ${u} cm. Die Leiste muss mindestens ${u} cm lang sein.`};}},
+{s:'r',k:'u',f:R=>{const a=R(30,60),b=R(20,a-5),u=2*(a+b);return{t:`Der rechteckige Pausenhof ist ${a} m lang und ${b} m breit. Der Hausmeister spannt rundherum ein Absperrband. Wie viele Meter Band braucht er?`,a:`u = 2 · (${a} + ${b}) = ${u} m. Er braucht ${u} m Band.`};}},
+{s:'r',k:'u',f:R=>{const a=R(4,9)*10,b=R(3,a/10-1)*10,u=2*(a+b);return{t:`Ein rechteckiges Tischtuch ist ${a} cm lang und ${b} cm breit. Rundherum wird eine Spitzenborte aufgenäht. Wie lang ist die Borte? Gib das Ergebnis in cm und in m an.`,a:`u = 2 · (${a} + ${b}) = ${u} cm = ${vqF(u/100)} m.`};}},
+{s:'r',k:'u',f:R=>{const a=R(80,110),b=R(50,70),r=R(2,4),u=2*(a+b);return{t:`Ein rechteckiger Sportplatz ist ${a} m lang und ${b} m breit. Lena läuft ${r} Runden am Rand entlang. Wie viele Meter läuft sie?`,a:`u = 2 · (${a} + ${b}) = ${u} m; ${r} · ${u} = ${r*u} m. Lena läuft ${vqF(r*u)} m.`};}},
+{s:'r',k:'u',f:R=>{const a=R(15,30),b=R(10,a-3),p=R(8,15),u=2*(a+b);return{t:`Ein rechteckiger Gemüsegarten ist ${a} m lang und ${b} m breit und wird eingezäunt. Ein Meter Zaun kostet ${p} €. Wie viel kostet der gesamte Zaun?`,a:`u = 2 · (${a} + ${b}) = ${u} m; ${u} · ${p} = ${u*p} €. Der Zaun kostet ${vqF(u*p)} €.`};}},
+/* Rechteck: Fläche */
+{s:'r',k:'A',f:R=>{const a=R(8,25),b=R(5,a-1),A=a*b;return{t:`Auf einem rechteckigen Stück Wiese (${a} m × ${b} m) wird Rasen angesät. Wie groß ist die Fläche?`,a:`A = ${a} · ${b} = ${A} m². Die Fläche beträgt ${A} m².`};}},
+{s:'r',k:'A',f:R=>{const a=R(4,8),b=R(3,a-1),p=R(12,25),A=a*b;return{t:`Ein rechteckiges Zimmer ist ${a} m lang und ${b} m breit. Es wird mit Teppichboden ausgelegt. Wie viel m² Teppichboden werden benötigt? Ein m² kostet ${p} €. Wie viel kostet der Teppichboden?`,a:`A = ${a} · ${b} = ${A} m²; ${A} · ${p} = ${A*p} €.`};}},
+{s:'r',k:'A',f:R=>{const a=R(25,40),b=R(8,12),A=a*b;return{t:`Die Wandtafel in der Klasse ist ${a} dm lang und ${b} dm hoch. Wie groß ist ihre Fläche in dm²? Gib das Ergebnis auch in m² an.`,a:`A = ${a} · ${b} = ${A} dm² = ${vqF(A/100)} m².`};}},
+{s:'r',k:'A',f:R=>{const a=R(26,30),b=R(18,21),A=a*b;return{t:`Eine rechteckige Heftseite ist ${a} cm hoch und ${b} cm breit. Wie groß ist die Seite?`,a:`A = ${a} · ${b} = ${A} cm².`};}},
+{s:'r',k:'A',f:R=>{const a=R(4,9)*10,b=R(2,5)*10,g=R(2,5),A=a*b;return{t:`Ein rechteckiges Feld ist ${a} m lang und ${b} m breit. Auf jeden m² werden ${g} g Dünger gestreut. Wie viel Dünger wird insgesamt gebraucht? Gib das Ergebnis in g und in kg an.`,a:`A = ${a} · ${b} = ${A} m²; ${A} · ${g} = ${A*g} g = ${vqF(A*g/1000)} kg.`};}},
+{s:'r',k:'A',f:R=>{const a=R(60,90),b=R(40,a-10),A=a*b;return{t:`Eine rechteckige Fensterscheibe ist ${a} cm hoch und ${b} cm breit. Wie groß ist die Scheibe in cm²? Gib das Ergebnis auch in dm² an.`,a:`A = ${a} · ${b} = ${A} cm² = ${vqF(A/100)} dm².`};}},
+{s:'r',k:'A',f:R=>{const a=R(3,6),b=R(2,a-1),n=R(2,3);const f=a*5,g=b*5;return{t:`Ein rechteckiges Badezimmer ist ${a} m lang und ${b} m breit. Der Boden wird mit quadratischen Fliesen (Seitenlänge 20 cm) belegt. Auf einen Meter passen 5 Fliesen. Wie viele Fliesen werden benötigt?`,a:`${a} · 5 = ${f} Fliesen in der Länge, ${b} · 5 = ${g} Fliesen in der Breite; ${f} · ${g} = ${f*g} Fliesen.`};}},
+/* Rechteck: Umfang und Fläche */
+{s:'r',k:'ua',f:R=>{const a=R(10,30),b=R(6,a-2),u=2*(a+b),A=a*b;return{t:`Eine rechteckige Terrasse ist ${a} m lang und ${b} m breit. Berechne den Umfang und den Flächeninhalt der Terrasse.`,a:`u = 2 · (${a} + ${b}) = ${u} m; A = ${a} · ${b} = ${A} m².`};}},
+{s:'r',k:'ua',f:R=>{const a=R(20,50),b=R(10,a-5),u=2*(a+b),A=a*b;return{t:`Der rechteckige Schulgarten ist ${a} m lang und ${b} m breit. a) Wie viel Meter Zaun werden für die Umrandung benötigt? b) Wie groß ist die Fläche des Gartens?`,a:`a) u = 2 · (${a} + ${b}) = ${u} m; b) A = ${a} · ${b} = ${A} m².`};}},
+{s:'r',k:'ua',f:R=>{const a=R(8,16),b=R(5,a-1),p=R(4,9),q=R(3,6),u=2*(a+b),A=a*b;return{t:`Ein rechteckiges Beet ist ${a} m lang und ${b} m breit. Für die Randeinfassung kostet ein Meter ${p} €, für die Blumenerde pro m² ${q} €. Wie viel kosten Einfassung und Erde zusammen?`,a:`u = 2 · (${a} + ${b}) = ${u} m → ${u} · ${p} = ${u*p} €; A = ${a} · ${b} = ${A} m² → ${A} · ${q} = ${A*q} €; zusammen ${u*p+A*q} €.`};}},
+/* Rechteck: Umkehraufgaben */
+{s:'r',k:'um',f:R=>{const a=R(8,20),b=R(4,a-1),A=a*b;return{t:`Ein rechteckiges Beet hat eine Fläche von ${A} m². Es ist ${a} m lang. Wie breit ist es?`,a:`b = ${A} : ${a} = ${b} m. Das Beet ist ${b} m breit.`};}},
+{s:'r',k:'um',f:R=>{const a=R(20,40),b=R(10,a-5),u=2*(a+b);return{t:`Ein rechteckiger Bilderrahmen hat einen Umfang von ${u} cm. Er ist ${a} cm lang. Wie breit ist er?`,a:`a + b = ${u} : 2 = ${u/2}; b = ${u/2} − ${a} = ${b} cm.`};}},
+{s:'r',k:'um',f:R=>{const a=R(10,25),b=R(6,a-2),A=a*b,u=2*(a+b);return{t:`Ein rechteckiges Grundstück ist ${a} m lang und hat eine Fläche von ${A} m². Wie viel Meter Zaun werden benötigt, um es ganz einzuzäunen?`,a:`b = ${A} : ${a} = ${b} m; u = 2 · (${a} + ${b}) = ${u} m. Es werden ${u} m Zaun benötigt.`};}},
+{s:'r',k:'um',f:R=>{const a=R(12,30),b=R(5,a-3),u=2*(a+b),A=a*b;return{t:`Ein rechteckiger Pool ist ${a} m lang. Um den Pool zu umrunden, geht man ${u} m. Wie breit ist der Pool und wie groß ist seine Wasserfläche?`,a:`b = ${u} : 2 − ${a} = ${b} m; A = ${a} · ${b} = ${A} m².`};}},
+/* Quadrat */
+{s:'q',k:'u',f:R=>{const a=R(2,6),u=4*a;return{t:`Ein quadratischer Sandkasten hat die Seitenlänge ${a} m. Er wird mit Holzbrettern umrandet. Wie lang sind alle Bretter zusammen?`,a:`u = 4 · ${a} = ${u} m.`};}},
+{s:'q',k:'u',f:R=>{const a=R(25,40),u=4*a;return{t:`Ein quadratischer Pizzakarton hat die Seitenlänge ${a} cm. Rundherum klebt man ein Klebeband. Wie viel Klebeband braucht man für 3 Kartons?`,a:`u = 4 · ${a} = ${u} cm; 3 · ${u} = ${3*u} cm = ${vqF(3*u/100)} m.`};}},
+{s:'q',k:'u',f:R=>{const a=R(8,20),p=R(5,9),u=4*a;return{t:`Ein quadratischer Gemüsegarten hat die Seitenlänge ${a} m. Der Zaun kostet pro Meter ${p} €. Wie viel kostet der Zaun?`,a:`u = 4 · ${a} = ${u} m; ${u} · ${p} = ${u*p} €.`};}},
+{s:'q',k:'A',f:R=>{const a=R(15,40),A=a*a;return{t:`Eine quadratische Fliese hat die Seitenlänge ${a} cm. Wie groß ist ihre Fläche?`,a:`A = ${a} · ${a} = ${A} cm².`};}},
+{s:'q',k:'A',f:R=>{const a=R(12,30),p=R(4,8),A=a*a;return{t:`Ein quadratisches Spielfeld hat die Seitenlänge ${a} m. Es wird mit Rollrasen belegt. Ein m² kostet ${p} €. Wie viel kostet der Rasen?`,a:`A = ${a} · ${a} = ${A} m²; ${A} · ${p} = ${A*p} €.`};}},
+{s:'q',k:'A',f:R=>{const a=R(4,9),A=a*a;return{t:`Ein quadratisches Tuch hat die Seitenlänge ${a} dm. Wie groß ist das Tuch in dm²? Gib das Ergebnis auch in cm² an.`,a:`A = ${a} · ${a} = ${A} dm² = ${A*100} cm².`};}},
+{s:'q',k:'ua',f:R=>{const a=R(6,20),u=4*a,A=a*a;return{t:`Ein quadratischer Platz hat die Seitenlänge ${a} m. a) Wie lang ist sein Umfang? b) Wie groß ist seine Fläche?`,a:`a) u = 4 · ${a} = ${u} m; b) A = ${a} · ${a} = ${A} m².`};}},
+{s:'q',k:'um',f:R=>{const a=R(6,25),u=4*a,A=a*a;return{t:`Ein quadratischer Garten soll mit ${u} m Zaun umgeben werden. Wie lang ist eine Seite? Wie groß ist die Fläche des Gartens?`,a:`a = ${u} : 4 = ${a} m; A = ${a} · ${a} = ${A} m².`};}},
+{s:'q',k:'um',f:R=>{const a=R(5,20),A=a*a,u=4*a;return{t:`Ein quadratischer Platz hat eine Fläche von ${A} m². Wie lang ist eine Seite? Wie lang ist der Umfang?`,a:`a = ${a} m (weil ${a} · ${a} = ${A}); u = 4 · ${a} = ${u} m.`};}},
+/* Parallelogramm */
+{s:'p',k:'A',f:R=>{const a=R(6,20),b=R(5,a-1),h=R(3,b-1),A=a*h;return{t:`Ein Blumenbeet hat die Form eines Parallelogramms. Die Grundseite a ist ${a} m lang, die dazugehörige Höhe h<sub>a</sub> beträgt ${h} m. Berechne die Fläche des Beetes.`,a:`A = a · h<sub>a</sub> = ${a} · ${h} = ${A} m².`};}},
+{s:'p',k:'u',f:R=>{const a=R(6,20),b=R(5,a-1),u=2*(a+b);return{t:`Ein parallelogrammförmiges Beet hat die Seitenlängen a = ${a} m und b = ${b} m. Es wird mit Randsteinen eingefasst. Wie viele Meter Randsteine werden gebraucht?`,a:`u = 2 · (${a} + ${b}) = ${u} m.`};}},
+{s:'p',k:'ua',f:R=>{const a=R(8,24),b=R(5,a-2),h=R(3,b-1),u=2*(a+b),A=a*h;return{t:`Eine Wiese hat die Form eines Parallelogramms mit a = ${a} m, b = ${b} m und h<sub>a</sub> = ${h} m. Berechne den Umfang und die Fläche.`,a:`u = 2 · (${a} + ${b}) = ${u} m; A = ${a} · ${h} = ${A} m².`};}},
+{s:'p',k:'um',f:R=>{const a=R(6,16),h=R(3,9),A=a*h;return{t:`Ein parallelogrammförmiges Beet hat eine Fläche von ${A} m². Die Grundseite a ist ${a} m lang. Wie groß ist die Höhe h<sub>a</sub>?`,a:`h<sub>a</sub> = ${A} : ${a} = ${h} m.`};}},
+/* Raute */
+{s:'ra',k:'A',f:R=>{const [x,y,a]=VQ_RT[R(0,4)],e=2*x,f=2*y,A=e*f/2;return{t:`Eine rautenförmige Fliese hat die Diagonalen e = ${e} cm und f = ${f} cm. Berechne ihre Fläche.`,a:`A = e · f : 2 = ${e} · ${f} : 2 = ${A} cm².`};}},
+{s:'ra',k:'u',f:R=>{const a=R(6,25);return{t:`Eine rautenförmige Fliese hat die Seitenlänge a = ${a} cm. Rundherum wird eine Zierkante geklebt. Wie lang ist die Zierkante?`,a:`u = 4 · ${a} = ${4*a} cm.`};}},
+{s:'ra',k:'ua',f:R=>{const [x,y,a]=VQ_RT[R(0,4)],e=2*x,f=2*y;return{t:`Ein rautenförmiges Fenster hat die Seitenlänge a = ${a} dm und die Diagonalen e = ${e} dm und f = ${f} dm. Berechne den Umfang und die Fläche.`,a:`u = 4 · ${a} = ${4*a} dm; A = ${e} · ${f} : 2 = ${e*f/2} dm².`};}},
+{s:'ra',k:'um',f:R=>{const [x,y,a]=VQ_RT[R(0,4)],e=2*x,f=2*y,A=e*f/2;return{t:`Eine Raute hat eine Fläche von ${A} cm². Die Diagonale e ist ${e} cm lang. Wie lang ist die Diagonale f?`,a:`f = 2 · A : e = 2 · ${A} : ${e} = ${f} cm.`};}},
+/* Deltoid */
+{s:'d',k:'A',f:R=>{const [p,q1,a,q2,b]=VQ_DT[R(0,3)],e=q1+q2,f=2*p,A=e*f/2;return{t:`Ein Drachen hat die Diagonalen e = ${e} cm und f = ${f} cm. Wie viel cm² Papier braucht man mindestens für den Drachen?`,a:`A = e · f : 2 = ${e} · ${f} : 2 = ${A} cm².`};}},
+{s:'d',k:'u',f:R=>{const [p,q1,a,q2,b]=VQ_DT[R(0,3)],u=2*(a+b);return{t:`Ein Drachen hat zwei Seiten mit a = ${a} cm und zwei Seiten mit b = ${b} cm. Der Drachen wird rundherum mit einer Schnur eingefasst. Wie lang ist die Schnur?`,a:`u = 2 · (${a} + ${b}) = ${u} cm.`};}},
+{s:'d',k:'ua',f:R=>{const [p,q1,a,q2,b]=VQ_DT[R(0,3)],e=q1+q2,f=2*p,u=2*(a+b),A=e*f/2;return{t:`Ein Deltoid hat die Seiten a = ${a} cm und b = ${b} cm sowie die Diagonalen e = ${e} cm und f = ${f} cm. Berechne den Umfang und die Fläche.`,a:`u = 2 · (${a} + ${b}) = ${u} cm; A = ${e} · ${f} : 2 = ${A} cm².`};}},
+{s:'d',k:'um',f:R=>{const [p,q1,a,q2,b]=VQ_DT[R(0,3)],e=q1+q2,f=2*p,A=e*f/2;return{t:`Ein Drachen hat eine Fläche von ${A} cm². Die Diagonale e ist ${e} cm lang. Wie lang ist die Diagonale f?`,a:`f = 2 · A : e = 2 · ${A} : ${e} = ${f} cm.`};}},
+/* Trapez */
+{s:'t',k:'A',f:R=>{const [x,h,l]=VQ_TT[R(0,4)],c=R(10,20),a=c+2*x,A=(a+c)*h/2;return{t:`Ein trapezförmiges Grundstück hat die parallelen Seiten a = ${a} m und c = ${c} m. Der Abstand der beiden Seiten (die Höhe) beträgt ${h} m. Berechne die Fläche des Grundstücks.`,a:`A = (a + c) · h : 2 = (${a} + ${c}) · ${h} : 2 = ${A} m².`};}},
+{s:'t',k:'u',f:R=>{const [x,h,l]=VQ_TT[R(0,4)],c=R(10,20),a=c+2*x,u=a+c+2*l;return{t:`Ein trapezförmiges Beet hat die Seiten a = ${a} m, b = ${l} m, c = ${c} m und d = ${l} m. Es wird mit einem Zaun umgeben. Wie lang ist der Zaun?`,a:`u = a + b + c + d = ${a} + ${l} + ${c} + ${l} = ${u} m.`};}},
+{s:'t',k:'ua',f:R=>{const [x,h,l]=VQ_TT[R(0,4)],c=R(10,20),a=c+2*x,u=a+c+2*l,A=(a+c)*h/2;return{t:`Ein Garten hat die Form eines Trapezes mit a = ${a} m, c = ${c} m, b = d = ${l} m und der Höhe h = ${h} m. Berechne den Umfang und die Fläche.`,a:`u = ${a} + ${l} + ${c} + ${l} = ${u} m; A = (${a} + ${c}) · ${h} : 2 = ${A} m².`};}},
+{s:'t',k:'um',f:R=>{const [x,h,l]=VQ_TT[R(0,4)],c=R(10,20),a=c+2*x,A=(a+c)*h/2;return{t:`Ein trapezförmiges Grundstück hat eine Fläche von ${A} m². Die parallelen Seiten sind a = ${a} m und c = ${c} m lang. Wie groß ist die Höhe h?`,a:`h = 2 · A : (a + c) = 2 · ${A} : ${a+c} = ${h} m.`};}}
+];
+const VQ_SK={r:'rechteck',q:'quadrat',p:'parallelogramm',ra:'raute',d:'deltoid',t:'trapez'};
+function vqShuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=kri(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;}
+function vqGen(it){const n=Math.max(1,+it.n||4);it.d=[];
+ if(it.type==='vsa'){const md=it.md||'mix',fm=it.fm||'rq';
+  let pool=VQS.filter(x=>(fm==='all'||x.s==='r'||x.s==='q')&&(md==='all'||(md==='mix'?x.k!=='um':x.k===md)));
+  if(!pool.length)pool=VQS.slice();let q=[];
+  while(q.length<n)q=q.concat(vqShuf(pool));
+  it.d=q.slice(0,n).map(x=>{const r=x.f(kri);r.s=x.s;return r;});return;}
+ /* Rechenaufgaben */
+ const md=it.md||'ua',fm=it.fm||'rq',un=it.un||'cm',u2=un+'²',R=kri;
+ const mk=(sh,kind)=>{
+  if(sh==='r'){const a=R(4,30),b=R(3,a-1),u=2*(a+b),A=a*b;
+   if(kind==='ua')return{t:`<b>Rechteck</b> &nbsp; a = ${a} ${un}, b = ${b} ${un}`,f:[['u',`${u} ${un}`],['A',`${A} ${u2}`]]};
+   const v=R(0,2);
+   if(v===0)return{t:`<b>Rechteck</b> &nbsp; A = ${A} ${u2}, a = ${a} ${un}`,f:[['b',`${b} ${un}`]]};
+   if(v===1)return{t:`<b>Rechteck</b> &nbsp; u = ${u} ${un}, a = ${a} ${un}`,f:[['b',`${b} ${un}`],['A',`${A} ${u2}`]]};
+   return{t:`<b>Rechteck</b> &nbsp; A = ${A} ${u2}, b = ${b} ${un}`,f:[['a',`${a} ${un}`],['u',`${u} ${un}`]]};}
+  if(sh==='q'){const a=R(3,25),u=4*a,A=a*a;
+   if(kind==='ua')return{t:`<b>Quadrat</b> &nbsp; a = ${a} ${un}`,f:[['u',`${u} ${un}`],['A',`${A} ${u2}`]]};
+   return R(0,1)?{t:`<b>Quadrat</b> &nbsp; u = ${u} ${un}`,f:[['a',`${a} ${un}`],['A',`${A} ${u2}`]]}:{t:`<b>Quadrat</b> &nbsp; A = ${A} ${u2}`,f:[['a',`${a} ${un}`],['u',`${u} ${un}`]]};}
+  if(sh==='p'){const a=R(6,24),b=R(5,a-1),h=R(3,b-1),u=2*(a+b),A=a*h;
+   if(kind==='ua')return{t:`<b>Parallelogramm</b> &nbsp; a = ${a} ${un}, b = ${b} ${un}, h<sub>a</sub> = ${h} ${un}`,f:[['u',`${u} ${un}`],['A',`${A} ${u2}`]]};
+   return{t:`<b>Parallelogramm</b> &nbsp; A = ${A} ${u2}, a = ${a} ${un}`,f:[['h<sub>a</sub>',`${h} ${un}`]]};}
+  if(sh==='ra'){const [x,y,a0]=VQ_RT[R(0,4)],k=R(1,2),a=a0*k,e=2*x*k,f=2*y*k,u=4*a,A=e*f/2;
+   if(kind==='ua')return{t:`<b>Raute</b> &nbsp; a = ${a} ${un}, e = ${e} ${un}, f = ${f} ${un}`,f:[['u',`${u} ${un}`],['A',`${A} ${u2}`]]};
+   return{t:`<b>Raute</b> &nbsp; A = ${A} ${u2}, e = ${e} ${un}`,f:[['f',`${f} ${un}`]]};}
+  if(sh==='d'){const [p,q1,a,q2,b]=VQ_DT[R(0,3)],e=q1+q2,f=2*p,u=2*(a+b),A=e*f/2;
+   if(kind==='ua')return{t:`<b>Deltoid</b> &nbsp; a = ${a} ${un}, b = ${b} ${un}, e = ${e} ${un}, f = ${f} ${un}`,f:[['u',`${u} ${un}`],['A',`${A} ${u2}`]]};
+   return{t:`<b>Deltoid</b> &nbsp; A = ${A} ${u2}, e = ${e} ${un}`,f:[['f',`${f} ${un}`]]};}
+  const [x,h,l]=VQ_TT[R(0,4)],c=R(10,20),a=c+2*x,u=a+c+2*l,A=(a+c)*h/2;
+  if(kind==='ua')return{t:`<b>Trapez</b> &nbsp; a = ${a} ${un}, b = ${l} ${un}, c = ${c} ${un}, d = ${l} ${un}, h = ${h} ${un}`,f:[['u',`${u} ${un}`],['A',`${A} ${u2}`]]};
+  return{t:`<b>Trapez</b> &nbsp; A = ${A} ${u2}, a = ${a} ${un}, c = ${c} ${un}`,f:[['h',`${h} ${un}`]]};};
+ if(md==='tab'){const rows=[];const pat=['ab','au','aA','bu','bA','ab','aA','au'];for(let i=0;i<n;i++){const a=R(4,24),b=R(3,a-1),u=2*(a+b),A=a*b,p=pat[i%pat.length];rows.push({a,b,u,A,hid:p==='ab'?['u','A']:p==='au'?['b','A']:p==='aA'?['b','u']:p==='bu'?['a','A']:['a','u']});}it.d=rows;return;}
+ const shs=fm==='all'?['r','q','p','ra','d','t']:['r','q'];
+ for(let i=0;i<n;i++){const sh=shs[kri(0,shs.length-1)];const kind=md==='ua'?'ua':md==='um'?'um':(i%2?'um':'ua');it.d.push(Object.assign(mk(sh,kind),{s:sh}));}}
+function vqSketch(it,r,i){if((it.ill||'none')!=='skizze'||!VQ_SK[r.s])return '';const sv=svgFor(VQ_SK[r.s],'none','a').replace('<svg ','<svg style="width:125px;height:auto;display:block" ');return '<div class="ipic" data-ip="'+ipk(i,r.t)+'" style="flex:none;position:relative">'+sv+'</div>';}
+function vqBlock(it){const sh=tlS(it),D=it.d||[],co=+it.co||1,lb=i=>ssLb(it,i),H1=t=>`<div style="font-weight:700;margin-bottom:.4em">${t}</div>`,wrap=x=>`<div class="tlx" style="${kst(it)}">${x}</div>`,ln=(t,w)=>ciLn(t,sh,w),th='border:1.6px solid #000;padding:.25em .8em;text-align:center;min-width:3.2em;',Lb=i=>lb(i)?`<b>${lb(i)}</b> `:'',sv=t=>sh?`<span class="sv">${t}</span>`:'';
+ if(it.type==='vsa'){return wrap(H1('Löse die Sachaufgaben! Schreibe die Rechnung und einen Antwortsatz auf!')+D.map((r,i)=>{const pc=vqSketch(it,r,i),bd=`<div>${Lb(i)}${r.t}</div><div style="line-height:1.7em;min-height:3.4em;margin-top:.3em;background:repeating-linear-gradient(transparent 0,transparent calc(1.7em - 1.2px),#777 calc(1.7em - 1.2px),#777 1.7em)">${sv(r.a)}</div>`;return pc?`<div style="break-inside:avoid;margin:.5em 0 1em;display:flex;gap:.8em;align-items:flex-start"><div style="flex:1;min-width:0">${bd}</div>${pc}</div>`:`<div style="break-inside:avoid;margin:.5em 0 1em">${bd}</div>`;}).join(''));}
+ const un=it.un||'cm';
+ if(it.md==='tab'){const cell=(r,k,u)=>r.hid.includes(k)?sv(r[k]):r[k];return wrap(H1(`Ergänze die fehlenden Werte der Rechtecke! (Längen in ${un}, Flächen in ${un}²)`)+`<table style="border-collapse:collapse;margin:.3em 0"><tr>${['Rechteck','Seite a','Seite b','Umfang u','Fläche A'].map(x=>`<th style="${th}background:#eaf2f8">${x}</th>`).join('')}</tr>${D.map((r,i)=>`<tr><td style="${th}">${lb(i)||i+1}</td>${['a','b','u','A'].map(k=>`<td style="${th}height:1.9em">${r.hid.includes(k)?sv(r[k]):r[k]}</td>`).join('')}</tr>`).join('')}</table>`);}
+ const head=it.md==='ua'?'Berechne Umfang und Fläche!':it.md==='um'?'Berechne die gesuchten Größen (Umkehraufgaben)!':'Berechne die gesuchten Größen!';
+ const item=(r,i)=>`<div style="break-inside:avoid;margin:.45em 0 .8em"><div>${Lb(i)}${r.t}</div><div style="margin:.3em 0 0 1.4em;line-height:2;display:flex;flex-wrap:wrap;gap:.2em 1.6em">${r.f.map(([l,v])=>`<span style="white-space:nowrap">${l} = ${ln(v,6)}</span>`).join('')}</div></div>`;
+ return wrap(H1(head)+tlGrid(co,D.map(item).join('')));}
+function renderVq(){const g=$('#g-vq'),it=items.find(i=>i.id===sel&&VQT.includes(i.type));if(!g)return;if(!it){g.innerHTML='';return;}
+ const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-vq="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`;
+ let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+ const fm=`<label>Vierecke${sl('fm',[['rq','Rechteck und Quadrat'],['all','alle Vierecke (auch Parallelogramm, Raute, Deltoid, Trapez)']])}</label>`;
+ const lab=`<label>Nummerierung${sl('lab',[['a','a) b) c) d)'],['n','1. 2. 3. 4.'],['none','keine']])}</label>`;
+ if(k==='vsa')H+=`<label>Aufgabenart${sl('md',[['mix','Umfang und Fläche gemischt'],['u','nur Umfang u'],['A','nur Fläche A'],['ua','Umfang und Fläche in einer Aufgabe'],['um','Umkehraufgaben (Seite gesucht)'],['all','alles gemischt (mit Umkehraufgaben)']])}</label>${fm}<label>Anzahl${sl('n',tN([1,2,3,4,5,6,7,8]))}</label>${lab}<label>Skizze${sl('ill',[['none','keine'],['skizze','Skizze der Figur mit Seitenbuchstaben']])}</label>`;
+ else H+=`<label>Aufgabenart${sl('md',[['ua','Umfang und Fläche berechnen'],['um','Umkehraufgaben (Größe gesucht)'],['mix','gemischt'],['tab','Tabelle (Rechtecke ergänzen)']])}</label>${it.md==='tab'?'':fm}<label>Anzahl${sl('n',tN([2,3,4,6,8,10,12]))}</label>${it.md==='tab'?'':`<label>Spalten${sl('co',tN([1,2,3]))}</label>`}<label>Einheit${sl('un',tN(['cm','m','dm','mm']))}</label>${lab}`;
+ H+=`<label class="ck"><input type="checkbox" data-vq="show"${it.show?' checked':''}> Lösung zeigen</label><button data-vq-act="mix">Neu mischen</button>`;g.innerHTML=H;}
+const vqHandler=e=>{const t=e.target,k=t.dataset.vq;if(!k)return;const it=items.find(i=>i.id===sel&&VQT.includes(i.type));if(!it)return;if(e.type==='change')return;
+ rec('vq'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','co'].includes(k))v=+v;it[k]=v;
+ if(['n','md','un','fm'].includes(k))tlGen(it);render();if(['md'].includes(k))renderProps();};
+$('#rp').addEventListener('input',vqHandler);
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-vq-act]');if(!b)return;const it=items.find(i=>i.id===sel&&VQT.includes(i.type));if(!it)return;rec();tlGen(it);render();});
+
+(function(){const P=document.querySelector('.catp[data-c="vk"]');if(!P)return;P.addEventListener('click',e=>{const h=e.target.closest('.vkh');if(!h)return;const g=P.querySelector('.vkg[data-k="'+h.dataset.k+'"]');if(!g)return;const hide=g.style.display!=='none';g.style.display=hide?'none':'';h.querySelector('.ssar').textContent=hide?'▸':'▾';});})();
 </script></body></html>
