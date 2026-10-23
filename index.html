@@ -144,6 +144,13 @@ body.pv .pgb{display:none}
  .gh button{font-size:14px;padding:8px 12px}
  .trash{font-size:20px;padding:6px}
 }
+
+.ipc{display:none;position:absolute;top:-10px;right:-10px;gap:3px;z-index:9}
+.item.sel .ipc{display:flex}
+.ipc button{font:13px/1 system-ui,sans-serif;padding:3px 6px;border:1px solid var(--acc);background:#fff;color:var(--acc);border-radius:6px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.25);touch-action:none}
+.ipc button.mv{cursor:grab}
+@media print{.ipc{display:none!important}}
+@media (pointer:coarse){.ipc button{font-size:17px;padding:7px 10px}.ipc{top:-14px;right:-14px}}
 </style></head><body>
 <div class="bar no-print">
 <strong>Arbeitsblatt-Generator</strong> <button type="button" class="tg" id="tgL">☰ Elemente</button><button type="button" class="tg" id="tgR">⚙ Eigenschaften</button>
@@ -3230,7 +3237,7 @@ function pysBlock(it){const s=tlS(it),co=+it.co||1,pl=+it.pl||0;let h='';
  h+=tlGrid(co,it.d.map((t,i)=>{
   const work=pl?`<div style="height:${pl*1.5}em;line-height:1.5em">${s?`<span class="sv">${t.sv.l1}<br>${t.sv.l2}</span>`:''}</div>`:'';
   const ant=it.an?`<div style="line-height:1.5em;min-height:3.05em;background:${ln} 0 calc(1.5em - 1.2px)/100% 1.2px no-repeat,${ln} 0 calc(3em - 1.2px)/100% 1.2px no-repeat;margin-top:.3em"><b>Antwort:</b> ${s?`<span class="sv">${t.a}</span>`:''}</div>`:'';
-  return `<div style="display:flex;gap:.4em;align-items:flex-start;break-inside:avoid;margin-bottom:.4em"><b>${nlab(it,i,'n')}</b><div style="flex:1;min-width:0">${t.pic?`<div style="display:flex;gap:.8em;align-items:center"><div style="flex:1;min-width:0">${t.t}</div><div style="flex:none">${pyPic(Object.assign({},t,{pw:co>1?8.8:11.5}))}</div></div>`:t.t}${work}${ant}</div></div>`;}).join(''));
+  return `<div style="display:flex;gap:.4em;align-items:flex-start;break-inside:avoid;margin-bottom:.4em"><b>${nlab(it,i,'n')}</b><div style="flex:1;min-width:0">${t.pic?`<div style="display:flex;gap:.8em;align-items:center"><div style="flex:1;min-width:0">${t.t}</div><div class="ipic" data-ip="${ipk(i,t.t)}" style="flex:none;position:relative">${pyPic(Object.assign({},t,{pw:co>1?8.8:11.5}))}</div></div>`:t.t}${work}${ant}</div></div>`;}).join(''));
  return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
 function renderPl(){const g=$('#g-pl'),it=items.find(i=>i.id===sel&&PYT.includes(i.type));if(!g)return;
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern auf dem Blatt markieren.</div>';return;}
@@ -4398,9 +4405,9 @@ const K4SK={qu:'qu',wu:'wu'};
 const k4PicHtml=(it,t,i)=>{const m=K4MAP.find(x=>x[0].test(t));const mode=it.ill||'none';if(!m||mode==='none')return '';const parts=[];
  if((mode==='bild'||mode==='beide')&&PIC[m[1]])parts.push(piSvg(PIC[m[1]](),mode==='beide'?96:112));
  if((mode==='skizze'||mode==='beide')){const s=m[2]&&PSK[m[2]];if(s)parts.push(piSvg(s(),mode==='beide'?96:112));else if(mode==='skizze'&&PIC[m[1]])parts.push(piSvg(PIC[m[1]](),112));}
- return parts.length?`<div style="display:flex;gap:.4em;flex:none;align-items:center">${parts.join('')}</div>`:'';};
+ return parts.length?`<div class="ipic" data-ip="${ipk(i,t)}" style="display:flex;gap:.4em;flex:none;align-items:center;position:relative">${parts.join('')}</div>`:'';};
 const prPicHtml=(it,t,i)=>{const md=it.pimg||'none';if(md==='none')return '';const q=t.q||'';let id=null;for(const [re,k] of PRMAP)if(re.test(q)){id=k;break;}
- if(md==='pct'||!id||!PIC[id])return piSvg(piPct(i),84);return piSvg(PIC[id](),100);};
+ const h=(md==='pct'||!id||!PIC[id])?piSvg(piPct(i),84):piSvg(PIC[id](),100);return `<span class="ipic" data-ip="${ipk(i,q)}" style="position:relative;display:inline-block;flex:none">${h}</span>`;};
 const PRMAP=[[/[Ee]inkauf/,'einkauf'],[/Gehalt/,'gehalt'],[/Miete/,'miete'],[/Grippe/,'klasse'],[/Theater/,'theater'],[/Tunnel/,'tunnel'],[/Fahrrad/,'fahrrad'],[/Müsli/,'muesli'],[/Brille/,'brille'],[/Skateboard/,'skateboard'],[/Test/,'test'],[/Bus/,'bus'],[/Eier/,'eier'],[/Sand/,'lkw'],[/Computerspiel/,'spiel'],[/Einwohner|Stadt/,'stadt'],[/Verein|Training/,'verein'],[/Laufschuhe|Schuhe/,'schuh']];
 
 /* ===== Körper 4. Klasse ===== */
@@ -6824,4 +6831,37 @@ try{const wA=k=>()=>`<g transform="translate(10 0) scale(.4)">${ART[k].s()}</g>`
 try{const ks=Object.keys(P).map(k=>'al_'+k);DKCAT['Alltag & Sachaufgaben']=ks.join(' ');DKCATS['Alltag & Sachaufgaben']=new Set(ks);if(typeof dkPalette==='function')dkPalette();}catch(e){}
 })();
 
+
+/* ===== Automatische Bilder in Sachaufgaben: einzeln verschieben oder löschen ===== */
+(function(){
+ const hs=t=>{let h=0;for(const c of String(t))h=(h*31+c.charCodeAt(0))|0;return (h>>>0).toString(36);};
+ window.ipk=(i,t)=>i+'_'+hs(String(t||'').replace(/<[^>]*>/g,''));
+ const sig=it=>(it.pimg||'')+'|'+(it.ill||'');
+ function apply(){
+  items.forEach(it=>{
+   const el=sheet.querySelector('[data-id="'+it.id+'"]');if(!el)return;
+   const ps=el.querySelectorAll('.ipic');if(!ps.length)return;
+   if(it._ps!==undefined&&it._ps!==sig(it)){delete it.ipd;}
+   it._ps=sig(it);
+   const D=it.ipd||{};
+   ps.forEach(p=>{
+    const k=p.dataset.ip,v=D[k];
+    if(v==='x'){p.style.display='none';return;}
+    if(v){p.style.transform='translate('+v[0]+'px,'+v[1]+'px)';p.style.zIndex=3;}
+    const c=document.createElement('span');c.className='ipc no-print';
+    c.innerHTML='<button type="button" class="mv" title="Ziehen: Bild verschieben (nur dieses Bild)">✥</button><button type="button" title="Dieses Bild löschen">🗑</button>';
+    p.appendChild(c);
+    const [mv,del]=c.querySelectorAll('button');
+    del.onpointerdown=e=>e.stopPropagation();
+    del.onclick=e=>{e.stopPropagation();rec();it.ipd=Object.assign({},it.ipd||{});it.ipd[k]='x';render();sync();};
+    mv.onpointerdown=e=>{e.stopPropagation();e.preventDefault();try{mv.setPointerCapture(e.pointerId);}catch(x){}
+     const sx=e.clientX,sy=e.clientY,o=(it.ipd&&Array.isArray(it.ipd[k]))?it.ipd[k]:[0,0];let first=true,cur=o;
+     mv.onpointermove=m=>{if(first){rec();first=false;}cur=[Math.round(o[0]+m.clientX-sx),Math.round(o[1]+m.clientY-sy)];p.style.transform='translate('+cur[0]+'px,'+cur[1]+'px)';p.style.zIndex=3;};
+     mv.onpointerup=()=>{mv.onpointermove=null;mv.onpointerup=null;if(!first){it.ipd=Object.assign({},it.ipd||{});it.ipd[k]=cur;sync();}};};
+   });
+  });
+ }
+ const _r=render;render=function(){const r=_r.apply(this,arguments);apply();return r;};
+ apply();
+})();
 </script></body></html>
