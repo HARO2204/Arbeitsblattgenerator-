@@ -114,9 +114,39 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 body.pv .pgb{display:none}
 @media screen{#sheet[data-sol]{display:none!important}}@media print{#sheet[data-sol]{break-before:page;page-break-before:always}}
 @media print{.pgb{display:none!important}#sheet{height:calc(var(--np,1)*1122px)!important}}
-.pp{display:inline-block;width:.34em;height:.78em;border-left:.085em solid currentColor;border-right:.085em solid currentColor;box-sizing:border-box;vertical-align:-.06em;margin:0 .06em;font-style:normal}</style></head><body>
+.pp{display:inline-block;width:.34em;height:.78em;border-left:.085em solid currentColor;border-right:.085em solid currentColor;box-sizing:border-box;vertical-align:-.06em;margin:0 .06em;font-style:normal}
+/* ===== iPad / Touch ===== */
+.tg{display:none}
+.item.sel,#sheet .h,#sheet .gh button,.pqm{touch-action:none}
+#sheet .h,#sheet .gh,#sheet .pxb,.rot,.rzh{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+@media (max-width:1250px){
+ .tg{display:inline-block}
+ .wrap{position:relative}
+ #left{position:absolute;left:0;top:0;bottom:0;z-index:40;box-shadow:3px 0 14px rgba(0,0,0,.25);transition:transform .2s}
+ body:not(.lo) #left{transform:translateX(-106%);visibility:hidden}
+ #rp{position:absolute;right:0;top:0;bottom:0;z-index:40;box-shadow:-3px 0 14px rgba(0,0,0,.25);transition:transform .2s}
+ body.rpc #rp{transform:translateX(106%)}
+ main{padding:10px 8px}
+ body.rpv main{padding-right:286px}
+ .bar{gap:6px 10px;padding:6px 10px}
+}
+@media (pointer:coarse){
+ .bar button,.bar select{min-height:38px}
+ .bar input[type=checkbox],#rp input[type=checkbox]{width:20px;height:20px}
+ .bar input,.bar select,#rp input,#rp select,#left input{font-size:16px}
+ #rp button,#rp select{min-height:38px}
+ #left .cat{padding:12px 10px}
+ .pal{padding:8px}
+ .pxb{left:-42px;gap:6px}
+ .pxb button{font-size:17px;padding:7px 10px}
+ .rzh{width:28px;height:28px;right:-16px;bottom:-16px;border-radius:7px}
+ .rot{width:36px;height:36px;font-size:20px;line-height:32px;margin-left:-18px;top:-44px}
+ .gh button{font-size:14px;padding:8px 12px}
+ .trash{font-size:20px;padding:6px}
+}
+</style></head><body>
 <div class="bar no-print">
-<strong>Arbeitsblatt-Generator</strong>
+<strong>Arbeitsblatt-Generator</strong> <button type="button" class="tg" id="tgL">☰ Elemente</button><button type="button" class="tg" id="tgR">⚙ Eigenschaften</button>
 <label><input type="checkbox" id="hn"> Name</label><select id="hnp" title="Name links oder rechts oben"><option value="l">links</option><option value="r">rechts</option></select><label><input type="checkbox" id="hdt"> Datum</label><label><input type="checkbox" id="hpg"> Seite</label><label><input type="checkbox" id="hu"> Unterschrift</label>
 <label><input type="checkbox" id="rahm"> Rahmen</label><label title="Wenn du eine Aufgabe aus der linken Spalte aufs Blatt ziehst, entsteht sie automatisch mit Nummer und Angabe (sobald das Blatt schon nummerierte Aufgaben enthält)"><input type="checkbox" id="autot" checked> Aufgabe automatisch nummerieren</label><label title="Art des Rahmens">Rahmenart <select id="rst"><option value="l">Linie</option><option value="b">Herbstblätter</option><option value="f">Blumen</option><option value="s">Schneeflocken</option><option value="h">Halloween</option><option value="e">Eistüten</option><option value="p">Bunte Punkte</option></select></label><label title="Farbe des Rahmens"><input type="color" id="rahmc" value="#000000" style="width:30px;height:24px;padding:0;border:1px solid #bbb;vertical-align:middle"></label><label title="Fußzeile auf jeder Seite: links | Mitte | Schuljahr">Fußzeile <select id="ft"><option value="0">keine</option><option value="1">Standard AHS | MS1 | Schuljahr</option><option value="2">Standard | MS1 | Schuljahr</option><option value="3">M1 | MS1 | Schuljahr</option><option value="4">frei wählbar …</option></select></label><button id="hfb" title="Kopfzeile und Fußzeile frei gestalten">✏️ Kopf-/Fußzeile</button><label title="Das Blatt wächst automatisch, wenn mehr Platz gebraucht wird. Hier kann eine Mindestzahl an Seiten festgelegt werden.">Seiten ab <select id="npg"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
 <label><input type="checkbox" id="solpdf" checked> Lösungsblatt im PDF</label><button id="symb" type="button" title="Mathematische Symbole und griechische Buchstaben einfügen">Σ Symbole</button>
@@ -6611,5 +6641,29 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-lb-act]');
  mdGen=function(it){const r=_md.apply(this,arguments);nmFix(it);return r;};
  prMk1=function(){const e=_pr.apply(this,arguments);fix(e);return e;};
  v4Gen=function(){const a=_v4.apply(this,arguments);a.forEach(fix);return a;};
+})();
+
+/* ===== iPad / Touch: Leisten ein-/ausblenden, Langdruck = Kontextmenü, Doppeltippen ===== */
+(function(){
+ const B=document.body,L=document.getElementById('left'),R=document.getElementById('rp'),mq=matchMedia('(max-width:1250px)');
+ const upd=()=>{B.classList.toggle('rpv',mq.matches&&!!R&&R.style.display!=='none'&&!B.classList.contains('rpc'));};
+ document.getElementById('tgL').onclick=()=>{B.classList.toggle('lo');};
+ document.getElementById('tgR').onclick=()=>{B.classList.toggle('rpc');upd();};
+ if(R)new MutationObserver(upd).observe(R,{attributes:true,attributeFilter:['style']});
+ mq.addEventListener?mq.addEventListener('change',()=>{B.classList.remove('lo');upd();}):0;
+ L.addEventListener('click',e=>{if(mq.matches&&e.target.closest('.pal'))B.classList.remove('lo');});
+ document.querySelector('main').addEventListener('pointerdown',()=>{if(mq.matches)B.classList.remove('lo');},true);
+ upd();
+ /* Langes Drücken (Finger/Stift) öffnet das Kontextmenü */
+ const sh=document.getElementById('sheet');let t=null,sx=0,sy=0;
+ const cl=()=>{clearTimeout(t);t=null;};
+ sh.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'||e.target.closest('.h,.gh,.rot,.rzh,.pxb,.trash'))return;cl();sx=e.clientX;sy=e.clientY;const tg=e.target;
+  t=setTimeout(()=>{t=null;tg.dispatchEvent(new MouseEvent('contextmenu',{bubbles:true,cancelable:true,clientX:sx,clientY:sy}));},650);});
+ sh.addEventListener('pointermove',e=>{if(t&&Math.hypot(e.clientX-sx,e.clientY-sy)>8)cl();});
+ ['pointerup','pointercancel'].forEach(n=>sh.addEventListener(n,cl));
+ /* Doppeltippen auf Drehen-/Größen-Griff = Doppelklick */
+ let lt=0,le=null;
+ document.addEventListener('pointerup',e=>{if(e.pointerType==='mouse')return;const h=e.target.closest&&e.target.closest('.rot,.rzh');if(!h){le=null;return;}
+  const n=Date.now();if(le===h&&n-lt<400){le=null;h.dispatchEvent(new MouseEvent('dblclick',{bubbles:true,cancelable:true}));}else{le=h;lt=n;}},true);
 })();
 </script></body></html>
