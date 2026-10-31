@@ -7499,6 +7499,86 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  route();addEventListener('hashchange',route);
 })();
 
+/* ===== Beamer-Modus: Blatt Aufgabe für Aufgabe, Lösung auf Klick ===== */
+(function(){
+ const SKIP=['frm','skq'];
+ const wait=ms=>new Promise(r=>setTimeout(r,ms));
+ function bands(){
+  const els=[...sheet.querySelectorAll('.item')].map(e=>({e,it:items.find(i=>String(i.id)===e.dataset.id)})).filter(x=>x.it&&!SKIP.includes(x.it.type));
+  els.forEach(x=>{x.t=x.e.offsetTop;x.b=x.e.offsetTop+x.e.offsetHeight;});
+  els.sort((a,b)=>a.t-b.t);
+  const H=PH*Math.max(1,PGN);
+  const nums=els.filter(x=>x.it.type==='num');
+  if(nums.length){
+   const st=nums.map((n,k)=>k===0?0:Math.max(0,n.t-10));
+   return st.map((t,k)=>{const end=k+1<st.length?st[k+1]:H;const inn=els.filter(x=>x.t>=t&&x.t<end);const bt=inn.length?Math.max(...inn.map(x=>x.b)):end;return{t,b:Math.min(end,Math.max(t+60,bt+12))};});}
+  const cl=[];
+  els.forEach(x=>{const c=cl[cl.length-1];if(c&&x.t<c.b-3){c.b=Math.max(c.b,x.b);c.m.push(x);}else cl.push({t:x.t,b:x.b,m:[x]});});
+  const out=[];
+  for(let i=0;i<cl.length;i++){const c=cl[i];const onlyHead=c.m.every(x=>x.it.type==='text'&&(x.it.head||x.it.hd));
+   if(onlyHead&&cl[i+1]){cl[i+1].t=Math.min(cl[i+1].t,c.t);cl[i+1].m=c.m.concat(cl[i+1].m);continue;}out.push(c);}
+
+  return out.map(c=>({t:Math.max(0,c.t-12),b:Math.min(H,c.b+12)}));}
+ async function mkFrame(host,solution,H){
+  const fr=document.createElement('iframe');fr.setAttribute('aria-hidden','true');
+  fr.style.cssText='position:absolute;left:0;top:0;width:794px;height:'+H+'px;border:0;transform-origin:0 0;background:#fff;pointer-events:none;visibility:hidden';
+  host.appendChild(fr);
+  const d=fr.contentDocument;d.open();
+  d.write('<!doctype html><html lang="de"><head><meta charset="utf-8">'+[...document.querySelectorAll('style,link[rel=stylesheet]')].map(e=>e.outerHTML).join('')+'</head><body class="pv" style="margin:0;background:#fff;height:auto"></body></html>');d.close();
+  const c=sheet.cloneNode(true);c.style.boxShadow='none';c.style.margin='0';c.classList.remove('sel');d.body.appendChild(c);
+  return fr;}
+ async function open(){
+  if(!items.length){toast('Das Blatt ist leer.');return;}
+  const solBefore=SOL,prev=sel,mk=$('#solmark');
+  let B,H=PH*Math.max(1,PGN),hs=false;
+  const o=document.createElement('div');o.id='bmv';o.style.cssText='position:fixed;inset:0;z-index:10001;background:#14181f;display:flex;flex-direction:column;font:16px system-ui,sans-serif;color:#fff';
+  o.innerHTML='<div id="bm-st" style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:10px;position:relative"><div id="bm-w" style="position:relative;overflow:hidden;background:#fff;border-radius:6px;box-shadow:0 6px 40px rgba(0,0,0,.5)"></div><div id="bm-ld" style="position:absolute;color:#fff;font-size:20px">Blatt wird vorbereitet …</div></div>'
+  +'<div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px;background:#0c0f14"><button id="bm-p" class="bmb">◀ Zurück</button><span id="bm-i" style="min-width:120px;text-align:center;font-weight:700"></span><button id="bm-n" class="bmb">Weiter ▶</button><span style="width:14px"></span><button id="bm-s" class="bmb">👁 Lösung zeigen</button><button id="bm-a" class="bmb">📄 Ganzes Blatt</button><button id="bm-f" class="bmb">⛶ Vollbild</button><button id="bm-x" class="bmb">✕ Schließen</button></div>'
+  +'<style>#bmv .bmb{font:inherit;font-size:16px;padding:10px 16px;border-radius:8px;border:1px solid #3a4558;background:#1d2430;color:#fff;cursor:pointer}#bmv .bmb:hover{background:#2a3446}#bmv .bmb.on{background:#2f6fed;border-color:#2f6fed}#bmv .bmb:disabled{opacity:.4;cursor:default}</style>';
+  document.body.appendChild(o);const q=s=>o.querySelector(s);
+  let A,S,i=0,all=false;
+  try{
+   sel=null;SOL=false;if(mk)mk.style.display='none';render();await wait(40);
+   B=bands();
+   const host=q('#bm-w');
+   A=await mkFrame(host,false,H);
+   const has=(()=>{try{return hasSol();}catch(e){return false;}})();
+   if(has){SOL=true;if(mk)mk.style.display='block';render();await wait(60);S=await mkFrame(host,true,H);}
+  }catch(e){toast('Beamer-Modus konnte nicht gestartet werden.');}
+  finally{SOL=solBefore;if(mk)mk.style.display=SOL?'block':'none';sel=prev;try{render();}catch(e){}}
+  await wait(250);try{await Promise.race([A.contentDocument.fonts.ready,wait(2500)]);}catch(e){}
+  q('#bm-ld').remove();
+  if(!B.length)B=[{t:0,b:H}];
+  q('#bm-s').style.display=S?'':'none';
+  function show(){
+   const st=q('#bm-st'),w=q('#bm-w'),W=st.clientWidth-20,Hh=st.clientHeight-20;
+   const t=all?0:B[i].t,b=all?H:B[i].b,h=b-t;
+   const s=Math.min(W/794,Hh/h,all?9:2.6);
+   w.style.width=794*s+'px';w.style.height=h*s+'px';
+   [A,S].forEach(f=>{if(f)f.style.transform='translate(0,'+(-t*s)+'px) scale('+s+')';});
+   A.style.visibility=hs&&S?'hidden':'visible';if(S)S.style.visibility=hs?'visible':'hidden';
+   q('#bm-i').textContent=all?'Ganzes Blatt':'Aufgabe '+(i+1)+' von '+B.length;
+   q('#bm-p').disabled=all||i===0;q('#bm-n').disabled=all||i===B.length-1;
+   q('#bm-s').textContent=hs?'🙈 Lösung verbergen':'👁 Lösung zeigen';q('#bm-s').classList.toggle('on',hs);q('#bm-a').classList.toggle('on',all);}
+  const go=d=>{if(all)return;const n=i+d;if(n<0||n>=B.length)return;i=n;hs=false;show();};
+  const tog=()=>{if(!S)return;hs=!hs;show();};
+  const close=()=>{removeEventListener('keydown',key,true);removeEventListener('resize',show);o.remove();if(document.fullscreenElement)try{document.exitFullscreen();}catch(e){}};
+  function key(e){if(!document.getElementById('bmv'))return;const k=e.key;
+   if(k==='ArrowRight'||k==='PageDown'||k===' '||k==='Enter'){e.preventDefault();e.stopPropagation();go(1);}
+   else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){e.preventDefault();e.stopPropagation();go(-1);}
+   else if(k==='s'||k==='S'||k==='l'||k==='L'||k==='ArrowDown'||k==='ArrowUp'){e.preventDefault();e.stopPropagation();tog();}
+   else if(k==='Escape'){e.preventDefault();e.stopPropagation();close();}
+   else if(k==='a'||k==='A'){all=!all;show();}
+   else if(k==='f'||k==='F'){fs();}}
+  const fs=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else o.requestFullscreen();}catch(e){}};
+  q('#bm-p').onclick=()=>go(-1);q('#bm-n').onclick=()=>go(1);q('#bm-s').onclick=tog;q('#bm-a').onclick=()=>{all=!all;show();};q('#bm-f').onclick=fs;q('#bm-x').onclick=close;
+  q('#bm-st').onclick=e=>{if(e.target.closest('button'))return;const r=q('#bm-w').getBoundingClientRect();if(e.clientX<r.left+r.width*0.3)go(-1);else go(1);};
+  addEventListener('keydown',key,true);addEventListener('resize',show);
+  show();}
+ window.__beamer=open;
+ const b=document.createElement('button');b.id='bmb';b.textContent='📽 Beamer';b.title='Das Blatt Aufgabe für Aufgabe groß zeigen, Lösung auf Klick';b.onclick=open;
+ const svb=document.getElementById('svb');if(svb)svb.parentNode.insertBefore(b,svb.nextSibling);
+})();
 /* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
 (function(){
  const real=window.html2canvas;if(typeof real!=='function')return;
