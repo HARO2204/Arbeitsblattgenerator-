@@ -7804,10 +7804,90 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   }catch(err){if(!(err&&err.code==='declined'))toast('Der Word-Export hat nicht geklappt. Bitte „PDF speichern“ verwenden.');}
   finally{b.disabled=false;b.textContent=old;SOL=solBefore;if(mk)mk.style.display=SOL?'block':'none';sel=prev;render();try{sync();}catch(e){}}}
  window.__makeDocx=makeDocx;
+ /* ---- Variante 2: Text bearbeitbar (Überschrift, Nummern, Angaben als Word-Text, Aufgabenteil als Bild) ---- */
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ const hex=c=>/^#[0-9a-f]{6}$/i.test(c||'')?c.slice(1):'000000';
+ const FF={arial:'Arial',verdana:'Verdana',times:'Times New Roman',georgia:'Georgia',comic:'Comic Sans MS',courier:'Courier New',tahoma:'Tahoma',trebuchet:'Trebuchet MS'};
+ const run=(t,o)=>'<w:r><w:rPr><w:rFonts w:ascii="'+(FF[String(o.ff||'arial').toLowerCase()]||'Arial')+'" w:hAnsi="'+(FF[String(o.ff||'arial').toLowerCase()]||'Arial')+'" w:cs="Arial"/>'+(o.fb?'<w:b/>':'')+(o.fi?'<w:i/>':'')+(o.fu?'<w:u w:val="single"/>':'')+'<w:color w:val="'+hex(o.col)+'"/><w:sz w:val="'+Math.max(16,Math.round((o.fs||16)*1.5))+'"/></w:rPr><w:t xml:space="preserve">'+esc(t)+'</w:t></w:r>';
+ const txtOf=it=>{if(it.html!=null){const d=document.createElement('div');d.innerHTML=String(it.html).replace(/<br\s*\/?>|<\/div>|<\/p>/gi,'\n');return d.textContent.replace(/\n+$/,'');}return String(it.text||'');};
+ const paraT=(lines,o,pp)=>'<w:p><w:pPr>'+(pp||'')+'</w:pPr>'+lines.map((ln,i)=>(i?'<w:r><w:br/></w:r>':'')+run(ln,o)).join('')+'</w:p>';
+ function docx2(blocks,title){
+  const files=[],rels=[];let n=0,body='';
+  blocks.forEach(b=>{
+   if(b.xml){body+=b.xml;return;}
+   if(b.img){n++;const id=n;files.push({name:'word/media/b'+id+'.png',data:b.img});rels.push('<Relationship Id="rId'+(id+10)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/b'+id+'.png"/>');
+    body+='<w:p><w:pPr>'+(b.keep?'<w:keepNext/>':'')+'<w:spacing w:before="0" w:after="'+(b.after==null?120:b.after)+'" w:line="240" w:lineRule="auto"/><w:ind w:left="'+(b.ind||0)+'"/></w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+b.cx+'" cy="'+b.cy+'"/><wp:docPr id="'+id+'" name="Bild '+id+'" descr="Aufgabenteil"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="'+id+'" name="b'+id+'.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId'+(id+10)+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+b.cx+'" cy="'+b.cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>';}});
+  const doc=X+'<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>'+body+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="851" w:right="680" w:bottom="851" w:left="680" w:header="400" w:footer="400" w:gutter="0"/></w:sectPr></w:body></w:document>';
+  const all=[
+   {name:'[Content_Types].xml',data:enc.encode(X+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>')},
+   {name:'_rels/.rels',data:enc.encode(X+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>')},
+   {name:'docProps/core.xml',data:enc.encode(X+'<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>'+esc(title||'Arbeitsblatt')+'</dc:title><dc:creator>Arbeitsblattgenerator</dc:creator></cp:coreProperties>')},
+   {name:'word/document.xml',data:enc.encode(doc)},
+   {name:'word/_rels/document.xml.rels',data:enc.encode(X+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rels.join('')+'</Relationships>')}].concat(files);
+  return zip(all);}
+ window.__docx2=docx2;
+ const MAXW=6696000,PX=9525;
+ const lbl=e=>{const w=document.createTreeWalker(e,NodeFilter.SHOW_TEXT);let n,t='';while(n=w.nextNode()){if(n.parentElement&&n.parentElement.closest('.trash,.rot,.gh,.rzh,.no-print,.h'))continue;t+=n.nodeValue;}return t.replace(/\s+/g,' ').trim();};
+ const SKIPF=['frm','skq'];
+ async function crop(comp,S,l,t,r,b){l=Math.max(0,Math.floor(l));t=Math.max(0,Math.floor(t));r=Math.min(794,Math.ceil(r));b=Math.ceil(b);if(r-l<4||b-t<4)return null;
+  const c=document.createElement('canvas');c.width=Math.round((r-l)*S);c.height=Math.round((b-t)*S);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(comp,l*S,t*S,(r-l)*S,(b-t)*S,0,0,c.width,c.height);
+  const bl=await new Promise(rs=>c.toBlob(rs,'image/png'));let cx=(r-l)*PX,cy=(b-t)*PX;if(cx>MAXW){cy=Math.round(cy*MAXW/cx);cx=MAXW;}if(cy>9000000){cx=Math.round(cx*9000000/cy);cy=9000000;}
+  return{img:new Uint8Array(await bl.arrayBuffer()),cx:Math.round(cx),cy:Math.round(cy)};}
+ function structure(){ // Blöcke nach Position sortiert
+  const els=[...sheet.querySelectorAll('.item')].map(e=>({e,it:items.find(i=>String(i.id)===e.dataset.id)})).filter(x=>x.it&&!SKIPF.includes(x.it.type));
+  els.forEach(x=>{x.t=x.e.offsetTop;x.b=x.e.offsetTop+Math.max(x.e.offsetHeight,x.e.scrollHeight);x.l=x.e.offsetLeft;x.r=x.e.offsetLeft+Math.max(x.e.offsetWidth,x.e.scrollWidth);});
+  const groups=new Map(),blocks=[];
+  els.forEach(x=>{if(x.it.gid!=null){if(!groups.has(x.it.gid))groups.set(x.it.gid,[]);groups.get(x.it.gid).push(x);}});
+  els.forEach(x=>{if(x.it.gid==null){
+   if(x.it.type==='text')blocks.push({k:x.it.head||x.it.hd?'head':'text',t:x.t,x});
+   else if(x.it.type!=='num')blocks.push({k:'free',t:x.t,x});}});
+  groups.forEach((g,id)=>{const ang=g.filter(x=>x.it.type==='text'&&!x.it.head&&!x.it.hd).sort((a,b)=>a.t-b.t),num=g.find(x=>x.it.type==='num'),rest=g.filter(x=>x.it.type!=='text'&&x.it.type!=='num'),
+    top=Math.min(...g.map(x=>x.t));blocks.push({k:'task',t:top,ang,num,rest});});
+  blocks.sort((a,b)=>a.t-b.t);return blocks;}
+ async function makeDocxEdit(){
+  const b=document.getElementById('dxe');
+  if(typeof html2canvas==='undefined'){toast('Der Word-Export ist hier nicht möglich (ein Baustein konnte nicht geladen werden).');return;}
+  if(!items.length){toast('Das Blatt ist leer.');return;}
+  const old=b.textContent;b.disabled=true;b.textContent='Word wird erstellt …';
+  const solBefore=SOL,prev=sel,mk=$('#solmark');SOL=false;if(mk)mk.style.display='none';sel=null;render();showG([]);
+  const shot=async k=>{try{await document.fonts.ready}catch(_){}
+   return html2canvas(sheet,{scale:2,backgroundColor:'#ffffff',useCORS:true,windowWidth:1100,x:0,y:k*PH,width:794,height:PH,scrollX:0,scrollY:0,onclone:d=>{d.body.classList.add('pv');d.documentElement.style.height='auto';d.body.style.height='auto';d.querySelector('.bar').style.display='none';d.querySelector('aside').style.display='none';d.querySelector('.wrap').style.cssText='display:block;overflow:visible;flex:none';d.querySelector('main').style.cssText='display:block;overflow:visible;padding:0;flex:none';const s=d.querySelector('#sheet');s.style.boxShadow='none';s.style.margin='0';}});};
+  const composite=async np=>{const cs=[];for(let k=0;k<np;k++)cs.push(await shot(k));const S=cs[0].width/794,c=document.createElement('canvas');c.width=cs[0].width;c.height=cs[0].height*np;const x=c.getContext('2d');cs.forEach((p,k)=>x.drawImage(p,0,k*p.height));return{c,S};};
+  try{
+   const np=PGN,B=structure(),A=await composite(np),out=[];
+   const lineP=(lines,o,pp)=>({xml:paraT(lines,o,pp)});
+   let first=true;
+   for(const bl of B){
+    if(bl.k==='head'){const it=bl.x.it;if(first&&bl.t>22){const im=await crop(A.c,A.S,0,0,794,bl.t-4);if(im)out.push(Object.assign(im,{after:60}));}
+     out.push(lineP(txtOf(it).split('\n'),it,'<w:jc w:val="center"/><w:spacing w:before="120" w:after="200"/>'));}
+    else if(bl.k==='text'){const it=bl.x.it;out.push(lineP(txtOf(it).split('\n'),it,'<w:spacing w:before="60" w:after="60"/>'));}
+    else if(bl.k==='free'){const x=bl.x,im=await crop(A.c,A.S,x.l,x.t,x.r,x.b);if(im)out.push(Object.assign(im,{after:120}));}
+    else if(bl.k==='task'){
+     const a0=bl.ang[0],o=Object.assign({},a0?a0.it:{fs:18,fb:true});if(!a0)o.fs=18;
+     const label=bl.num?lbl(bl.num.e):'';
+     const lines=a0?bl.ang.map(x=>txtOf(x.it)).join('\n').split('\n'):[''];
+     out.push({xml:'<w:p><w:pPr><w:keepNext/><w:tabs><w:tab w:val="left" w:pos="567"/></w:tabs><w:spacing w:before="200" w:after="80"/><w:ind w:left="567" w:hanging="567"/></w:pPr>'+run(label,Object.assign({},o,{fb:true}))+'<w:r><w:tab/></w:r>'+lines.map((ln,i)=>(i?'<w:r><w:br/></w:r>':'')+run(ln,o)).join('')+'</w:p>'});
+     const used=bl.ang.concat(bl.num?[bl.num]:[]),bodyTop=Math.max(...used.map(x=>x.b),0),body=bl.rest;
+     if(body.length){const t=Math.min(...body.map(x=>x.t)),l=Math.min(...body.map(x=>x.l)),r=Math.max(...body.map(x=>x.r)),bb=Math.max(...body.map(x=>x.b));
+      const im=await crop(A.c,A.S,l-6,Math.min(t,Math.max(bodyTop,t))-4,r+6,bb+6);if(im)out.push(Object.assign(im,{ind:567,after:160}));}}
+    first=false;}
+   if($('#solpdf').checked&&hasSol()){
+    SOL=true;if(mk)mk.style.display='block';render();await new Promise(r=>setTimeout(r,60));
+    const Sx=await composite(PGN),B2=structure().filter(x=>x.k==='task');
+    out.push({xml:'<w:p><w:pPr><w:pageBreakBefore/><w:jc w:val="center"/><w:spacing w:before="0" w:after="200"/></w:pPr>'+run('Lösungen',{fb:true,fs:26})+'</w:p>'});
+    for(const bl of B2){const a0=bl.ang[0],o=Object.assign({},a0?a0.it:{fs:18,fb:true}),label=bl.num?lbl(bl.num.e):'';
+     out.push({xml:'<w:p><w:pPr><w:keepNext/><w:tabs><w:tab w:val="left" w:pos="567"/></w:tabs><w:spacing w:before="160" w:after="60"/><w:ind w:left="567" w:hanging="567"/></w:pPr>'+run(label,Object.assign({},o,{fb:true,fs:16}))+'<w:r><w:tab/></w:r>'+run(a0?txtOf(a0.it).split('\n')[0]:'',Object.assign({},o,{fs:14,fb:false}))+'</w:p>'});
+     if(bl.rest.length){const t=Math.min(...bl.rest.map(x=>x.t)),l=Math.min(...bl.rest.map(x=>x.l)),r=Math.max(...bl.rest.map(x=>x.r)),bb=Math.max(...bl.rest.map(x=>x.b));const im=await crop(Sx.c,Sx.S,l-6,t-4,r+6,bb+6);if(im)out.push(Object.assign(im,{ind:567,after:120}));}}}
+   const name=pdfName().replace(/\.pdf$/i,''),blob=docx2(out,name);
+   const dl=(window.claude&&claude.use)?await claude.use('downloads'):null;
+   if(dl)await dl.save({filename:name+' (bearbeitbar).docx',data:blob});
+   else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+' (bearbeitbar).docx';document.body.appendChild(a);a.click();a.remove();}
+  }catch(err){if(!(err&&err.code==='declined')){toast('Der Word-Export hat nicht geklappt. Bitte „PDF speichern“ verwenden.');try{console.error(err);}catch(e){}}}
+  finally{b.disabled=false;b.textContent=old;SOL=solBefore;if(mk)mk.style.display=SOL?'block':'none';sel=prev;render();try{sync();}catch(e){}}}
+ window.__makeDocxEdit=makeDocxEdit;
  const pb=document.getElementById('pdfb');
- if(pb){const b=document.createElement('button');b.id='dxb';b.textContent='Word speichern';b.title='Arbeitsblatt als Word-Datei (.docx) speichern. Die Seiten sind Bilder, nicht bearbeitbar. Lösungsblatt wie beim PDF.';b.onclick=makeDocx;pb.parentNode.insertBefore(b,pb.nextSibling);}
+ if(pb){const b=document.createElement('button');b.id='dxb';b.textContent='Word speichern';b.title='Arbeitsblatt als Word-Datei (.docx) speichern. Die Seiten sind Bilder, nicht bearbeitbar. Lösungsblatt wie beim PDF.';b.onclick=makeDocx;pb.parentNode.insertBefore(b,pb.nextSibling);const e=document.createElement('button');e.id='dxe';e.textContent='Word (Text bearbeitbar)';e.title='Word-Datei, in der Überschrift, Nummern und Angaben als Text bearbeitbar sind. Der Aufgabenteil darunter ist ein Bild.';e.onclick=makeDocxEdit;b.parentNode.insertBefore(e,b.nextSibling);}
 })();
-
 /* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
 (function(){
  const real=window.html2canvas;if(typeof real!=='function')return;
