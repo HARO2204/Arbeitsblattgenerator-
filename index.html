@@ -7427,6 +7427,30 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
 
 
 
+/* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
+(function(){
+ const real=window.html2canvas;if(typeof real!=='function')return;
+ async function build(el){
+  const fr=document.createElement('iframe');fr.setAttribute('aria-hidden','true');
+  fr.style.cssText='position:fixed;left:-12000px;top:0;width:900px;height:'+(PH*Math.max(1,PGN)+60)+'px;border:0;visibility:hidden';
+  document.body.appendChild(fr);
+  const d=fr.contentDocument;d.open();
+  d.write('<!doctype html><html lang="de"><head><meta charset="utf-8">'+[...document.querySelectorAll('style,link[rel=stylesheet]')].map(e=>e.outerHTML).join('')+'</head><body class="pv" style="margin:0;background:#fff;height:auto"></body></html>');d.close();
+  const c=el.cloneNode(true);c.style.boxShadow='none';c.style.margin='0';c.classList.remove('sel');d.body.appendChild(c);
+  await new Promise(r=>setTimeout(r,120));
+  try{await Promise.race([d.fonts.ready,new Promise(r=>setTimeout(r,3000))]);}catch(e){}
+  return{fr,c};}
+ window.__pdfBuild=build;
+ window.html2canvas=async function(el,o){
+  const sh=document.getElementById('sheet'),args=arguments,self=this;
+  if(el!==sh||window.__pdfFast===false)return real.apply(self,args);
+  let b=null;
+  try{b=await build(el);const o2=Object.assign({},o||{});delete o2.onclone;o2.windowWidth=900;return await real.call(self,b.c,o2);}
+  catch(e){return real.apply(self,args);}
+  finally{if(b&&b.fr)b.fr.remove();}};
+ Object.keys(real).forEach(k=>{try{window.html2canvas[k]=real[k];}catch(e){}});
+})();
+
 /* ===== Selbstkontrolle: QR-Code mit Lösungen ===== */
 (function(){
  const MIR='https://haro2204.github.io/Arbeitsblattgenerator-/';
