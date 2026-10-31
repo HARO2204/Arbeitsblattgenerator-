@@ -7425,6 +7425,7 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
 
 
 
+
 /* ===== Selbstkontrolle: QR-Code mit Lösungen ===== */
 (function(){
  const MIR='https://haro2204.github.io/Arbeitsblattgenerator-/';
@@ -7453,9 +7454,10 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  const plain=h=>{const d=document.createElement('div');d.innerHTML=String(h||'').replace(/<br\s*\/?>|<\/div>|<\/p>/gi,' ');return d.textContent.replace(/\s+/g,' ').trim();};
  const NOSOL=['text','head','num','img','deko','frm','ckf','skq','kre','lb'];
  function collect(){
-  const solBefore=SOL,prev=sel;sel=null;SOL=true;const mk=$('#solmark');if(mk)mk.style.display='block';render();
+  const solBefore=SOL,prev=sel;const mk=$('#solmark');const out=[];
+  try{sel=null;SOL=true;if(mk)mk.style.display='block';render();
   const els=[...sheet.querySelectorAll('.item')].map(e=>({e,it:items.find(i=>String(i.id)===e.dataset.id)})).filter(x=>x.it).sort((a,b)=>a.it.y-b.it.y||a.it.x-b.it.x);
-  const out=[];let head='';
+  let head='';
   els.forEach(({e,it})=>{
    if(it.type==='text'&&!it.head){const t=plain(it.html!=null?it.html:it.text);if(t)head=t;return;}
    if(NOSOL.includes(it.type))return;
@@ -7469,7 +7471,7 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
       else if(k===lastK&&cur&&/^\d$/.test(t)&&/^\d+$/.test(cur.t)){cur.t+=t;}else{cur={t};fr.push(cur);}lastK=k;}}
     fr=fr.map(x=>x.t);}
    if(fr.length){out.push([head.replace(/^\d+[.)]\s*/,'').slice(0,60),fr]);head='';}});
-  SOL=solBefore;if(mk)mk.style.display=SOL?'block':'none';sel=prev;render();
+  }catch(e){}finally{SOL=solBefore;if(mk)mk.style.display=SOL?'block':'none';sel=prev;try{render();}catch(e){}}
   return out;}
  async function enc(obj){const u8=new TextEncoder().encode(JSON.stringify(obj));let pre='0',b=u8;
   if(window.CompressionStream){try{const cs=new CompressionStream('deflate-raw'),w=cs.writable.getWriter();w.write(u8);w.close();b=new Uint8Array(await new Response(cs.readable).arrayBuffer());pre='1';}catch(e){b=u8;pre='0';}}
@@ -7502,7 +7504,7 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
    const it={id:uid++,type:'skq',x:x!=null&&x>=0?Math.min(x,794-160):794-186,y:y!=null&&y>=0?y:Math.max(40,Math.min(PH-190,bot+10)),w:146,url:r.url,n:r.n,qv:r.qv,len:r.len,vid:''};
    items.push(it);sel=it.id;render();sync();toast('QR-Code mit '+r.n+' Lösungen aufs Blatt gesetzt. Er wird beim Drucken automatisch aktualisiert.');})();return;}
   return _add.apply(this,arguments);};
- const _pa=printAll;printAll=function(){if(!items.some(i=>i.type==='skq'))return _pa.apply(this,arguments);refresh().then(()=>_pa.apply(this,arguments));};
+ const _pa=printAll;printAll=function(){if(!items.some(i=>i.type==='skq'))return _pa.apply(this,arguments);refresh().catch(()=>{}).then(()=>_pa.apply(this,arguments));};
  const _mp=makePdf,L0={};['#pdfb','#pvp'].forEach(q=>{const b=$(q);if(b)L0[q]=b.textContent;});
  const unstick=()=>['#pdfb','#pvp'].forEach(q=>{const b=$(q);if(b&&(b.disabled||/wird erstellt/.test(b.textContent))){b.disabled=false;b.textContent=L0[q]||'PDF speichern';}});
  makePdf=async function(){const a=arguments;let to;
