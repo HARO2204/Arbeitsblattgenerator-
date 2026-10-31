@@ -7421,6 +7421,7 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  window.__hu=m;
 })();
 
+
 /* ===== Selbstkontrolle: QR-Code mit Lösungen ===== */
 (function(){
  const MIR='https://haro2204.github.io/Arbeitsblattgenerator-/';
@@ -7452,7 +7453,8 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   if(pre==='1'){const ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter();w.write(u8);w.close();o=new Uint8Array(await new Response(ds.readable).arrayBuffer());}
   return JSON.parse(new TextDecoder().decode(o));}
  const title=()=>{try{return pdfName().replace(/\.pdf$/,'');}catch(e){return 'Arbeitsblatt';}};
- async function make(video){
+ async function make(video,lnk){
+  if(lnk&&/^https?:\/\//i.test(lnk)){const M=window.__qrMatrix(lnk);if(M)return{url:lnk,n:0,qv:(M.length-17)/4,len:lnk.length,lnk:1};return{err:'Der Link ist zu lang für einen QR-Code.'};}
   const g=collect();if(!g.length)return{err:'Auf diesem Blatt gibt es keine Aufgaben mit Lösung.'};
   const tries=[{t:title(),a:g},{t:title(),a:g.map(x=>['',x[1]])},{t:'',a:g.map(x=>['',x[1]])}];
   for(const o of tries){if(video)o.l=video;const url=base()+'#sk='+await enc(o),M=window.__qrMatrix(url);if(M)return{url,n:g.length,qv:(M.length-17)/4,len:url.length};}
@@ -7467,7 +7469,7 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  /* ---- Hinzufügen / Aktualisieren ---- */
  const msg=t=>{const e=document.getElementById('sk-m');if(e)e.textContent=t||'';};
  async function refresh(){const qs=items.filter(i=>i.type==='skq');if(!qs.length)return;
-  for(const q of qs){const r=await make(q.vid||'');if(r.err){q.url='';q.n=0;msg(r.err);continue;}q.url=r.url;q.n=r.n;q.qv=r.qv;q.len=r.len;}
+  for(const q of qs){const r=await make(q.vid||'',q.lnk||'');if(r.err){q.url='';q.n=0;msg(r.err);continue;}q.url=r.url;q.n=r.n;q.qv=r.qv;q.len=r.len;}
   render();try{renderProps();}catch(e){}}
  const _add=add;add=function(t,x,y){
   if(t==='skq'){(async()=>{const r=await make('');if(r.err){toast(r.err);return;}rec();
@@ -7483,13 +7485,14 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  let g=document.getElementById('g-sk');if(!g){const a=document.getElementById('g-kre')||document.getElementById('g-ci');if(a){g=document.createElement('div');g.className='grp';g.id='g-sk';g.dataset.cats='lk';a.after(g);}}
  const s1=()=>items.find(i=>i.id===sel&&i.type==='skq');
  function renderSk(){if(!g)return;const it=s1();if(!it){g.innerHTML='';return;}
-  g.innerHTML=`<div style="font-weight:700;margin:6px 0 4px">✅ Selbstkontrolle (QR-Code)</div><div style="font-size:13px;color:var(--mut,#666);margin-bottom:6px">${it.n?'Enthält die Lösungen von '+it.n+' Aufgaben (QR-Version '+it.qv+').':'Kein QR-Code (Lösungen zu lang).'} Die Kinder scannen ihn und tippen sich zu jeder Aufgabe die Lösung auf.</div>
-<label>Link zu einem Erklärvideo (optional)<input type="url" id="sk-v" placeholder="https://…" value="${(it.vid||'').replace(/"/g,'&quot;')}"></label>
+  g.innerHTML=`<div style="font-weight:700;margin:6px 0 4px">✅ Selbstkontrolle (QR-Code)</div><div style="font-size:13px;color:var(--mut,#666);margin-bottom:6px">${it.lnk?'Der QR-Code führt direkt zu deinem Lösungsblatt (Link unten).':it.n?'Enthält die Lösungen von '+it.n+' Aufgaben (QR-Version '+it.qv+'). Die Kinder tippen sich zu jeder Aufgabe die Lösung auf.':'Kein QR-Code (Lösungen zu lang).'}</div>
+<label>Link zum ausgefüllten Lösungsblatt (empfohlen)<input type="url" id="sk-l" placeholder="https://… (z. B. PDF in Teams/OneDrive)" value="${(it.lnk||'').replace(/"/g,'&quot;')}"></label><div style="font-size:12px;color:var(--mut,#666);margin:2px 0 6px">So geht’s: Oben auf „PDF speichern“ (mit Lösungsblatt) → PDF in Teams/OneDrive hochladen → Freigabelink hier einfügen. Die Kinder sehen dann genau dein ausgefülltes Blatt. Leer lassen = automatisch erzeugte Kurzlösungen.</div>
+<label>Link zu einem Erklärvideo (optional, nur ohne Lösungsblatt-Link)<input type="url" id="sk-v" placeholder="https://…" value="${(it.vid||'').replace(/"/g,'&quot;')}"></label>
 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><button type="button" class="btn" data-sk="re">↻ QR-Code neu erzeugen</button><button type="button" class="btn" data-sk="pv">👁 Lösungsseite ansehen</button></div><div id="sk-m" style="font-size:12px;margin-top:6px;color:var(--mut,#666)">Tipp: Der QR-Code wird beim Drucken, bei „PDF speichern“ und bei den Niveaus automatisch an die aktuellen Zahlen angepasst. Das Video wird nach dem Eintippen beim nächsten Erzeugen übernommen.</div>`;}
  if(g){g.addEventListener('click',async e=>{const b=e.target.closest('[data-sk]'),it=s1();if(!b||!it)return;
-   if(b.dataset.sk==='re'){it.vid=(document.getElementById('sk-v')||{}).value||'';rec();await refresh();renderSk();}
-   else if(b.dataset.sk==='pv'&&it.url)viewer(it.url.split('#sk=')[1]);});
-  g.addEventListener('change',e=>{const it=s1();if(it&&e.target.id==='sk-v'){it.vid=e.target.value.trim();refresh().then(renderSk);}});}
+   if(b.dataset.sk==='re'){it.lnk=(document.getElementById('sk-l')||{}).value.trim();it.vid=(document.getElementById('sk-v')||{}).value||'';rec();await refresh();renderSk();}
+   else if(b.dataset.sk==='pv'&&it.url){if(it.lnk)window.open(it.lnk,'_blank');else viewer(it.url.split('#sk=')[1]);}});
+  g.addEventListener('change',e=>{const it=s1();if(it&&e.target.id==='sk-l'){it.lnk=e.target.value.trim();refresh().then(renderSk);}else if(it&&e.target.id==='sk-v'){it.vid=e.target.value.trim();refresh().then(renderSk);}});}
  const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);renderSk();};
  /* ---- Palette (Für Lehrkräfte) ---- */
  const pl=document.querySelector('.catp[data-c="lk"]');
