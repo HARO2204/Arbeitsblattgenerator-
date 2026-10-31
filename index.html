@@ -6446,6 +6446,7 @@ Object.entries(PRE).forEach(([c,list])=>{const box=document.querySelector('#left
  const b1=document.createElement('button');b1.id='svb';b1.textContent='💾 Speichern / Öffnen';b1.title='Arbeitsblatt speichern oder ein gespeichertes öffnen';b1.onclick=()=>{msg('');list();m.style.display='flex';};
  const b2=document.createElement('button');b2.id='rollall';b2.textContent='🎲 Alles neu würfeln';b2.title='Alle Aufgaben des Blatts bekommen neue Zahlen (Aufbau bleibt gleich)';b2.onclick=rollAll;
  const qa=$('#qadd');qa.parentNode.insertBefore(b2,qa.nextSibling);qa.parentNode.insertBefore(b1,b2);
+ window.__sheetIO={load,store,pack,unpack,KEY,hasItems:()=>items.length>0};
 })();
 /* Voreinstellungen für Potenz-Aufgaben (Assistent) */
 const POVP={m0:{op:'mal',ko:false,ng:false,ex0:true,neg:false,n:6,co:3},m1:{op:'mal',ko:true,ng:true,ex0:false,neg:false,n:10,co:2,lv:2},d0:{op:'geteilt',ko:false,ng:false,ex0:false,neg:true,n:4,co:2},d1:{op:'geteilt',ko:true,ng:true,ex0:false,neg:false,n:8,co:2,lv:2}};
@@ -7426,6 +7427,77 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
 
 
 
+
+/* ===== Meine Blätter: Ordner, Umbenennen, Duplizieren, Würfeln, Teilen ===== */
+(function(){
+ const IO=window.__sheetIO;if(!IO)return;
+ const FK='vk_blaetter_ordner_v1',MIR='https://haro2204.github.io/Arbeitsblattgenerator-/';
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ const lf=()=>{try{const a=JSON.parse(localStorage.getItem(FK)||'[]');return Array.isArray(a)?a:[];}catch(e){return[];}};
+ const sf=a=>{try{localStorage.setItem(FK,JSON.stringify(a));}catch(e){}};
+ const base=()=>{let v='';try{v=localStorage.getItem('smbase')||'';}catch(e){}if(v&&/github\.io/.test(v))return v.replace(/#.*$/,'');if(/github\.io$/.test(location.hostname))return location.origin+location.pathname;return MIR;};
+ const title=d=>{try{const h=(d.items||[]).find(i=>i.type==='text'&&(i.head||i.hd))||(d.items||[]).find(i=>i.type==='text');if(!h)return'';const t=document.createElement('div');t.innerHTML=String(h.html!=null?h.html:h.text||'').replace(/<br\s*\/?>/gi,' ');return t.textContent.replace(/\s+/g,' ').trim().slice(0,60);}catch(e){return'';}};
+ const nTasks=d=>(d.items||[]).filter(i=>!['text','head','num','img','deko','frm','ckf','skq','kre','lb'].includes(i.type)).length;
+ let cur='*';
+ const m=document.createElement('div');m.id='mbm';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:none;align-items:center;justify-content:center';
+ m.innerHTML='<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;width:min(820px,96vw);max-height:90vh;display:flex;flex-direction:column;padding:16px 18px;box-shadow:0 8px 40px rgba(0,0,0,.35);font:14px system-ui,sans-serif"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-weight:700;font-size:18px;flex:1">📁 Meine Blätter</div><button id="mb-x">Schließen</button></div>'
+ +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center"><input id="mb-n" type="text" placeholder="Name für das aktuelle Blatt, z. B. Koordinatensystem Check-up" style="flex:1;min-width:200px;font:inherit;padding:6px"><button id="mb-s" class="pri">💾 Aktuelles Blatt speichern</button></div>'
+ +'<div style="display:flex;gap:12px;min-height:0;flex:1;overflow:hidden;flex-wrap:wrap"><div id="mb-f" style="width:190px;flex:none;display:flex;flex-direction:column;gap:4px;overflow:auto"></div><div id="mb-l" style="flex:1;min-width:260px;overflow:auto;display:flex;flex-direction:column;gap:6px"></div></div>'
+ +'<div style="display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line,#ddd);padding-top:10px;margin-top:10px"><button id="mb-ea">⬇ Alle Blätter sichern</button><button id="mb-o">⬆ Aus Datei laden</button></div><div id="mb-m" style="font-size:13px;min-height:1.3em;margin-top:6px;color:#555"></div><input type="file" id="mb-i" accept=".json,application/json" multiple style="display:none"></div>';
+ document.body.appendChild(m);const q=s=>m.querySelector(s),msg=t=>q('#mb-m').textContent=t||'';
+ const bs='font:inherit;padding:3px 8px;cursor:pointer';
+ function folders(){const o=IO.load(),s=new Set(lf());Object.values(o).forEach(v=>{if(v.f)s.add(v.f);});return[...s].sort((a,b)=>a.localeCompare(b,'de'));}
+ function render(){const o=IO.load(),fs=folders();
+  const cnt=f=>Object.values(o).filter(v=>f==='*'?true:f===''?!v.f:v.f===f).length;
+  const fb=(k,l)=>`<button data-f="${esc(k)}" style="${bs};text-align:left;${cur===k?'background:#2f6fed;color:#fff;border-color:#2f6fed':''}">${l} <span style="opacity:.7">(${cnt(k)})</span></button>`;
+  q('#mb-f').innerHTML=fb('*','📚 Alle')+fb('','📄 Ohne Ordner')+fs.map(f=>fb(f,'📁 '+esc(f))).join('')+'<button id="mb-nf" style="'+bs+';text-align:left">＋ Neuer Ordner</button>'+(cur&&cur!=='*'&&cur!==''?'<button id="mb-df" style="'+bs+';text-align:left" title="Ordner löschen (die Blätter bleiben erhalten)">🗑 Ordner löschen</button>':'');
+  const ks=Object.keys(o).filter(k=>cur==='*'||(cur===''?!o[k].f:o[k].f===cur)).sort((a,b)=>o[b].t-o[a].t);
+  const opt=v=>'<option value="">Ohne Ordner</option>'+fs.map(f=>`<option value="${esc(f)}"${v===f?' selected':''}>${esc(f)}</option>`).join('');
+  q('#mb-l').innerHTML=ks.length?ks.map(k=>{const d=o[k],t=title(d);return`<div style="border:1px solid var(--line,#ccc);border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:6px"><div style="display:flex;gap:6px;align-items:baseline;flex-wrap:wrap"><b style="word-break:break-word">${esc(k)}</b><span style="font-size:12px;color:var(--mut,#666)">${new Date(d.t).toLocaleDateString('de-AT')} · ${nTasks(d)} Aufgabenblöcke${t&&t!==k?' · „'+esc(t)+'“':''}</span></div><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><button data-a="open" data-k="${esc(k)}" class="pri" style="${bs}">Öffnen</button><button data-a="roll" data-k="${esc(k)}" style="${bs}" title="Öffnen und alle Aufgaben neu würfeln">🎲 Öffnen &amp; neu würfeln</button><select data-a="mv" data-k="${esc(k)}" style="font:inherit;padding:3px">${opt(d.f||'')}</select><button data-a="ren" data-k="${esc(k)}" style="${bs}" title="Umbenennen">✎</button><button data-a="dup" data-k="${esc(k)}" style="${bs}" title="Duplizieren">⧉</button><button data-a="link" data-k="${esc(k)}" style="${bs}" title="Link zum Teilen kopieren">🔗 Link</button><button data-a="file" data-k="${esc(k)}" style="${bs}" title="Als Datei sichern und teilen">⬇ Datei</button><button data-a="del" data-k="${esc(k)}" style="${bs}" title="Löschen">🗑</button></div></div>`;}).join(''):'<div style="font-size:13px;color:var(--mut,#666)">Hier ist noch nichts. Gestalte ein Blatt, gib oben einen Namen ein und klicke auf „Aktuelles Blatt speichern“.</div>';}
+ async function save(name,blob,ext){try{const dl=(window.claude&&claude.use)?await claude.use('downloads'):null;if(dl)await dl.save({filename:name+ext,data:blob});else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name+ext;document.body.appendChild(a);a.click();a.remove();}return true;}catch(e){if(!(e&&e.code==='declined'))msg('Die Datei konnte nicht gesichert werden.');return false;}}
+ const safe=s=>String(s).replace(/[\\/:*?"<>|]+/g,'_');
+ async function enc(o){const u8=new TextEncoder().encode(JSON.stringify(o));let b=u8,pre='0';if(window.CompressionStream){try{const cs=new CompressionStream('deflate-raw'),w=cs.writable.getWriter();w.write(u8);w.close();b=new Uint8Array(await new Response(cs.readable).arrayBuffer());pre='1';}catch(e){}}let s='';b.forEach(x=>s+=String.fromCharCode(x));return pre+btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+ async function dec(str){const pre=str[0],b64=str.slice(1).replace(/-/g,'+').replace(/_/g,'/'),u8=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));let o=u8;if(pre==='1'){const ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter();w.write(u8);w.close();o=new Uint8Array(await new Response(ds.readable).arrayBuffer());}return JSON.parse(new TextDecoder().decode(o));}
+ const uniq=(o,n)=>{if(!o[n])return n;let i=2;while(o[n+' ('+i+')'])i++;return n+' ('+i+')';};
+ function openIt(k,roll){const d=IO.load()[k];if(!d)return;if(IO.hasItems()&&!confirm('Das aktuelle Blatt wird durch „'+k+'“ ersetzt (mit „Rückgängig“ holst du es zurück). Fortfahren?'))return;IO.unpack(d);m.style.display='none';if(roll)setTimeout(()=>{try{window.rollAll();}catch(e){}},80);else toast('„'+k+'“ geöffnet.');}
+ q('#mb-f').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.id==='mb-nf'){const n=(prompt('Name des neuen Ordners:')||'').trim();if(n){const a=lf();if(!a.includes(n)){a.push(n);sf(a);}cur=n;render();}return;}
+  if(b.id==='mb-df'){if(confirm('Ordner „'+cur+'“ löschen? Die Blätter bleiben erhalten (ohne Ordner).')){const o=IO.load();Object.values(o).forEach(v=>{if(v.f===cur)delete v.f;});IO.store(o);sf(lf().filter(x=>x!==cur));cur='*';render();}return;}
+  if(b.dataset.f!=null){cur=b.dataset.f;render();}};
+ q('#mb-l').onchange=e=>{const s=e.target.closest('select[data-a=mv]');if(!s)return;const o=IO.load(),k=s.dataset.k;if(o[k]){if(s.value)o[k].f=s.value;else delete o[k].f;IO.store(o);render();}};
+ q('#mb-l').onclick=async e=>{const b=e.target.closest('button[data-a]');if(!b)return;const k=b.dataset.k,o=IO.load(),a=b.dataset.a;if(!o[k])return;
+  if(a==='open')openIt(k,false);else if(a==='roll')openIt(k,true);
+  else if(a==='del'){if(confirm('„'+k+'“ löschen?')){delete o[k];IO.store(o);render();}}
+  else if(a==='ren'){const n=(prompt('Neuer Name:',k)||'').trim();if(n&&n!==k){if(o[n]){msg('Den Namen gibt es schon.');return;}o[n]=o[k];delete o[k];IO.store(o);render();}}
+  else if(a==='dup'){const n=uniq(o,k+' (Kopie)');o[n]=JSON.parse(JSON.stringify(o[k]));o[n].t=Date.now();IO.store(o);render();msg('Dupliziert als „'+n+'“.');}
+  else if(a==='file'){if(await save(safe(k),new Blob([JSON.stringify(o[k])],{type:'application/json'}),'.arbeitsblatt.json'))msg('Datei gesichert. Schick sie Kolleginnen, sie öffnen sie mit „⬆ Aus Datei laden“.');}
+  else if(a==='link'){const s=await enc({n:k,d:o[k]}),url=base()+'#bl='+s;if(url.length>60000){msg('Dieses Blatt ist für einen Link zu groß (viele Bilder). Bitte „⬇ Datei“ verwenden.');return;}
+   let ok=false;try{await navigator.clipboard.writeText(url);ok=true;}catch(x){}
+   if(ok)msg('Link kopiert ('+Math.round(url.length/1000)+' KB). Kolleginnen fügen ihn in den Browser ein und können das Blatt speichern.');
+   else{const t=document.createElement('textarea');t.value=url;t.style.cssText='width:100%;height:70px;margin-top:6px';q('#mb-m').textContent='Link zum Kopieren (Strg+C):';q('#mb-m').appendChild(t);t.select();}}};
+ q('#mb-s').onclick=()=>{const n=q('#mb-n').value.trim();if(!IO.hasItems()){msg('Das aktuelle Blatt ist leer.');return;}if(!n){msg('Bitte gib einen Namen ein.');return;}const o=IO.load();if(o[n]&&!confirm('„'+n+'“ gibt es schon. Überschreiben?'))return;const old=o[n];o[n]=IO.pack();const f=(cur&&cur!=='*')?cur:(old&&old.f);if(f)o[n].f=f;if(IO.store(o)){msg('Gespeichert als „'+n+'“'+(o[n].f?' im Ordner „'+o[n].f+'“':'')+'.');render();}else msg('Speichern im Browser ist hier nicht möglich. Nutze „⬇ Datei“ in der Liste.');};
+ q('#mb-ea').onclick=async()=>{const o=IO.load();if(!Object.keys(o).length){msg('Es ist noch nichts gespeichert.');return;}if(await save('Meine-Blaetter-'+new Date().toISOString().slice(0,10),new Blob([JSON.stringify({blaetter:o,ordner:lf()})],{type:'application/json'}),'.blaetter.json'))msg('Alle Blätter gesichert. Mit „⬆ Aus Datei laden“ holst du sie zurück, auch in einer neuen Version oder auf einem anderen Gerät.');};
+ q('#mb-o').onclick=()=>q('#mb-i').click();
+ q('#mb-i').onchange=async e=>{const fs=[...e.target.files];e.target.value='';let n=0,bad=0;const o=IO.load();
+  for(const f of fs){try{const d=JSON.parse(await f.text());
+   if(d&&d.blaetter&&typeof d.blaetter==='object'){Object.keys(d.blaetter).forEach(k=>{const nn=uniq(o,k);o[nn]=d.blaetter[k];n++;});(d.ordner||[]).forEach(x=>{const a=lf();if(!a.includes(x)){a.push(x);sf(a);}});}
+   else if(d&&Array.isArray(d.items)){const nn=uniq(o,safe(f.name.replace(/\.(arbeitsblatt|blaetter)?\.?json$/i,''))||'Importiert');o[nn]=d;if(!o[nn].t)o[nn].t=Date.now();if(cur&&cur!=='*')o[nn].f=cur;n++;}
+   else bad++;}catch(x){bad++;}}
+  IO.store(o);render();msg(n+' Blatt/Blätter geladen'+(bad?', '+bad+' Datei(en) nicht lesbar.':'.'));};
+ q('#mb-x').onclick=()=>m.style.display='none';m.addEventListener('click',e=>{if(e.target===m)m.style.display='none';});
+ function openMgr(){msg('');q('#mb-n').value='';render();m.style.display='flex';}window.__openMeineBlaetter=openMgr;
+ const b1=document.getElementById('svb');if(b1){b1.textContent='📁 Meine Blätter';b1.title='Blätter speichern, in Ordnern ordnen, neu würfeln und mit Kolleginnen teilen';b1.onclick=openMgr;}
+ /* Link von einer Kollegin */
+ async function route(){const h=location.hash,mm=/^#bl=(.+)$/.exec(h);if(!mm)return;let p;try{p=await dec(mm[1]);}catch(e){toast('Dieser Link ist ungültig oder unvollständig.');return;}
+  if(!p||!p.d||!Array.isArray(p.d.items)){toast('Dieser Link enthält kein Arbeitsblatt.');return;}
+  try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}
+  const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center';
+  o.innerHTML='<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;max-width:min(460px,94vw);padding:18px 20px;font:15px system-ui,sans-serif"><div style="font-weight:700;font-size:17px;margin-bottom:8px">📨 Geteiltes Arbeitsblatt</div><div style="margin-bottom:12px">„'+esc(p.n||'Arbeitsblatt')+'“ ('+nTasks(p.d)+' Aufgabenblöcke)</div><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="bl-s" class="pri" style="font:inherit;padding:6px 12px">In „Meine Blätter“ speichern &amp; öffnen</button><button id="bl-o" style="font:inherit;padding:6px 12px">Nur öffnen</button><button id="bl-x" style="font:inherit;padding:6px 12px">Abbrechen</button></div></div>';
+  document.body.appendChild(o);const c=s=>o.querySelector(s);
+  c('#bl-x').onclick=()=>o.remove();
+  c('#bl-o').onclick=()=>{IO.unpack(p.d);o.remove();};
+  c('#bl-s').onclick=()=>{const all=IO.load(),nn=uniq(all,p.n||'Geteiltes Blatt');all[nn]=Object.assign({},p.d,{t:Date.now()});IO.store(all);IO.unpack(p.d);o.remove();toast('Gespeichert als „'+nn+'“.');};}
+ route();addEventListener('hashchange',route);
+})();
 
 /* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
 (function(){
