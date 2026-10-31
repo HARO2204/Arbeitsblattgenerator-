@@ -7625,6 +7625,18 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   return out.length&&out.length<=24?out:null;}
  const numOf=s=>{s=String(s).replace(/\s+/g,'').replace('−','-').replace('–','-');if(/,/.test(s))s=s.replace(/\./g,'').replace(',','.');else if(/^-?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');const v=Number(s);return s===''||isNaN(v)?null:v;};
  const same=(f,v)=>f.k==='sel'?v===f.a:(numOf(v)!==null&&numOf(v)===numOf(f.a));
+ /* ---------- Klassen-Challenge ---------- */
+ const TH={r:{f:'🚀',g:'🌕',n:'Rakete zum Mond'},e:{f:'🦄',g:'🌈',n:'Einhorn zum Regenbogen'},d:{f:'🐉',g:'💎',n:'Drache zum Schatz'}};
+ const chMsg=p=>p>=100?'Geschafft! Das ganze Team! 🎉':p>=75?'Fast am Ziel!':p>=50?'Halbzeit geschafft!':p>=25?'Gut gestartet!':'Los geht’s!';
+ const chPct=(p,g)=>Math.max(0,Math.min(100,Math.round(100*p/Math.max(1,g))));
+ function chBar(p,g,th,big){const T=TH[th]||TH.r,pc=chPct(p,g),h=big?70:30,fs=big?56:26;
+  return '<div style="position:relative;padding-top:'+(fs+6)+'px"><div style="position:absolute;top:0;left:calc('+pc+'% * 0.92);font-size:'+fs+'px;line-height:1;transition:left .8s">'+T.f+'</div><div style="position:absolute;top:0;right:0;font-size:'+fs+'px;line-height:1">'+T.g+'</div>'
+  +'<div style="height:'+h+'px;background:#e5e7eb;border-radius:99px;overflow:hidden"><div style="height:100%;width:'+pc+'%;background:linear-gradient(90deg,#34c759,#2f6fed);transition:width .8s"></div></div></div>'
+  +'<div style="text-align:center;font-weight:700;font-size:'+(big?34:15)+'px;margin-top:6px">'+pc+' % · '+chMsg(pc)+'</div>';}
+ function confetti(host){if(!document.getElementById('ue-cf-st')){const st=document.createElement('style');st.id='ue-cf-st';st.textContent='@keyframes ueFall{from{transform:translateY(-10vh) rotate(0)}to{transform:translateY(110vh) rotate(540deg)}}';document.head.appendChild(st);}
+  const w=document.createElement('div');w.style.cssText='position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:10050';
+  for(let i=0;i<40;i++){const e=document.createElement('span');e.textContent=['🎉','⭐','🎊','✨','🦄'][i%5];e.style.cssText='position:absolute;top:0;left:'+Math.random()*100+'%;font-size:'+(20+Math.random()*26)+'px;animation:ueFall '+(2.5+Math.random()*2.5)+'s linear '+Math.random()*1.5+'s forwards';w.appendChild(e);}
+  (host||document.body).appendChild(w);setTimeout(()=>w.remove(),7000);}
  /* ---------- Lehrkraft ---------- */
  let G=null;
  const mkCode=()=>String(1000+Math.floor(Math.random()*9000));
@@ -7637,24 +7649,34 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  async function start(){
   if(!items.length){toast('Das Blatt ist leer.');return;}
   let S;try{S=await snapshot();}catch(e){toast('Die Übung konnte nicht vorbereitet werden.');return;}
-  G={S,players:new Map(),code:mkCode(),net:null,opened:false,t0:Date.now()};
+  G={S,players:new Map(),code:mkCode(),net:null,opened:false,t0:Date.now(),goal:Math.max(10,S.tasks.length*20),th:'r',done:false};
   o.style.display='flex';o.innerHTML='<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;padding:20px 24px;font:15px system-ui,sans-serif">Verbindung wird aufgebaut …</div>';
   const g0=G;setTimeout(()=>{if(G===g0&&!G.opened)fail('Zeitüberschreitung');},12000);
   let tries=0;const open=async()=>{G.net=await netHost(G.code,{onOpen:()=>{if(G&&!G.opened){G.opened=true;dash();}},onError:e=>{if(e==='unavailable-id'&&tries++<6){G.code=mkCode();open();return;}fail(e);},onMsg:hmsg,onLeave:cid=>{for(const p of G.players.values())if(p.cid===cid)p.on=false;dashUpd();}});};open();}
  function fail(e){const m=e;try{G&&G.net&&G.net.close();}catch(x){}G=null;o.innerHTML='<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;padding:20px 24px;max-width:min(460px,94vw);font:15px system-ui,sans-serif"><b>Die Verbindung konnte nicht aufgebaut werden</b> ('+esc(m)+').<p>Die Übungsseite braucht Internet und funktioniert nur auf der GitHub-Seite (nicht in der Claude-Ansicht). Außerdem darf das Schulnetz keine Verbindungen zwischen Geräten blockieren.</p><button id="ue-c" style="font:inherit;padding:6px 14px">Schließen</button></div>';o.querySelector('#ue-c').onclick=close;}
  function hmsg(cid,m){if(!G||!m)return;
   if(m.t==='hello'){let p=G.players.get(m.pid);if(p){p.cid=cid;p.on=true;}else{let nm=String(m.name||'').trim().slice(0,16)||'Gast',b=nm,k=2;while([...G.players.values()].some(x=>x.name===nm))nm=b+' '+k++;p={name:nm,cid,on:true,res:{}};G.players.set(m.pid,p);}
-   G.net.send(cid,{t:'set',name:p.name,S:G.S,res:p.res});dashUpd();return;}
-  if(m.t==='r'){const p=G.players.get(m.pid);if(!p)return;p.res[m.i]={ok:m.ok,tries:m.tries};dashUpd();}}
+   G.net.send(cid,{t:'set',name:p.name,S:G.S,res:p.res,ch:chState()});dashUpd();return;}
+  if(m.t==='r'){const p=G.players.get(m.pid);if(!p)return;p.res[m.i]={ok:m.ok,tries:m.tries};dashUpd();chPush();}}
+ const pts=()=>{let n=0;G.players.forEach(p=>Object.values(p.res).forEach(x=>{if(x&&x.ok>=0.5)n++;}));return n;};
+ function chState(){return{t:'ch',p:pts(),g:G.goal,th:G.th};}
+ function chPush(){const m=chState();G.players.forEach(p=>{if(p.on)G.net.send(p.cid,m);});}
  function stats(){const n=G.S.tasks.length,ps=[...G.players.values()];
   return G.S.tasks.map((t,i)=>{const r=ps.map(p=>p.res[i]).filter(Boolean);const good=r.filter(x=>x.ok===1).length;return{i,n:r.length,good,pct:r.length?Math.round(100*good/r.length):null};});}
  const cell=r=>!r?'<td style="background:#e5e7eb"></td>':r.ok===1?'<td style="background:#34c759" title="gleich richtig">✓</td>':r.ok===0.5?'<td style="background:#ffcc00" title="nach Fehler richtig">~</td>':'<td style="background:#ff453a;color:#fff" title="nicht geschafft">✗</td>';
  function dash(){const url=base()+'#ue='+G.code,qr=(()=>{try{return window.__qrSvg(url,200)||'';}catch(e){return'';}})();
   o.innerHTML='<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;width:min(900px,96vw);max-height:92vh;overflow:auto;padding:16px 20px;font:14px system-ui,sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.35)"><div style="display:flex;align-items:center;gap:8px"><div style="font-weight:700;font-size:18px;flex:1">📱 Übungsseite läuft</div><button id="ue-csv" style="font:inherit;padding:5px 10px">⬇ Ergebnisse (CSV)</button><button id="ue-end" style="font:inherit;padding:5px 10px">Beenden</button></div>'
   +'<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:10px 0"><div style="background:#fff;padding:4px">'+qr+'</div><div style="flex:1;min-width:220px"><div>Kinder scannen den QR-Code oder öffnen:</div><div style="font-weight:700;word-break:break-all;margin:4px 0">'+esc(url)+'</div><div>Code: <b style="font-size:22px">'+G.code+'</b></div><div style="color:#666;font-size:13px;margin-top:6px">Lass diese Seite offen, solange die Kinder üben. '+(netMode==='bc'?'<b style="color:#b45309">Test-Modus: Der Verbindungsdienst ist nicht erreichbar, es funktioniert nur in Tabs desselben Browsers.</b>':'')+'</div></div></div>'
-  +'<div id="ue-d"></div></div>';
-  o.querySelector('#ue-end').onclick=close;o.querySelector('#ue-csv').onclick=csv;dashUpd();}
- function dashUpd(){const d=document.getElementById('ue-d');if(!d||!G)return;const ps=[...G.players.values()],st=stats(),n=st.length;
+  +'<div style="border:1px solid #d5dbe6;border-radius:10px;padding:10px 12px;margin-bottom:10px"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:6px"><b>🏆 Klassen-Challenge</b><select id="ue-th" style="font:inherit;padding:3px">'+Object.keys(TH).map(k=>'<option value="'+k+'"'+(G.th===k?' selected':'')+'>'+TH[k].n+'</option>').join('')+'</select><label>Ziel: <input id="ue-g" type="number" min="5" max="2000" value="'+G.goal+'" style="font:inherit;width:5em;padding:3px"> richtige Aufgaben</label><button id="ue-big" style="font:inherit;padding:4px 10px">🖥 Großansicht</button></div><div id="ue-ch"></div></div><div id="ue-d"></div></div>';
+  o.querySelector('#ue-end').onclick=close;o.querySelector('#ue-csv').onclick=csv;
+  o.querySelector('#ue-th').onchange=e=>{G.th=e.target.value;chPush();dashUpd();};o.querySelector('#ue-g').onchange=e=>{G.goal=Math.max(5,+e.target.value||20);G.done=false;chPush();dashUpd();};o.querySelector('#ue-big').onclick=bigView;dashUpd();}
+ function bigView(){let v=document.getElementById('uec');if(v)return;v=document.createElement('div');v.id='uec';v.style.cssText='position:fixed;inset:0;z-index:10040;background:#14181f;color:#fff;display:flex;flex-direction:column;justify-content:center;padding:6vw;font-family:system-ui,sans-serif';
+  v.innerHTML='<div style="font-size:36px;font-weight:700;text-align:center;margin-bottom:30px">🏆 Klassen-Challenge</div><div id="uec-b"></div><div id="uec-k" style="text-align:center;margin-top:24px;font-size:22px;color:#9aa6b8"></div><button id="uec-x" style="position:absolute;top:14px;right:14px;font:inherit;padding:8px 14px">✕ Schließen</button>';
+  document.body.appendChild(v);v.querySelector('#uec-x').onclick=()=>v.remove();addEventListener('keydown',function k(e){if(e.key==='Escape'){v.remove();removeEventListener('keydown',k);}});dashUpd();}
+ function dashUpd(){const d=document.getElementById('ue-d');if(!d||!G)return;
+  {const P=pts(),pc=chPct(P,G.goal),a=document.getElementById('ue-ch');if(a)a.innerHTML=chBar(P,G.goal,G.th,false)+'<div style="text-align:center;color:#666;font-size:12px">'+P+' von '+G.goal+' Aufgaben</div>';
+   const b=document.getElementById('uec-b');if(b){b.innerHTML=chBar(P,G.goal,G.th,true);const k=document.getElementById('uec-k');if(k)k.textContent=P+' von '+G.goal+' richtigen Aufgaben · '+[...G.players.values()].filter(x=>x.on).length+' Kinder';}
+   if(pc>=100&&!G.done){G.done=true;confetti();}}const ps=[...G.players.values()],st=stats(),n=st.length;
   const hard=st.filter(x=>x.n>=1).sort((a,b)=>a.pct-b.pct||b.n-a.n).slice(0,4);
   d.innerHTML='<div style="font-weight:700;margin:6px 0">'+ps.filter(p=>p.on).length+' Kinder verbunden, '+ps.length+' insgesamt</div>'
   +(ps.length?'<div style="overflow:auto"><table style="border-collapse:collapse;font-size:13px"><tr><th style="text-align:left;padding:3px 8px">Kind</th>'+st.map(x=>'<th style="padding:3px 6px">'+(x.i+1)+'</th>').join('')+'</tr>'
@@ -7676,9 +7698,10 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   let nm='';try{nm=sessionStorage.getItem('ue_name')||'';}catch(e){}
   box('<h2 style="margin:8px 0">📱 Übung</h2><label>Dein Name:<br><input id="ue-n" type="text" maxlength="16" value="'+esc(nm)+'" style="font:inherit;font-size:18px;padding:10px;width:100%;box-sizing:border-box;margin-top:6px"></label><button id="ue-go" style="font:inherit;font-size:18px;margin-top:14px;padding:12px 20px;border:0;border-radius:10px;background:#2f6fed;color:#fff;width:100%">Los geht’s</button><div id="ue-st" style="margin-top:10px;color:#555"></div>');
   root.querySelector('#ue-go').onclick=()=>{const name=root.querySelector('#ue-n').value.trim();if(!name){root.querySelector('#ue-st').textContent='Bitte gib deinen Namen ein.';return;}try{sessionStorage.setItem('ue_name',name);}catch(e){}connect(name);};
-  let net=null,set=null;
+  let net=null,set=null,lastDone=false;
+  const chUpd=m=>{const el=root.querySelector('#ue-ch');if(!el)return;el.innerHTML=chBar(m.p,m.g,m.th,false);const d=chPct(m.p,m.g)>=100;if(d&&!lastDone)confetti(root);lastDone=d;};
   function connect(name){root.querySelector('#ue-st').textContent='Verbindung wird aufgebaut …';
-   netJoin(code,{onOpen:()=>{net.send({t:'hello',pid,name});},onError:e=>{root.querySelector('#ue-st').textContent=(e==='peer-unavailable'||e==='timeout')?'Diesen Code gibt es nicht (oder die Lehrkraft hat die Übung beendet).':'Verbindung nicht möglich ('+e+').';},onMsg:m=>{if(m.t==='set'){set=m;run(m);}},onClose:()=>{}}).then(n=>{net=n;});}
+   netJoin(code,{onOpen:()=>{net.send({t:'hello',pid,name});},onError:e=>{root.querySelector('#ue-st').textContent=(e==='peer-unavailable'||e==='timeout')?'Diesen Code gibt es nicht (oder die Lehrkraft hat die Übung beendet).':'Verbindung nicht möglich ('+e+').';},onMsg:m=>{if(m.t==='set'){set=m;run(m);}else if(m.t==='ch'){chUpd(m);}},onClose:()=>{}}).then(n=>{net=n;});}
   async function run(m){
    box('<div style="padding:30px;text-align:center">Aufgaben werden geladen …</div>');
    let pack;try{pack=await dec(m.S.pack);}catch(e){box('Die Übung konnte nicht geladen werden.');return;}
@@ -7690,8 +7713,8 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
    SOL=false;if(mk)mk.style.display='none';try{render();}catch(e){}
    const T=m.S.tasks,H=m.S.H,res=m.res||{},st=T.map((_,i)=>res[i]?{done:true,ok:res[i].ok,tries:res[i].tries||1}:{done:false,tries:0});
    const frame=(host,html,t,l,r,s)=>{const fr=document.createElement('iframe');fr.setAttribute('aria-hidden','true');fr.style.cssText='position:absolute;left:0;top:0;width:794px;height:'+H+'px;border:0;transform-origin:0 0;background:#fff;pointer-events:none;transform:translate('+(-l*s)+'px,'+(-t*s)+'px) scale('+s+')';host.appendChild(fr);const d=fr.contentDocument;d.open();d.write('<!doctype html><html lang="de"><head><meta charset="utf-8">'+sty+'</head><body class="pv" style="margin:0;background:#fff;height:auto">'+html+'</body></html>');d.close();return fr;};
-   root.innerHTML='<div style="position:sticky;top:0;z-index:5;background:#14181f;color:#fff;padding:8px 14px;display:flex;gap:10px;align-items:center"><b style="flex:1">'+esc(m.S.title||'Übung')+'</b><span id="ue-p"></span></div><div id="ue-l" style="max-width:700px;margin:0 auto;padding:10px 12px 60px"></div>';
-   const L=root.querySelector('#ue-l'),P=root.querySelector('#ue-p');
+   root.innerHTML='<div style="position:sticky;top:0;z-index:5;background:#14181f;color:#fff;padding:8px 14px;display:flex;gap:10px;align-items:center"><b style="flex:1">'+esc(m.S.title||'Übung')+'</b><span id="ue-p"></span></div><div id="ue-ch" style="background:#fff;padding:6px 14px 4px;border-bottom:1px solid #e5e7eb"></div><div id="ue-l" style="max-width:700px;margin:0 auto;padding:10px 12px 60px"></div>';
+   const L=root.querySelector('#ue-l'),P=root.querySelector('#ue-p');if(m.ch)chUpd(m.ch);
    const prog=()=>{const n=st.filter(x=>x.done).length;P.textContent=n+' / '+T.length+' erledigt';};prog();
    const send=(i,ok,tries)=>{st[i].done=true;st[i].ok=ok;st[i].tries=tries;prog();net.send({t:'r',pid,i,ok,tries});};
    const W=Math.min(700,Math.max(300,innerWidth-24))-20;
