@@ -7505,20 +7505,20 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  const wait=ms=>new Promise(r=>setTimeout(r,ms));
  function bands(){
   const els=[...sheet.querySelectorAll('.item')].map(e=>({e,it:items.find(i=>String(i.id)===e.dataset.id)})).filter(x=>x.it&&!SKIP.includes(x.it.type));
-  els.forEach(x=>{x.t=x.e.offsetTop;x.b=x.e.offsetTop+x.e.offsetHeight;});
+  els.forEach(x=>{x.t=x.e.offsetTop;x.b=x.e.offsetTop+Math.max(x.e.offsetHeight,x.e.scrollHeight);x.w=Math.max(x.e.offsetWidth,x.e.scrollWidth);});
   els.sort((a,b)=>a.t-b.t);
   const H=PH*Math.max(1,PGN);
   const nums=els.filter(x=>x.it.type==='num');
   if(nums.length){
    const st=nums.map((n,k)=>k===0?0:Math.max(0,n.t-10));
-   return st.map((t,k)=>{const end=k+1<st.length?st[k+1]:H;const inn=els.filter(x=>x.t>=t&&x.t<end);const bt=inn.length?Math.max(...inn.map(x=>x.b)):end;return{t,b:Math.min(end,Math.max(t+60,bt+12))};});}
+   return st.map((t,k)=>{const end=k+1<st.length?st[k+1]:H;const inn=els.filter(x=>x.t>=t&&x.t<end);const bt=inn.length?Math.max(...inn.map(x=>x.b)):end;const lx=inn.length?Math.min(...inn.map(x=>x.e.offsetLeft)):0,rx=inn.length?Math.max(...inn.map(x=>x.e.offsetLeft+x.w)):794;return{t,b:Math.min(end,Math.max(t+60,bt+12)),l:Math.max(0,lx-10),r:Math.min(794,rx+10),ids:inn.map(x=>x.it.id)};});}
   const cl=[];
   els.forEach(x=>{const c=cl[cl.length-1];if(c&&x.t<c.b-3){c.b=Math.max(c.b,x.b);c.m.push(x);}else cl.push({t:x.t,b:x.b,m:[x]});});
   const out=[];
   for(let i=0;i<cl.length;i++){const c=cl[i];const onlyHead=c.m.every(x=>x.it.type==='text'&&(x.it.head||x.it.hd));
    if(onlyHead&&cl[i+1]){cl[i+1].t=Math.min(cl[i+1].t,c.t);cl[i+1].m=c.m.concat(cl[i+1].m);continue;}out.push(c);}
 
-  return out.map(c=>({t:Math.max(0,c.t-12),b:Math.min(H,c.b+12)}));}
+  return out.map(c=>({t:Math.max(0,c.t-12),b:Math.min(H,c.b+12),l:Math.max(0,Math.min(...c.m.map(x=>x.e.offsetLeft))-10),r:Math.min(794,Math.max(...c.m.map(x=>x.e.offsetLeft+x.w))+10),ids:c.m.map(x=>x.it.id)}));}
  async function mkFrame(host,solution,H){
   const fr=document.createElement('iframe');fr.setAttribute('aria-hidden','true');
   fr.style.cssText='position:absolute;left:0;top:0;width:794px;height:'+H+'px;border:0;transform-origin:0 0;background:#fff;pointer-events:none;visibility:hidden';
@@ -7575,9 +7575,163 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   q('#bm-st').onclick=e=>{if(e.target.closest('button'))return;const r=q('#bm-w').getBoundingClientRect();if(e.clientX<r.left+r.width*0.3)go(-1);else go(1);};
   addEventListener('keydown',key,true);addEventListener('resize',show);
   show();}
- window.__beamer=open;
+ window.__beamer=open;window.__bmBands=bands;
  const b=document.createElement('button');b.id='bmb';b.textContent='📽 Beamer';b.title='Das Blatt Aufgabe für Aufgabe groß zeigen, Lösung auf Klick';b.onclick=open;
  const svb=document.getElementById('svb');if(svb)svb.parentNode.insertBefore(b,svb.nextSibling);
+})();
+/* ===== Übungsseite (Live): Kinder üben am Handy/Tablet, Lehrkraft sieht die Ergebnisse ===== */
+(function(){
+ const IO=window.__sheetIO;if(!IO||!window.__bmBands)return;
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+ const wait=ms=>new Promise(r=>setTimeout(r,ms));
+ const MIR='https://haro2204.github.io/Arbeitsblattgenerator-/';
+ const base=()=>{let v='';try{v=localStorage.getItem('smbase')||'';}catch(e){}if(v&&/github\.io/.test(v))return v.replace(/#.*$/,'');if(/github\.io$/.test(location.hostname))return location.origin+location.pathname;return MIR;};
+ /* ---------- Verbindung (wie beim Live-Quiz) ---------- */
+ let peerLib=null;
+ function loadPeer(){if(peerLib)return peerLib;peerLib=new Promise(res=>{if(window.Peer)return res(true);const s=document.createElement('script');s.src=window.PEER_SRC||'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';s.onload=()=>res(!!window.Peer);s.onerror=()=>res(false);document.head.appendChild(s);setTimeout(()=>res(!!window.Peer),6000);});return peerLib;}
+ const PCFG=()=>window.PEER_CFG||{};let netMode='peer';
+ async function netHost(code,h){const ok=await loadPeer();netMode=ok?'peer':'bc';
+  if(!ok){const ch=new BroadcastChannel('ueb-'+code);ch.onmessage=e=>{const d=e.data;if(d.to!=='host')return;if(d.msg.t==='__ping'){ch.postMessage({to:d.from,msg:{t:'ack'}});return;}h.onMsg(d.from,d.msg);};setTimeout(h.onOpen,50);
+   return{send:(to,m)=>ch.postMessage({to,msg:m}),close:()=>ch.close()};}
+  const conns={};let peer;try{peer=new Peer('ueb-'+code,PCFG());}catch(e){h.onError('x');return null;}
+  peer.on('open',()=>h.onOpen());peer.on('error',e=>h.onError(e.type||'x'));
+  peer.on('connection',c=>{conns[c.peer]=c;c.on('data',m=>h.onMsg(c.peer,m));c.on('close',()=>{h.onLeave&&h.onLeave(c.peer);});c.on('error',()=>{});});
+  return{send:(to,m)=>{const c=conns[to];if(c&&c.open)try{c.send(m);}catch(e){}},close:()=>{try{peer.destroy();}catch(e){}}};}
+ async function netJoin(code,h){const ok=await loadPeer();netMode=ok?'peer':'bc';
+  if(!ok){const ch=new BroadcastChannel('ueb-'+code),me='p'+Math.random().toString(36).slice(2);let acked=false;ch.onmessage=e=>{const d=e.data;if(d.to!==me&&d.to!=='*')return;if(d.msg.t==='ack'){acked=true;h.onOpen();return;}h.onMsg(d.msg);};
+   setTimeout(()=>{if(!acked)h.onError('peer-unavailable');},2500);setTimeout(()=>ch.postMessage({from:me,to:'host',msg:{t:'__ping'}}),50);
+   return{send:m=>ch.postMessage({from:me,to:'host',msg:m}),close:()=>ch.close()};}
+  const peer=new Peer(undefined,PCFG());let conn,t=setTimeout(()=>h.onError('timeout'),12000);
+  peer.on('error',e=>{clearTimeout(t);h.onError(e.type||'x');});
+  const api={send:m=>{if(conn&&conn.open)try{conn.send(m);}catch(e){}},close:()=>{try{peer.destroy();}catch(e){}}};
+  peer.on('open',()=>{conn=peer.connect('ueb-'+code,{reliable:true});conn.on('open',()=>{clearTimeout(t);h.onOpen();});conn.on('data',m=>h.onMsg(m));conn.on('close',()=>h.onClose&&h.onClose());conn.on('error',()=>{});});
+  return api;}
+ /* ---------- Komprimieren ---------- */
+ async function enc(o){const u8=new TextEncoder().encode(JSON.stringify(o));let b=u8,pre='0';if(window.CompressionStream){try{const cs=new CompressionStream('deflate-raw'),w=cs.writable.getWriter();w.write(u8);w.close();b=new Uint8Array(await new Response(cs.readable).arrayBuffer());pre='1';}catch(e){}}let s='';b.forEach(x=>s+=String.fromCharCode(x));return pre+btoa(s);}
+ async function dec(str){const pre=str[0],u8=Uint8Array.from(atob(str.slice(1)),c=>c.charCodeAt(0));let o=u8;if(pre==='1'){const ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter();w.write(u8);w.close();o=new Uint8Array(await new Response(ds.readable).arrayBuffer());}return JSON.parse(new TextDecoder().decode(o));}
+ /* ---------- Antwortfelder aus den Aufgabendaten ---------- */
+ const fn=x=>{let s=String(Math.round(x*1e6)/1e6).replace('.',',');const m=s.match(/^(-?\d+)(,\d+)?$/);if(m&&m[1].replace('-','').length>=5)s=m[1].replace(/\B(?=(\d{3})+(?!\d))/g,' ')+(m[2]||'');return s.replace('-','−');};
+ const labs=(it,n)=>{const L='abcdefghijklmnopqrstuvwxyz';return Array.from({length:n},(_,i)=>it.lab==='1'?(i+1)+')':it.lab==='none'?'':L[i]+')');};
+ const FIELD={
+  cmp:it=>{const p=it.pairs||[];if(!p.length||!p.every(x=>x.every(y=>typeof y==='string')))return null;const l=labs(it,p.length);return p.map((x,i)=>({l:l[i],k:'sel',o:['<','=','>'],a:x[2]}));},
+  tdv:it=>{const d=it.d||[];if(!d.length)return null;const l=labs(it,d.length);return d.map((r,i)=>({l:l[i],k:'sel',o:['∣','∤'],a:r[1]%r[0]===0?'∣':'∤'}));},
+  as:it=>{const r=it.rows||[];if(!r.length||r.some(x=>x.res==null))return null;const l=labs(it,r.length);return r.map((x,i)=>({l:l[i],k:'num',a:fn(x.res)}));},
+  mm:it=>{const d=it.d||[];if(!d.length)return null;const l=labs(it,d.length);return d.map((r,i)=>({l:l[i],k:'num',a:fn(r[0]*r[1])}));},
+  mv:it=>{const d=it.d||[];if(!d.length||it.rest)return null;const l=labs(it,d.length);return d.map((r,i)=>({l:l[i],k:'num',a:fn(r[0]/r[1])}));}};
+ const NOANS=['text','head','num','img','deko','frm','ckf','skq','kre','lb'];
+ function fieldsFor(B){const its=(B.ids||[]).map(id=>items.find(i=>i.id===id)).filter(Boolean).filter(i=>!NOANS.includes(i.type));
+  if(!its.length)return null;const out=[];
+  for(const it of its){const f=FIELD[it.type];if(!f)return null;const r=f(it);if(!r)return null;if(its.length>1&&r.length)r.forEach((x,i)=>{x.l=(its.indexOf(it)+1)+'.'+x.l;});out.push(...r);}
+  return out.length&&out.length<=24?out:null;}
+ const numOf=s=>{s=String(s).replace(/\s+/g,'').replace('−','-').replace('–','-');if(/,/.test(s))s=s.replace(/\./g,'').replace(',','.');else if(/^-?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');const v=Number(s);return s===''||isNaN(v)?null:v;};
+ const same=(f,v)=>f.k==='sel'?v===f.a:(numOf(v)!==null&&numOf(v)===numOf(f.a));
+ /* ---------- Lehrkraft ---------- */
+ let G=null;
+ const mkCode=()=>String(1000+Math.floor(Math.random()*9000));
+ async function snapshot(){
+  const B=window.__bmBands();const tasks=B.map(b=>({t:b.t,b:b.b,l:b.l,r:b.r,f:fieldsFor(b)}));
+  const pack=IO.pack();return{title:(()=>{try{return pdfName().replace(/\.pdf$/,'');}catch(e){return'Übung';}})(),tasks,pack:await enc(pack),H:PH*Math.max(1,PGN)};}
+ const o=document.createElement('div');o.id='uem';o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:none;align-items:center;justify-content:center';
+ document.body.appendChild(o);
+ function close(){if(G){try{G.net&&G.net.close();}catch(e){}G=null;}o.style.display='none';}
+ async function start(){
+  if(!items.length){toast('Das Blatt ist leer.');return;}
+  let S;try{S=await snapshot();}catch(e){toast('Die Übung konnte nicht vorbereitet werden.');return;}
+  G={S,players:new Map(),code:mkCode(),net:null,opened:false,t0:Date.now()};
+  o.style.display='flex';o.innerHTML='<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;padding:20px 24px;font:15px system-ui,sans-serif">Verbindung wird aufgebaut …</div>';
+  const g0=G;setTimeout(()=>{if(G===g0&&!G.opened)fail('Zeitüberschreitung');},12000);
+  let tries=0;const open=async()=>{G.net=await netHost(G.code,{onOpen:()=>{if(G&&!G.opened){G.opened=true;dash();}},onError:e=>{if(e==='unavailable-id'&&tries++<6){G.code=mkCode();open();return;}fail(e);},onMsg:hmsg,onLeave:cid=>{for(const p of G.players.values())if(p.cid===cid)p.on=false;dashUpd();}});};open();}
+ function fail(e){const m=e;try{G&&G.net&&G.net.close();}catch(x){}G=null;o.innerHTML='<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;padding:20px 24px;max-width:min(460px,94vw);font:15px system-ui,sans-serif"><b>Die Verbindung konnte nicht aufgebaut werden</b> ('+esc(m)+').<p>Die Übungsseite braucht Internet und funktioniert nur auf der GitHub-Seite (nicht in der Claude-Ansicht). Außerdem darf das Schulnetz keine Verbindungen zwischen Geräten blockieren.</p><button id="ue-c" style="font:inherit;padding:6px 14px">Schließen</button></div>';o.querySelector('#ue-c').onclick=close;}
+ function hmsg(cid,m){if(!G||!m)return;
+  if(m.t==='hello'){let p=G.players.get(m.pid);if(p){p.cid=cid;p.on=true;}else{let nm=String(m.name||'').trim().slice(0,16)||'Gast',b=nm,k=2;while([...G.players.values()].some(x=>x.name===nm))nm=b+' '+k++;p={name:nm,cid,on:true,res:{}};G.players.set(m.pid,p);}
+   G.net.send(cid,{t:'set',name:p.name,S:G.S,res:p.res});dashUpd();return;}
+  if(m.t==='r'){const p=G.players.get(m.pid);if(!p)return;p.res[m.i]={ok:m.ok,tries:m.tries};dashUpd();}}
+ function stats(){const n=G.S.tasks.length,ps=[...G.players.values()];
+  return G.S.tasks.map((t,i)=>{const r=ps.map(p=>p.res[i]).filter(Boolean);const good=r.filter(x=>x.ok===1).length;return{i,n:r.length,good,pct:r.length?Math.round(100*good/r.length):null};});}
+ const cell=r=>!r?'<td style="background:#e5e7eb"></td>':r.ok===1?'<td style="background:#34c759" title="gleich richtig">✓</td>':r.ok===0.5?'<td style="background:#ffcc00" title="nach Fehler richtig">~</td>':'<td style="background:#ff453a;color:#fff" title="nicht geschafft">✗</td>';
+ function dash(){const url=base()+'#ue='+G.code,qr=(()=>{try{return window.__qrSvg(url,200)||'';}catch(e){return'';}})();
+  o.innerHTML='<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;width:min(900px,96vw);max-height:92vh;overflow:auto;padding:16px 20px;font:14px system-ui,sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.35)"><div style="display:flex;align-items:center;gap:8px"><div style="font-weight:700;font-size:18px;flex:1">📱 Übungsseite läuft</div><button id="ue-csv" style="font:inherit;padding:5px 10px">⬇ Ergebnisse (CSV)</button><button id="ue-end" style="font:inherit;padding:5px 10px">Beenden</button></div>'
+  +'<div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:10px 0"><div style="background:#fff;padding:4px">'+qr+'</div><div style="flex:1;min-width:220px"><div>Kinder scannen den QR-Code oder öffnen:</div><div style="font-weight:700;word-break:break-all;margin:4px 0">'+esc(url)+'</div><div>Code: <b style="font-size:22px">'+G.code+'</b></div><div style="color:#666;font-size:13px;margin-top:6px">Lass diese Seite offen, solange die Kinder üben. '+(netMode==='bc'?'<b style="color:#b45309">Test-Modus: Der Verbindungsdienst ist nicht erreichbar, es funktioniert nur in Tabs desselben Browsers.</b>':'')+'</div></div></div>'
+  +'<div id="ue-d"></div></div>';
+  o.querySelector('#ue-end').onclick=close;o.querySelector('#ue-csv').onclick=csv;dashUpd();}
+ function dashUpd(){const d=document.getElementById('ue-d');if(!d||!G)return;const ps=[...G.players.values()],st=stats(),n=st.length;
+  const hard=st.filter(x=>x.n>=1).sort((a,b)=>a.pct-b.pct||b.n-a.n).slice(0,4);
+  d.innerHTML='<div style="font-weight:700;margin:6px 0">'+ps.filter(p=>p.on).length+' Kinder verbunden, '+ps.length+' insgesamt</div>'
+  +(ps.length?'<div style="overflow:auto"><table style="border-collapse:collapse;font-size:13px"><tr><th style="text-align:left;padding:3px 8px">Kind</th>'+st.map(x=>'<th style="padding:3px 6px">'+(x.i+1)+'</th>').join('')+'</tr>'
+   +ps.map(p=>'<tr><td style="padding:3px 8px;white-space:nowrap;'+(p.on?'':'opacity:.5')+'">'+esc(p.name)+'</td>'+st.map(x=>cell(p.res[x.i]).replace('<td','<td style="text-align:center;min-width:26px;'+'"').replace('style="text-align:center;min-width:26px;" style="','style="text-align:center;min-width:26px;')).join('')+'</tr>').join('')
+   +'<tr><td style="padding:4px 8px;font-weight:700">% sofort richtig</td>'+st.map(x=>'<td style="text-align:center;font-weight:700;padding:4px 6px">'+(x.pct==null?'–':x.pct)+'</td>').join('')+'</tr></table></div>'
+   +(hard.length?'<div style="margin-top:10px"><b>Am schwierigsten:</b> '+hard.map(x=>'Aufgabe '+(x.i+1)+' ('+x.pct+' % sofort richtig)').join(' · ')+'</div>':''):'<div style="color:#666">Noch niemand verbunden.</div>')
+  +'<div style="font-size:12px;color:#666;margin-top:8px">✓ gleich richtig · ~ nach einem Fehler richtig · ✗ nicht geschafft oder Lösung angesehen</div>';}
+ async function save(name,blob){try{const dl=(window.claude&&claude.use)?await claude.use('downloads'):null;if(dl)await dl.save({filename:name,data:blob});else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();}}catch(e){}}
+ function csv(){if(!G)return;const n=G.S.tasks.length,rows=[['Kind'].concat(Array.from({length:n},(_,i)=>'Aufgabe '+(i+1)))];
+  [...G.players.values()].forEach(p=>rows.push([p.name].concat(Array.from({length:n},(_,i)=>{const r=p.res[i];return r?(r.ok===1?'richtig':r.ok===0.5?'nach Fehler':'falsch'):'';}))));
+  const st=stats();rows.push(['% sofort richtig'].concat(st.map(x=>x.pct==null?'':x.pct)));
+  save('Uebung-Ergebnisse.csv',new Blob(['﻿'+rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(';')).join('\n')],{type:'text/csv'}));}
+ /* ---------- Kinder ---------- */
+ async function student(code){
+  const root=document.createElement('div');root.id='uev';root.style.cssText='position:fixed;inset:0;z-index:10002;background:#f1f5f9;color:#111;overflow:auto;font:16px system-ui,sans-serif;-webkit-text-size-adjust:100%';
+  document.body.appendChild(root);document.title='Übung';
+  const pid=(()=>{try{let v=sessionStorage.getItem('ue_pid');if(!v){v='k'+Math.random().toString(36).slice(2);sessionStorage.setItem('ue_pid',v);}return v;}catch(e){return'k'+Math.random().toString(36).slice(2);}})();
+  const box=h=>root.innerHTML='<div style="max-width:640px;margin:0 auto;padding:16px">'+h+'</div>';
+  let nm='';try{nm=sessionStorage.getItem('ue_name')||'';}catch(e){}
+  box('<h2 style="margin:8px 0">📱 Übung</h2><label>Dein Name:<br><input id="ue-n" type="text" maxlength="16" value="'+esc(nm)+'" style="font:inherit;font-size:18px;padding:10px;width:100%;box-sizing:border-box;margin-top:6px"></label><button id="ue-go" style="font:inherit;font-size:18px;margin-top:14px;padding:12px 20px;border:0;border-radius:10px;background:#2f6fed;color:#fff;width:100%">Los geht’s</button><div id="ue-st" style="margin-top:10px;color:#555"></div>');
+  root.querySelector('#ue-go').onclick=()=>{const name=root.querySelector('#ue-n').value.trim();if(!name){root.querySelector('#ue-st').textContent='Bitte gib deinen Namen ein.';return;}try{sessionStorage.setItem('ue_name',name);}catch(e){}connect(name);};
+  let net=null,set=null;
+  function connect(name){root.querySelector('#ue-st').textContent='Verbindung wird aufgebaut …';
+   netJoin(code,{onOpen:()=>{net.send({t:'hello',pid,name});},onError:e=>{root.querySelector('#ue-st').textContent=(e==='peer-unavailable'||e==='timeout')?'Diesen Code gibt es nicht (oder die Lehrkraft hat die Übung beendet).':'Verbindung nicht möglich ('+e+').';},onMsg:m=>{if(m.t==='set'){set=m;run(m);}},onClose:()=>{}}).then(n=>{net=n;});}
+  async function run(m){
+   box('<div style="padding:30px;text-align:center">Aufgaben werden geladen …</div>');
+   let pack;try{pack=await dec(m.S.pack);}catch(e){box('Die Übung konnte nicht geladen werden.');return;}
+   const sty=[...document.querySelectorAll('style,link[rel=stylesheet]')].map(e=>e.outerHTML).join('');
+   // Blatt nur in der Schüler-Ansicht einsetzen
+   const solB=SOL,mk=$('#solmark');IO.unpack(pack);SOL=false;if(mk)mk.style.display='none';sel=null;render();await wait(60);
+   const hA=sheet.cloneNode(true);hA.style.boxShadow='none';hA.style.margin='0';hA.classList.remove('sel');const htmlA=hA.outerHTML;
+   let htmlS=null;try{if(hasSol()){SOL=true;if(mk)mk.style.display='block';render();await wait(80);const hS=sheet.cloneNode(true);hS.style.boxShadow='none';hS.style.margin='0';hS.classList.remove('sel');htmlS=hS.outerHTML;}}catch(e){}
+   SOL=false;if(mk)mk.style.display='none';try{render();}catch(e){}
+   const T=m.S.tasks,H=m.S.H,res=m.res||{},st=T.map((_,i)=>res[i]?{done:true,ok:res[i].ok,tries:res[i].tries||1}:{done:false,tries:0});
+   const frame=(host,html,t,l,r,s)=>{const fr=document.createElement('iframe');fr.setAttribute('aria-hidden','true');fr.style.cssText='position:absolute;left:0;top:0;width:794px;height:'+H+'px;border:0;transform-origin:0 0;background:#fff;pointer-events:none;transform:translate('+(-l*s)+'px,'+(-t*s)+'px) scale('+s+')';host.appendChild(fr);const d=fr.contentDocument;d.open();d.write('<!doctype html><html lang="de"><head><meta charset="utf-8">'+sty+'</head><body class="pv" style="margin:0;background:#fff;height:auto">'+html+'</body></html>');d.close();return fr;};
+   root.innerHTML='<div style="position:sticky;top:0;z-index:5;background:#14181f;color:#fff;padding:8px 14px;display:flex;gap:10px;align-items:center"><b style="flex:1">'+esc(m.S.title||'Übung')+'</b><span id="ue-p"></span></div><div id="ue-l" style="max-width:700px;margin:0 auto;padding:10px 12px 60px"></div>';
+   const L=root.querySelector('#ue-l'),P=root.querySelector('#ue-p');
+   const prog=()=>{const n=st.filter(x=>x.done).length;P.textContent=n+' / '+T.length+' erledigt';};prog();
+   const send=(i,ok,tries)=>{st[i].done=true;st[i].ok=ok;st[i].tries=tries;prog();net.send({t:'r',pid,i,ok,tries});};
+   const W=Math.min(700,Math.max(300,innerWidth-24))-20;
+   T.forEach((t,i)=>{
+    const l=Math.max(0,t.l||0),r=Math.min(794,t.r||794),w=r-l,h=t.b-t.t,s=Math.max(.72,Math.min(1.4,W/w));
+    const c=document.createElement('div');c.style.cssText='background:#fff;border-radius:12px;box-shadow:0 1px 6px rgba(0,0,0,.12);margin:12px 0;padding:10px';
+    c.innerHTML='<div style="font-weight:700;margin-bottom:6px">Aufgabe '+(i+1)+'</div><div class="sc" style="overflow-x:auto;border:1px solid #e5e7eb;border-radius:8px"><div class="fh" style="position:relative;overflow:hidden;width:'+Math.round(w*s)+'px;height:'+Math.round(h*s)+'px;background:#fff"></div></div>'+(w*s>W+4?'<div style="font-size:12px;color:#666;margin-top:3px">↔ Wische nach rechts, um die ganze Aufgabe zu sehen.</div>':'')+'<div class="fl" style="margin-top:8px"></div><div class="ms" style="margin-top:6px;min-height:1.3em;font-weight:600"></div><div class="bt" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px"></div>';
+    L.appendChild(c);const fh=c.querySelector('.fh'),fl=c.querySelector('.fl'),ms=c.querySelector('.ms'),bt=c.querySelector('.bt');
+    let fA=null,fS=null,showS=false;
+    const mkA=()=>{if(!fA)fA=frame(fh,htmlA,t.t,l,r,s);};
+    const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){mkA();io.disconnect();}},{rootMargin:'400px'});io.observe(c);
+    const btn=(txt,fnc,pri)=>{const b=document.createElement('button');b.textContent=txt;b.style.cssText='font:inherit;padding:10px 14px;border-radius:9px;border:1px solid #c7ced9;background:'+(pri?'#2f6fed;color:#fff;border-color:#2f6fed':'#fff')+';';b.onclick=fnc;bt.appendChild(b);return b;};
+    const solBtn=()=>{if(!htmlS)return;const b=btn('👁 Lösung ansehen',()=>{mkA();if(!fS)fS=frame(fh,htmlS,t.t,l,r,s);showS=!showS;fS.style.visibility=showS?'visible':'hidden';fA.style.visibility=showS?'hidden':'visible';b.textContent=showS?'🙈 Lösung verbergen':'👁 Lösung ansehen';if(showS&&!st[i].done&&t.f)send(i,0,st[i].tries||1);});return b;};
+    if(t.f){
+     const vals=t.f.map(()=>null);
+     t.f.forEach((f,j)=>{const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin:6px 0';row.innerHTML='<span style="min-width:2.2em;font-weight:700">'+esc(f.l||'')+'</span>';
+      if(f.k==='sel'){f.o.forEach(o=>{const b=document.createElement('button');b.textContent=o;b.dataset.v=o;b.style.cssText='font:inherit;font-size:22px;width:52px;height:46px;border-radius:9px;border:2px solid #c7ced9;background:#fff';b.onclick=()=>{vals[j]=o;[...row.querySelectorAll('button')].forEach(x=>{x.style.background=x===b?'#dbe7ff':'#fff';x.style.borderColor=x===b?'#2f6fed':'#c7ced9';});};row.appendChild(b);});}
+      else{const inp=document.createElement('input');inp.type='text';inp.inputMode='decimal';inp.autocomplete='off';inp.style.cssText='font:inherit;font-size:20px;padding:8px;width:9em;border:2px solid #c7ced9;border-radius:9px';inp.oninput=()=>{vals[j]=inp.value;};row.appendChild(inp);}
+      row.dataset.j=j;fl.appendChild(row);});
+     const mark=(j,ok)=>{const row=fl.children[j];row.style.background=ok===null?'':ok?'#d9f7e0':'#ffe1de';row.style.borderRadius='8px';};
+     btn('Prüfen',()=>{const oks=t.f.map((f,j)=>vals[j]!=null&&vals[j]!==''&&same(f,vals[j]));
+      oks.forEach((x,j)=>mark(j,vals[j]==null||vals[j]===''?null:x));
+      if(oks.every(Boolean)){const first=st[i].tries===0;ms.textContent='✅ Alles richtig!'+(first?'':' (nach einem Fehler)');ms.style.color='#15803d';send(i,first?1:0.5,st[i].tries+1);solBtn&&0;}
+      else{st[i].tries++;const n=oks.filter(Boolean).length;ms.textContent='❌ '+n+' von '+oks.length+' richtig. Probier die roten noch einmal.';ms.style.color='#b91c1c';if(st[i].tries===1&&!st[i].done){}}
+     },true);
+     solBtn();
+    }else{
+     const sb=solBtn();
+     if(!sb){const n=document.createElement('div');n.style.color='#666';n.textContent='Rechne im Heft. Die Lösung bekommst du von deiner Lehrkraft.';bt.appendChild(n);}
+     else{const a=btn('✅ Hatte ich richtig',()=>{send(i,1,1);ms.textContent='Gespeichert: richtig';ms.style.color='#15803d';});const b=btn('❌ Nicht ganz',()=>{send(i,0,1);ms.textContent='Gespeichert: nicht ganz – schau dir die Lösung an.';ms.style.color='#b91c1c';});}
+    }
+   });
+   const end=document.createElement('div');end.style.cssText='text-align:center;color:#555;margin:20px 0';end.textContent='Fertig? Dann sag deiner Lehrkraft Bescheid. 👍';L.appendChild(end);
+  }
+ }
+ window.__ueStudent=student;window.__ueStart=start;
+ const b=document.createElement('button');b.id='ueb';b.textContent='📱 Übung';b.title='Kinder üben am Handy oder Tablet, du siehst die Ergebnisse';b.onclick=start;
+ const bm=document.getElementById('bmb')||document.getElementById('svb');if(bm)bm.parentNode.insertBefore(b,bm.nextSibling);
+ function route(){const m=/^#ue=(\d{3,6})$/.exec(location.hash);if(m&&!document.getElementById('uev'))student(m[1]);}
+ route();addEventListener('hashchange',route);
 })();
 /* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
 (function(){
