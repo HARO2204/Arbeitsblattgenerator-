@@ -7888,6 +7888,79 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  const pb=document.getElementById('pdfb');
  if(pb){const b=document.createElement('button');b.id='dxb';b.textContent='Word speichern';b.title='Arbeitsblatt als Word-Datei (.docx) speichern. Die Seiten sind Bilder, nicht bearbeitbar. Lösungsblatt wie beim PDF.';b.onclick=makeDocx;pb.parentNode.insertBefore(b,pb.nextSibling);const e=document.createElement('button');e.id='dxe';e.textContent='Word (Text bearbeitbar)';e.title='Word-Datei, in der Überschrift, Nummern und Angaben als Text bearbeitbar sind. Der Aufgabenteil darunter ist ein Bild.';e.onclick=makeDocxEdit;b.parentNode.insertBefore(e,b.nextSibling);}
 })();
+/* ===== Partnerrätsel: zwei Blätter (A und B), die Ergebnisse des anderen werden gebraucht ===== */
+(function(){
+ const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+ const OPS={add:'+',sub:'−',mul:'·',div:':'};
+ const fmt=v=>String(v).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+ function gen(n,mx,ops){ops=ops&&ops.length?ops:['add','sub'];const steps=[];let p=null;
+  for(let i=0;i<2*n;i++){let st=null,t=0;
+   while(!st&&t++<80){const op=pick(ops);
+    if(i===0){
+     if(op==='add'){const a=R(2,Math.max(3,Math.floor(mx*.6))),b=R(2,Math.max(3,Math.floor(mx*.6)));if(a+b<=mx)st={op,a,q:b,r:a+b};}
+     else if(op==='sub'){const a=R(Math.max(5,Math.floor(mx*.3)),mx),b=R(2,a-2);if(a-b>=2)st={op,a,q:b,r:a-b};}
+     else if(op==='mul'){const a=R(2,10),b=R(2,10);st={op,a,q:b,r:a*b};}
+     else{const b=R(2,10),r=R(2,10);st={op,a:b*r,q:b,r};}}
+    else{
+     if(op==='add'){const q=R(2,Math.max(3,Math.floor(mx/3)));if(p+q<=Math.max(mx,100))st={op,q,r:p+q};}
+     else if(op==='sub'){if(p>4){const q=R(2,p-2);st={op,q,r:p-q};}}
+     else if(op==='mul'){const q=R(2,10);if(p*q<=Math.max(mx,100)&&p>1)st={op,q,r:p*q};}
+     else{const ds=[];for(let q=2;q<=10;q++)if(p%q===0&&p/q>=2)ds.push(q);if(ds.length){const q=pick(ds);st={op,q,r:p/q};}}}}
+   if(!st)st=i===0?{op:'add',a:7,q:5,r:12}:p>4?{op:'sub',q:2,r:p-2}:{op:'add',q:3,r:p+3};
+   steps.push(st);p=st.r;}
+  return steps;}
+ function ptrSvg(it){const W=714,fs=it.fs||20,n=it.n||5,role=it.role||'A',chain=it.chain||[],me=role==='A'?0:1,other=role==='A'?'B':'A',rowH=Math.round(fs*3.2),H0=84,H=H0+n*rowH+56,sol=typeof SOL!=='undefined'&&SOL;
+  const e=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');let g='';
+  g+=`<text x="${W/2}" y="30" text-anchor="middle" font-size="${fs+8}" font-weight="700" font-family="Arial,sans-serif">Partnerrätsel · Blatt ${role}</text>`;
+  g+=`<text x="${W/2}" y="54" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" fill="#333">Rechne deine Aufgaben und sage das Ergebnis jeder Aufgabe deinem Partner.</text>`;
+  g+=`<text x="${W/2}" y="72" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" fill="#333">Für die nächste Aufgabe brauchst du seine Zahl – hör gut zu!</text>`;
+  for(let k=0;k<n;k++){const si=2*k+me,st=chain[si];if(!st)continue;const y=H0+k*rowH+rowH*0.62,lab=role+(k+1);
+   g+=`<circle cx="30" cy="${y-fs*0.35}" r="${fs*0.95}" fill="#e8f0fb" stroke="#2f6fed"/><text x="30" y="${y-fs*0.35+fs*0.35}" text-anchor="middle" font-size="${fs-2}" font-weight="700" font-family="Arial,sans-serif" fill="#1a4fb5">${lab}</text>`;
+   let x=72;
+   if(si===0){const t=`${fmt(st.a)} ${OPS[st.op]} ${fmt(st.q)} =`;g+=`<text x="${x}" y="${y}" font-size="${fs+4}" font-family="Arial,sans-serif">${e(t)}</text>`;x+=t.length*(fs+4)*0.58+14;}
+   else{const pl=other+(Math.floor((si-1)/2)+1),pr=chain[si-1].r,bw=150,bh=Math.round(fs*2.2);
+    g+=`<rect x="${x}" y="${y-bh+8}" width="${bw}" height="${bh}" rx="6" fill="${sol?'#fff5f5':'#fff'}" stroke="#666" stroke-dasharray="5 4"/>`;
+    if(sol)g+=`<text x="${x+bw/2}" y="${y+3}" text-anchor="middle" font-size="${fs+2}" font-family="Arial,sans-serif" fill="#d00">${fmt(pr)}</text>`;
+    g+=`<text x="${x+bw/2}" y="${y-bh+8+11}" text-anchor="middle" font-size="10" font-family="Arial,sans-serif" fill="#777">Zahl von ${pl}</text>`;
+    x+=bw+14;const t=`${OPS[st.op]} ${fmt(st.q)} =`;g+=`<text x="${x}" y="${y}" font-size="${fs+4}" font-family="Arial,sans-serif">${e(t)}</text>`;x+=t.length*(fs+4)*0.6+14;}
+   const lx2=W-36;g+=`<line x1="${x}" y1="${y+4}" x2="${lx2}" y2="${y+4}" stroke="#000" stroke-width="1.2"/>`;
+   if(sol)g+=`<text x="${x+10}" y="${y}" font-size="${fs+4}" font-family="Arial,sans-serif" fill="#d00" font-weight="700">${fmt(st.r)}</text>`;}
+  const last=chain[chain.length-1],cy=H-22;
+  if(last){g+=`<g transform="rotate(180 ${W/2} ${cy})"><text x="${W/2}" y="${cy}" text-anchor="middle" font-size="13" font-family="Arial,sans-serif" fill="#555">Kontrolle (Blatt umdrehen): Die letzte Zahl der Kette ist ${fmt(last.r)}.</text></g>`;}
+  return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect x="1" y="1" width="${W-2}" height="${H-2}" rx="10" fill="none" stroke="#2f6fed" stroke-width="1.5"/>${g}</svg>`};}
+ const _sv=svgNew;svgNew=function(it){return it.type==='ptr'?ptrSvg(it):_sv.apply(this,arguments);};
+ const _co=catOf;catOf=function(it){return it.type==='ptr'?'lk':_co.apply(this,arguments);};
+ const linked=it=>items.filter(i=>i.type==='ptr'&&i.cid===it.cid);
+ function regen(it,par){const L=linked(it),c=gen(par.n,par.mx,par.ops);L.forEach(x=>{Object.assign(x,par);x.chain=c;});render();}
+ const _add=add;add=function(t,x,y){
+  if(t!=='ptr')return _add.apply(this,arguments);
+  rec();const cid='p'+Date.now(),par={n:5,mx:100,ops:['add','sub','mul','div'],fs:20},c=gen(par.n,par.mx,par.ops);
+  const np=document.getElementById('npg');if(np&&+np.value<2){np.value='2';np.dispatchEvent(new Event('change'));}
+  const mkI=(role,yy)=>({id:uid++,type:'ptr',cid,role,x:40,y:yy,w:714,n:par.n,mx:par.mx,ops:par.ops.slice(),fs:par.fs,chain:c});
+  const a=mkI('A',40),b=mkI('B',PH+40);items.push(a,b);sel=a.id;render();sync();toast('Partnerrätsel eingefügt: Seite 1 = Kind A, Seite 2 = Kind B. Drucke das Blatt zweiseitig und schneide es auseinander.');};
+ let g=document.getElementById('g-ptr');if(!g){const a=document.getElementById('g-sk')||document.getElementById('g-kre');if(a){g=document.createElement('div');g.className='grp';g.id='g-ptr';g.dataset.cats='lk';a.after(g);}}
+ const s1=()=>items.find(i=>i.id===sel&&i.type==='ptr');
+ function renderPt(){if(!g)return;const it=s1();if(!it){g.innerHTML='';return;}
+  const sel2=(id,vals,cur,lab)=>`<label style="display:block;margin:4px 0">${lab}<select id="${id}" style="font:inherit;margin-left:6px">${vals.map(v=>`<option value="${v}"${String(v)===String(cur)?' selected':''}>${v}</option>`).join('')}</select></label>`;
+  const ck=(k,l)=>`<label style="margin-right:8px"><input type="checkbox" data-op="${k}"${(it.ops||[]).includes(k)?' checked':''}> ${l}</label>`;
+  g.innerHTML=`<div style="font-weight:700;margin:6px 0 4px">🤝 Partnerrätsel (Blatt ${it.role})</div><div style="font-size:13px;color:var(--mut,#666);margin-bottom:6px">Die Kinder brauchen abwechselnd die Zahl des Partners. Am Ende stimmt die Kontrollzahl, wenn beide richtig gerechnet haben.</div>`
+  +sel2('pt-n',[3,4,5,6,7,8],it.n,'Aufgaben pro Kind')+sel2('pt-m',[20,100,1000],it.mx,'Zahlenraum bis')
+  +`<div style="margin:4px 0">${ck('add','＋')}${ck('sub','−')}${ck('mul','·')}${ck('div',':')}</div>`
+  +`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"><button type="button" class="btn" data-pt="roll">🎲 Neu würfeln (A und B)</button></div><div style="font-size:12px;color:var(--mut,#666);margin-top:6px">Tipp: Mit „Lösungen anzeigen“ siehst du die ganze Kette in Rot.</div>`;}
+ if(g){
+  const upd=()=>{const it=s1();if(!it)return;const ops=[...g.querySelectorAll('[data-op]:checked')].map(x=>x.dataset.op);if(!ops.length){toast('Bitte mindestens eine Rechenart wählen.');renderPt();return;}
+   rec();regen(it,{n:+g.querySelector('#pt-n').value,mx:+g.querySelector('#pt-m').value,ops,fs:it.fs||20});renderPt();};
+  g.addEventListener('change',e=>{if(e.target.id==='pt-n'||e.target.id==='pt-m'||e.target.dataset.op)upd();});
+  g.addEventListener('click',e=>{const b=e.target.closest('[data-pt]');if(!b)return;const it=s1();if(!it)return;if(b.dataset.pt==='roll'){rec();regen(it,{n:it.n,mx:it.mx,ops:it.ops,fs:it.fs||20});}});}
+ const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);renderPt();};
+ /* Palette (Für Lehrkräfte) */
+ const pl=document.querySelector('.catp[data-c="lk"]');
+ if(pl){const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t='ptr';d.style.cssText='margin-bottom:8px';d.innerHTML='<svg viewBox="0 0 100 40"><rect x="6" y="6" width="38" height="28" rx="4" fill="#e8f0fb" stroke="#2f6fed"/><rect x="56" y="6" width="38" height="28" rx="4" fill="#fff3e0" stroke="#e8590c"/><text x="25" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#1a4fb5">A</text><text x="75" y="26" text-anchor="middle" font-size="14" font-weight="700" fill="#c2410c">B</text><path d="M44 15h12M52 11l4 4-4 4M56 25H44M48 21l-4 4 4 4" stroke="#333" fill="none"/></svg><span>Partnerrätsel (Blatt A + B)</span>';
+  const ins=pl.querySelector('.pal[data-t="skq"]');(ins?ins.nextSibling:pl.firstChild);pl.insertBefore(d,pl.firstChild);
+  d.ondragstart=ev=>ev.dataTransfer.setData('text/plain','ptr');d.onclick=()=>add('ptr');
+  const h=document.createElement('div');h.style.cssText='font-size:12px;color:var(--mut,#666);margin:0 0 8px';h.textContent='Zwei Blätter für zwei Kinder: Die Kinder brauchen abwechselnd das Ergebnis des Partners.';pl.insertBefore(h,d.nextSibling);}
+})();
+
 /* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
 (function(){
  const real=window.html2canvas;if(typeof real!=='function')return;
