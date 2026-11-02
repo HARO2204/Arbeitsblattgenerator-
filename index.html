@@ -7965,7 +7965,7 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
 (function(){
  const L=document.getElementById('left');if(!L)return;
  const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','fk']],['📐 Geometrie',['sg','wk','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
- const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'234',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',fk:'4',sg:'1',wk:'12',pn:'1',dr:'2',vk:'12',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
+ const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',fk:'4',sg:'1',wk:'12',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
  const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
  let kl=+ls.get('vk_klasse_v1',0)||0,USER=ls.get('vk_klzuord_v1',{})||{},COL=ls.get('vk_klgrp_v1',{})||{};
  const mapOf=c=>(USER[c]||DEF[c]||'1234');
@@ -8013,6 +8013,135 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  const _ac=applyCat;applyCat=function(){const r=_ac.apply(this,arguments);try{openCur();}catch(e){}return r;};
  window.__klOrganize=organize;
  setTimeout(organize,0);setTimeout(organize,1500);addEventListener('load',()=>setTimeout(organize,300));
+})();
+
+/* ===== Brüche: vergleichen/ordnen und Bruch ↔ Dezimalzahl ===== */
+(function(){
+ const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+ const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+ const gcd=(a,b)=>b?gcd(b,a%b):a;
+ const dec=(n,d)=>{ /* exakt als Dezimalzahl mit Komma, nur für d | 10^k */ let k=0,m=d;while(m%10===0){m/=10;k++;}let t=0,x=d;while(x%2===0){x/=2;t++;}let f=0;while(x%5===0){x/=5;f++;}if(x!==1)return null;const p=Math.max(t,f);const v=n*Math.pow(10,p)/d;let s=String(Math.round(v));while(s.length<=p)s='0'+s;return p?s.slice(0,s.length-p)+','+s.slice(s.length-p):s;};
+ const decStr=v=>String(v).replace('.',',');
+ const PER={'1/3':'0,333…','2/3':'0,666…','1/6':'0,1666…','5/6':'0,8333…','1/9':'0,111…','2/9':'0,222…','4/9':'0,444…','5/9':'0,555…','7/9':'0,777…','8/9':'0,888…'};
+ const BVD={1:'ohne',2:'ohne',3:'ohne'};
+ /* ---------- Vergleichen ---------- */
+ function numFrac(n,d){return{n,d,k:'f'};}
+ function numDec(n,d,s){return{n,d,k:'d',s};}
+ function valCmp(a,b){return a.n*b.d-b.n*a.d;}
+ function mkNum(art,mx,mode){
+  if(art==='dez'){const d=pick([2,4,5,10]);const n=R(1,d*2-1);const e=dec(n,d);return e!==null&&R(0,1)?numDec(n,d,e):numFrac(n,d);}
+  return null;}
+ function genCmp(it){
+  const out=[],mx=+it.mx||10;
+  for(let i=0;i<it.n;i++){let a,b,t=0;
+   do{t++;
+    if(it.art==='gleich'){const d=R(3,mx);a=numFrac(R(1,d-1),d);b=numFrac(R(1,d-1),d);}
+    else if(it.art==='stamm'){const d1=R(2,mx),d2=R(2,mx);a=numFrac(1,d1);b=numFrac(R(1,2)===1?1:R(1,d2-1),d2);}
+    else if(it.art==='ungl'){const d1=pick([2,3,4,5,6].filter(x=>x<=mx)),f=R(2,Math.max(2,Math.floor(mx/d1))),d2=d1*f;a=numFrac(R(1,d1-1),d1);b=numFrac(R(1,d2-1),d2);if(R(0,1))[a,b]=[b,a];}
+    else{const d=pick([2,4,5,10]);const n=R(1,d*2-1);a=numFrac(n,d);const q=pick([2,4,5,10,20]);let m=Math.round(n/d*q)+pick([-1,0,0,1]);m=Math.max(1,m);const e=dec(m,q);b=e?numDec(m,q,e):numFrac(m,q);if(R(0,1))[a,b]=[b,a];}
+   }while(t<40&&(a.n===0||b.n===0||(valCmp(a,b)===0&&R(0,4))||(a.k==='f'&&b.k==='f'&&a.n===b.n&&a.d===b.d)));
+   out.push({a,b,s:valCmp(a,b)<0?'<':valCmp(a,b)>0?'>':'='});}
+  return out;}
+ function genOrd(it){
+  const out=[],mx=+it.mx||10,cnt=+it.cnt||4;
+  for(let i=0;i<it.n;i++){let arr=[],t=0;
+   while(arr.length<cnt&&t++<200){let x;
+    if(it.art==='gleich'){const d=out.length||arr.length?arr[0]?arr[0].d:R(3,mx):R(3,mx);x=numFrac(R(1,Math.max(2,(arr[0]?arr[0].d:d)*1)-1),arr[0]?arr[0].d:d);}
+    else if(it.art==='stamm'){x=numFrac(1,R(2,mx));}
+    else if(it.art==='ungl'){const d=pick([2,3,4,5,6,8,10,12].filter(v=>v<=Math.max(4,mx)));x=numFrac(R(1,d-1),d);}
+    else{const d=pick([2,4,5,10]);if(R(0,1)){x=numFrac(R(1,d*2-1),d);}else{const q=pick([2,4,5,10]);const m=R(1,q*2-1);const e=dec(m,q);x=e?numDec(m,q,e):numFrac(m,q);}}
+    if(!arr.some(y=>valCmp(x,y)===0))arr.push(x);}
+   const sorted=arr.slice().sort(valCmp);out.push({g:shuf(arr),s:sorted});}
+  return out;}
+ /* ---------- Bruch <-> Dezimalzahl ---------- */
+ function genBd(it){
+  const rows=[],lv=+it.lv||1;const seen=new Set();
+  let guard=0;
+  while(rows.length<it.n&&guard++<400){let n,d,dz;
+   if(lv===1){d=pick([10,100,10,100,1000].slice(0,it.lv===1?4:5));n=d===10?R(1,29):d===100?R(1,99):R(1,199);if(n%d===0)continue;if(R(0,3)===0&&d!==1000)n=R(1,9);dz=dec(n,d);}
+   else if(lv===2){const dd=pick([[2,[1]],[4,[1,3,5]],[5,[1,2,3,4,6]],[8,[1,3,5,7]],[20,[1,3,7,9,11]],[25,[1,2,3,4,6]],[50,[1,3,7,9]]]);d=dd[0];n=pick(dd[1]);dz=dec(n,d);}
+   else{const k=pick(Object.keys(PER));n=+k.split('/')[0];d=+k.split('/')[1];dz=PER[k];}
+   const key=n+'/'+d;if(seen.has(key))continue;seen.add(key);
+   let pr=null;if(it.pro&&lv<3){const v=dec(n*100,d);pr=v===null?null:v+' %';}
+   let given;
+   if(it.md==='b2d')given='b';else if(it.md==='d2b')given='d';else{const c=['b','d'];if(pr)c.push('p');given=pick(c);}
+   rows.push({n,d,dz,pr,g:given,whole:n>=d});}
+  return rows;}
+ function gen(it){if(it.type==='bvg')it.tasks=it.md==='ord'?genOrd(it):genCmp(it);else it.rows=genBd(it);}
+ /* ---------- Zeichnen ---------- */
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+ const fw=(n,d,fs)=>Math.max(String(n).length,String(d).length)*fs*0.62+fs*0.5;
+ function frac(cx,y0,n,d,fs,col){const w=fw(n,d,fs),ly=y0-fs*0.3;col=col||'#000';
+  return `<text x="${cx}" y="${y0-fs*0.45}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}">${n}</text><line x1="${cx-w/2}" y1="${ly}" x2="${cx+w/2}" y2="${ly}" stroke="${col}" stroke-width="1.5"/><text x="${cx}" y="${y0+fs*0.55}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}">${d}</text>`;}
+ function numSvg(x,y0,v,fs){ /* gibt [svg,width] */ if(v.k==='d'){const w=v.s.length*fs*0.58+4;return[`<text x="${x+w/2}" y="${y0}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif">${v.s}</text>`,w];}
+  const w=fw(v.n,v.d,fs);return[frac(x+w/2,y0,v.n,v.d,fs),w];}
+ const isSol=()=>typeof SOL!=='undefined'&&SOL;
+ function bvgSvg(it){const W=it.w||714,fs=it.fs||22,sol=isSol(),rowH=Math.round(fs*2.5),tasks=(it.tasks||[]).filter(t=>it.md==='ord'?(t.g&&t.s):(t.a&&t.b));let g='',H=6;
+  if(it.md==='ord'){tasks.forEach((t,i)=>{const y0=H+rowH*0.62;let x=8;
+    g+=`<text x="${x}" y="${y0}" font-size="${fs-2}" font-weight="700" font-family="Arial,sans-serif" fill="#2b5fb4">${it.lab==='n'?'':String.fromCharCode(97+i)+')'}</text>`;x+=fs*1.9;
+    t.g.forEach((v,k)=>{const [s,w]=numSvg(x,y0,v,fs);g+=s;x+=w+(k<t.g.length-1?fs*0.9:0);if(k<t.g.length-1)g+=`<text x="${x-fs*0.45}" y="${y0}" font-size="${fs}" font-family="Arial,sans-serif" text-anchor="middle">;</text>`;});
+    H+=rowH;const y1=H+rowH*0.32;let xx=8+fs*1.9;g+=`<text x="${xx-fs*0.2}" y="${y1}" font-size="${fs-4}" fill="#555" font-family="Arial,sans-serif">&#8594;</text>`;xx+=fs*0.9;
+    t.s.forEach((v,k)=>{const bw=Math.max(fs*2.2,numSvg(0,0,v,fs)[1]+10);g+=`<rect x="${xx}" y="${y1-fs*1.05}" width="${bw}" height="${fs*1.6}" rx="5" fill="none" stroke="#888"/>`;if(sol){const [s2,w2]=numSvg(xx+bw/2-numSvg(0,0,v,fs)[1]/2,y1-fs*0.1,v,fs);g+=s2.replace(/fill="#000"/g,'fill="#d00"').replace(/<text /g,'<text fill="#d00" ').replace(/<line /g,'<line stroke="#d00" ');}xx+=bw;if(k<t.s.length-1){g+=`<text x="${xx+fs*0.45}" y="${y1}" font-size="${fs}" font-family="Arial,sans-serif" text-anchor="middle">&lt;</text>`;xx+=fs*0.9;}});
+    H+=rowH*0.75;});}
+  else{const cols=Math.max(1,Math.min(3,+it.cols||2)),cw=W/cols,rows=Math.ceil(tasks.length/cols);
+   tasks.forEach((t,i)=>{const c=i%cols,r=Math.floor(i/cols),x0=c*cw+6,y0=H+r*rowH+rowH*0.62;let x=x0;
+    g+=`<text x="${x}" y="${y0}" font-size="${fs-4}" font-weight="700" font-family="Arial,sans-serif" fill="#2b5fb4">${String.fromCharCode(97+i)})</text>`;x+=fs*1.5;
+    let [s1,w1]=numSvg(x,y0,t.a,fs);g+=s1;x+=w1+fs*0.5;
+    const bs=fs*1.5;g+=`<rect x="${x}" y="${y0-bs*0.78}" width="${bs}" height="${bs}" rx="4" fill="none" stroke="#888"/>`;
+    if(sol)g+=`<text x="${x+bs/2}" y="${y0+bs*0.05}" text-anchor="middle" font-size="${fs+2}" font-weight="700" font-family="Arial,sans-serif" fill="#d00">${t.s==='<'?'&lt;':t.s}</text>`;
+    x+=bs+fs*0.5;let [s2]=numSvg(x,y0,t.b,fs);g+=s2;});
+   H+=rows*rowH;}
+  H+=8;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ function bdSvg(it){const W=it.w||560,fs=it.fs||22,sol=isSol(),rows=it.rows||[],pro=it.pro&&it.lv<3,rowH=Math.round(fs*2.7);
+  const cols=['Bruch','Dezimalzahl'].concat(pro?['Prozent']:[]),cw=(W-24)/cols.length,x0=0,hh=Math.round(fs*1.5);let g='';
+  g+=`<rect x="0.5" y="0.5" width="${W-1}" height="${hh}" fill="#e8f0fb" stroke="#555"/>`;
+  cols.forEach((c,i)=>{g+=`<text x="${i*cw+cw/2+12}" y="${hh*0.7}" text-anchor="middle" font-size="${fs-4}" font-weight="700" font-family="Arial,sans-serif">${c}</text>`;});
+  rows.forEach((r,k)=>{const y=hh+k*rowH,yb=y+rowH*0.62;
+   g+=`<rect x="0.5" y="${y+0.5}" width="${W-1}" height="${rowH}" fill="none" stroke="#555"/>`;
+   cols.forEach((c,i)=>{const cx=i*cw+cw/2+12,key=['b','d','p'][i];if(i>0)g+=`<line x1="${i*cw+12}" y1="${y}" x2="${i*cw+12}" y2="${y+rowH}" stroke="#555"/>`;
+    const show=r.g===key||(sol),col=r.g===key?'#000':'#d00';
+    if(!show)return;
+    if(key==='b')g+=frac(cx,yb,r.n,r.d,fs,col);
+    else if(key==='d')g+=`<text x="${cx}" y="${yb}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}">${r.dz}</text>`;
+    else if(r.pr)g+=`<text x="${cx}" y="${yb}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}">${r.pr}</text>`;});});
+  const H=hh+rows.length*rowH+2;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ const _sv=svgNew;svgNew=function(it){return it.type==='bvg'?bvgSvg(it):it.type==='bdz'?bdSvg(it):_sv.apply(this,arguments);};
+ const _co=catOf;catOf=function(it){return(it.type==='bvg'||it.type==='bdz')?'br':_co.apply(this,arguments);};
+ const DEF={bvg:{md:'cmp',art:'ungl',mx:8,n:6,cols:3,cnt:4,fs:22,w:714},bdz:{md:'mix',lv:1,n:6,pro:false,fs:22,w:560}};
+ const _add=add;add=function(t,x,y){
+  if(t!=='bvg'&&t!=='bdz')return _add.apply(this,arguments);
+  rec();const it={id:uid++,type:t,x:x??60,y:y??100,...JSON.parse(JSON.stringify(DEF[t]))};gen(it);items.push(it);sel=it.id;render();
+  if(x===undefined){try{const e=elOf(it.id),w=e?e.offsetWidth:0;if(w>=400&&w<=794){it.x=Math.round((794-w)/2);render();}}catch(_){}}sync();};
+ /* Panel */
+ let g=document.getElementById('g-bz');if(!g){g=document.createElement('div');g.className='grp';g.id='g-bz';g.dataset.cats='br';const a=document.getElementById('g-br')||document.getElementById('g-ci');const f=[...document.querySelectorAll('#rp [data-cats]')].find(e=>e!==g&&e.dataset.cats.split(' ').includes('br'));if(f)f.parentNode.insertBefore(g,f);else if(a)a.after(g);else document.getElementById('rp').appendChild(g);}
+ const css=document.createElement('style');css.textContent='#rp .grp#g-bz:empty,#rp .grp#g-ptr:empty{display:none!important}';document.head.appendChild(css);
+ const cur=()=>items.find(i=>i.id===sel&&(i.type==='bvg'||i.type==='bdz'));
+ const S=(k,vals,v,lab)=>`<label>${lab}<select data-bz="${k}">${vals.map(a=>{const[val,txt]=Array.isArray(a)?a:[a,a];return`<option value="${val}"${String(val)===String(v)?' selected':''}>${txt}</option>`;}).join('')}</select></label>`;
+ function panel(){const it=cur();if(!it){g.innerHTML='';return;}
+  let h='';
+  if(it.type==='bvg'){h=`<div style="font-weight:700;margin:2px 0">Brüche vergleichen und ordnen</div>`
+   +S('md',[['cmp','Vergleichen (&lt; = &gt;)'],['ord','Der Größe nach ordnen']],it.md,'Aufgabe')
+   +S('art',[['gleich','gleichnamige Brüche'],['stamm','Stammbrüche (Zähler 1)'],['ungl','ungleichnamige Brüche'],['dez','Brüche und Dezimalzahlen']],it.art,'Zahlen')
+   +S('mx',[[6,'Nenner bis 6'],[8,'Nenner bis 8'],[10,'Nenner bis 10'],[12,'Nenner bis 12']],it.mx,'Nenner')
+   +S('n',[2,3,4,5,6,8,9,10,12],it.n,'Anzahl der Aufgaben')
+   +(it.md==='cmp'?S('cols',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten']],it.cols,'Spalten'):S('cnt',[3,4,5,6],it.cnt,'Zahlen pro Aufgabe'));}
+  else{h=`<div style="font-weight:700;margin:2px 0">Bruch und Dezimalzahl</div>`
+   +S('md',[['mix','gemischt (je Zeile eine Angabe)'],['b2d','Bruch → Dezimalzahl'],['d2b','Dezimalzahl → Bruch']],it.md,'Aufgabe')
+   +S('lv',[[1,'1 · Zehntel, Hundertstel, Tausendstel'],[2,'2 · einfache Brüche (½, ¼, ⅕ …)'],[3,'3 · periodische Dezimalzahlen (⅓ …)']],it.lv,'Stufe')
+   +S('n',[3,4,5,6,8,10,12],it.n,'Anzahl der Zeilen')
+   +(it.lv<3?`<label class="ck"><input type="checkbox" data-bz="pro"${it.pro?' checked':''}> Spalte Prozent dazu</label>`:'');}
+  h+=S('fs',[[18,'klein'],[22,'mittel'],[26,'groß']],it.fs,'Schrift')+`<button type="button" data-bz-act="roll">🎲 Neu würfeln</button>`;
+  g.innerHTML=h;}
+ g.addEventListener('change',e=>{const t=e.target,k=t.dataset.bz;if(!k)return;const it=cur();if(!it)return;rec('bz'+k);
+  let v=t.type==='checkbox'?t.checked:t.value;if(['mx','n','cols','cnt','lv','fs'].includes(k))v=+v;it[k]=v;if(k==='lv'&&v===3)it.pro=false;
+  if(k!=='fs')gen(it);render();panel();});
+ g.addEventListener('click',e=>{const b=e.target.closest('[data-bz-act]');if(!b)return;const it=cur();if(!it)return;rec();gen(it);render();});
+ const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
+ /* Palette */
+ const P=document.querySelector('.catp[data-c="br"]');
+ if(P){const mk=(t,svg,txt)=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.innerHTML=`<svg viewBox="0 0 100 40">${svg}</svg><span>${txt}</span>`;d.ondragstart=ev=>ev.dataTransfer.setData('text/plain',t);d.onclick=()=>add(t);P.appendChild(d);};
+  mk('bvg','<text x="14" y="17" font-size="11" text-anchor="middle">3</text><path d="M7 20h14" stroke="#000"/><text x="14" y="32" font-size="11" text-anchor="middle">5</text><rect x="38" y="12" width="22" height="20" rx="3" fill="none" stroke="#000"/><text x="49" y="28" font-size="15" text-anchor="middle" fill="#d00">&lt;</text><text x="82" y="17" font-size="11" text-anchor="middle">2</text><path d="M75 20h14" stroke="#000"/><text x="82" y="32" font-size="11" text-anchor="middle">3</text>','Brüche vergleichen und ordnen');
+  mk('bdz','<rect x="6" y="6" width="88" height="28" fill="none" stroke="#000"/><path d="M50 6v28" stroke="#000"/><text x="28" y="17" font-size="10" text-anchor="middle">3</text><path d="M21 20h14" stroke="#000"/><text x="28" y="31" font-size="10" text-anchor="middle">4</text><text x="72" y="25" font-size="12" text-anchor="middle" fill="#d00">0,75</text>','Bruch ↔ Dezimalzahl (Tabelle)');}
 })();
 
 /* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
