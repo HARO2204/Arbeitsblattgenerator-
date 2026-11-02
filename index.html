@@ -7964,8 +7964,8 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
 /* ===== Klassenfilter + Themengruppen in der linken Leiste ===== */
 (function(){
  const L=document.getElementById('left');if(!L)return;
- const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','fk']],['📐 Geometrie',['sg','wk','sy','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
- const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',fk:'4',sg:'1',wk:'12',sy:'2',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
+ const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','gz','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','fk']],['📐 Geometrie',['sg','wk','sy','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
+ const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',gz:'23',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',fk:'4',sg:'1',wk:'12',sy:'2',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
  const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
  let kl=+ls.get('vk_klasse_v1',0)||0,USER=ls.get('vk_klzuord_v1',{})||{},COL=ls.get('vk_klgrp_v1',{})||{};
  const mapOf=c=>(USER[c]||DEF[c]||'1234');
@@ -8298,6 +8298,147 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   h+='<button type="button" data-sy-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
  g.addEventListener('change',e=>{const t=e.target,k=t.dataset.sy;if(!k)return;const it=cur();if(!it)return;rec('sy'+k);it[k]=k==='n'?+t.value:t.value;it.tasks=GEN[it.type](it);render();panel();});
  g.addEventListener('click',e=>{const b=e.target.closest('[data-sy-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
+ const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
+})();
+
+/* ===== Ganze und rationale Zahlen ===== */
+(function(){
+ const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+ const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a),f2=v=>Math.round(v*100)/100,isSol=()=>typeof SOL!=='undefined'&&SOL;
+ const MI='−',RD='#d00',BL='#2b5fb4',TY=['gzs','gzr','gzl','gzt'];
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+ const sg=n=>(n<0?MI:'')+Math.abs(n);
+ const nz=(a,b)=>{let v;do{v=R(a,b);}while(v===0);return v;};
+ /* Brüche als {n,d} */
+ const fr=(n,d)=>{if(d<0){n=-n;d=-d;}const g=gcd(n,d)||1;return{n:n/g,d:d/g};};
+ const fadd=(a,b)=>fr(a.n*b.d+b.n*a.d,a.d*b.d),fsub=(a,b)=>fr(a.n*b.d-b.n*a.d,a.d*b.d),fmul=(a,b)=>fr(a.n*b.n,a.d*b.d),fdiv=(a,b)=>fr(a.n*b.d,a.d*b.n);
+ const decOf=a=>{ /* exakt, falls d | 10^k */ let k=0,p=1;while(p%a.d!==0&&k<6){k++;p*=10;}if(p%a.d!==0)return null;const v=Math.abs(a.n)*p/a.d;let s=String(v);if(k){while(s.length<=k)s='0'+s;s=s.slice(0,s.length-k)+','+s.slice(s.length-k);s=s.replace(/0+$/,'').replace(/,$/,'');}return(a.n<0?MI:'')+s;};
+ /* Tokens: {s:'text'} | {f:[n,d]} (Betrag) */
+ const tw=(s,fs)=>String(s).length*fs*0.56;
+ const fw=(n,d,fs)=>Math.max(String(n).length,String(d).length)*fs*0.6+fs*0.5;
+ function tokW(tk,fs){return tk.reduce((w,t)=>w+(t.f?fw(t.f[0],t.f[1],fs):tw(t.s,fs)),0);}
+ function tokSvg(tk,x,y,fs,col){let g='',cx=x;col=col||'#000';
+  tk.forEach(t=>{if(t.f){const w=fw(t.f[0],t.f[1],fs),cc=cx+w/2,ly=y-fs*0.3;g+=`<text x="${f2(cc)}" y="${f2(y-fs*0.45)}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}">${t.f[0]}</text><line x1="${f2(cx+2)}" y1="${f2(ly)}" x2="${f2(cx+w-2)}" y2="${f2(ly)}" stroke="${col}" stroke-width="1.4"/><text x="${f2(cc)}" y="${f2(y+fs*0.55)}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}">${t.f[1]}</text>`;cx+=w;}
+   else{g+=`<text x="${f2(cx)}" y="${y}" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}" xml:space="preserve">${esc(t.s)}</text>`;cx+=tw(t.s,fs);}});
+  return[g,cx-x];}
+ /* ---------- Ganze Zahlen ---------- */
+ const opS={'+':'+','-':MI,'*':'·','/':':'};
+ function termI(v,sty,first){ /* ganze Zahl als Token */ if(sty==='klammer')return(v<0?'('+MI+Math.abs(v)+')':'(+'+v+')');if(first)return sg(v);return v<0?'('+MI+Math.abs(v)+')':String(v);}
+ function genGzs(it){const out=[],mx=+it.mx||10;
+  for(let i=0;i<it.n;i++){const sty=it.sty==='mix'?pick(['klammer','kurz']):it.sty,op=it.op==='mix'?pick(['as','md']):it.op;let tk=[],res;
+   if(op==='as'){const k=+it.k===3?3:2,v=[nz(-mx,mx),nz(-mx,mx)];if(k===3)v.push(nz(-mx,mx));const ops=v.slice(1).map(()=>pick(['+','-']));
+    res=v[0];tk.push({s:termI(v[0],sty,true)});v.slice(1).forEach((x,j)=>{tk.push({s:' '+opS[ops[j]]+' '});tk.push({s:termI(x,sty,false)});res=ops[j]==='+'?res+x:res-x;});}
+   else{const lim=Math.min(mx,12),mul=R(0,1)===0;if(mul){const a=nz(-lim,lim),b=nz(-lim,lim);tk=[{s:termI(a,'klammer',true)},{s:' · '},{s:termI(b,'klammer',false)}];res=a*b;}
+    else{const b=nz(-lim,lim),q=nz(-lim,lim),a=b*q;tk=[{s:termI(a,'klammer',true)},{s:' : '},{s:termI(b,'klammer',false)}];res=q;}}
+   out.push({tk,res:sg(res)});}
+  return out;}
+ /* ---------- Rationale Zahlen ---------- */
+ function frTok(a,sign){ /* Bruch mit Vorzeichen in Klammern */ if(a.d===1)return[{s:'('+sg(a.n)+')'}];return[{s:'('+(a.n<0?MI:'')},{f:[Math.abs(a.n),a.d]},{s:')'}];}
+ function resTok(a,kind){ if(kind==='dez'){const s=decOf(a);return[{s:s===null?'?':s}];}
+  if(a.d===1)return[{s:sg(a.n)}];return[{s:a.n<0?MI:''},{f:[Math.abs(a.n),a.d]}];}
+ function genGzr(it){const out=[];
+  for(let i=0;i<it.n;i++){const kind=it.kind==='mix'?pick(['dez','bru']):it.kind,op=it.op==='mix'?pick(['as','md']):it.op;let A,B,o,tk,res;
+   const dz=()=>{const v=nz(-99,99);return fr(v,10);};
+   if(kind==='dez'){
+    if(op==='as'){A=dz();B=dz();o=pick(['+','-']);res=o==='+'?fadd(A,B):fsub(A,B);}
+    else if(R(0,1)){A=dz();B=fr(nz(-9,9),R(0,1)?1:10);o='*';res=fmul(A,B);}
+    else{const q=dz(),b=fr(nz(-9,9),1);if(b.n===0)continue;A=fmul(q,b);B=b;o='/';res=q;}
+    const showD=a=>[{s:'('+decOf(a)+')'}];tk=[].concat(showD(A),[{s:' '+opS[o]+' '}],showD(B));}
+   else{
+    const bf=()=>{const d=pick([2,3,4,5,6,8,10]);return fr(nz(-d+1>-9?-d+1:-8,d-1),d);};
+    A=bf();B=bf();
+    if(op==='as'){o=pick(['+','-']);res=o==='+'?fadd(A,B):fsub(A,B);}
+    else if(R(0,1)){o='*';res=fmul(A,B);}else{o='/';res=fdiv(A,B);}
+    tk=[].concat(frTok(A),[{s:' '+opS[o]+' '}],frTok(B));}
+   out.push({tk,kind,res:resTok(res,kind)});}
+  return out;}
+ function gzSvg(it,tasks,fsBase){const W=it.w||714,sol=isSol();let cols=Math.max(1,Math.min(3,+it.cols||2));if(it.type==='gzr'&&tasks.some(t=>t.kind==='bru'))cols=Math.min(cols,2);
+  const fs=cols===1?fsBase+2:cols===2?fsBase:fsBase-4,cw=W/cols,rowH=Math.round(fs*(tasks.some(t=>t.kind==='bru')?2.6:2.2)),rows=Math.ceil(tasks.length/cols);let g='';
+  tasks.forEach((t,i)=>{const c=i%cols,r=Math.floor(i/cols),x0=c*cw+6,y=r*rowH+rowH*0.66;let x=x0;
+   g+=`<text x="${x}" y="${y}" font-size="${fs-4}" font-weight="700" font-family="Arial,sans-serif" fill="${BL}">${String.fromCharCode(97+i)})</text>`;x+=fs*1.5;
+   const [s,w]=tokSvg(t.tk,x,y,fs);g+=s;x+=w;g+=`<text x="${f2(x)}" y="${y}" font-size="${fs}" font-family="Arial,sans-serif" xml:space="preserve"> = </text>`;x+=tw(' = ',fs);
+   const bw=Math.min(cw-6-(x-x0)-4,fs*5.2);g+=`<line x1="${f2(x)}" y1="${y+4}" x2="${f2(x+bw)}" y2="${y+4}" stroke="#000" stroke-width="1.2"/>`;
+   if(sol){const tk=Array.isArray(t.res)?t.res:[{s:t.res}];const [s2]=tokSvg(tk,x+4,y,fs,RD);g+=s2;}});
+  const H=rows*rowH+6;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Zahlengerade ---------- */
+ function genGzl(it){const out=[],Rg=+it.rg||10;
+  for(let i=0;i<it.n;i++){
+   if(it.md==='bew'){let s,k,r,t=0;do{s=R(-Rg+1,Rg-1);k=nz(-Rg+1,Rg-1);r=s+k;t++;}while((r<-Rg||r>Rg||Math.abs(k)<2)&&t<100);out.push({s,k,r});}
+   else{const v=[];while(v.length<4){const x=R(-Rg+1,Rg-1);if(!v.includes(x))v.push(x);}out.push({v});}}
+  return out;}
+ function gzlSvg(it){const W=it.w||714,Rg=+it.rg||10,sol=isSol(),X0=34,X1=W-34,u=(X1-X0)/(2*Rg),X=v=>X0+(v+Rg)*u;let g='',H=4;
+  const axis=(y)=>{let q=`<line x1="${X0-14}" y1="${y}" x2="${X1+14}" y2="${y}" stroke="#000" stroke-width="1.6"/><path d="M${X1+14} ${y}l-8 -4v8z" fill="#000"/><path d="M${X0-14} ${y}l8 -4v8z" fill="#000"/>`;
+   for(let v=-Rg;v<=Rg;v++){q+=`<line x1="${f2(X(v))}" y1="${y-(v===0?9:6)}" x2="${f2(X(v))}" y2="${y+(v===0?9:6)}" stroke="#000" stroke-width="${v===0?2:1.2}"/><text x="${f2(X(v))}" y="${y+24}" text-anchor="middle" font-size="${Rg>10?11:12.5}" font-family="Arial,sans-serif" fill="#333">${v<0?MI+Math.abs(v):v}</text>`;}return q;};
+  it.tasks.forEach((t,i)=>{
+   if(it.md==='bew'){const y=H+74,lab=String.fromCharCode(97+i)+')';
+    g+=`<text x="10" y="${H+26}" font-size="19" font-family="Arial,sans-serif"><tspan font-weight="700" fill="${BL}" font-size="15">${lab}</tspan>  ${sg(t.s)} ${t.k<0?MI:'+'} ${Math.abs(t.k)} = </text><line x1="${178}" y1="${H+29}" x2="${240}" y2="${H+29}" stroke="#000"/>`;
+    if(sol)g+=`<text x="209" y="${H+25}" text-anchor="middle" font-size="19" font-weight="700" font-family="Arial,sans-serif" fill="${RD}">${sg(t.r)}</text>`;
+    g+=axis(y);
+    if(sol){const xs=X(t.s),xr=X(t.r),mid=(xs+xr)/2,up=Math.min(30,10+Math.abs(xr-xs)*0.18),cy=y-5-up*2,ex=xr,ey=y-6;let dx=ex-mid,dy=ey-cy;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;const bx=ex-dx*11,by=ey-dy*11,px=-dy*4.5,py=dx*4.5;g+=`<circle cx="${f2(xs)}" cy="${y}" r="4.5" fill="${RD}"/><path d="M${f2(xs)} ${y-5}Q${f2(mid)} ${f2(cy)} ${f2(bx)} ${f2(by)}" fill="none" stroke="${RD}" stroke-width="2.2"/><path d="M${f2(ex)} ${f2(ey)}L${f2(bx+px)} ${f2(by+py)}L${f2(bx-px)} ${f2(by-py)}z" fill="${RD}"/><circle cx="${f2(xr)}" cy="${y}" r="4.5" fill="${RD}"/>`;}
+    H+=106;}
+   else if(it.md==='lesen'){const y=H+58,L='ABCD';
+    g+=`<text x="10" y="${H+20}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="${BL}">${String.fromCharCode(97+i)})  Lies die markierten Zahlen ab.</text>`;
+    g+=axis(y);t.v.forEach((v,k)=>{g+=`<circle cx="${f2(X(v))}" cy="${y}" r="5" fill="${BL}"/><text x="${f2(X(v))}" y="${y-14}" text-anchor="middle" font-size="16" font-weight="700" font-family="Arial,sans-serif" fill="${BL}">${L[k]}</text>`;});
+    t.v.forEach((v,k)=>{const x=10+k*170;g+=`<text x="${x}" y="${H+112}" font-size="17" font-family="Arial,sans-serif">${L[k]} = </text><line x1="${x+34}" y1="${H+114}" x2="${x+104}" y2="${H+114}" stroke="#000"/>`;if(sol)g+=`<text x="${x+69}" y="${H+110}" text-anchor="middle" font-size="17" font-weight="700" font-family="Arial,sans-serif" fill="${RD}">${sg(v)}</text>`;});
+    H+=128;}
+   else{const y=H+62,L='ABCD';
+    g+=`<text x="10" y="${H+20}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="${BL}">${String.fromCharCode(97+i)})  Markiere auf der Zahlengeraden:  ${t.v.map((v,k)=>L[k]+' = '+sg(v)).join(',   ')}</text>`;
+    g+=axis(y);if(sol)t.v.forEach((v,k)=>{g+=`<circle cx="${f2(X(v))}" cy="${y}" r="5" fill="${RD}"/><text x="${f2(X(v))}" y="${y-14}" text-anchor="middle" font-size="16" font-weight="700" font-family="Arial,sans-serif" fill="${RD}">${L[k]}</text>`;});
+    H+=96;}});
+  return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H+4}" viewBox="0 0 ${W} ${H+4}">${g}</svg>`};}
+ /* ---------- Sachaufgaben ---------- */
+ const TPL=[
+  ()=>{const a=R(-9,6),b=R(3,12),up=R(0,1);const r=up?a+b:a-b;return{t:`Um 6 Uhr hat es ${sg(a)} °C. Bis Mittag ${up?'steigt':'sinkt'} die Temperatur um ${b} °C. Wie warm ist es am Mittag?`,c:`${sg(a)} ${up?'+':MI} ${b} = ${sg(r)}`,a:`${sg(r)} °C`};},
+  ()=>{const a=R(-12,-1),b=R(-8,15);const r=b-a;return{t:`Morgens zeigt das Thermometer ${sg(a)} °C, mittags ${sg(b)} °C. Um wie viel Grad ist die Temperatur gestiegen (oder gesunken)?`,c:`${sg(b)} ${MI} (${sg(a)}) = ${sg(r)}`,a:`${r>0?'gestiegen':'gesunken'} um ${Math.abs(r)} °C`};},
+  ()=>{const a=R(10,90),b=R(10,90);const k=R(-40,-5);const take=R(0,1);const bal=take?a:k;const m=R(10,60);const r=take?a-m-b:k+m;
+   return take?{t:`Lena hat ${a} € auf dem Konto. Sie kauft Schuhe um ${m+b} €. Wie ist ihr Kontostand danach?`,c:`${a} ${MI} ${m+b} = ${sg(a-m-b)}`,a:`${sg(a-m-b)} €`}:{t:`Jonas hat ${sg(k)} € Kontostand (Schulden). Er zahlt ${m} € ein. Wie ist sein Kontostand danach?`,c:`${sg(k)} + ${m} = ${sg(k+m)}`,a:`${sg(k+m)} €`};},
+  ()=>{const a=R(1,6),b=R(2,9),down=R(0,1);const s=-a;const r=down?s-b:s+b;return{t:`Ein Taucher ist ${a} m unter dem Meeresspiegel (${sg(s)} m). Er ${down?'taucht noch':'steigt'} ${b} m ${down?'tiefer':'höher'}. Auf welcher Höhe ist er danach?`,c:`${sg(s)} ${down?MI:'+'} ${b} = ${sg(r)}`,a:`${sg(r)} m`};},
+  ()=>{const a=R(1,4),b=R(2,6);const r=R(0,1)?a-b:a+b;const dn=r<a;return{t:`Im Haus gibt es zwei Untergeschosse (${MI}1, ${MI}2). Der Aufzug steht im ${a}. Stock und fährt ${b} Stockwerke nach unten. In welchem Stock hält er?`,c:`${a} ${MI} ${b} = ${sg(a-b)}`,a:`${a-b<0?'im Untergeschoss '+sg(a-b):'im '+(a-b)+'. Stock'}`};},
+  ()=>{const a=R(-6,-1),b=R(2,5);return{t:`Die Temperatur sinkt jede Stunde um ${b} °C. Um 18 Uhr hat es ${sg(a)} °C. Wie warm ist es 3 Stunden später?`,c:`${sg(a)} ${MI} 3 · ${b} = ${sg(a-3*b)}`,a:`${sg(a-3*b)} °C`};}];
+ function genGzt(it){const out=[],pool=TPL.map((_,i)=>i);for(let i=0;i<it.n;i++){const k=pool.length?pool.splice(R(0,pool.length-1),1)[0]:R(0,TPL.length-1);out.push(TPL[k]());}return out;}
+ const wrap=(s,m)=>{const w=s.split(' '),L=[];let c='';w.forEach(x=>{if((c+' '+x).trim().length>m){L.push(c);c=x;}else c=(c+' '+x).trim();});if(c)L.push(c);return L;};
+ function gztSvg(it){const W=it.w||714,fs=17,sol=isSol();let g='',H=4;
+  it.tasks.forEach((t,i)=>{const L=wrap(t.t,78);
+   L.forEach((ln,k)=>{g+=`<text x="${k?30:8}" y="${H+20+k*22}" font-size="${fs}" font-family="Arial,sans-serif">${k?'':`<tspan font-weight="700" fill="${BL}">${String.fromCharCode(97+i)})</tspan> `}${esc(ln)}</text>`;});
+   const y=H+20+L.length*22+10;
+   g+=`<text x="30" y="${y+14}" font-size="${fs-1}" font-family="Arial,sans-serif">Rechnung:</text><line x1="${110}" y1="${y+16}" x2="${330}" y2="${y+16}" stroke="#000"/><text x="350" y="${y+14}" font-size="${fs-1}" font-family="Arial,sans-serif">Antwort:</text><line x1="${420}" y1="${y+16}" x2="${W-8}" y2="${y+16}" stroke="#000"/>`;
+   if(sol)g+=`<text x="${114}" y="${y+12}" font-size="${fs}" font-family="Arial,sans-serif" fill="${RD}">${esc(t.c)}</text><text x="${424}" y="${y+12}" font-size="${fs}" font-family="Arial,sans-serif" fill="${RD}" font-weight="700">${esc(t.a)}</text>`;
+   H=y+36;});
+  return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Einbindung ---------- */
+ const GEN={gzs:genGzs,gzr:genGzr,gzl:genGzl,gzt:genGzt};
+ const DRAW={gzs:it=>gzSvg(it,it.tasks,22),gzr:it=>gzSvg(it,it.tasks,22),gzl:gzlSvg,gzt:gztSvg};
+ const DEF={gzs:{n:9,mx:10,op:'as',k:2,sty:'mix',cols:3,w:714},gzr:{n:6,kind:'dez',op:'as',cols:2,w:714},gzl:{n:2,md:'lesen',rg:10,w:714},gzt:{n:3,w:714}};
+ const _sv=svgNew;svgNew=function(it){return TY.includes(it.type)?DRAW[it.type](it):_sv.apply(this,arguments);};
+ const _co=catOf;catOf=function(it){return TY.includes(it.type)?'gz':_co.apply(this,arguments);};
+ const _add=add;add=function(t,x,y){
+  if(!TY.includes(t))return _add.apply(this,arguments);
+  rec();const it={id:uid++,type:t,x:x??40,y:y??100,...JSON.parse(JSON.stringify(DEF[t]))};it.tasks=GEN[t](it);items.push(it);sel=it.id;render();
+  if(x===undefined){try{const e=elOf(it.id),w=e?e.offsetWidth:0;if(w>=400&&w<=794){it.x=Math.round((794-w)/2);render();}}catch(_){}}sync();};
+ CATS.gz='Ganze und rationale Zahlen';
+ const L=document.getElementById('left');let btn=L.querySelector('.cat[data-c="gz"]');
+ if(!btn){btn=document.createElement('button');btn.className='cat';btn.dataset.c='gz';btn.textContent='± Ganze und rationale Zahlen';
+  const P0=document.createElement('div');P0.className='catp';P0.dataset.c='gz';P0.id='gzpal';
+  const ref=L.querySelector('.catp[data-c="zn"]');if(ref){ref.after(btn);btn.after(P0);}else{L.appendChild(btn);L.appendChild(P0);}
+  btn.onclick=()=>{const c='gz';cat=(cat===c&&!sel)?null:c;select(null);};}
+ const P=L.querySelector('.catp[data-c="gz"]');
+ const mk=(t,svg,txt)=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.innerHTML=`<svg viewBox="0 0 100 40">${svg}</svg><span>${txt}</span>`;d.ondragstart=ev=>ev.dataTransfer.setData('text/plain',t);d.onclick=()=>add(t);d.style.marginBottom='6px';P.appendChild(d);};
+ mk('gzs','<text x="50" y="26" text-anchor="middle" font-size="13">(−7) + (+3)</text>','Rechnen mit ganzen Zahlen');
+ mk('gzr','<text x="50" y="26" text-anchor="middle" font-size="12">(−2,5) · 4</text>','Rechnen mit rationalen Zahlen (Dezimal, Bruch)');
+ mk('gzl','<path d="M8 24h84M50 18v12M30 20v8M70 20v8" stroke="#000" stroke-width="1.5"/><path d="M30 18Q50 2 70 17" fill="none" stroke="#d00" stroke-width="2"/>','Zahlengerade (ablesen, markieren, Bewegung)');
+ mk('gzt','<text x="50" y="18" text-anchor="middle" font-size="9">−4 °C … +9 °C</text><text x="50" y="32" text-anchor="middle" font-size="9">Wie warm?</text>','Sachaufgaben (Temperatur, Konto, Tauchen)');
+ let g=document.getElementById('g-gz');if(!g){g=document.createElement('div');g.className='grp';g.id='g-gz';g.dataset.cats='gz';document.getElementById('rp').appendChild(g);}
+ const cur=()=>items.find(i=>i.id===sel&&TY.includes(i.type));
+ const S=(k,vals,v,lab)=>`<label>${lab}<select data-gz="${k}">${vals.map(a=>{const[val,txt]=Array.isArray(a)?a:[a,a];return`<option value="${val}"${String(val)===String(v)?' selected':''}>${txt}</option>`;}).join('')}</select></label>`;
+ function panel(){const it=cur();if(!it){g.innerHTML='<div style="font-size:13px;color:var(--mut,#666)">Wähle links eine Aufgabe, dann kannst du sie hier einstellen.</div>';return;}
+  const T={gzs:'Ganze Zahlen rechnen',gzr:'Rationale Zahlen rechnen',gzl:'Zahlengerade',gzt:'Sachaufgaben'}[it.type];let h=`<div style="font-weight:700;margin:2px 0">${T}</div>`;
+  if(it.type==='gzs')h+=S('op',[['as','Addieren und Subtrahieren'],['md','Multiplizieren und Dividieren'],['mix','gemischt']],it.op,'Rechenart')+S('mx',[[10,'Zahlen bis 10'],[20,'Zahlen bis 20'],[100,'Zahlen bis 100']],it.mx,'Zahlenraum')+(it.op!=='md'?S('k',[[2,'2 Zahlen'],[3,'3 Zahlen']],it.k,'Länge der Rechnung'):'')+S('sty',[['mix','Klammern gemischt'],['klammer','immer mit Klammern (−7) + (+3)'],['kurz','kurz −7 + 3']],it.sty,'Schreibweise')+S('n',[3,6,9,12,15],it.n,'Anzahl der Aufgaben')+S('cols',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten']],it.cols,'Spalten');
+  if(it.type==='gzr')h+=S('kind',[['dez','Dezimalzahlen'],['bru','Brüche'],['mix','gemischt']],it.kind,'Zahlen')+S('op',[['as','Addieren und Subtrahieren'],['md','Multiplizieren und Dividieren'],['mix','gemischt']],it.op,'Rechenart')+S('n',[2,4,6,8,10],it.n,'Anzahl der Aufgaben')+S('cols',[[1,'1 Spalte'],[2,'2 Spalten']],Math.min(it.cols,2),'Spalten');
+  if(it.type==='gzl')h+=S('md',[['lesen','Zahlen ablesen'],['setzen','Zahlen markieren'],['bew','Addieren/Subtrahieren als Bewegung']],it.md,'Aufgabe')+S('rg',[[10,'von −10 bis 10'],[12,'von −12 bis 12']],it.rg,'Zahlengerade')+S('n',[1,2,3,4],it.n,'Anzahl der Aufgaben');
+  if(it.type==='gzt')h+=S('n',[2,3,4,5,6],it.n,'Anzahl der Aufgaben');
+  h+='<button type="button" data-gz-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
+ g.addEventListener('change',e=>{const t=e.target,k=t.dataset.gz;if(!k)return;const it=cur();if(!it)return;rec('gz'+k);it[k]=['n','mx','k','cols','rg'].includes(k)?+t.value:t.value;if(it.type==='gzr'&&k==='cols')it.cols=+t.value;it.tasks=GEN[it.type](it);render();panel();});
+ g.addEventListener('click',e=>{const b=e.target.closest('[data-gz-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
  const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
 })();
 
