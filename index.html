@@ -7961,6 +7961,60 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   const h=document.createElement('div');h.style.cssText='font-size:12px;color:var(--mut,#666);margin:0 0 8px';h.textContent='Zwei Blätter für zwei Kinder: Die Kinder brauchen abwechselnd das Ergebnis des Partners.';pl.insertBefore(h,d.nextSibling);}
 })();
 
+/* ===== Klassenfilter + Themengruppen in der linken Leiste ===== */
+(function(){
+ const L=document.getElementById('left');if(!L)return;
+ const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','fk']],['📐 Geometrie',['sg','wk','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
+ const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',st:'1',sw:'12',rd:'12',cp:'1',as:'12',md:'12',kr:'1234',tl:'12',po:'23',br:'23',pc:'23',vh:'23',te:'23',ge:'23',fk:'34',sg:'1',wk:'12',pn:'12',dr:'12',vk:'12',ci:'13',ko:'123',pl:'34',kd:'12',mb:'23',mu:'12',ss:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
+ const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+ let kl=+ls.get('vk_klasse_v1',0)||0,USER=ls.get('vk_klzuord_v1',{})||{},COL=ls.get('vk_klgrp_v1',{})||{};
+ const mapOf=c=>(USER[c]||DEF[c]||'1234');
+ const parts=c=>[...L.querySelectorAll('[data-c="'+c+'"]')];
+ const btn=c=>L.querySelector('.cat[data-c="'+c+'"]');
+ const css=document.createElement('style');css.textContent='#left .klg,#left .klb{display:flex;flex-direction:column;gap:8px}#left .klg.col>.klb{display:none}#left .klh{font:600 11px system-ui,sans-serif;text-transform:uppercase;letter-spacing:.05em;text-align:left;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--mut,#666);padding:10px 2px 3px;cursor:pointer;border-radius:0}#left .kl-off{display:none!important}#left .cat[data-kl]::after{content:attr(data-kl);float:right;font-size:11px;font-weight:500;opacity:.7}#left .klr{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-size:12px;color:var(--mut,#666);padding:6px 0 0}#left .klr button{font:inherit;font-weight:600;padding:3px 7px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);cursor:pointer}#left .klr button.on{background:var(--acc);color:#fff;border-color:var(--acc)}#klm{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10000;display:flex;align-items:center;justify-content:center}#klm .b{background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;width:min(520px,94vw);max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.35)}#klm .h{padding:14px 18px 6px;font-weight:700;font-size:16px}#klm .d{padding:4px 18px;overflow:auto;font-size:14px}#klm table{width:100%;border-collapse:collapse}#klm td,#klm th{padding:3px 6px;text-align:center;border-bottom:1px solid var(--line,#ddd)}#klm td:first-child,#klm th:first-child{text-align:left}#klm .f{padding:10px 18px 14px;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line,#ddd)}#klm .f button{font:inherit;padding:6px 12px;border:1px solid var(--line,#ccc);border-radius:8px;background:var(--panel,#fff);color:var(--ink,#111);cursor:pointer}#klm .f .pri{background:var(--acc,#2f6fed);color:#fff;border-color:var(--acc,#2f6fed)}';
+ document.head.appendChild(css);
+ /* Filterzeile */
+ const lsw=L.querySelector('.lsw');let row=null;
+ if(lsw){row=document.createElement('div');row.className='klr';row.innerHTML='<span>Klasse:</span><button data-k="0">Alle</button><button data-k="1">1.</button><button data-k="2">2.</button><button data-k="3">3.</button><button data-k="4">4.</button><button data-x="fold" title="Alle Gruppen ein- oder ausklappen">⇅</button><button data-x="edit" title="Themen den Klassen zuordnen">✎</button>';lsw.appendChild(row);}
+ let wr=[];
+ function organize(){
+  const placed=new Set(wr.flatMap(w=>w.cats));const all=[...L.querySelectorAll('.cat')].map(b=>b.dataset.c);
+  const rest=all.filter(c=>!placed.has(c)&&!G.some(g=>g[1].includes(c)));
+  const defs=G.map((g,i)=>({i,name:g[0],cats:g[1].filter(c=>btn(c))}));
+  if(rest.length)defs.push({i:G.length,name:'➕ Weitere',cats:rest});
+  defs.forEach(d=>{if(!d.cats.length)return;let w=wr.find(x=>x.i===d.i);
+   if(!w){const el=document.createElement('div');el.className='klg';const h=document.createElement('button');h.type='button';h.className='klh';const body=document.createElement('div');body.className='klb';el.append(h,body);L.appendChild(el);w={i:d.i,name:d.name,el,h,body,cats:[]};wr.push(w);h.onclick=()=>{COL[w.i]=COL[w.i]?0:1;ls.set('vk_klgrp_v1',COL);upd();};}
+   d.cats.forEach(c=>{if(!w.cats.includes(c))w.cats.push(c);parts(c).forEach(e=>{if(e.parentNode!==w.body)w.body.appendChild(e);});});});
+  const P=L.querySelector(':scope > p');if(P)L.appendChild(P);
+  upd();}
+ function vis(c){const b=btn(c);return b&&b.style.display!=='none'&&!b.classList.contains('kl-off');}
+ function upd(){
+  const q=document.getElementById('lsq'),searching=q&&q.value.trim()!=='';
+  Object.keys(DEF).concat(wr.flatMap(w=>w.cats)).forEach(c=>{const b=btn(c);if(!b)return;const m=mapOf(c),off=kl&&!m.includes(String(kl));parts(c).forEach(e=>e.classList.toggle('kl-off',!!off));
+   if(m==='1234'||m.length>=4)b.removeAttribute('data-kl');else b.dataset.kl=m.split('').join('·');});
+  wr.forEach(w=>{const n=w.cats.filter(vis).length,total=w.cats.filter(c=>btn(c)&&!btn(c).classList.contains('kl-off')).length;
+   w.el.classList.toggle('kl-off',n===0);w.h.textContent=(searching||!COL[w.i]?'▾ ':'▸ ')+w.name+(kl?'  ('+total+')':'');
+   w.el.classList.toggle('col',!searching&&!!COL[w.i]);});
+  if(row)row.querySelectorAll('[data-k]').forEach(b=>b.classList.toggle('on',+b.dataset.k===kl));}
+ function openCur(){const b=L.querySelector('.cat.on');if(!b)return;const w=wr.find(x=>x.cats.includes(b.dataset.c));if(w&&COL[w.i]){COL[w.i]=0;upd();}}
+ function modal(){
+  const o=document.createElement('div');o.id='klm';
+  const rows=wr.flatMap(w=>[`<tr><th colspan="5" style="background:var(--bg,#f3f3f3);font-size:12px;text-transform:uppercase;letter-spacing:.04em">${w.name}</th></tr>`].concat(w.cats.map(c=>{const m=mapOf(c);return`<tr data-c="${c}"><td>${btn(c).textContent.trim()}</td>${[1,2,3,4].map(k=>`<td><input type="checkbox" data-k="${k}"${m.includes(String(k))?' checked':''}></td>`).join('')}</tr>`;}))).join('');
+  o.innerHTML=`<div class="b"><div class="h">Themen den Klassen zuordnen</div><div class="d"><div style="font-size:13px;color:var(--mut,#666);margin-bottom:6px">Mit Haken siehst du das Thema in dieser Klasse. Alle vier Haken = immer sichtbar.</div><table><tr><th></th><th>1.</th><th>2.</th><th>3.</th><th>4.</th></tr>${rows}</table></div><div class="f"><button class="pri" data-a="ok">Speichern</button><button data-a="def">Standard</button><button data-a="no">Abbrechen</button></div></div>`;
+  o.addEventListener('click',e=>{const a=e.target.dataset&&e.target.dataset.a;if(e.target===o||a==='no'){o.remove();return;}
+   if(a==='def'){USER={};ls.set('vk_klzuord_v1',USER);o.remove();upd();return;}
+   if(a==='ok'){const u={};o.querySelectorAll('tr[data-c]').forEach(tr=>{const m=[...tr.querySelectorAll('input:checked')].map(i=>i.dataset.k).join('')||'1234';if(m!==(DEF[tr.dataset.c]||'1234'))u[tr.dataset.c]=m;});USER=u;ls.set('vk_klzuord_v1',USER);o.remove();upd();}});
+  document.body.appendChild(o);}
+ if(row)row.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.k!=null){kl=+b.dataset.k;ls.set('vk_klasse_v1',kl);upd();}
+  else if(b.dataset.x==='edit')modal();
+  else if(b.dataset.x==='fold'){const allc=wr.every(w=>COL[w.i]);wr.forEach(w=>COL[w.i]=allc?0:1);ls.set('vk_klgrp_v1',COL);upd();}});
+ const q=document.getElementById('lsq');if(q){q.addEventListener('input',upd);q.addEventListener('keydown',e=>{if(e.key==='Escape')setTimeout(upd,0);});}
+ const _ac=applyCat;applyCat=function(){const r=_ac.apply(this,arguments);try{openCur();}catch(e){}return r;};
+ window.__klOrganize=organize;
+ setTimeout(organize,0);setTimeout(organize,1500);addEventListener('load',()=>setTimeout(organize,300));
+})();
+
 /* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
 (function(){
  const real=window.html2canvas;if(typeof real!=='function')return;
