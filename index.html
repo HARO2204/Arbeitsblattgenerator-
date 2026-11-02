@@ -8442,6 +8442,95 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
 })();
 
+/* ===== Zinsrechnung und Zinseszins ===== */
+(function(){
+ const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+ const f2=v=>Math.round(v*100)/100,r2=x=>Math.round(x*100+1e-7)/100,isSol=()=>typeof SOL!=='undefined'&&SOL;
+ const RD='#d00',BL='#2b5fb4',TY=['zin','zes','zis'];
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+ const num=(v,d)=>{let s=Math.abs(v).toFixed(d===undefined?2:d);let [a,b]=s.split('.');a=a.replace(/\B(?=(\d{3})+(?!\d))/g,' ');if(b!==undefined&&/^0+$/.test(b)&&d===undefined)b=undefined;return(v<0?'−':'')+a+(b!==undefined?','+b:'');};
+ const eur=v=>num(v)+' €',pc=p=>String(p).replace('.',',')+' %';
+ const NAMES=[['Lena','sie'],['Jonas','er'],['Mia','sie'],['Luca','er'],['Nora','sie'],['Felix','er'],['Emma','sie'],['Paul','er']];
+ const cap=s=>s[0].toUpperCase()+s.slice(1);
+ /* ---------- Zinsen berechnen (Tabelle) ---------- */
+ function pickKpt(mon){for(let g=0;g<200;g++){const K=pick([500,800,1000,1200,1500,2000,2500,3000,4000,5000,6000]),p=pick([1,1.5,2,2.5,3,3.5,4,5]),t=mon?pick([3,6,9,12,18,24]):pick([1,2,3,4,5]),den=mon?1200:100,N=K*(p*2)*t*50;if(N%den===0)return{K,p,t,Z:N/den/100};}return{K:1000,p:2,t:1,Z:20};}
+ function genZin(it){const rows=[];for(let i=0;i<it.n;i++){const d=pickKpt(it.zt==='m'),g=it.gs==='mix'?pick(['z','k','p','t']):it.gs;rows.push({...d,g});}return rows;}
+ function tableSvg(W,heads,widths,rows,fs,sol,rowH){let g='',x=0;const hh=Math.round(fs*1.7);
+  g+=`<rect x="0.5" y="0.5" width="${W-1}" height="${hh}" fill="#e8f0fb" stroke="#555"/>`;
+  widths.forEach((w,i)=>{g+=`<text x="${f2(x+w/2)}" y="${hh*0.68}" text-anchor="middle" font-size="${fs-3}" font-weight="700" font-family="Arial,sans-serif">${esc(heads[i])}</text>`;if(i>0)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${hh+rows.length*rowH}" stroke="#555"/>`;x+=w;});
+  rows.forEach((r,k)=>{const y=hh+k*rowH;g+=`<rect x="0.5" y="${y+0.5}" width="${W-1}" height="${rowH}" fill="none" stroke="#555"/>`;let cx=0;
+   r.forEach((c,i)=>{const w=widths[i];const show=c.g||sol;if(show&&c.s!=='')g+=`<text x="${f2(cx+w/2)}" y="${y+rowH*0.66}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${c.g?'#000':RD}">${esc(c.s)}</text>`;cx+=w;});});
+  return[g,hh+rows.length*rowH];}
+ function zinSvg(it){const W=it.w||660,fs=19,sol=isSol(),mon=it.zt==='m';
+  const heads=['Kapital K','Zinssatz p','Zeit t','Zinsen Z'],widths=[W*0.27,W*0.2,W*0.24,W*0.29];
+  const rows=it.tasks.map(r=>[{s:eur(r.K).replace(/,00/,''),g:r.g!=='k'},{s:pc(r.p),g:r.g!=='p'},{s:r.t+(mon?' Monate':(r.t===1?' Jahr':' Jahre')),g:r.g!=='t'},{s:eur(r.Z),g:r.g!=='z'}]);
+  const [g,H]=tableSvg(W,heads,widths,rows,fs,sol,Math.round(fs*2.3));
+  const note=`<text x="2" y="${H+20}" font-size="13" fill="#555" font-family="Arial,sans-serif">Z = K · p/100 · t${mon?' /12':''}   (Zinsen für ${mon?'Monate':'Jahre'}, Zinssatz pro Jahr)</text>`;
+  return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H+28}" viewBox="0 0 ${W} ${H+28}">${g}${note}</svg>`};}
+ /* ---------- Zinseszins ---------- */
+ function genZes(it){const out=[];for(let i=0;i<it.n;i++){const K=pick([1000,2000,2500,3000,4000,5000]),p=pick([1,2,3,4,5]),n=it.md==='tab'?R(2,+it.ny||4):R(2,4);
+   const rows=[];let a=K;for(let y=1;y<=n;y++){const z=r2(a*p/100),e=r2(a+z);rows.push({y,a,z,e});a=e;}
+   const q=(100+p)/100,qs=String(q).replace('.',','),fin=r2(K*Math.pow(q,n));out.push({K,p,n,rows,qs,fin});}
+  return out;}
+ function zesSvg(it){const W=it.w||660,fs=18,sol=isSol();let g='',H=4;
+  it.tasks.forEach((t,i)=>{g+=`<text x="2" y="${H+20}" font-size="16" font-family="Arial,sans-serif"><tspan font-weight="700" fill="${BL}">${String.fromCharCode(97+i)})</tspan>  Kapital ${eur(t.K).replace(/,00/,'')}, Zinssatz ${pc(t.p)} pro Jahr, Laufzeit ${t.n} Jahre ${it.md==='tab'?'(Zinseszinsen, auf Cent runden)':''}</text>`;
+   H+=30;
+   if(it.md==='tab'){const heads=['Jahr','Kapital am Anfang','Zinsen','Kapital am Ende'],widths=[W*0.12,W*0.3,W*0.26,W*0.32];
+    const rows=t.rows.map((r,k)=>[{s:String(r.y),g:true},{s:eur(r.a),g:k===0},{s:eur(r.z),g:false},{s:eur(r.e),g:false}]);
+    const [s,h]=tableSvg(W,heads,widths,rows,fs,sol,Math.round(fs*2.2));g+=`<g transform="translate(0 ${H})">${s}</g>`;H+=h+22;}
+   else{const y=H+10;g+=`<text x="26" y="${y+8}" font-size="17" font-family="Arial,sans-serif">Aufzinsungsfaktor  q = 1 + ${pc(t.p).replace(' %','')}/100 =</text><line x1="290" y1="${y+11}" x2="370" y2="${y+11}" stroke="#000"/>`;
+    g+=`<text x="26" y="${y+44}" font-size="17" font-family="Arial,sans-serif">Endkapital  K<tspan font-size="12" dy="4">${t.n}</tspan><tspan dy="-4"> = ${eur(t.K).replace(/,00/,'')} · q</tspan><tspan font-size="12" dy="-7">${t.n}</tspan><tspan dy="7"> =</tspan></text><line x1="250" y1="${y+47}" x2="400" y2="${y+47}" stroke="#000"/>`;
+    if(sol)g+=`<text x="330" y="${y+7}" text-anchor="middle" font-size="17" fill="${RD}" font-family="Arial,sans-serif">${t.qs}</text><text x="325" y="${y+43}" text-anchor="middle" font-size="17" fill="${RD}" font-weight="700" font-family="Arial,sans-serif">${eur(t.fin)}</text>`;
+    H+=82;}});
+  return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Sachaufgaben ---------- */
+ function genZis(it){const out=[],kinds=it.ar==='mix'?['z','k','p','t','e']:[it.ar];
+  for(let i=0;i<it.n;i++){const kd=kinds[i%kinds.length],nm=pick(NAMES),pro=nm[1],Pr=cap(pro),K=pick([500,800,1000,1200,1500,2000,2500,3000,4000,5000]);
+   let p=pick([1,1.5,2,2.5,3,3.5,4,5]);
+   if(kd==='z'){const t=pick([1,1,2,3,4]);const Z=r2(K*p/100*t);out.push({t:`${nm[0]} legt ${eur(K).replace(/,00/,'')} auf ein Sparbuch. Der Zinssatz beträgt ${pc(p)} pro Jahr. Wie viel Zinsen bekommt ${pro} nach ${t} ${t===1?'Jahr':'Jahren'}?`,c:`Z = ${num(K,0)} · ${String(p).replace('.',',')}/100${t>1?' · '+t:''} = ${eur(Z)}`,a:eur(Z)});}
+   else if(kd==='k'){const Z=r2(K*p/100);out.push({t:`${nm[0]} bekommt bei einem Zinssatz von ${pc(p)} nach 1 Jahr ${eur(Z)} Zinsen. Wie viel Geld hat ${pro} angelegt?`,c:`K = ${num(Z)} · 100 : ${String(p).replace('.',',')} = ${num(K,0)}`,a:eur(K).replace(/,00/,'')});}
+   else if(kd==='p'){const Z=r2(K*p/100);out.push({t:`${nm[0]} hat ${eur(K).replace(/,00/,'')} angelegt und bekommt nach 1 Jahr ${eur(Z)} Zinsen. Wie hoch ist der Zinssatz?`,c:`p = ${num(Z)} : ${num(K,0)} · 100 = ${String(p).replace('.',',')}`,a:pc(p)});}
+   else if(kd==='t'){const t=pick([2,3,4,5]);const Z=r2(K*p/100*t);out.push({t:`${eur(K).replace(/,00/,'')} werden mit ${pc(p)} pro Jahr verzinst. Nach wie vielen Jahren sind es ${eur(Z)} Zinsen?`,c:`t = ${num(Z)} · 100 : (${num(K,0)} · ${String(p).replace('.',',')}) = ${t}`,a:`${t} Jahre`});}
+   else{p=pick([1,2,3,4,5]);const n=R(2,4),q=(100+p)/100,qs=String(q).replace('.',','),fin=r2(K*Math.pow(q,n));out.push({t:`${nm[0]} legt ${eur(K).replace(/,00/,'')} zu ${pc(p)} Zinseszinsen an. Wie viel Geld hat ${pro} nach ${n} Jahren?`,c:`K${n} = ${num(K,0)} · ${qs}^${n} = ${eur(fin)}`,a:eur(fin)});}}
+  return out;}
+ const wrap=(s,m)=>{const w=s.split(' '),L=[];let c='';w.forEach(x=>{if((c+' '+x).trim().length>m){L.push(c);c=x;}else c=(c+' '+x).trim();});if(c)L.push(c);return L;};
+ function zisSvg(it){const W=it.w||714,fs=17,sol=isSol();let g='',H=4;
+  it.tasks.forEach((t,i)=>{const L=wrap(t.t,78);
+   L.forEach((ln,k)=>{g+=`<text x="${k?30:8}" y="${H+20+k*22}" font-size="${fs}" font-family="Arial,sans-serif">${k?'':`<tspan font-weight="700" fill="${BL}">${String.fromCharCode(97+i)})</tspan> `}${esc(ln)}</text>`;});
+   const y=H+20+L.length*22+10;
+   g+=`<text x="30" y="${y+14}" font-size="${fs-1}" font-family="Arial,sans-serif">Rechnung:</text><line x1="110" y1="${y+16}" x2="400" y2="${y+16}" stroke="#000"/><text x="420" y="${y+14}" font-size="${fs-1}" font-family="Arial,sans-serif">Antwort:</text><line x1="490" y1="${y+16}" x2="${W-8}" y2="${y+16}" stroke="#000"/>`;
+   if(sol)g+=`<text x="114" y="${y+12}" font-size="${fs-1}" font-family="Arial,sans-serif" fill="${RD}">${esc(t.c)}</text><text x="494" y="${y+12}" font-size="${fs}" font-family="Arial,sans-serif" fill="${RD}" font-weight="700">${esc(t.a)}</text>`;
+   H=y+36;});
+  return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Einbindung ---------- */
+ const GEN={zin:genZin,zes:genZes,zis:genZis},DRAW={zin:zinSvg,zes:zesSvg,zis:zisSvg};
+ const DEF={zin:{n:5,gs:'mix',zt:'j',w:660},zes:{n:1,md:'tab',ny:4,w:660},zis:{n:4,ar:'mix',w:714}};
+ const _sv=svgNew;svgNew=function(it){return TY.includes(it.type)?DRAW[it.type](it):_sv.apply(this,arguments);};
+ const _co=catOf;catOf=function(it){return TY.includes(it.type)?'pc':_co.apply(this,arguments);};
+ const _add=add;add=function(t,x,y){
+  if(!TY.includes(t))return _add.apply(this,arguments);
+  rec();const it={id:uid++,type:t,x:x??40,y:y??100,...JSON.parse(JSON.stringify(DEF[t]))};it.tasks=GEN[t](it);items.push(it);sel=it.id;render();
+  if(x===undefined){try{const e=elOf(it.id),w=e?e.offsetWidth:0;if(w>=400&&w<=794){it.x=Math.round((794-w)/2);render();}}catch(_){}}sync();};
+ const P=document.querySelector('.catp[data-c="pc"]');
+ if(P){const mk=(t,svg,txt)=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.innerHTML=`<svg viewBox="0 0 100 40">${svg}</svg><span>${txt}</span>`;d.ondragstart=ev=>ev.dataTransfer.setData('text/plain',t);d.onclick=()=>add(t);P.appendChild(d);};
+  mk('zin','<text x="50" y="17" text-anchor="middle" font-size="10">Z = K · p/100 · t</text><text x="50" y="32" text-anchor="middle" font-size="10" fill="#d00">1 500 € · 2 % = 30 €</text>','Zinsen berechnen (Tabelle)');
+  mk('zes','<path d="M10 32Q50 30 90 8" fill="none" stroke="#d00" stroke-width="2"/><path d="M10 32L90 24" stroke="#555" stroke-width="1.5" stroke-dasharray="3 2"/><text x="14" y="14" font-size="9">Zinseszins</text>','Zinseszins (Tabelle, Faktor)');
+  mk('zis','<text x="50" y="17" text-anchor="middle" font-size="9">Sparbuch: 2 000 € zu 3 %</text><text x="50" y="31" text-anchor="middle" font-size="9">Wie viel Zinsen?</text>','Zinsen: Sachaufgaben');}
+ let g=document.getElementById('g-zi');if(!g){g=document.createElement('div');g.className='grp';g.id='g-zi';g.dataset.cats='pc';const f=[...document.querySelectorAll('#rp [data-cats]')].find(e=>e!==g&&e.dataset.cats.split(' ').includes('pc'));if(f)f.parentNode.insertBefore(g,f);else document.getElementById('rp').appendChild(g);}
+ const st=document.createElement('style');st.textContent='#rp .grp#g-zi:empty{display:none!important}';document.head.appendChild(st);
+ const cur=()=>items.find(i=>i.id===sel&&TY.includes(i.type));
+ const S=(k,vals,v,lab)=>`<label>${lab}<select data-zi="${k}">${vals.map(a=>{const[val,txt]=Array.isArray(a)?a:[a,a];return`<option value="${val}"${String(val)===String(v)?' selected':''}>${txt}</option>`;}).join('')}</select></label>`;
+ function panel(){const it=cur();if(!it){g.innerHTML='';return;}
+  const T={zin:'Zinsen berechnen',zes:'Zinseszins',zis:'Zinsen: Sachaufgaben'}[it.type];let h=`<div style="font-weight:700;margin:2px 0">${T}</div>`;
+  if(it.type==='zin')h+=S('gs',[['mix','gemischt'],['z','Zinsen gesucht'],['k','Kapital gesucht'],['p','Zinssatz gesucht'],['t','Zeit gesucht']],it.gs,'Was ist gesucht?')+S('zt',[['j','Zeit in Jahren'],['m','Zeit in Monaten']],it.zt,'Zeit')+S('n',[3,4,5,6,8],it.n,'Anzahl der Zeilen');
+  if(it.type==='zes')h+=S('md',[['tab','Tabelle (Jahr für Jahr)'],['fak','mit Aufzinsungsfaktor']],it.md,'Aufgabe')+(it.md==='tab'?S('ny',[[2,'bis 2 Jahre'],[3,'bis 3 Jahre'],[4,'bis 4 Jahre'],[5,'bis 5 Jahre']],it.ny,'Laufzeit'):'')+S('n',[1,2,3],it.n,'Anzahl der Aufgaben');
+  if(it.type==='zis')h+=S('ar',[['mix','gemischt'],['z','Zinsen berechnen'],['k','Kapital berechnen'],['p','Zinssatz berechnen'],['t','Zeit berechnen'],['e','Zinseszins']],it.ar,'Aufgabenart')+S('n',[2,3,4,5,6],it.n,'Anzahl der Aufgaben');
+  h+='<button type="button" data-zi-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
+ g.addEventListener('change',e=>{const t=e.target,k=t.dataset.zi;if(!k)return;const it=cur();if(!it)return;rec('zi'+k);it[k]=['n','ny'].includes(k)?+t.value:t.value;it.tasks=GEN[it.type](it);render();panel();});
+ g.addEventListener('click',e=>{const b=e.target.closest('[data-zi-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
+ const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
+})();
+
 /* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
 (function(){
  const real=window.html2canvas;if(typeof real!=='function')return;
