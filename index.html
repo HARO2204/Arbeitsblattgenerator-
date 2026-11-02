@@ -7964,8 +7964,8 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
 /* ===== Klassenfilter + Themengruppen in der linken Leiste ===== */
 (function(){
  const L=document.getElementById('left');if(!L)return;
- const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','gz','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','fk']],['📐 Geometrie',['sg','wk','sy','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss','wa']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
- const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',gz:'23',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',fk:'4',sg:'1',wk:'12',sy:'2',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',wa:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
+ const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','gz','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','gl','fk']],['📐 Geometrie',['sg','wk','sy','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss','wa']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
+ const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',gz:'23',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',gl:'34',fk:'4',sg:'1',wk:'12',sy:'2',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',wa:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
  const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
  let kl=+ls.get('vk_klasse_v1',0)||0,USER=ls.get('vk_klzuord_v1',{})||{},COL=ls.get('vk_klgrp_v1',{})||{};
  const mapOf=c=>(USER[c]||DEF[c]||'1234');
@@ -8669,6 +8669,142 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   h+='<button type="button" data-wa-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
  g.addEventListener('change',e=>{const t=e.target,k=t.dataset.wa;if(!k)return;const it=cur();if(!it)return;rec('wa'+k);it[k]=['n','N'].includes(k)?+t.value:t.value;it.tasks=GEN[it.type](it);render();panel();});
  g.addEventListener('click',e=>{const b=e.target.closest('[data-wa-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
+ const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
+})();
+
+/* ===== Gleichungssysteme ===== */
+(function(){
+ const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+ const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+ const f2=v=>Math.round(v*100)/100,isSol=()=>typeof SOL!=='undefined'&&SOL;
+ const RD='#d00',BL='#2b5fb4',TY=['glr','glp','glg','glt'],M='−';
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+ const T=(x,y,s,fs,o)=>`<text x="${f2(x)}" y="${f2(y)}" font-size="${fs}" font-family="Arial,sans-serif"${o||''}>${esc(s)}</text>`;
+ const num=v=>String(v).replace('-',M);
+ const term=(c,v,first)=>{if(c===0)return'';const a=Math.abs(c),s=c<0?(first?M:' '+M+' '):(first?'':' + ');return s+(a===1?'':a)+v;};
+ const lin=(a,b)=>{let s=term(a,'x',true);if(b!==0)s+=s?(b<0?' '+M+' ':' + ')+(Math.abs(b)===1?'':Math.abs(b))+'y':(b<0?M:'')+(Math.abs(b)===1?'':Math.abs(b))+'y';return s||'0';};
+ const E1=(a,b,c)=>lin(a,b)+' = '+num(c);
+ const ykx=(k,d)=>'y = '+(k===0?'':(k<0?M:'')+(Math.abs(k)===1?'':Math.abs(k))+'x')+(d===0?(k===0?'0':''):(k===0?num(d):(d<0?' '+M+' ':' + ')+Math.abs(d)));
+ const nz=(lo,hi)=>{let v=0;while(v===0)v=R(lo,hi);return v;};
+ /* ---- Gleichungssystem erzeugen ---- */
+ function sys(meth,lv){const mx=lv===1?5:9;
+  for(let t=0;t<200;t++){const x=nz(-mx,mx),y=nz(-mx,mx);let m=meth==='mix'?pick(['ein','gl','add']):meth,e1,e2,hint;
+   if(m==='gl'){const k1=nz(-3,3),k2=nz(-3,3);if(k1===k2)continue;const d1=y-k1*x,d2=y-k2*x;if(Math.abs(d1)>12||Math.abs(d2)>12)continue;
+    e1={a:-k1,b:1,c:d1,t:ykx(k1,d1),k:k1,d:d1};e2={a:-k2,b:1,c:d2,t:ykx(k2,d2),k:k2,d:d2};hint='Gleichsetzungsverfahren';}
+   else if(m==='ein'){const k=nz(-3,3),d=y-k*x;if(Math.abs(d)>12)continue;const a2=nz(-4,4),b2=nz(-3,3);if(a2*1-b2*(-k)===0&&false)continue;
+    const c2=a2*x+b2*y;if(a2+b2*k===0)continue;e1={a:-k,b:1,c:d,t:ykx(k,d),k:k,d:d};e2={a:a2,b:b2,c:c2,t:E1(a2,b2,c2)};hint='Einsetzungsverfahren';}
+   else{const a1=nz(-4,4),b1=nz(-4,4),f=lv===1?1:pick([1,2,-2,3,-3]),k=lv===1?-1:pick([-1,1,-2,2]);let b2=-b1*(lv===1?1:k),a2=nz(-4,4);
+    if(lv===1){b2=-b1;}else{b2=b1*pick([2,-2,-1,3]);}
+    if(a1*b2-a2*b1===0)continue;const c1=a1*x+b1*y,c2=a2*x+b2*y;e1={a:a1,b:b1,c:c1,t:E1(a1,b1,c1)};e2={a:a2,b:b2,c:c2,t:E1(a2,b2,c2)};hint='Additionsverfahren';}
+   if(e1.a*e2.b-e2.a*e1.b===0)continue;return{x,y,e1,e2,hint};}
+  return{x:2,y:1,e1:{a:1,b:1,c:3,t:E1(1,1,3)},e2:{a:1,b:-1,c:1,t:E1(1,-1,1)},hint:'Additionsverfahren'};}
+ const sub=(a,b,x,y)=>(a!==0?num(a)+'\u00b7('+num(x)+')':'')+(b!==0?(a!==0?(b<0?' '+M+' ':' + '):(b<0?M:''))+Math.abs(b)+'\u00b7('+num(y)+')':'');
+ const dup=(L,k)=>!L.some(o=>o.x===k.x&&o.y===k.y&&o.e1.t===k.e1.t);
+ function genRech(it){const o=[];while(o.length<it.n){const s=sys(it.vf,+it.lv);if(dup(o,s))o.push(s);}return o;}
+ function brace(x,y0,y1){const ym=(y0+y1)/2;return`<path d="M${x+8} ${y0}Q${x+2} ${y0} ${x+2} ${y0+8}L${x+2} ${ym-8}Q${x+2} ${ym} ${x-4} ${ym}Q${x+2} ${ym} ${x+2} ${ym+8}L${x+2} ${y1-8}Q${x+2} ${y1} ${x+8} ${y1}" fill="none" stroke="#000" stroke-width="1.6"/>`;}
+ function rechSvg(it){const W=it.w||714,sol=isSol(),cols=2,cw=W/cols,rh=232,n=it.tasks.length;let g='';
+  it.tasks.forEach((t,i)=>{const c=i%cols,r=Math.floor(i/cols),ox=c*cw+6,oy=r*rh+6;
+   g+=T(ox,oy+20,String.fromCharCode(97+i)+')',15,` font-weight="700" fill="${BL}"`);
+   g+=brace(ox+30,oy+6,oy+62)+T(ox+48,oy+25,'I',13,' fill="#888"')+T(ox+60,oy+25,t.e1.t,17)+T(ox+48,oy+53,'II',13,' fill="#888"')+T(ox+66,oy+53,t.e2.t,17);
+   if(it.vf==='mix'||it.hint!==false)g+=T(ox+30,oy+84,t.hint,12,' fill="#666" font-style="italic"');
+   for(let k=0;k<4;k++)g+=`<line x1="${ox}" y1="${oy+112+k*26}" x2="${ox+cw-18}" y2="${oy+112+k*26}" stroke="#bbb"/>`;
+   g+=T(ox,oy+218,'L = {(',16)+`<line x1="${ox+46}" y1="${oy+219}" x2="${ox+86}" y2="${oy+219}" stroke="#000"/>`+T(ox+90,oy+218,'|',16)+`<line x1="${ox+100}" y1="${oy+219}" x2="${ox+140}" y2="${oy+219}" stroke="#000"/>`+T(ox+144,oy+218,')}',16);
+   if(sol){g+=T(ox+48,oy+216,num(t.x),16,` fill="${RD}" font-weight="700"`)+T(ox+102,oy+216,num(t.y),16,` fill="${RD}" font-weight="700"`);
+    g+=T(ox+4,oy+134,'x = '+num(t.x)+',  y = '+num(t.y),15,` fill="${RD}"`);
+    g+=T(ox+4,oy+160,'Probe I: '+sub(t.e1.a,t.e1.b,t.x,t.y)+' = '+num(t.e1.c)+' ✓',12,` fill="${RD}"`);}
+  });
+  const H=Math.ceil(n/cols)*rh+6;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---- Probe ---- */
+ function genProbe(it){const o=[];while(o.length<it.n){const s=sys('mix',+it.lv);if(!dup(o,s))continue;const r=pick([0,0,1,2]);let px=s.x,py=s.y;
+   if(r===1){px=s.x+pick([-1,1,2]);}if(r===2){py=s.y+pick([-2,-1,1]);}
+   const ok=s.e1.a*px+s.e1.b*py===s.e1.c&&s.e2.a*px+s.e2.b*py===s.e2.c;o.push({...s,px,py,ok});}return o;}
+ const val=(a,b,px,py)=>a*px+b*py;
+ function probeSvg(it){const W=it.w||714,sol=isSol(),rh=150;let g='';
+  it.tasks.forEach((t,i)=>{const oy=i*rh+6;g+=T(2,oy+22,String.fromCharCode(97+i)+')',15,` font-weight="700" fill="${BL}"`);
+   g+=brace(60,oy+6,oy+62)+T(76,oy+25,'I',13,' fill="#888"')+T(88,oy+25,t.e1.t,17)+T(76,oy+53,'II',13,' fill="#888"')+T(94,oy+53,t.e2.t,17);
+   g+=T(300,oy+40,'Ist ('+num(t.px)+' | '+num(t.py)+') eine Lösung?',17);
+   g+=`<rect x="300" y="${oy+52}" width="16" height="16" fill="none" stroke="#000" stroke-width="1.5"/>`+T(322,oy+66,'ja',15)+`<rect x="360" y="${oy+52}" width="16" height="16" fill="none" stroke="#000" stroke-width="1.5"/>`+T(382,oy+66,'nein',15);
+   g+=T(30,oy+100,'I:',14,' fill="#888"')+`<line x1="52" y1="${oy+102}" x2="330" y2="${oy+102}" stroke="#bbb"/>`+T(360,oy+100,'II:',14,' fill="#888"')+`<line x1="390" y1="${oy+102}" x2="${W-30}" y2="${oy+102}" stroke="#bbb"/>`;
+   if(sol){const v1=val(t.e1.a,t.e1.b,t.px,t.py),v2=val(t.e2.a,t.e2.b,t.px,t.py),f=(e,v)=>e.k!==undefined?(num(e.k)+'\u00b7('+num(t.px)+') '+(e.d<0?M:'+')+' '+Math.abs(e.d)+' = '+num(e.k*t.px+e.d)+(e.k*t.px+e.d===t.py?' \u2713':' \u2260 '+num(t.py))):sub(e.a,e.b,t.px,t.py)+' = '+num(v)+(v===e.c?' ✓':' ≠ '+num(e.c));
+    g+=T(54,oy+98,f(t.e1,v1),13,` fill="${RD}"`)+T(392,oy+98,f(t.e2,v2),13,` fill="${RD}"`);
+    const bx=t.ok?300:360;g+=`<path d="M${bx+2} ${oy+60}l5 7l10 -16" fill="none" stroke="${RD}" stroke-width="3"/>`;}
+  });
+  const H=it.tasks.length*rh+6;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---- grafisch ---- */
+ function genGraf(it){const o=[];while(o.length<it.n){const x=R(-4,4),y=R(-4,4),k1=nz(-3,3),k2=nz(-3,3);if(k1===k2)continue;const d1=y-k1*x,d2=y-k2*x;if(Math.abs(d1)>5||Math.abs(d2)>5)continue;o.push({x,y,k1,d1,k2,d2});}return o;}
+ function gridSvg(ox,oy,t,sol,drawn){const u=22,N=6,S=2*N*u;let g=`<g transform="translate(${ox} ${oy})">`;
+  for(let k=-N;k<=N;k++){const p=(k+N)*u;g+=`<line x1="${p}" y1="0" x2="${p}" y2="${S}" stroke="${k===0?'#000':'#ccd'}" stroke-width="${k===0?1.6:0.8}"/><line x1="0" y1="${p}" x2="${S}" y2="${p}" stroke="${k===0?'#000':'#ccd'}" stroke-width="${k===0?1.6:0.8}"/>`;
+   if(k&&k%2===0){g+=T(p-4,N*u+13,num(k),9,' fill="#555"')+T(N*u+4,S-p+3,num(k),9,' fill="#555"');}}
+  g+=T(S+4,N*u+4,'x',12,' font-style="italic"')+T(N*u+5,-4,'y',12,' font-style="italic"');
+  const line=(k,d,col)=>{const pts=[];for(let xx=-N;xx<=N;xx++){const yy=k*xx+d;if(Math.abs(yy)<=N)pts.push([xx,yy]);}
+   const cand=[];[-N,N].forEach(xx=>{const yy=k*xx+d;if(Math.abs(yy)<=N)cand.push([xx,yy]);});[-N,N].forEach(yy=>{const xx=(yy-d)/k;if(Math.abs(xx)<=N)cand.push([xx,yy]);});
+   const u2=[];cand.forEach(p=>{if(!u2.some(q=>Math.abs(q[0]-p[0])<1e-9&&Math.abs(q[1]-p[1])<1e-9))u2.push(p);});if(u2.length<2)return'';
+   const P=q=>[(q[0]+N)*u,(N-q[1])*u];const a=P(u2[0]),b=P(u2[1]);return`<line x1="${f2(a[0])}" y1="${f2(a[1])}" x2="${f2(b[0])}" y2="${f2(b[1])}" stroke="${col}" stroke-width="2.2"/>`;};
+  if(drawn||sol){g+=line(t.k1,t.d1,sol&&!drawn?RD:'#1e5fb4')+line(t.k2,t.d2,sol&&!drawn?'#c60':'#2a8a3a');}
+  if(sol)g+=`<circle cx="${(t.x+N)*u}" cy="${(N-t.y)*u}" r="5.5" fill="${RD}"/>`;
+  return g+'</g>';}
+ function grafSvg(it){const W=it.w||714,sol=isSol(),S=264,cw=W/2;let g='';
+  it.tasks.forEach((t,i)=>{const ox=i*cw+26,oy=64;if(i>1)return;
+   g+=T(ox-24,18,String.fromCharCode(97+i)+')',15,` font-weight="700" fill="${BL}"`);
+   g+=T(ox+10,22,'I   '+ykx(t.k1,t.d1),16,` fill="${it.md==='lesen'?'#1e5fb4':'#000'}"`)+T(ox+10,44,'II  '+ykx(t.k2,t.d2),16,` fill="${it.md==='lesen'?'#2a8a3a':'#000'}"`);
+   g+=gridSvg(ox,oy,t,sol,it.md==='lesen');
+   g+=T(ox,oy+S+30,'L = {(',16)+`<line x1="${ox+46}" y1="${oy+S+31}" x2="${ox+86}" y2="${oy+S+31}" stroke="#000"/>`+T(ox+90,oy+S+30,'|',16)+`<line x1="${ox+100}" y1="${oy+S+31}" x2="${ox+140}" y2="${oy+S+31}" stroke="#000"/>`+T(ox+144,oy+S+30,')}',16);
+   if(sol)g+=T(ox+48,oy+S+28,num(t.x),16,` fill="${RD}" font-weight="700"`)+T(ox+102,oy+S+28,num(t.y),16,` fill="${RD}" font-weight="700"`);});
+  const H=64+S+46;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---- Textaufgaben ---- */
+ const eur=c=>(c/100).toFixed(2).replace('.',',')+' €';
+ const TP=[
+  ()=>{const x=R(4,30),y=R(1,x-1);let S=x+y,D=x-y;return{q:`Die Summe zweier Zahlen ist ${S}, ihre Differenz ist ${D}. Wie heißen die Zahlen?`,v:'x = größere Zahl, y = kleinere Zahl',e:[`x + y = ${S}`,`x ${M} y = ${D}`],a:`Die Zahlen heißen ${x} und ${y}.`,x,y};},
+  ()=>{const x=pick([80,90,120,150,160,180,200,250]),y=pick([30,40,50,60,70,90,100]),a=R(2,4),b=R(1,4);if(a===b)return null;
+   const items=pick([['Heft','Stift'],['Radiergummi','Bleistift'],['Apfel','Birne']]);const m=(a2,b2)=>a2*x+b2*y;
+   const a2=R(1,4),b2=R(1,4);if(a*b2-a2*b===0)return null;return{q:`${a} ${items[0]}e und ${b} ${items[1]}e kosten zusammen ${eur(m(a,b))}. ${a2} ${items[0]}e und ${b2} ${items[1]}e kosten ${eur(m(a2,b2))}. Wie viel kostet ein ${items[0]}, wie viel ein ${items[1]}?`.replace('Apfele','Äpfel').replace('Birnee','Birnen'),v:`x = Preis ${items[0]}, y = Preis ${items[1]} (in Cent)`,e:[`${a}x + ${b}y = ${m(a,b)}`,`${a2}x + ${b2}y = ${m(a2,b2)}`],a:`Ein ${items[0]} kostet ${eur(x)}, ein ${items[1]} kostet ${eur(y)}.`,x,y};},
+  ()=>{const y=R(5,20),k=pick([2,3,4]),x=k*y;return{q:`Vater und Sohn sind zusammen ${x+y} Jahre alt. Der Vater ist ${k}-mal so alt wie der Sohn. Wie alt sind die beiden?`,v:'x = Alter Vater, y = Alter Sohn',e:[`x + y = ${x+y}`,`x = ${k}y`],a:`Der Vater ist ${x}, der Sohn ist ${y} Jahre alt.`,x,y};},
+  ()=>{const b=R(3,12),d=R(2,8),l=b+d;return{q:`Ein Rechteck hat den Umfang ${2*(l+b)} cm. Die Länge ist um ${d} cm größer als die Breite. Berechne Länge und Breite.`,v:'x = Länge, y = Breite',e:[`2x + 2y = ${2*(l+b)}`,`x ${M} y = ${d}`],a:`Länge ${l} cm, Breite ${b} cm.`,x:l,y:b};},
+  ()=>{const x=R(6,16),y=R(3,x-1),a=R(2,3),b=R(1,4),a2=1,b2=R(3,5);if(a*b2-a2*b===0)return null;return{q:`${a} Erwachsene und ${b} Kinder zahlen zusammen ${a*x+b*y} € Eintritt, ${a2} Erwachsener und ${b2} Kinder zahlen ${a2*x+b2*y} €. Wie teuer ist die Karte für Erwachsene, wie teuer für Kinder?`,v:'x = Erwachsene, y = Kinder',e:[`${a}x + ${b}y = ${a*x+b*y}`,`x + ${b2}y = ${x+b2*y}`],a:`Erwachsene zahlen ${x} €, Kinder ${y} €.`,x,y};},
+  ()=>{const x=R(3,12),y=R(3,12),n=x+y,W=x+2*y;return{q:`In einer Sparbüchse liegen ${n} Münzen, nur 1-€- und 2-€-Münzen, im Gesamtwert von ${W} €. Wie viele Münzen jeder Sorte sind es?`,v:'x = Anzahl 1-€-Münzen, y = Anzahl 2-€-Münzen',e:[`x + y = ${n}`,`x + 2y = ${W}`],a:`Es sind ${x} Einser und ${y} Zweier.`,x,y};}];
+ function genTxt(it){const o=[],used=new Set();let g=0;while(o.length<it.n&&g++<200){const i=R(0,TP.length-1);if(used.has(i)&&used.size<TP.length)continue;const t=TP[i]();if(!t)continue;used.add(i);o.push(t);}return o;}
+ const wrap=(s,m)=>{const w=s.split(' '),L=[];let c='';w.forEach(x=>{if((c+' '+x).trim().length>m){L.push(c);c=x;}else c=(c+' '+x).trim();});if(c)L.push(c);return L;};
+ function txtSvg(it){const W=it.w||714,sol=isSol();let g='',H=4;
+  it.tasks.forEach((t,i)=>{const L=wrap(t.q.replace(/ \u20ac/g,'\u00a0\u20ac'),84);L.forEach((ln,k)=>{g+=T(k?30:4,H+20+k*21,(k?'':String.fromCharCode(97+i)+') ')+ln,16);});H+=L.length*21+10;
+   g+=T(30,H+22,'Gleichungen:',14,' font-weight="700" fill="#2b5fb4"');
+   [0,1].forEach(k=>{const y=H+22+k*28;g+=T(150,y,k?'II':'I',13,' fill="#888"')+`<line x1="168" y1="${y+3}" x2="420" y2="${y+3}" stroke="#bbb"/>`;if(sol)g+=T(172,y,t.e[k],16,` fill="${RD}"`);});
+   if(sol)g+=T(440,H+22,t.v,12,` fill="${RD}"`);
+   H+=76;g+=T(30,H+14,'Rechnung:',14,' font-weight="700" fill="#2b5fb4"');for(let k=0;k<4;k++)g+=`<line x1="30" y1="${H+40+k*26}" x2="${W-20}" y2="${H+40+k*26}" stroke="#bbb"/>`;
+   if(sol)g+=T(120,H+38,'x = '+t.x+',  y = '+t.y,15,` fill="${RD}"`);
+   H+=150;g+=T(30,H+10,'Antwort:',14,' font-weight="700" fill="#2b5fb4"')+`<line x1="100" y1="${H+13}" x2="${W-20}" y2="${H+13}" stroke="#000"/>`;if(sol)g+=T(104,H+9,t.a,15,` fill="${RD}"`);H+=40;});
+  return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---- Einbindung ---- */
+ const GEN={glr:genRech,glp:genProbe,glg:genGraf,glt:genTxt},DRAW={glr:rechSvg,glp:probeSvg,glg:grafSvg,glt:txtSvg};
+ const DEF={glr:{n:4,vf:'mix',lv:1,w:714},glp:{n:4,lv:1,w:714},glg:{n:2,md:'lesen',w:714},glt:{n:2,w:714}};
+ const _sv=svgNew;svgNew=function(it){return TY.includes(it.type)?DRAW[it.type](it):_sv.apply(this,arguments);};
+ const _co=catOf;catOf=function(it){return TY.includes(it.type)?'gl':_co.apply(this,arguments);};
+ const _add=add;add=function(t,x,y){
+  if(!TY.includes(t))return _add.apply(this,arguments);
+  rec();const it={id:uid++,type:t,x:x??40,y:y??100,...JSON.parse(JSON.stringify(DEF[t]))};it.tasks=GEN[t](it);items.push(it);sel=it.id;render();
+  if(x===undefined){try{const e=elOf(it.id),w=e?e.offsetWidth:0;if(w>=400&&w<=794){it.x=Math.round((794-w)/2);render();}}catch(_){}}sync();};
+ CATS.gl='Gleichungssysteme';
+ const L=document.getElementById('left');let btn=L.querySelector('.cat[data-c="gl"]');
+ if(!btn){btn=document.createElement('button');btn.className='cat';btn.dataset.c='gl';btn.textContent='🔗 Gleichungssysteme';
+  const P0=document.createElement('div');P0.className='catp';P0.dataset.c='gl';P0.id='glpal';const ref=L.querySelector('.catp[data-c="ge"]');if(ref){ref.after(btn);btn.after(P0);}else{L.appendChild(btn);L.appendChild(P0);}
+  btn.onclick=()=>{const c='gl';cat=(cat===c&&!sel)?null:c;select(null);};}
+ const P=L.querySelector('.catp[data-c="gl"]');
+ const mk=(t,svg,txt)=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.innerHTML=`<svg viewBox="0 0 100 40">${svg}</svg><span>${txt}</span>`;d.ondragstart=ev=>ev.dataTransfer.setData('text/plain',t);d.onclick=()=>add(t);d.style.marginBottom='6px';P.appendChild(d);};
+ mk('glr','<text x="8" y="17" font-size="11">x + y = 5</text><text x="8" y="33" font-size="11">x − y = 1</text>','Gleichungssystem lösen');
+ mk('glp','<text x="6" y="17" font-size="10">(3|2) ?</text><path d="M62 24l6 8l14 -18" stroke="#d00" stroke-width="3" fill="none"/>','Probe: Ist es eine Lösung?');
+ mk('glg','<path d="M10 4v32M4 20h92" stroke="#999"/><path d="M12 34L88 8M12 10L88 32" stroke="#1e5fb4" stroke-width="2" fill="none"/><circle cx="50" cy="21" r="3" fill="#d00"/>','Grafisch lösen');
+ mk('glt','<text x="6" y="16" font-size="10">3 Hefte + 2 Stifte</text><text x="6" y="31" font-size="10">= 7,40 €</text>','Textaufgaben (Systeme)');
+ let g=document.getElementById('g-gl');if(!g){g=document.createElement('div');g.className='grp';g.id='g-gl';g.dataset.cats='gl';document.getElementById('rp').appendChild(g);}
+ const cur=()=>items.find(i=>i.id===sel&&TY.includes(i.type));
+ const S=(k,vals,v,lab)=>`<label>${lab}<select data-gl="${k}">${vals.map(a=>{const[val,txt]=Array.isArray(a)?a:[a,a];return`<option value="${val}"${String(val)===String(v)?' selected':''}>${txt}</option>`;}).join('')}</select></label>`;
+ function panel(){const it=cur();if(!it){g.innerHTML='<div style="font-size:13px;color:var(--mut,#666)">Wähle links eine Aufgabe, dann kannst du sie hier einstellen.</div>';return;}
+  const T0={glr:'Gleichungssystem lösen',glp:'Probe',glg:'Grafisch lösen',glt:'Textaufgaben'}[it.type];let h=`<div style="font-weight:700;margin:2px 0">${T0}</div>`;
+  if(it.type==='glr')h+=S('vf',[['mix','gemischt'],['ein','Einsetzungsverfahren'],['gl','Gleichsetzungsverfahren'],['add','Additionsverfahren']],it.vf,'Verfahren')+S('lv',[[1,'leichter'],[2,'schwerer']],it.lv,'Schwierigkeit')+S('n',[2,4,6],it.n,'Anzahl der Aufgaben');
+  if(it.type==='glp')h+=S('lv',[[1,'leichter'],[2,'schwerer']],it.lv,'Schwierigkeit')+S('n',[2,3,4,5],it.n,'Anzahl der Aufgaben');
+  if(it.type==='glg')h+=S('md',[['lesen','Geraden gezeichnet, Schnittpunkt ablesen'],['zeichnen','Geraden selbst zeichnen']],it.md,'Aufgabe')+S('n',[1,2],it.n,'Anzahl der Aufgaben');
+  if(it.type==='glt')h+=S('n',[1,2,3],it.n,'Anzahl der Aufgaben');
+  h+='<button type="button" data-gl-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
+ g.addEventListener('change',e=>{const t=e.target,k=t.dataset.gl;if(!k)return;const it=cur();if(!it)return;rec('gl'+k);it[k]=['n','lv'].includes(k)?+t.value:t.value;it.tasks=GEN[it.type](it);render();panel();});
+ g.addEventListener('click',e=>{const b=e.target.closest('[data-gl-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
  const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
 })();
 
