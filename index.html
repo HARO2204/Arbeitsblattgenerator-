@@ -7964,8 +7964,8 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
 /* ===== Klassenfilter + Themengruppen in der linken Leiste ===== */
 (function(){
  const L=document.getElementById('left');if(!L)return;
- const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','fk']],['📐 Geometrie',['sg','wk','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
- const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',fk:'4',sg:'1',wk:'12',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
+ const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','fk']],['📐 Geometrie',['sg','wk','sy','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
+ const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',fk:'4',sg:'1',wk:'12',sy:'2',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
  const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
  let kl=+ls.get('vk_klasse_v1',0)||0,USER=ls.get('vk_klzuord_v1',{})||{},COL=ls.get('vk_klgrp_v1',{})||{};
  const mapOf=c=>(USER[c]||DEF[c]||'1234');
@@ -8142,6 +8142,163 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
  if(P){const mk=(t,svg,txt)=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.innerHTML=`<svg viewBox="0 0 100 40">${svg}</svg><span>${txt}</span>`;d.ondragstart=ev=>ev.dataTransfer.setData('text/plain',t);d.onclick=()=>add(t);P.appendChild(d);};
   mk('bvg','<text x="14" y="17" font-size="11" text-anchor="middle">3</text><path d="M7 20h14" stroke="#000"/><text x="14" y="32" font-size="11" text-anchor="middle">5</text><rect x="38" y="12" width="22" height="20" rx="3" fill="none" stroke="#000"/><text x="49" y="28" font-size="15" text-anchor="middle" fill="#d00">&lt;</text><text x="82" y="17" font-size="11" text-anchor="middle">2</text><path d="M75 20h14" stroke="#000"/><text x="82" y="32" font-size="11" text-anchor="middle">3</text>','Brüche vergleichen und ordnen');
   mk('bdz','<rect x="6" y="6" width="88" height="28" fill="none" stroke="#000"/><path d="M50 6v28" stroke="#000"/><text x="28" y="17" font-size="10" text-anchor="middle">3</text><path d="M21 20h14" stroke="#000"/><text x="28" y="31" font-size="10" text-anchor="middle">4</text><text x="72" y="25" font-size="12" text-anchor="middle" fill="#d00">0,75</text>','Bruch ↔ Dezimalzahl (Tabelle)');}
+})();
+
+/* ===== Symmetrie, Kongruenz und Symmetralen ===== */
+(function(){
+ const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+ const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+ const f=v=>Math.round(v*100)/100,isSol=()=>typeof SOL!=='undefined'&&SOL;
+ const BL='#1a4fb5',RD='#d00',GR='#cfd8e6';
+ const TY=['sps','spa','kgr','smt'];
+ /* ---------- Spiegeln am Raster ---------- */
+ function genSps(it){const out=[],GW=14,GH=8;
+  for(let i=0;i<it.n;i++){const ax=it.ax==='mix'?pick(['v','h']):it.ax;let pts=[];
+   if(ax==='v'){const m=R(3,5),us=[];while(us.length<m){const u=R(1,GH-1);if(!us.includes(u))us.push(u);}us.sort((a,b)=>a-b);
+    const u0=R(0,us[0]-1),u1=R(us[m-1]+1,GH);pts=[[GW/2,u0]].concat(us.map(u=>[GW/2-R(1,6),u])).concat([[GW/2,u1]]);}
+   else{const m=R(3,5),us=[];while(us.length<m){const u=R(1,GW-1);if(!us.includes(u))us.push(u);}us.sort((a,b)=>a-b);
+    const u0=R(0,us[0]-1),u1=R(us[m-1]+1,GW);pts=[[u0,GH/2]].concat(us.map(u=>[u,GH/2-R(1,3)])).concat([[u1,GH/2]]);}
+   out.push({ax,pts});}
+  return out;}
+ function spsSvg(it){const s=22,GW=14,GH=8,W=it.w||714,cols=2,cw=W/cols,rows=Math.ceil(it.tasks.length/cols),ch=GH*s+34,sol=isSol();let g='';
+  it.tasks.forEach((t,i)=>{const c=i%cols,r=Math.floor(i/cols),ox=c*cw+(cw-GW*s)/2,oy=r*ch+26;
+   g+=`<text x="${c*cw+8}" y="${oy-8}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="#2b5fb4">${String.fromCharCode(97+i)})  Spiegle die Figur an der Achse.</text>`;
+   for(let x=0;x<=GW;x++)g+=`<line x1="${ox+x*s}" y1="${oy}" x2="${ox+x*s}" y2="${oy+GH*s}" stroke="${GR}"/>`;
+   for(let y=0;y<=GH;y++)g+=`<line x1="${ox}" y1="${oy+y*s}" x2="${ox+GW*s}" y2="${oy+y*s}" stroke="${GR}"/>`;
+   const P=t.pts.map(p=>[ox+p[0]*s,oy+p[1]*s]).map(p=>p.join(',')).join(' ');
+   const M=t.pts.map(p=>t.ax==='v'?[GW-p[0],p[1]]:[p[0],GH-p[1]]).map(p=>[ox+p[0]*s,oy+p[1]*s]).map(p=>p.join(',')).join(' ');
+   if(sol)g+=`<polygon points="${M}" fill="rgba(221,0,0,.12)" stroke="${RD}" stroke-width="2.4"/>`;
+   g+=`<polygon points="${P}" fill="rgba(47,111,237,.18)" stroke="${BL}" stroke-width="2.4"/>`;
+   if(t.ax==='v')g+=`<line x1="${ox+GW/2*s}" y1="${oy-4}" x2="${ox+GW/2*s}" y2="${oy+GH*s+4}" stroke="#000" stroke-width="2" stroke-dasharray="7 4"/>`;
+   else g+=`<line x1="${ox-4}" y1="${oy+GH/2*s}" x2="${ox+GW*s+4}" y2="${oy+GH/2*s}" stroke="#000" stroke-width="2" stroke-dasharray="7 4"/>`;});
+  const H=rows*ch+6;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Symmetrieachsen einzeichnen ---------- */
+ const rp=n=>{const a=[];for(let k=0;k<n;k++){const t=-Math.PI/2+2*Math.PI*k/n;a.push([Math.cos(t),Math.sin(t)]);}return a;};
+ function regAxes(n){const v=rp(n),ax=[];if(n%2){for(let k=0;k<n;k++)ax.push([v[k][0],v[k][1],-v[k][0],-v[k][1]]);}
+  else{for(let k=0;k<n/2;k++)ax.push([v[k][0],v[k][1],v[k+n/2][0],v[k+n/2][1]]);for(let k=0;k<n/2;k++){const a=v[k],b=v[(k+1)%n],mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2;ax.push([mx,my,-mx,-my]);}}return ax;}
+ const SH=[
+  {n:'Quadrat',p:[[-.8,-.8],[.8,-.8],[.8,.8],[-.8,.8]],a:[[0,-1,0,1],[-1,0,1,0],[-1,-1,1,1],[-1,1,1,-1]]},
+  {n:'Rechteck',p:[[-1.1,-.65],[1.1,-.65],[1.1,.65],[-1.1,.65]],a:[[0,-.95,0,.95],[-1.35,0,1.35,0]]},
+  {n:'Raute',p:[[0,-1],[.75,0],[0,1],[-.75,0]],a:[[0,-1.25,0,1.25],[-1,0,1,0]]},
+  {n:'Parallelogramm',p:[[-1.1,.6],[.5,.6],[1.1,-.6],[-.5,-.6]],a:[]},
+  {n:'gleichschenkeliges Dreieck',p:[[0,-1],[.85,.8],[-.85,.8]],a:[[0,-1.25,0,1.05]]},
+  {n:'gleichseitiges Dreieck',p:[[0,-1],[.87,.5],[-.87,.5]],a:regAxes(3).map(l=>l.map(x=>x*1.25))},
+  {n:'Drachenviereck',p:[[0,-1.05],[.75,-.2],[0,.95],[-.75,-.2]],a:[[0,-1.3,0,1.2]]},
+  {n:'gleichschenkeliges Trapez',p:[[-1.1,.6],[1.1,.6],[.6,-.6],[-.6,-.6]],a:[[0,-.85,0,.85]]},
+  {n:'allgemeines Trapez',p:[[-1,.6],[1.1,.6],[.5,-.6],[-.7,-.6]],a:[]},
+  {n:'regelmäßiges Fünfeck',p:rp(5).map(p=>[p[0]*.95,p[1]*.95]),a:regAxes(5).map(l=>l.map(x=>x*1.2))},
+  {n:'regelmäßiges Sechseck',p:rp(6).map(p=>[p[0]*.95,p[1]*.95]),a:regAxes(6).map(l=>l.map(x=>x*1.2))},
+  {n:'rechtwinkeliges Dreieck',p:[[-.9,.8],[.9,.8],[-.9,-.8]],a:[]},
+  {n:'Buchstabe A',t:'A',a:[[0,-1,0,1]]},{n:'Buchstabe H',t:'H',a:[[0,-1,0,1],[-1,0,1,0]]},{n:'Buchstabe E',t:'E',a:[[-1,0,1,0]]},
+  {n:'Buchstabe F',t:'F',a:[]},{n:'Buchstabe M',t:'M',a:[[0,-1,0,1]]},{n:'Buchstabe S',t:'S',a:[]},{n:'Buchstabe O',t:'O',a:[[0,-1,0,1],[-1,0,1,0]]},
+  {n:'Buchstabe T',t:'T',a:[[0,-1,0,1]]},{n:'Buchstabe Z',t:'Z',a:[]},{n:'Buchstabe B',t:'B',a:[[-1,0,1,0]]}];
+ function genSpa(it){const idx=shuf(SH.map((_,i)=>i)),out=[],withZ=idx.filter(i=>SH[i].a.length===0),some=idx.filter(i=>SH[i].a.length>0);
+  const pool=[];while(pool.length<it.n){if(pool.length%3===2&&withZ.length)pool.push(withZ.shift());else if(some.length)pool.push(some.shift());else if(withZ.length)pool.push(withZ.shift());else break;}
+  return pool.slice(0,it.n).map(i=>({i}));}
+ function spaSvg(it){const W=it.w||714,cols=3,cw=W/cols,ch=222,R0=62,sol=isSol(),rows=Math.ceil(it.tasks.length/cols);let g='';
+  it.tasks.forEach((t,i)=>{const c=i%cols,r=Math.floor(i/cols),cx=c*cw+cw/2,cy=r*ch+88,S=SH[t.i];
+   g+=`<text x="${c*cw+8}" y="${r*ch+20}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="#2b5fb4">${String.fromCharCode(97+i)})</text>`;
+   if(S.p)g+=`<polygon points="${S.p.map(p=>f(cx+p[0]*R0)+','+f(cy+p[1]*R0)).join(' ')}" fill="rgba(47,111,237,.14)" stroke="${BL}" stroke-width="2.4" stroke-linejoin="round"/>`;
+   else g+=`<text x="${cx}" y="${cy+R0*0.65}" text-anchor="middle" font-size="${R0*1.9}" font-weight="700" font-family="Arial,sans-serif" fill="${BL}">${S.t}</text>`;
+   if(sol)S.a.forEach(l=>{const k=S.t?R0*0.95:R0;g+=`<line x1="${f(cx+l[0]*k)}" y1="${f(cy+l[1]*k)}" x2="${f(cx+l[2]*k)}" y2="${f(cy+l[3]*k)}" stroke="${RD}" stroke-width="2" stroke-dasharray="7 4"/>`;});
+   g+=`<text x="${c*cw+14}" y="${r*ch+ch-26}" font-size="14" font-family="Arial,sans-serif">Symmetrieachsen: </text><line x1="${c*cw+138}" y1="${r*ch+ch-24}" x2="${c*cw+178}" y2="${r*ch+ch-24}" stroke="#000"/>`;
+   if(sol)g+=`<text x="${c*cw+158}" y="${r*ch+ch-27}" text-anchor="middle" font-size="16" font-weight="700" font-family="Arial,sans-serif" fill="${RD}">${S.a.length}</text>`;});
+  const H=rows*ch+4;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Kongruenz mit Quadratfiguren ---------- */
+ const key=c=>c.map(p=>p.join(',')).sort().join(';');
+ const norm=c=>{const mx=Math.min(...c.map(p=>p[0])),my=Math.min(...c.map(p=>p[1]));return c.map(p=>[p[0]-mx,p[1]-my]);};
+ const TR=[(x,y)=>[x,y],(x,y)=>[-y,x],(x,y)=>[-x,-y],(x,y)=>[y,-x],(x,y)=>[-x,y],(x,y)=>[x,-y],(x,y)=>[y,x],(x,y)=>[-y,-x]];
+ const canon=c=>TR.map(t=>key(norm(c.map(p=>t(p[0],p[1]))))).sort()[0];
+ const conn=c=>{const s=new Set(c.map(p=>p+''));const seen=new Set([c[0]+'']),st=[c[0]];while(st.length){const p=st.pop();[[1,0],[-1,0],[0,1],[0,-1]].forEach(d=>{const q=[p[0]+d[0],p[1]+d[1]];if(s.has(q+'')&&!seen.has(q+'')){seen.add(q+'');st.push(q);}});}return seen.size===c.length;};
+ const bb=c=>{const n=norm(c);return[Math.max(...n.map(p=>p[0]))+1,Math.max(...n.map(p=>p[1]))+1];};
+ function poly(n){let c=[[0,0]];while(c.length<n){const p=pick(c),d=pick([[1,0],[-1,0],[0,1],[0,-1]]),q=[p[0]+d[0],p[1]+d[1]];if(c.some(x=>x[0]===q[0]&&x[1]===q[1]))continue;const t=c.concat([q]);const b=bb(t);if(b[0]>4||b[1]>4)continue;c=t;}return norm(c);}
+ function alter(c){for(let t=0;t<200;t++){const k=R(0,c.length-1),rest=c.filter((_,i)=>i!==k);if(!conn(rest))continue;const p=pick(rest),d=pick([[1,0],[-1,0],[0,1],[0,-1]]),q=[p[0]+d[0],p[1]+d[1]];if(rest.some(x=>x[0]===q[0]&&x[1]===q[1]))continue;if(q[0]===c[k][0]&&q[1]===c[k][1])continue;const n=rest.concat([q]);const b=bb(n);if(b[0]>4||b[1]>4)continue;if(canon(n)!==canon(c))return norm(n);}return null;}
+ function place(c,G){const t=TR[R(0,7)],r=norm(c.map(p=>t(p[0],p[1]))),b=bb(r);const dx=R(0,G-b[0]),dy=R(0,G-b[1]);return r.map(p=>[p[0]+dx,p[1]+dy]);}
+ function genKgr(it){const out=[],G=6;
+  for(let i=0;i<it.n;i++){let c,alt,t=0;do{c=poly(R(5,6));alt=alter(c);}while(!alt&&t++<30);
+   const nb=R(1,2),bad=shuf([0,1,2]).slice(0,nb);
+   const cand=[0,1,2].map(k=>bad.includes(k)?{c:place(alter(c)||alt,G),ok:false}:{c:place(c,G),ok:true});
+   out.push({o:place(c,G),cand});}
+  return out;}
+ function kgrSvg(it){const s=24,G=6,W=it.w||714,gw=G*s,gap=(W-12-4*gw)/3,rowH=gw+88,sol=isSol();let g='';
+  const grid=(ox,oy)=>{let q='';for(let x=0;x<=G;x++)q+=`<line x1="${ox+x*s}" y1="${oy}" x2="${ox+x*s}" y2="${oy+gw}" stroke="${GR}"/>`;for(let y=0;y<=G;y++)q+=`<line x1="${ox}" y1="${oy+y*s}" x2="${ox+gw}" y2="${oy+y*s}" stroke="${GR}"/>`;return q;};
+  const cells=(c,ox,oy,col)=>c.map(p=>`<rect x="${ox+p[0]*s}" y="${oy+p[1]*s}" width="${s}" height="${s}" fill="${col}" stroke="#2b3f6b" stroke-width="1.2"/>`).join('');
+  it.tasks.forEach((t,i)=>{const oy=i*rowH+26;
+   g+=`<text x="4" y="${oy-8}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="#2b5fb4">${String.fromCharCode(97+i)})  Welche Figuren sind zur ersten Figur kongruent? Kreuze an.</text>`;
+   const ox0=6;g+=grid(ox0,oy)+cells(t.o,ox0,oy,'rgba(47,111,237,.35)');
+   g+=`<text x="${ox0+gw/2}" y="${oy+gw+18}" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="700">Figur</text>`;
+   t.cand.forEach((cd,k)=>{const ox=6+(k+1)*(gw+gap);g+=grid(ox,oy)+cells(cd.c,ox,oy,'rgba(255,193,7,.45)');
+    g+=`<text x="${ox+gw/2}" y="${oy+gw+18}" text-anchor="middle" font-size="14" font-family="Arial,sans-serif" font-weight="700">${'ABC'[k]}</text>`;
+    const bx=ox+4,by=oy+gw+28;
+    g+=`<rect x="${bx}" y="${by}" width="14" height="14" fill="none" stroke="#555"/><text x="${bx+19}" y="${by+12}" font-size="12" font-family="Arial,sans-serif">kongruent</text>`;
+    g+=`<rect x="${bx}" y="${by+18}" width="14" height="14" fill="none" stroke="#555"/><text x="${bx+19}" y="${by+30}" font-size="12" font-family="Arial,sans-serif">nicht kongruent</text>`;
+    if(sol){const yy=cd.ok?by:by+18;g+=`<path d="M${bx+2} ${yy+8}l4 4 7-11" stroke="${RD}" stroke-width="2.6" fill="none"/>`;}});});
+  const H=it.tasks.length*rowH+6;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Symmetralen konstruieren ---------- */
+ function genSmt(it){const out=[];for(let i=0;i<it.n;i++){const kind=it.md==='mix'?(i%2?'w':'s'):(it.md==='strecke'?'s':'w');
+   if(kind==='s'){const L=R(140,210),th=R(-35,35)*Math.PI/180+(R(0,1)?0:Math.PI/2*R(0,1)*0);out.push({k:'s',L,th});}
+   else{out.push({k:'w',al:R(40,140),b:-R(0,25)});}}
+  return out;}
+ const arc=(cx,cy,r,a0,a1)=>{const x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);return`<path d="M${f(x0)} ${f(y0)}A${r} ${r} 0 0 ${a1>a0?1:0} ${f(x1)} ${f(y1)}" fill="none" stroke="${RD}" stroke-width="1.6"/>`;};
+ function smtSvg(it){const W=it.w||714,cols=2,cw=W/cols,ch=252,sol=isSol(),rows=Math.ceil(it.tasks.length/cols);let g='';
+  it.tasks.forEach((t,i)=>{const c=i%cols,r=Math.floor(i/cols),ox=c*cw,oy=r*ch;
+   g+=`<rect x="${ox+4}" y="${oy+4}" width="${cw-8}" height="${ch-8}" rx="8" fill="none" stroke="#b9c6dc"/>`;
+   g+=`<text x="${ox+14}" y="${oy+24}" font-size="14" font-weight="700" font-family="Arial,sans-serif" fill="#2b5fb4">${String.fromCharCode(97+i)})  ${t.k==='s'?'Konstruiere die Streckensymmetrale.':'Konstruiere die Winkelsymmetrale.'}</text>`;
+   if(t.k==='s'){const cx=ox+cw/2,cy=oy+ch/2+12,ux=Math.cos(t.th),uy=Math.sin(t.th),A=[cx-ux*t.L/2,cy-uy*t.L/2],B=[cx+ux*t.L/2,cy+uy*t.L/2];
+    g+=`<line x1="${f(A[0])}" y1="${f(A[1])}" x2="${f(B[0])}" y2="${f(B[1])}" stroke="#000" stroke-width="2"/>`;
+    [[A,'A',-1],[B,'B',1]].forEach(([p,n,s])=>{g+=`<circle cx="${f(p[0])}" cy="${f(p[1])}" r="3" fill="#000"/><text x="${f(p[0]+s*14-5)}" y="${f(p[1]-9)}" font-size="15" font-family="Arial,sans-serif">${n}</text>`;});
+    if(sol){const rr=t.L*0.65,h=Math.sqrt(rr*rr-t.L*t.L/4),nx=-uy,ny=ux,M=[cx,cy],P=[cx+nx*h,cy+ny*h],Q=[cx-nx*h,cy-ny*h];
+     const ang=(C,X)=>Math.atan2(X[1]-C[1],X[0]-C[0]),d=0.2;
+     [A,B].forEach(C=>[P,Q].forEach(X=>{const a=ang(C,X);g+=arc(C[0],C[1],f(rr),a-d,a+d);}));
+     g+=`<line x1="${f(cx+nx*(h+26))}" y1="${f(cy+ny*(h+26))}" x2="${f(cx-nx*(h+26))}" y2="${f(cy-ny*(h+26))}" stroke="${RD}" stroke-width="2"/>`;
+     const q=9;g+=`<path d="M${f(cx+ux*q)} ${f(cy+uy*q)}l${f(nx*q)} ${f(ny*q)}l${f(-ux*q)} ${f(-uy*q)}" fill="none" stroke="${RD}" stroke-width="1.4"/><circle cx="${cx}" cy="${cy}" r="3" fill="${RD}"/><text x="${f(cx+ux*4+nx*14)}" y="${f(cy+uy*4+ny*14+4)}" font-size="14" font-weight="700" fill="${RD}" font-family="Arial,sans-serif">M</text>`;}}
+   else{const S=[ox+cw/2-40,oy+ch-48],al=t.al*Math.PI/180,a1=t.b*Math.PI/180,a2=a1-al,L=140;
+    const E1=[S[0]+L*Math.cos(a1),S[1]+L*Math.sin(a1)],E2=[S[0]+L*Math.cos(a2),S[1]+L*Math.sin(a2)];
+    g+=`<line x1="${f(S[0])}" y1="${f(S[1])}" x2="${f(E1[0])}" y2="${f(E1[1])}" stroke="#000" stroke-width="2"/><line x1="${f(S[0])}" y1="${f(S[1])}" x2="${f(E2[0])}" y2="${f(E2[1])}" stroke="#000" stroke-width="2"/><circle cx="${f(S[0])}" cy="${f(S[1])}" r="3" fill="#000"/><text x="${f(S[0]-16)}" y="${f(S[1]+18)}" font-size="15" font-family="Arial,sans-serif">S</text>`;
+    const am=(a1+a2)/2;g+=`<text x="${f(S[0]+34*Math.cos(am)-4)}" y="${f(S[1]+34*Math.sin(am)+5)}" font-size="15" font-family="Arial,sans-serif" font-style="italic">α</text>`;
+    if(sol){const r1=48,P1=[S[0]+r1*Math.cos(a1),S[1]+r1*Math.sin(a1)],P2=[S[0]+r1*Math.cos(a2),S[1]+r1*Math.sin(a2)],r2=Math.max(62,r1*Math.sin(al/2)+16);
+     g+=arc(S[0],S[1],r1,a2,a1);
+     const tt=r1*Math.cos(al/2)+Math.sqrt(r2*r2-r1*r1*Math.sin(al/2)**2),T=[S[0]+tt*Math.cos(am),S[1]+tt*Math.sin(am)],d=0.2;
+     [P1,P2].forEach(P=>{const a=Math.atan2(T[1]-P[1],T[0]-P[0]);g+=arc(P[0],P[1],f(r2),a-d,a+d);});
+     g+=`<line x1="${f(S[0])}" y1="${f(S[1])}" x2="${f(S[0]+150*Math.cos(am))}" y2="${f(S[1]+150*Math.sin(am))}" stroke="${RD}" stroke-width="2"/>`;}}});
+  const H=rows*ch+2;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Einbindung ---------- */
+ const GEN={sps:genSps,spa:genSpa,kgr:genKgr,smt:genSmt},DRAW={sps:spsSvg,spa:spaSvg,kgr:kgrSvg,smt:smtSvg};
+ const DEF={sps:{n:4,ax:'mix',w:714},spa:{n:6,w:714},kgr:{n:2,w:714},smt:{n:4,md:'mix',w:714}};
+ const _sv=svgNew;svgNew=function(it){return TY.includes(it.type)?DRAW[it.type](it):_sv.apply(this,arguments);};
+ const _co=catOf;catOf=function(it){return TY.includes(it.type)?'sy':_co.apply(this,arguments);};
+ const _add=add;add=function(t,x,y){
+  if(!TY.includes(t))return _add.apply(this,arguments);
+  rec();const it={id:uid++,type:t,x:x??40,y:y??100,...JSON.parse(JSON.stringify(DEF[t]))};it.tasks=GEN[t](it);items.push(it);sel=it.id;render();
+  if(x===undefined){try{const e=elOf(it.id),w=e?e.offsetWidth:0;if(w>=400&&w<=794){it.x=Math.round((794-w)/2);render();}}catch(_){}}sync();};
+ CATS.sy='Symmetrie und Kongruenz';
+ /* Kategorie-Knopf */
+ const L=document.getElementById('left');let btn=L.querySelector('.cat[data-c="sy"]');
+ if(!btn){btn=document.createElement('button');btn.className='cat';btn.dataset.c='sy';btn.textContent='🦋 Symmetrie und Kongruenz';
+  const P=document.createElement('div');P.className='catp';P.dataset.c='sy';P.id='sypal';
+  const ref=L.querySelector('.catp[data-c="wk"]');if(ref){ref.after(btn);btn.after(P);}else{L.appendChild(btn);L.appendChild(P);}
+  btn.onclick=()=>{const c='sy';cat=(cat===c&&!sel)?null:c;select(null);};}
+ const P=L.querySelector('.catp[data-c="sy"]');
+ const mk=(t,svg,txt)=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.innerHTML=`<svg viewBox="0 0 100 40">${svg}</svg><span>${txt}</span>`;d.ondragstart=ev=>ev.dataTransfer.setData('text/plain',t);d.onclick=()=>add(t);d.style.marginBottom='6px';P.appendChild(d);};
+ mk('sps','<path d="M50 4v32" stroke="#000" stroke-dasharray="3 2"/><path d="M50 8L36 14L40 22L32 30L50 34Z" fill="rgba(47,111,237,.3)" stroke="#1a4fb5"/><path d="M50 8L64 14L60 22L68 30L50 34Z" fill="rgba(221,0,0,.12)" stroke="#d00"/>','Spiegeln am Raster');
+ mk('spa','<path d="M50 4L82 34H18Z" fill="rgba(47,111,237,.15)" stroke="#1a4fb5"/><path d="M50 2v36" stroke="#d00" stroke-dasharray="4 3"/>','Symmetrieachsen einzeichnen');
+ mk('kgr','<rect x="8" y="8" width="12" height="12" fill="rgba(47,111,237,.35)" stroke="#2b3f6b"/><rect x="20" y="8" width="12" height="12" fill="rgba(47,111,237,.35)" stroke="#2b3f6b"/><rect x="20" y="20" width="12" height="12" fill="rgba(47,111,237,.35)" stroke="#2b3f6b"/><text x="52" y="26" font-size="15" font-weight="700">≅</text><rect x="68" y="8" width="12" height="12" fill="rgba(255,193,7,.45)" stroke="#2b3f6b"/><rect x="68" y="20" width="12" height="12" fill="rgba(255,193,7,.45)" stroke="#2b3f6b"/><rect x="80" y="20" width="12" height="12" fill="rgba(255,193,7,.45)" stroke="#2b3f6b"/>','Kongruente Figuren erkennen');
+ mk('smt','<path d="M10 30L90 10" stroke="#000" stroke-width="2"/><path d="M42 4L58 36" stroke="#d00" stroke-width="2"/><circle cx="10" cy="30" r="2.5"/><circle cx="90" cy="10" r="2.5"/>','Symmetralen konstruieren');
+ /* Panel */
+ let g=document.getElementById('g-sy');if(!g){g=document.createElement('div');g.className='grp';g.id='g-sy';g.dataset.cats='sy';document.getElementById('rp').appendChild(g);}
+ const cur=()=>items.find(i=>i.id===sel&&TY.includes(i.type));
+ const S=(k,vals,v,lab)=>`<label>${lab}<select data-sy="${k}">${vals.map(a=>{const[val,txt]=Array.isArray(a)?a:[a,a];return`<option value="${val}"${String(val)===String(v)?' selected':''}>${txt}</option>`;}).join('')}</select></label>`;
+ function panel(){const it=cur();if(!it){g.innerHTML='<div style="font-size:13px;color:var(--mut,#666)">Wähle links eine Aufgabe, dann kannst du sie hier einstellen.</div>';return;}
+  const T={sps:'Spiegeln am Raster',spa:'Symmetrieachsen einzeichnen',kgr:'Kongruente Figuren erkennen',smt:'Symmetralen konstruieren'}[it.type];
+  let h=`<div style="font-weight:700;margin:2px 0">${T}</div>`;
+  if(it.type==='sps')h+=S('ax',[['mix','Achse senkrecht und waagrecht'],['v','nur senkrecht'],['h','nur waagrecht']],it.ax,'Achse')+S('n',[2,4,6],it.n,'Anzahl der Felder');
+  if(it.type==='spa')h+=S('n',[3,6,9],it.n,'Anzahl der Figuren')+'<div style="font-size:12px;color:var(--mut,#666)">Es sind Figuren ohne und mit mehreren Symmetrieachsen gemischt, dazu Buchstaben.</div>';
+  if(it.type==='kgr')h+=S('n',[1,2,3],it.n,'Anzahl der Aufgaben');
+  if(it.type==='smt')h+=S('md',[['mix','Strecke und Winkel gemischt'],['strecke','nur Streckensymmetrale'],['winkel','nur Winkelsymmetrale']],it.md,'Aufgabe')+S('n',[2,4,6],it.n,'Anzahl der Aufgaben');
+  h+='<button type="button" data-sy-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
+ g.addEventListener('change',e=>{const t=e.target,k=t.dataset.sy;if(!k)return;const it=cur();if(!it)return;rec('sy'+k);it[k]=k==='n'?+t.value:t.value;it.tasks=GEN[it.type](it);render();panel();});
+ g.addEventListener('click',e=>{const b=e.target.closest('[data-sy-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
+ const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
 })();
 
 /* ===== PDF schneller: Blatt in leeres Dokument kopieren, damit html2canvas nicht die ganze (10-MB-)Seite klonen muss ===== */
