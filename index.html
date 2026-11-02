@@ -7964,8 +7964,8 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
 /* ===== Klassenfilter + Themengruppen in der linken Leiste ===== */
 (function(){
  const L=document.getElementById('left');if(!L)return;
- const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','gz','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','fk']],['📐 Geometrie',['sg','wk','sy','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
- const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',gz:'23',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',fk:'4',sg:'1',wk:'12',sy:'2',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
+ const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','gz','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','fk']],['📐 Geometrie',['sg','wk','sy','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss','wa']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
+ const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',gz:'23',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',fk:'4',sg:'1',wk:'12',sy:'2',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',wa:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
  const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
  let kl=+ls.get('vk_klasse_v1',0)||0,USER=ls.get('vk_klzuord_v1',{})||{},COL=ls.get('vk_klgrp_v1',{})||{};
  const mapOf=c=>(USER[c]||DEF[c]||'1234');
@@ -8528,6 +8528,147 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   h+='<button type="button" data-zi-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
  g.addEventListener('change',e=>{const t=e.target,k=t.dataset.zi;if(!k)return;const it=cur();if(!it)return;rec('zi'+k);it[k]=['n','ny'].includes(k)?+t.value:t.value;it.tasks=GEN[it.type](it);render();panel();});
  g.addEventListener('click',e=>{const b=e.target.closest('[data-zi-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
+ const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
+})();
+
+/* ===== Wahrscheinlichkeit, relative Häufigkeit, Baumdiagramme ===== */
+(function(){
+ const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+ const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
+ const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a),f2=v=>Math.round(v*100)/100,isSol=()=>typeof SOL!=='undefined'&&SOL;
+ const RD='#d00',BL='#2b5fb4',TY=['wzb','wzh','wzt','wza'];
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+ const COL={rot:'#e53935',blau:'#1e88e5',gelb:'#fdd835',grün:'#43a047',orange:'#fb8c00',lila:'#8e24aa'};
+ const fr=(n,d)=>{const g=gcd(n,d)||1;return[n/g,d/g];};
+ const pct=(g,m)=>{const v=g/m*100,r=Math.round(v*10)/10,ex=Math.abs(v-r)<1e-9;let s=String(r).replace('.',',');return(ex?'':'≈ ')+s+' %';};
+ function frac(cx,y0,n,d,fs,col){const w=Math.max(String(n).length,String(d).length)*fs*0.62+fs*0.5,ly=y0-fs*0.3;col=col||'#000';
+  if(d===1)return`<text x="${f2(cx)}" y="${f2(y0)}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}">${n}</text>`;
+  return`<text x="${f2(cx)}" y="${f2(y0-fs*0.45)}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}">${n}</text><line x1="${f2(cx-w/2)}" y1="${f2(ly)}" x2="${f2(cx+w/2)}" y2="${f2(ly)}" stroke="${col}" stroke-width="1.4"/><text x="${f2(cx)}" y="${f2(y0+fs*0.55)}" text-anchor="middle" font-size="${fs}" font-family="Arial,sans-serif" fill="${col}">${d}</text>`;}
+ const T=(x,y,s,fs,o)=>`<text x="${f2(x)}" y="${f2(y)}" font-size="${fs}" font-family="Arial,sans-serif"${o||''}>${esc(s)}</text>`;
+ /* ---------- Wahrscheinlichkeit (Urne, Glücksrad, Würfel) ---------- */
+ const WE=[['gerade Zahl',n=>n%2===0],['ungerade Zahl',n=>n%2===1],['Zahl größer als 4',n=>n>4],['Zahl kleiner als 3',n=>n<3],['Primzahl',n=>[2,3,5].includes(n)],['durch 3 teilbar',n=>n%3===0],['keine 6',n=>n!==6],['Zahl 6',n=>n===6]];
+ function genWzb(it){const out=[];
+  for(let i=0;i<it.n;i++){const kind=it.kd==='mix'?pick(['urne','rad','wuerfel']):it.kd;let t;
+   if(kind==='wuerfel'){const ev=shuf(WE).slice(0,3).map(([n,p])=>({n,g:[1,2,3,4,5,6].filter(p).length}));t={kind,m:6,ev};}
+   else{const m=kind==='rad'?pick([4,5,8,10]):pick([8,10,10,20,25]),cs=shuf(Object.keys(COL)).slice(0,pick([3,3,4])),cnt=cs.map(()=>1);let rest=m-cs.length;while(rest>0){cnt[R(0,cs.length-1)]++;rest--;}
+    const arr=[];cs.forEach((c,k)=>{for(let j=0;j<cnt[k];j++)arr.push(c);});const lay=kind==='rad'?arr:shuf(arr);
+    const evs=[];cs.forEach((c,k)=>{evs.push({n:c,g:cnt[k]});evs.push({n:'nicht '+c,g:m-cnt[k]});});
+    for(let a=0;a<cs.length;a++)for(let b=a+1;b<cs.length;b++)evs.push({n:cs[a]+' oder '+cs[b],g:cnt[a]+cnt[b]});
+    const ok=shuf(evs.filter(e=>e.g>0&&e.g<m)),pickEv=[];ok.forEach(e=>{if(pickEv.length<3&&!pickEv.some(x=>x.n.split(' ').includes(e.n.replace('nicht ',''))&&x.n.replace('nicht ','')===e.n.replace('nicht ',''))&&!pickEv.some(x=>x.g===e.g&&x.n.length===e.n.length))pickEv.push(e);});
+    while(pickEv.length<3&&ok.length>pickEv.length){const e=pick(ok);if(!pickEv.includes(e))pickEv.push(e);}
+    t={kind,m,lay,ev:pickEv};}
+   out.push(t);}
+  return out;}
+ function pie(cx,cy,r,i,k,col){const a0=-Math.PI/2+2*Math.PI*i/k,a1=-Math.PI/2+2*Math.PI*(i+1)/k,x0=cx+r*Math.cos(a0),y0=cy+r*Math.sin(a0),x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);return`<path d="M${cx} ${cy}L${f2(x0)} ${f2(y0)}A${r} ${r} 0 0 1 ${f2(x1)} ${f2(y1)}Z" fill="${col}" stroke="#333" stroke-width="1.2"/>`;}
+ function wzbSvg(it){const W=it.w||714,sol=isSol(),blk=210;let g='';
+  it.tasks.forEach((t,i)=>{const oy=i*blk+6;
+   g+=T(4,oy+18,String.fromCharCode(97+i)+')',15,` font-weight="700" fill="${BL}"`);
+   if(t.kind==='urne'){g+=`<rect x="26" y="${oy+26}" width="170" height="150" rx="14" fill="#f7f7f2" stroke="#555" stroke-width="1.6"/>`;
+    t.lay.forEach((c,k)=>{const col=k%6,row=Math.floor(k/6);g+=`<circle cx="${46+col*25}" cy="${oy+50+row*26}" r="11.5" fill="${COL[c]}" stroke="#333"/>`;});
+    g+=T(111,oy+196,'Urne mit '+t.m+' Kugeln',13,' text-anchor="middle" fill="#444"');}
+   else if(t.kind==='rad'){const cx=110,cy=oy+104,r=70;t.lay.forEach((c,k)=>{g+=pie(cx,cy,r,k,t.lay.length,COL[c]);});g+=`<path d="M${cx} ${cy-r-2}l-8 -14h16z" fill="#222"/>`+T(cx,oy+196,'Glücksrad mit '+t.m+' gleichen Feldern',12,' text-anchor="middle" fill="#444"');}
+   else{g+=`<rect x="60" y="${oy+40}" width="100" height="100" rx="16" fill="#fff" stroke="#333" stroke-width="2.4"/>`;[[85,66],[85,90],[85,114],[135,66],[135,90],[135,114]].forEach(p=>{g+=`<circle cx="${p[0]}" cy="${oy+p[1]}" r="7" fill="#222"/>`;});g+=T(110,oy+170,'Ein Würfel wird geworfen.',13,' text-anchor="middle" fill="#444"');}
+   const x0=214,heads=['Ereignis','günstige Fälle','mögliche Fälle','P (Bruch)','P (Prozent)'],ws=[136,88,88,86,98],hh=36,rh=48,ty=oy+20;
+   g+=`<rect x="${x0}" y="${ty}" width="${W-x0-6}" height="${hh}" fill="#e8f0fb" stroke="#555"/>`;let x=x0;
+   ws.forEach((w,k)=>{g+=T(x+w/2,ty+hh*0.62,heads[k],11,' text-anchor="middle" font-weight="700"');if(k)g+=`<line x1="${x}" y1="${ty}" x2="${x}" y2="${ty+hh+3*rh}" stroke="#555"/>`;x+=w;});
+   t.ev.forEach((e,k)=>{const y=ty+hh+k*rh;g+=`<rect x="${x0}" y="${y}" width="${W-x0-6}" height="${rh}" fill="none" stroke="#555"/>`;
+    g+=T(x0+8,y+rh*0.62,e.n,15);
+    if(sol){const [n,d]=fr(e.g,t.m);let cx=x0+ws[0];g+=T(cx+ws[1]/2,y+rh*0.64,String(e.g),17,` text-anchor="middle" fill="${RD}"`);cx+=ws[1];g+=T(cx+ws[2]/2,y+rh*0.64,String(t.m),17,` text-anchor="middle" fill="${RD}"`);cx+=ws[2];g+=frac(cx+ws[3]/2,y+rh*0.64,n,d,17,RD);cx+=ws[3];g+=T(cx+ws[4]/2,y+rh*0.64,pct(e.g,t.m),16,` text-anchor="middle" fill="${RD}"`);}});});
+  const H=it.tasks.length*blk+6;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- relative Häufigkeit ---------- */
+ const WK={wuerfel:{t:'Ein Würfel wird {N}-mal geworfen.',rows:['1','2','3','4','5','6'],lab:'Augenzahl',p:'1/6'},muenze:{t:'Eine Münze wird {N}-mal geworfen.',rows:['Kopf','Zahl'],lab:'Ergebnis',p:'1/2'},rad:{t:'Ein Glücksrad mit 4 gleich großen Feldern wird {N}-mal gedreht.',rows:['rot','blau','gelb','grün'],lab:'Farbe',p:'1/4'}};
+ function genWzh(it){const out=[];for(let i=0;i<it.n;i++){const kd=it.kd==='mix'?pick(['wuerfel','muenze','rad']):it.kd,N=+it.N,k=WK[kd].rows.length,cnt=WK[kd].rows.map(()=>0);for(let j=0;j<N;j++)cnt[R(0,k-1)]++;
+   out.push({kd,N,cnt});}return out;}
+ function wzhSvg(it){const W=it.w||660,sol=isSol(),fs=17;let g='',H=4;
+  it.tasks.forEach((t,i)=>{const K=WK[t.kd];g+=T(2,H+20,String.fromCharCode(97+i)+')',15,` font-weight="700" fill="${BL}"`)+T(24,H+20,K.t.replace('{N}',t.N),16);H+=30;
+   const heads=[K.lab,'absolute Häufigkeit','relative Häufigkeit (Bruch)','relative Häufigkeit (Prozent)'],ws=[W*0.16,W*0.2,W*0.32,W*0.32],hh=40,rh=44,n=t.cnt.length;
+   g+=`<g transform="translate(0 ${H})"><rect x="0.5" y="0.5" width="${W-1}" height="${hh}" fill="#e8f0fb" stroke="#555"/>`;let x=0;
+   ws.forEach((w,k)=>{g+=T(x+w/2,hh*0.62,heads[k],12.5,' text-anchor="middle" font-weight="700"');if(k)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${hh+(n+1)*rh}" stroke="#555"/>`;x+=w;});
+   for(let k=0;k<=n;k++){const y=hh+k*rh,sum=k===n;g+=`<rect x="0.5" y="${y+0.5}" width="${W-1}" height="${rh}" fill="${sum?'#f4f4f4':'none'}" stroke="#555"/>`;
+    g+=T(ws[0]/2,y+rh*0.64,sum?'Summe':K.rows[k],fs,` text-anchor="middle"${sum?' font-weight="700"':''}`);
+    if(sum||true){g+=T(ws[0]+ws[1]/2,y+rh*0.64,sum?String(t.N):String(t.cnt[k]),fs,` text-anchor="middle"${sum?' font-weight="700"':''}`);}
+    if(sol){const [a,b]=sum?[1,1]:fr(t.cnt[k],t.N),cx=ws[0]+ws[1]+ws[2]/2;g+=frac(cx,y+rh*0.64,a,b,fs,RD);g+=T(ws[0]+ws[1]+ws[2]+ws[3]/2,y+rh*0.64,sum?'100 %':pct(t.cnt[k],t.N),16,` text-anchor="middle" fill="${RD}"`);}}
+   g+='</g>';H+=hh+(n+1)*rh+10;
+   g+=T(2,H+14,`Vergleiche mit der Wahrscheinlichkeit P = ${K.p}: Welche Ergebnisse waren häufiger, welche seltener?`,13,' fill="#444"')+`<line x1="2" y1="${H+36}" x2="${W-2}" y2="${H+36}" stroke="#000"/>`;H+=52;});
+  return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Baumdiagramm zweistufig ---------- */
+ function genWzt(it){const out=[];for(let i=0;i<it.n;i++){const c=pick([['rot','blau'],['rot','gelb'],['blau','grün'],['gelb','grün']]);let a=R(2,5),b=R(2,5);while(a+b>8||a+b<4){a=R(2,5);b=R(2,5);}out.push({c,a,b,mit:it.zr==='mit'?true:it.zr==='ohne'?false:R(0,1)===0});}return out;}
+ function wztSvg(it){const W=it.w||714,sol=isSol(),blk=360;let g='';
+  it.tasks.forEach((t,i)=>{const oy=i*blk+4,[c1,c2]=t.c,tot=t.a+t.b,cn=[t.a,t.b];
+   g+=T(4,oy+20,String.fromCharCode(97+i)+')',15,` font-weight="700" fill="${BL}"`);
+   g+=T(26,oy+20,`In einer Urne liegen ${t.a} ${c1}e und ${t.b} ${c2}e Kugeln. Es wird zweimal gezogen, ${t.mit?'mit':'ohne'} Zurücklegen.`,15);
+   for(let k=0;k<t.a+t.b;k++){g+=`<circle cx="${34+k*22}" cy="${oy+44}" r="8.5" fill="${COL[k<t.a?c1:c2]}" stroke="#333"/>`;}
+   const rx=40,ry=oy+185,n1x=250,l1=[oy+105,oy+265],lx=470,leaves=[[oy+70,0,0],[oy+140,0,1],[oy+230,1,0],[oy+300,1,1]];
+   g+=`<circle cx="${rx}" cy="${ry}" r="4" fill="#000"/>`;
+   [0,1].forEach(a=>{g+=`<line x1="${rx}" y1="${ry}" x2="${n1x}" y2="${l1[a]}" stroke="#333" stroke-width="1.6"/><circle cx="${n1x}" cy="${l1[a]}" r="14" fill="${COL[t.c[a]]}" stroke="#333"/>`;
+    const p=fr(cn[a],tot);g+=frac((rx+n1x)/2-(a?-6:6)+(a?-0:0),(ry+l1[a])/2+(a?22:-12),p[0],p[1],15);});
+   leaves.forEach(([ly,a,b])=>{g+=`<line x1="${n1x}" y1="${l1[a]}" x2="${lx}" y2="${ly}" stroke="#333" stroke-width="1.6"/><circle cx="${lx}" cy="${ly}" r="11" fill="${COL[t.c[b]]}" stroke="#333"/>`;
+    const n2=t.mit?cn[b]:cn[b]-(a===b?1:0),d2=t.mit?tot:tot-1,p=fr(n2,d2),mx=(n1x+lx)/2,my=(l1[a]+ly)/2;
+    const bx=mx-22,by=(ly<l1[a]?my-20-36:my+12)+10;
+    g+=`<rect x="${f2(bx)}" y="${f2(by-10)}" width="40" height="${p[1]===1?22:36}" rx="4" fill="none" stroke="#999" stroke-dasharray="3 2"/>`;
+    if(sol)g+=frac(bx+20,by+(p[1]===1?7:3),p[0],p[1],14,RD);
+    /* Pfadwahrscheinlichkeit */
+    const P1=fr(cn[a],tot),P=fr(P1[0]*p[0],P1[1]*p[1]);
+    g+=T(lx+22,ly+5,c1[0].toUpperCase()===t.c[a][0].toUpperCase()?'':'',14);
+    g+=T(lx+20,ly+5,t.c[a]+' – '+t.c[b],13,' fill="#333"');
+    g+=`<rect x="${lx+112}" y="${ly-16}" width="56" height="${P[1]===1?26:40}" rx="4" fill="none" stroke="#999" stroke-dasharray="3 2"/>`;
+    if(sol)g+=frac(lx+140,ly+(P[1]===1?1:-0.5),P[0],P[1],14,RD);});
+   const same=(()=>{let s=0,d=tot*(t.mit?tot:tot-1);const cnn=[t.a,t.b];[0,1].forEach(a=>{s+=cnn[a]*(t.mit?cnn[a]:cnn[a]-1);});return fr(s,d);})();
+   g+=T(26,oy+346,'P(beide Kugeln haben dieselbe Farbe) =',15)+`<line x1="318" y1="${oy+349}" x2="400" y2="${oy+349}" stroke="#000"/>`;
+   if(sol)g+=T(359,oy+345,same[1]===1?String(same[0]):same[0]+'/'+same[1],15,` text-anchor="middle" fill="${RD}" font-weight="700"`);});
+  const H=it.tasks.length*blk+6;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ /* ---------- Abzählen (Baumdiagramm, 1. Klasse) ---------- */
+ const SC=[{t:'Menü',a:['Suppe','Salat','Vorspeisenteller','Brot'],b:['Schnitzel','Pizza','Nudeln'],q:'Eine Speisekarte hat {A} Vorspeisen und {B} Hauptspeisen. Wie viele verschiedene Menüs (eine Vorspeise und eine Hauptspeise) gibt es?'},
+  {t:'Outfit',a:['rotes T-Shirt','blaues T-Shirt','grünes T-Shirt','gelbes T-Shirt'],b:['Jeans','Shorts','Rock'],q:'Lena hat {A} T-Shirts und {B} Hosen. Wie viele verschiedene Outfits kann sie zusammenstellen?'},
+  {t:'Eis',a:['Vanille','Schoko','Erdbeere','Zitrone'],b:['Becher','Waffel','Hörnchen'],q:'Eine Eisdiele hat {A} Sorten und {B} Arten, das Eis zu servieren. Wie viele verschiedene Eis-Portionen (eine Sorte, eine Art) gibt es?'},
+  {t:'Jause',a:['Wasser','Saft','Tee','Milch'],b:['Apfel','Banane','Weckerl'],q:'Zur Pausenjause gibt es {A} Getränke und {B} Speisen. Wie viele verschiedene Jausen kann man wählen (ein Getränk, eine Speise)?'}];
+ function genWza(it){const out=[];const sc=shuf(SC);for(let i=0;i<it.n;i++){const s=sc[i%sc.length],A=R(2,Math.min(4,s.a.length)),B=R(2,Math.min(3,s.b.length));out.push({t:s.t,a:s.a.slice(0,A),b:s.b.slice(0,B),q:s.q.replace('{A}',A).replace('{B}',B)});}return out;}
+ const wrap=(s,m)=>{const w=s.split(' '),L=[];let c='';w.forEach(x=>{if((c+' '+x).trim().length>m){L.push(c);c=x;}else c=(c+' '+x).trim();});if(c)L.push(c);return L;};
+ function wzaSvg(it){const W=it.w||714,sol=isSol();let g='',H=4;
+  it.tasks.forEach((t,i)=>{const L=wrap(t.q,80);L.forEach((ln,k)=>{g+=T(k?30:6,H+20+k*21,(k?'':String.fromCharCode(97+i)+') ')+ln,16,k?'':'');});
+   const y0=H+L.length*21+22,nA=t.a.length,nB=t.b.length,rowH=26,hgt=Math.max(nA*nB*rowH,120),rx=40,ry=y0+hgt/2;let leaf=0;
+   g+=`<circle cx="${rx}" cy="${ry}" r="4" fill="#000"/>`;
+   t.a.forEach((a,ai)=>{const yA=y0+(ai+0.5)*hgt/nA;g+=`<line x1="${rx}" y1="${ry}" x2="230" y2="${yA}" stroke="#333" stroke-width="1.6"/>`+T(236,yA+5,a,15,' font-weight="700"');
+    if(sol)t.b.forEach((b,bi)=>{const yB=y0+(leaf+0.5)*hgt/(nA*nB);leaf++;g+=`<line x1="${232+tw(a,15)+8}" y1="${yA}" x2="420" y2="${yB}" stroke="${RD}" stroke-width="1.4"/>`+T(426,yB+5,a+' + '+b,14,` fill="${RD}"`);});});
+   g+=`<rect x="628" y="${y0+4}" width="82" height="${nB*24+12}" rx="6" fill="#f4f7fc" stroke="#9db4dd"/>`+T(636,y0+22,'Zweite Wahl:',11.5,' font-weight="700" fill="#2b5fb4"');t.b.forEach((b,k)=>{g+=T(636,y0+42+k*22,'• '+b,13);});
+   H=y0+hgt+16;g+=T(30,H+12,'Anzahl der Möglichkeiten:',16)+`<line x1="224" y1="${H+14}" x2="300" y2="${H+14}" stroke="#000"/>`;
+   if(sol)g+=T(262,H+11,`${nA} · ${nB} = ${nA*nB}`,16,` text-anchor="middle" fill="${RD}" font-weight="700"`);
+   H+=40;});
+  return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
+ const tw=(s,fs)=>String(s).length*fs*0.56;
+ /* ---------- Einbindung ---------- */
+ const GEN={wzb:genWzb,wzh:genWzh,wzt:genWzt,wza:genWza},DRAW={wzb:wzbSvg,wzh:wzhSvg,wzt:wztSvg,wza:wzaSvg};
+ const DEF={wzb:{n:2,kd:'mix',w:714},wzh:{n:1,kd:'wuerfel',N:60,w:660},wzt:{n:1,zr:'mit',w:714},wza:{n:2,w:714}};
+ DEF.wzh.N=100;
+ const _sv=svgNew;svgNew=function(it){return TY.includes(it.type)?DRAW[it.type](it):_sv.apply(this,arguments);};
+ const _co=catOf;catOf=function(it){return TY.includes(it.type)?'wa':_co.apply(this,arguments);};
+ const _add=add;add=function(t,x,y){
+  if(!TY.includes(t))return _add.apply(this,arguments);
+  rec();const it={id:uid++,type:t,x:x??40,y:y??100,...JSON.parse(JSON.stringify(DEF[t]))};it.tasks=GEN[t](it);items.push(it);sel=it.id;render();
+  if(x===undefined){try{const e=elOf(it.id),w=e?e.offsetWidth:0;if(w>=400&&w<=794){it.x=Math.round((794-w)/2);render();}}catch(_){}}sync();};
+ CATS.wa='Wahrscheinlichkeit';
+ const L=document.getElementById('left');let btn=L.querySelector('.cat[data-c="wa"]');
+ if(!btn){btn=document.createElement('button');btn.className='cat';btn.dataset.c='wa';btn.textContent='🎲 Wahrscheinlichkeit';
+  const P0=document.createElement('div');P0.className='catp';P0.dataset.c='wa';P0.id='wapal';const ref=L.querySelector('.catp[data-c="ss"]');if(ref){ref.after(btn);btn.after(P0);}else{L.appendChild(btn);L.appendChild(P0);}
+  btn.onclick=()=>{const c='wa';cat=(cat===c&&!sel)?null:c;select(null);};}
+ const P=L.querySelector('.catp[data-c="wa"]');
+ const mk=(t,svg,txt)=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.innerHTML=`<svg viewBox="0 0 100 40">${svg}</svg><span>${txt}</span>`;d.ondragstart=ev=>ev.dataTransfer.setData('text/plain',t);d.onclick=()=>add(t);d.style.marginBottom='6px';P.appendChild(d);};
+ mk('wza','<circle cx="12" cy="20" r="3"/><path d="M12 20L45 8M12 20L45 32M45 8L88 3M45 8L88 13M45 32L88 27M45 32L88 37" stroke="#d00" fill="none"/>','Abzählen mit Baumdiagramm');
+ mk('wzb','<circle cx="22" cy="20" r="14" fill="#e53935"/><path d="M22 20L22 6A14 14 0 0 1 34 27Z" fill="#fdd835"/><path d="M22 20L34 27A14 14 0 0 1 8 27Z" fill="#1e88e5"/><text x="74" y="25" text-anchor="middle" font-size="11">P = ?</text>','Wahrscheinlichkeit (Urne, Rad, Würfel)');
+ mk('wzh','<rect x="8" y="6" width="84" height="28" fill="none" stroke="#000"/><path d="M8 17h84M44 6v28M68 6v28" stroke="#000"/><text x="56" y="30" font-size="9" text-anchor="middle" fill="#d00">7/20</text>','Relative Häufigkeit (Tabelle)');
+ mk('wzt','<circle cx="10" cy="20" r="3"/><path d="M10 20L45 9M10 20L45 31M45 9L88 4M45 9L88 14M45 31L88 26M45 31L88 36" stroke="#000" fill="none"/><circle cx="45" cy="9" r="4" fill="#e53935"/><circle cx="45" cy="31" r="4" fill="#1e88e5"/>','Baumdiagramm zweistufig');
+ let g=document.getElementById('g-wa');if(!g){g=document.createElement('div');g.className='grp';g.id='g-wa';g.dataset.cats='wa';document.getElementById('rp').appendChild(g);}
+ const cur=()=>items.find(i=>i.id===sel&&TY.includes(i.type));
+ const S=(k,vals,v,lab)=>`<label>${lab}<select data-wa="${k}">${vals.map(a=>{const[val,txt]=Array.isArray(a)?a:[a,a];return`<option value="${val}"${String(val)===String(v)?' selected':''}>${txt}</option>`;}).join('')}</select></label>`;
+ function panel(){const it=cur();if(!it){g.innerHTML='<div style="font-size:13px;color:var(--mut,#666)">Wähle links eine Aufgabe, dann kannst du sie hier einstellen.</div>';return;}
+  const T0={wzb:'Wahrscheinlichkeit',wzh:'Relative Häufigkeit',wzt:'Baumdiagramm zweistufig',wza:'Abzählen mit Baumdiagramm'}[it.type];let h=`<div style="font-weight:700;margin:2px 0">${T0}</div>`;
+  if(it.type==='wzb')h+=S('kd',[['mix','gemischt'],['urne','Urne mit Kugeln'],['rad','Glücksrad'],['wuerfel','Würfel']],it.kd,'Zufallsexperiment')+S('n',[1,2,3],it.n,'Anzahl der Aufgaben');
+  if(it.type==='wzh')h+=S('kd',[['wuerfel','Würfel'],['muenze','Münze'],['rad','Glücksrad'],['mix','gemischt']],it.kd,'Zufallsexperiment')+S('N',[[20,'20-mal'],[40,'40-mal'],[50,'50-mal'],[100,'100-mal']],it.N,'Anzahl der Versuche')+S('n',[1,2],it.n,'Anzahl der Aufgaben');
+  if(it.type==='wzt')h+=S('zr',[['mit','mit Zurücklegen'],['ohne','ohne Zurücklegen'],['mix','gemischt']],it.zr,'Ziehen')+S('n',[1,2],it.n,'Anzahl der Aufgaben');
+  if(it.type==='wza')h+=S('n',[1,2,3],it.n,'Anzahl der Aufgaben');
+  h+='<button type="button" data-wa-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
+ g.addEventListener('change',e=>{const t=e.target,k=t.dataset.wa;if(!k)return;const it=cur();if(!it)return;rec('wa'+k);it[k]=['n','N'].includes(k)?+t.value:t.value;it.tasks=GEN[it.type](it);render();panel();});
+ g.addEventListener('click',e=>{const b=e.target.closest('[data-wa-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
  const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
 })();
 
