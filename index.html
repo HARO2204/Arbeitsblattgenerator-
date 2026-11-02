@@ -7964,8 +7964,8 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
 /* ===== Klassenfilter + Themengruppen in der linken Leiste ===== */
 (function(){
  const L=document.getElementById('left');if(!L)return;
- const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','gz','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','gl','fk']],['📐 Geometrie',['sg','wk','sy','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss','wa']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
- const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',gz:'23',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',gl:'34',fk:'4',sg:'1',wk:'12',sy:'2',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',wa:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
+ const G=[['🧰 Werkzeuge',['tx','dk','kf','lb']],['🔢 Zahlen und Rechnen',['zs','zn','gz','st','sw','rd','cp','as','md','kr','tl','po']],['½ Brüche, Anteile, Gleichungen',['br','pc','vh','te','ge','gl','fk']],['📐 Geometrie',['sg','wk','sy','ah','pn','dr','vk','ci','ko','pl','kd','mb']],['📏 Größen und Daten',['mu','ss','wa']],['🎮 Spielen und Üben',['lk','gsp','sm','ra']]];
+ const DEF={tx:'1234',dk:'1234',kf:'1234',lb:'1234',zs:'12',zn:'34',gz:'23',st:'1',sw:'1',rd:'12',cp:'12',as:'12',md:'1',kr:'1234',tl:'2',po:'3',br:'12',pc:'2',vh:'23',te:'1234',ge:'1234',gl:'34',fk:'4',sg:'1',wk:'12',sy:'2',ah:'34',pn:'1',dr:'2',vk:'123',ci:'14',ko:'134',pl:'4',kd:'2',mb:'1',mu:'1',ss:'1234',wa:'1234',lk:'1234',gsp:'1234',sm:'1234',ra:'1234'};
  const ls={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
  let kl=+ls.get('vk_klasse_v1',0)||0,USER=ls.get('vk_klzuord_v1',{})||{},COL=ls.get('vk_klgrp_v1',{})||{};
  const mapOf=c=>(USER[c]||DEF[c]||'1234');
@@ -8805,6 +8805,151 @@ ${rows?`<div style="font-weight:600;margin:10px 0 4px">${P0.length} von ${tot} A
   h+='<button type="button" data-gl-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
  g.addEventListener('change',e=>{const t=e.target,k=t.dataset.gl;if(!k)return;const it=cur();if(!it)return;rec('gl'+k);it[k]=['n','lv'].includes(k)?+t.value:t.value;it.tasks=GEN[it.type](it);render();panel();});
  g.addEventListener('click',e=>{const b=e.target.closest('[data-gl-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
+ const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
+})();
+
+/* ===== Ähnlichkeit und zentrische Streckung ===== */
+(function(){
+ const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+ const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a),f2=v=>Math.round(v*100)/100,isSol=()=>typeof SOL!=='undefined'&&SOL;
+ const RD='#d00',BL='#2b5fb4',TY=['ahs','ahr','aha','ahz'],M='−';
+ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+ const T=(x,y,s,fs,o)=>`<text x="${f2(x)}" y="${f2(y)}" font-size="${fs}" font-family="Arial,sans-serif"${o||''}>${esc(s)}</text>`;
+ const N=v=>{let s=String(Math.round(v*100)/100).replace('-',M);return s.replace('.',',');};
+ const svgW=(W,H,g)=>({W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`});
+ const KL={'2':2,'3':3,'0.5':0.5};
+ /* ---------- Streckung zeichnen ---------- */
+ function genS(it){const o=[];let guard=0;while(o.length<it.n&&guard++<500){const ks=it.kf==='mix'?pick([2,3,0.5]):+it.kf;
+   const sh=it.sh==='mix'?pick(['dr','vi']):it.sh;
+   const lim=ks===2?[4,3]:ks===3?[2,2]:[6,6],ev=ks===0.5;
+   const rv=m=>{let v=R(-m,m);return ev?v*2:v;},rm=ks===0.5?[3,3]:lim;
+   const pts=[];const n=sh==='dr'?3:4;
+   let ok=false;
+   for(let t=0;t<60&&!ok;t++){const P=[];if(sh==='dr'){for(let i=0;i<3;i++)P.push([rv(rm[0]),rv(rm[1])]);}
+    else{const a=[rv(rm[0]),rv(rm[1])],b=[rv(rm[0]),rv(rm[1])],d=[rv(Math.max(1,rm[0]-1)),rv(Math.max(1,rm[1]-1))];P.push(a,b,[b[0]+d[0],b[1]+d[1]],[a[0]+d[0],a[1]+d[1]]);}
+    if(P.some(p=>p[0]===0&&p[1]===0))continue;
+    const cr=(p,q,r)=>(q[0]-p[0])*(r[1]-p[1])-(q[1]-p[1])*(r[0]-p[0]);
+    if(Math.abs(cr(P[0],P[1],P[2]))<(ev?10:6))continue;
+    if(P.some(p=>Math.abs(p[0]*ks)>9||Math.abs(p[1]*ks)>6||Math.abs(p[0])>9||Math.abs(p[1])>6))continue;
+    if(sh==='vi'&&(Math.abs(cr(P[0],P[1],P[3]))<(ev?10:6)))continue;
+    pts.push(...P);ok=true;}
+   if(!ok)continue;const nx=Math.ceil(Math.max(...pts.map(p=>Math.max(Math.abs(p[0]),Math.abs(p[0]*ks))))),ny=Math.ceil(Math.max(...pts.map(p=>Math.max(Math.abs(p[1]),Math.abs(p[1]*ks)))));if(nx>9||ny>6)continue;const zx=R(nx+1,19-nx),zy=R(ny+1,13-ny);o.push({k:ks,zx,zy,P:pts,sh});}
+  return o;}
+ const kTxt=k=>k===0.5?'1 : 2  (k = ½)':'k = '+k;
+ function streckSvg(it){const W=it.w||714,sol=isSol(),u=22,cols=20,rows=14,gw=cols*u,gh=rows*u,blk=gh+72;let g='';
+  it.tasks.forEach((t,i)=>{const oy=i*blk+4,ox=(W-gw)/2;
+   g+=T(4,oy+18,String.fromCharCode(97+i)+')',15,` font-weight="700" fill="${BL}"`)+T(28,oy+18,`Strecke ${t.sh==='dr'?'das Dreieck ABC':'das Viereck ABCD'} vom Zentrum Z aus mit dem Streckfaktor k = ${t.k===0.5?'0,5':t.k}.`,16);
+   g+=`<g transform="translate(${ox} ${oy+42})">`;
+   for(let a=0;a<=cols;a++)g+=`<line x1="${a*u}" y1="0" x2="${a*u}" y2="${gh}" stroke="#c8d2e4" stroke-width="0.8"/>`;
+   for(let a=0;a<=rows;a++)g+=`<line x1="0" y1="${a*u}" x2="${gw}" y2="${a*u}" stroke="#c8d2e4" stroke-width="0.8"/>`;
+   const P=p=>[(t.zx+p[0])*u,(t.zy-p[1])*u],Z=[t.zx*u,t.zy*u],pp=t.P.map(P),cx=pp.reduce((s,p)=>s+p[0],0)/pp.length,cy=pp.reduce((s,p)=>s+p[1],0)/pp.length;
+   if(sol){t.P.forEach(p=>{const q=[p[0]*t.k,p[1]*t.k];const a=P(p),b=P(q);const far=t.k>1?b:a;const dx=far[0]-Z[0],dy=far[1]-Z[1],L=Math.hypot(dx,dy)||1;
+     g+=`<line x1="${Z[0]}" y1="${Z[1]}" x2="${f2(far[0]+dx/L*10)}" y2="${f2(far[1]+dy/L*10)}" stroke="${RD}" stroke-width="1" stroke-dasharray="4 3" opacity="0.8"/>`;});
+    const im=t.P.map(p=>P([p[0]*t.k,p[1]*t.k]));g+=`<polygon points="${im.map(p=>f2(p[0])+','+f2(p[1])).join(' ')}" fill="rgba(220,0,0,0.08)" stroke="${RD}" stroke-width="2.2"/>`;
+    const icx=im.reduce((s,p)=>s+p[0],0)/im.length,icy=im.reduce((s,p)=>s+p[1],0)/im.length;
+    im.forEach((p,k)=>{const dx=p[0]-icx,dy=p[1]-icy,L=Math.hypot(dx,dy)||1;g+=`<circle cx="${f2(p[0])}" cy="${f2(p[1])}" r="3.2" fill="${RD}"/>`+T(p[0]+dx/L*14-6,p[1]+dy/L*14+5,'ABCD'[k]+"'",14,` fill="${RD}" font-weight="700"`);});}
+   g+=`<polygon points="${pp.map(p=>f2(p[0])+','+f2(p[1])).join(' ')}" fill="rgba(43,95,180,0.10)" stroke="#000" stroke-width="2.2"/>`;
+   pp.forEach((p,k)=>{const dx=p[0]-cx,dy=p[1]-cy,L=Math.hypot(dx,dy)||1;g+=`<circle cx="${f2(p[0])}" cy="${f2(p[1])}" r="3.2" fill="#000"/>`+T(p[0]+dx/L*14-5,p[1]+dy/L*14+5,'ABCD'[k],15,' font-weight="700"');});
+   g+=`<circle cx="${Z[0]}" cy="${Z[1]}" r="4.5" fill="#000"/>`+T(Z[0]+7,Z[1]-7,'Z',16,' font-weight="700"');g+='</g>';});
+  return svgW(W,it.tasks.length*(gh+72)+8,g);}
+ /* ---------- Rechnen mit Streckfaktor ---------- */
+ const MD={laenge:{h:['Original (cm)','Streckfaktor k','Bild (cm)'],ex:1,u:'cm'},flaeche:{h:['Fläche Original (cm²)','Streckfaktor k','Fläche Bild (cm²)'],ex:2},volumen:{h:['Volumen Original (cm³)','Streckfaktor k','Volumen Bild (cm³)'],ex:3}};
+ function genR(it){const o=[],ex=MD[it.md].ex,seen=new Set();let guard=0;
+  while(o.length<it.n&&guard++<400){const k=pick(ex===3?[2,3,0.5]:ex===2?[2,3,4,5,0.5,1.5]:[2,3,4,5,0.5,1.5,2.5,0.25,10]);let A;
+   const kp=Math.pow(k,ex);let m=1;while(Math.abs(Math.round(A=R(2,40)*m*1000)/1000)<1||!Number.isInteger(Math.round(A*kp*1000)/1000)&&++m<50);if(ex===1)A=pick([2,3,4,5,6,8,10,12,15,20,24,30,36]);
+   if(ex===1&&k===0.25)A=pick([4,8,12,20,40]);if(ex===1&&k===0.5||ex===1&&k===1.5||ex===1&&k===2.5)A=pick([2,4,6,8,10,12,20]);
+   if(ex===2&&k===1.5)A=pick([4,8,12,16,20,36,40]);if(ex===2&&k===0.5)A=pick([4,8,12,16,20,32,40,100]);if(ex>1&&(k>=2&&k!==1.5))A=R(1,12);if(ex===3&&k===0.5)A=pick([8,16,24,40,64,80]);
+   const B=Math.round(A*kp*1000)/1000;if(!isFinite(B)||String(B).length>7)continue;
+   const key=A+'|'+k;if(seen.has(key))continue;seen.add(key);
+   const unk=pick([2,2,0,1]);o.push({A,k,B,unk});}
+  return o;}
+ function rechSvg(it){const W=it.w||714,sol=isSol(),h=MD[it.md].h,rh=46,hh=44,ws=[56,(W-56)/3,(W-56)/3,(W-56)/3];let g='';
+  g+=T(2,18,it.md==='laenge'?'Berechne die fehlenden Werte der zentrischen Streckung.':it.md==='flaeche'?'Berechne die fehlenden Werte. Beachte: Die Fläche wächst mit k².':'Berechne die fehlenden Werte. Beachte: Das Volumen wächst mit k³.',15);
+  const y0=28;g+=`<rect x="0.5" y="${y0}" width="${W-1}" height="${hh}" fill="#e8f0fb" stroke="#555"/>`;let x=ws[0];
+  g+=T(ws[0]/2,y0+hh*0.6,'Nr.',13,' text-anchor="middle" font-weight="700"');
+  h.forEach((s,k)=>{g+=T(x+ws[k+1]/2,y0+hh*0.6,s,13,' text-anchor="middle" font-weight="700"');g+=`<line x1="${x}" y1="${y0}" x2="${x}" y2="${y0+hh+it.tasks.length*rh}" stroke="#555"/>`;x+=ws[k+1];});
+  it.tasks.forEach((t,i)=>{const y=y0+hh+i*rh;g+=`<rect x="0.5" y="${y}" width="${W-1}" height="${rh}" fill="none" stroke="#555"/>`+T(ws[0]/2,y+rh*0.64,String(i+1),16,' text-anchor="middle" fill="#2b5fb4" font-weight="700"');
+   const vals=[t.A,t.k,t.B];let cx=ws[0];vals.forEach((v,k)=>{const mid=cx+ws[k+1]/2;
+    if(k===t.unk){g+=`<line x1="${mid-44}" y1="${y+rh-9}" x2="${mid+44}" y2="${y+rh-9}" stroke="#000"/>`;if(sol)g+=T(mid,y+rh*0.62,N(v),17,` text-anchor="middle" fill="${RD}" font-weight="700"`);}
+    else g+=T(mid,y+rh*0.64,N(v),17,' text-anchor="middle"');cx+=ws[k+1];});});
+  const H=y0+hh+it.tasks.length*rh+40;
+  g+=`<g><rect x="0" y="${H-34}" width="${W}" height="28" rx="6" fill="#f4f7fc" stroke="#9db4dd"/>`+T(10,H-15,it.md==='laenge'?'Merke: Bild = Original · k':it.md==='flaeche'?'Merke: Flächenbild = Original · k²':'Merke: Volumenbild = Original · k³',14,' fill="#2b5fb4" font-weight="700"')+'</g>';
+  return svgW(W,H,g);}
+ /* ---------- ähnlich? ---------- */
+ function genA(it){const o=[],mk=()=>{const kind=it.fg==='mix'?pick(['re','tr']):it.fg;
+   if(kind==='re'){const a=R(2,8),b=R(a+1,12),m=pick([2,3,1.5]);let c=a*m,d=b*m;const sim=R(0,1)===1;
+     if(!sim){if(R(0,1))c=Math.round((c+pick([-1,1,2]))*2)/2;else d=Math.round((d+pick([-2,-1,1,2]))*2)/2;if(c<=0)c=a+1;if(d<=0)d=b+1;}
+     return{kind,s:[a,b],t:[c,d],sim:a*d===b*c};}
+   for(let q=0;q<80;q++){const a=R(3,9),b=R(3,9),c=R(Math.abs(a-b)+1,a+b-1),m=pick([2,3,1.5]);let s=[a,b,c].sort((x,y)=>x-y),t=s.map(v=>v*m);
+     if(R(0,1)===0)t[R(0,2)]+=pick([-1,1]);const tri=t.slice().sort((x,y)=>x-y);if(tri[0]+tri[1]<=tri[2]||tri[0]<=0)continue;if(s[0]+s[1]<=s[2])continue;
+     const sim=s.every((v,i)=>Math.abs(v*tri[0]-tri[i]*s[0])<1e-9);return{kind:'tr',s,t:tri,sim};}
+   return{kind:'re',s:[2,3],t:[4,6],sim:true};};
+  let g=0;while(o.length<it.n&&g++<200){const t=mk();if(it.sm==='ja'&&!t.sim)continue;if(it.sm==='nein'&&t.sim)continue;o.push(t);}return o;}
+ function triPts(s,mw,mh){const[a,b,c]=s,x=(b*b+c*c-a*a)/(2*c),y=Math.sqrt(Math.max(0.01,b*b-x*x)),sc=Math.min(mw/c,mh/y,mw/Math.max(c,Math.abs(x),c-x));return[[0,0],[c*sc,0],[x*sc,-y*sc]].map(p=>p.slice());}
+ const ratio=(a,b)=>{const m=1000,A=Math.round(a*m),B=Math.round(b*m),d=gcd(A,B)||1;return(A/d)+' : '+(B/d);};
+ function ahnSvg(it){const W=it.w||714,sol=isSol(),blk=170;let g='';
+  it.tasks.forEach((t,i)=>{const oy=i*blk+6;g+=T(2,oy+18,String.fromCharCode(97+i)+')',15,` font-weight="700" fill="${BL}"`);
+   const fig=(ox,s)=>{if(t.kind==='re'){const sc=Math.min(120/Math.max(s[0],s[1]),90/Math.min(s[0],s[1]),Math.min(120/s[1],90/s[0],14)),w=s[1]*sc,h=s[0]*sc;const ww=Math.min(w,130),hh=h*(ww/w);
+     return`<rect x="${ox}" y="${oy+30}" width="${f2(ww)}" height="${f2(hh)}" fill="#e8f0fb" stroke="#000" stroke-width="2"/>`+T(ox+ww/2,oy+30+hh+16,N(s[1]),14,' text-anchor="middle"')+T(ox+ww+6,oy+30+hh/2+5,N(s[0]),14);}
+    const P=triPts(s,120,90),mnx=Math.min(...P.map(p=>p[0])),Q=P.map(p=>[ox+p[0]-mnx,oy+125+p[1]]);let r=`<polygon points="${Q.map(p=>f2(p[0])+','+f2(p[1])).join(' ')}" fill="#e8f0fb" stroke="#000" stroke-width="2"/>`;
+    const lab=(p,q,v)=>{const mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2,cx=(Q[0][0]+Q[1][0]+Q[2][0])/3,cy=(Q[0][1]+Q[1][1]+Q[2][1])/3,dx=mx-cx,dy=my-cy,L=Math.hypot(dx,dy)||1;return T(mx+dx/L*13-8,my+dy/L*13+5,N(v),14);};
+    return r+lab(Q[0],Q[1],s[2])+lab(Q[1],Q[2],s[0])+lab(Q[2],Q[0],s[1]);};
+   g+=fig(24,t.s)+fig(230,t.t);
+   g+=T(430,oy+60,`Sind die beiden ${t.kind==='re'?'Rechtecke':'Dreiecke'} ähnlich?`,15)+`<rect x="430" y="${oy+74}" width="16" height="16" fill="none" stroke="#000" stroke-width="1.5"/>`+T(452,oy+88,'ja',15)+`<rect x="490" y="${oy+74}" width="16" height="16" fill="none" stroke="#000" stroke-width="1.5"/>`+T(512,oy+88,'nein',15);
+   g+=T(430,oy+114,'Begründung:',13,' fill="#2b5fb4" font-weight="700"')+`<line x1="430" y1="${oy+136}" x2="${W-6}" y2="${oy+136}" stroke="#bbb"/><line x1="430" y1="${oy+158}" x2="${W-6}" y2="${oy+158}" stroke="#bbb"/>`;
+   if(sol){const bx=t.sim?430:490;g+=`<path d="M${bx+2} ${oy+82}l5 7l10 -16" fill="none" stroke="${RD}" stroke-width="3"/>`;
+    const ss=t.kind==='re'?t.s.slice().sort((x,y)=>x-y):t.s,tt=t.kind==='re'?t.t.slice().sort((x,y)=>x-y):t.t;
+    const rs=ss.map((v,k)=>ratio(v,tt[k]));g+=T(430,oy+132,'Verhältnisse: '+rs.join('  |  '),13,` fill="${RD}"`)+T(430,oy+154,t.sim?'alle gleich → ähnlich':'nicht alle gleich → nicht ähnlich',13,` fill="${RD}" font-weight="700"`);}});
+  return svgW(W,it.tasks.length*blk+8,g);}
+ /* ---------- Sachaufgaben ---------- */
+ const TP=[
+  ()=>{const h=pick([1,1.5,2]),s=pick([2,3,4]),k=pick([3,4,5,6,8]),H=h*k,S=s*k;return{q:`Ein ${N(h)} m langer Stab wirft zur gleichen Zeit einen ${N(s)} m langen Schatten. Ein Baum wirft einen ${N(S)} m langen Schatten. Wie hoch ist der Baum?`,s:[`H : ${N(h)} = ${N(S)} : ${N(s)}`,`H = ${N(h)} · ${N(S)} : ${N(s)} = ${N(H)}`],a:`Der Baum ist ${N(H)} m hoch.`};},
+  ()=>{const w=pick([9,10,12,15]),h=pick([6,8,10]),k=pick([2,3]),w2=w*k;return{q:`Ein Foto ist ${w} cm breit und ${h} cm hoch. Es wird auf eine Breite von ${w2} cm vergrößert. Wie hoch ist das vergrößerte Foto?`,s:[`k = ${w2} : ${w} = ${k}`,`${h} · ${k} = ${h*k}`],a:`Das vergrößerte Foto ist ${h*k} cm hoch.`};},
+  ()=>{const p=pick([150,200,50,300,400]),a=pick([4,6,8,10,12,20]),k=p/100;return{q:`Ein Kopierer vergrößert bzw. verkleinert auf ${p} %. Eine Strecke ist ${a} cm lang. Wie lang ist sie auf der Kopie? Wie groß ist der Streckfaktor k?`,s:[`k = ${p} : 100 = ${N(k)}`,`${a} · ${N(k)} = ${N(a*k)}`],a:`Streckfaktor ${N(k)}, die Strecke ist ${N(a*k)} cm lang.`};},
+  ()=>{const a=R(3,6),b=R(a+1,8),c=R(b,a+b-1),k=pick([2,3,4]);return{q:`Zwei Dreiecke sind ähnlich. Das kleine hat die Seiten a = ${a} cm, b = ${b} cm und c = ${c} cm. Im großen Dreieck ist die Seite a' = ${a*k} cm lang. Berechne b' und c'.`,s:[`k = ${a*k} : ${a} = ${k}`,`b' = ${b} · ${k} = ${b*k},  c' = ${c} · ${k} = ${c*k}`],a:`b' = ${b*k} cm und c' = ${c*k} cm.`};},
+  ()=>{const a=pick([2,3,4,5,6]),k=pick([2,3,4]);return{q:`Ein Quadrat hat die Seitenlänge ${a} cm. Alle Seiten werden mit dem Faktor ${k} gestreckt. Berechne Umfang und Fläche des Bildes und gib an, um welchen Faktor Umfang und Fläche größer werden.`,s:[`u' = 4 · ${a*k} = ${4*a*k} cm  (Faktor ${k})`,`A' = ${a*k}² = ${a*a*k*k} cm²  (Faktor ${k*k})`],a:`Umfang ${4*a*k} cm (k), Fläche ${a*a*k*k} cm² (k²).`};},
+  ()=>{const m=pick([2,3,4,5]),h=pick([8,10,12,15,20]);return{q:`Ein Modell eines Turms hat die Höhe ${h} cm. Der Turm ist in Wirklichkeit ${m*h/100} m hoch... `,s:[],a:''};}];
+ TP.pop();
+ function genZ(it){const o=[],used=new Set();let g=0;while(o.length<it.n&&g++<100){const i=R(0,TP.length-1);if(used.has(i)&&used.size<TP.length)continue;used.add(i);o.push(TP[i]());}return o;}
+ const wrap=(s,m)=>{const w=s.split(' '),L=[];let c='';w.forEach(x=>{if((c+' '+x).trim().length>m){L.push(c);c=x;}else c=(c+' '+x).trim();});if(c)L.push(c);return L;};
+ function sachSvg(it){const W=it.w||714,sol=isSol();let g='',H=4;
+  it.tasks.forEach((t,i)=>{const L=wrap(t.q.replace(/ cm/g,' cm').replace(/ m /g,' m ').replace(/ %/g,' %'),84);L.forEach((ln,k)=>{g+=T(k?30:4,H+20+k*21,(k?'':String.fromCharCode(97+i)+') ')+ln,16);});H+=L.length*21+14;
+   g+=T(30,H+10,'Rechnung:',14,' font-weight="700" fill="#2b5fb4"');for(let k=0;k<4;k++)g+=`<line x1="30" y1="${H+34+k*26}" x2="${W-20}" y2="${H+34+k*26}" stroke="#bbb"/>`;
+   if(sol)t.s.forEach((s,k)=>{g+=T(110,H+31+k*26,s,15,` fill="${RD}"`);});H+=140;
+   g+=T(30,H+10,'Antwort:',14,' font-weight="700" fill="#2b5fb4"')+`<line x1="100" y1="${H+13}" x2="${W-20}" y2="${H+13}" stroke="#000"/>`;if(sol)g+=T(104,H+9,t.a,15,` fill="${RD}"`);H+=40;});
+  return svgW(W,H,g);}
+ /* ---------- Einbindung ---------- */
+ const GEN={ahs:genS,ahr:genR,aha:genA,ahz:genZ},DRAW={ahs:streckSvg,ahr:rechSvg,aha:ahnSvg,ahz:sachSvg};
+ const DEF={ahs:{n:1,sh:'mix',kf:'mix',w:714},ahr:{n:6,md:'laenge',w:714},aha:{n:3,fg:'mix',sm:'mix',w:714},ahz:{n:2,w:714}};
+ const _sv=svgNew;svgNew=function(it){return TY.includes(it.type)?DRAW[it.type](it):_sv.apply(this,arguments);};
+ const _co=catOf;catOf=function(it){return TY.includes(it.type)?'ah':_co.apply(this,arguments);};
+ const _add=add;add=function(t,x,y){
+  if(!TY.includes(t))return _add.apply(this,arguments);
+  rec();const it={id:uid++,type:t,x:x??40,y:y??100,...JSON.parse(JSON.stringify(DEF[t]))};it.tasks=GEN[t](it);items.push(it);sel=it.id;render();
+  if(x===undefined){try{const e=elOf(it.id),w=e?e.offsetWidth:0;if(w>=400&&w<=794){it.x=Math.round((794-w)/2);render();}}catch(_){}}sync();};
+ CATS.ah='Ähnlichkeit und Streckung';
+ const L=document.getElementById('left');let btn=L.querySelector('.cat[data-c="ah"]');
+ if(!btn){btn=document.createElement('button');btn.className='cat';btn.dataset.c='ah';btn.textContent='🔍 Ähnlichkeit und Streckung';
+  const P0=document.createElement('div');P0.className='catp';P0.dataset.c='ah';P0.id='ahpal';const ref=L.querySelector('.catp[data-c="sy"]');if(ref){ref.after(btn);btn.after(P0);}else{L.appendChild(btn);L.appendChild(P0);}
+  btn.onclick=()=>{const c='ah';cat=(cat===c&&!sel)?null:c;select(null);};}
+ const P=L.querySelector('.catp[data-c="ah"]');
+ const mk=(t,svg,txt)=>{const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t=t;d.innerHTML=`<svg viewBox="0 0 100 40">${svg}</svg><span>${txt}</span>`;d.ondragstart=ev=>ev.dataTransfer.setData('text/plain',t);d.onclick=()=>add(t);d.style.marginBottom='6px';P.appendChild(d);};
+ mk('ahs','<circle cx="10" cy="30" r="2.5"/><path d="M10 30L40 10M10 30L40 34M10 30L88 6" stroke="#d00" stroke-dasharray="3 2" fill="none"/><polygon points="20,24 28,20 24,30" fill="none" stroke="#000"/><polygon points="40,18 56,10 48,30" fill="none" stroke="#d00" stroke-width="1.6"/>','Zentrische Streckung zeichnen');
+ mk('ahr','<rect x="6" y="6" width="88" height="28" fill="none" stroke="#000"/><path d="M6 17h88M36 6v28M66 6v28" stroke="#000"/><text x="80" y="29" font-size="9" text-anchor="middle" fill="#d00">k·a</text>','Streckfaktor berechnen (Tabelle)');
+ mk('aha','<rect x="6" y="14" width="22" height="14" fill="none" stroke="#000"/><rect x="40" y="8" width="38" height="24" fill="none" stroke="#000"/><text x="86" y="26" font-size="12">?</text>','Ähnliche Figuren erkennen');
+ mk('ahz','<text x="6" y="16" font-size="10">Schatten: 1 m</text><text x="6" y="31" font-size="10">Baum: ? m</text>','Sachaufgaben Ähnlichkeit');
+ let g=document.getElementById('g-ah');if(!g){g=document.createElement('div');g.className='grp';g.id='g-ah';g.dataset.cats='ah';document.getElementById('rp').appendChild(g);}
+ const cur=()=>items.find(i=>i.id===sel&&TY.includes(i.type));
+ const S=(k,vals,v,lab)=>`<label>${lab}<select data-ah="${k}">${vals.map(a=>{const[val,txt]=Array.isArray(a)?a:[a,a];return`<option value="${val}"${String(val)===String(v)?' selected':''}>${txt}</option>`;}).join('')}</select></label>`;
+ function panel(){const it=cur();if(!it){g.innerHTML='<div style="font-size:13px;color:var(--mut,#666)">Wähle links eine Aufgabe, dann kannst du sie hier einstellen.</div>';return;}
+  const T0={ahs:'Streckung zeichnen',ahr:'Streckfaktor berechnen',aha:'Ähnliche Figuren',ahz:'Sachaufgaben'}[it.type];let h=`<div style="font-weight:700;margin:2px 0">${T0}</div>`;
+  if(it.type==='ahs')h+=S('sh',[['mix','gemischt'],['dr','Dreieck'],['vi','Viereck']],it.sh,'Figur')+S('kf',[['mix','gemischt'],['2','k = 2'],['3','k = 3'],['0.5','k = 0,5 (Verkleinerung)']],it.kf,'Streckfaktor')+S('n',[1,2],it.n,'Anzahl der Aufgaben');
+  if(it.type==='ahr')h+=S('md',[['laenge','Längen'],['flaeche','Flächen (k²)'],['volumen','Volumen (k³)']],it.md,'Größe')+S('n',[4,6,8],it.n,'Anzahl der Zeilen');
+  if(it.type==='aha')h+=S('fg',[['mix','gemischt'],['re','Rechtecke'],['tr','Dreiecke']],it.fg,'Figuren')+S('sm',[['mix','ähnlich und nicht ähnlich'],['ja','nur ähnliche'],['nein','nur nicht ähnliche']],it.sm,'Aufgaben')+S('n',[2,3,4],it.n,'Anzahl der Aufgaben');
+  if(it.type==='ahz')h+=S('n',[1,2,3],it.n,'Anzahl der Aufgaben');
+  h+='<button type="button" data-ah-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
+ g.addEventListener('change',e=>{const t=e.target,k=t.dataset.ah;if(!k)return;const it=cur();if(!it)return;rec('ah'+k);it[k]=k==='n'?+t.value:t.value;it.tasks=GEN[it.type](it);render();panel();});
+ g.addEventListener('click',e=>{const b=e.target.closest('[data-ah-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
  const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
 })();
 
