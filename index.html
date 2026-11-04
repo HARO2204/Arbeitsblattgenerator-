@@ -3422,7 +3422,7 @@ zrTH.as=(()=>{const R=kri,T=tfm;const W=[
   (o)=>{const a=R(40,99),c=R(2,9),b=R(c+1,15);return{s:o?`${a} − (${b} − ${c}) = ${a} − ${b} + ${c}`:`${a} − (${b} − ${c}) = ${a} − ${b} − ${c}`,ok:o};},
   (o)=>{const a=R(20,99),b=R(2,15);return{s:o?`${a} + ${b} − ${b} = ${a}`:`${a} + ${b} − ${b} = ${a+b}`,ok:o};}];
  const CK={l:2,f:()=>{const NN=Math.min(+window.KKN||5,7),idx=tshuf([0,1,2,3,4,5,6]).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));
-  return{t:'Kreuze alle richtigen Aussagen an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
+  return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
  return W.concat([CK,CK]);})();
 function zrGen(it){if(it.th==='-'){it.d=[{t:'__ph',a:''}];return;}window.KKN=+it.ko||5;const n=+it.n||1,lv=+it.lv||2;let ths=it.th&&it.th!=='mix'?String(it.th).split(','):['sw','nb','rd','za','zm','re','tl'].filter(x=>zrTH[x]);ths=ths.filter(x=>zrTH[x]);if(!ths.length)ths=['sw','nb','re'];
  let pool=[];ths.forEach(t=>{let p=zrTH[t].filter(x=>lv===1?x.l===1:lv===2?x.l<=2:x.l>=2);if(!p.length)p=zrTH[t];pool=pool.concat(p);});
@@ -3470,7 +3470,7 @@ function zrGen(it){if(it.th==='-'){it.d=[{t:'__ph',a:''}];return;}window.KKN=+it
   o=>({s:o?'Mit dem Satz des Pythagoras kann man die dritte Seite berechnen, wenn zwei Seiten eines rechtwinkeligen Dreiecks bekannt sind.':'Mit dem Satz des Pythagoras kann man die dritte Seite berechnen, wenn nur eine Seite des Dreiecks bekannt ist.',ok:o}),
   o=>({s:o?'Der rechte Winkel liegt der Hypotenuse gegenüber.':'Der rechte Winkel liegt einer Kathete gegenüber.',ok:o})];
  const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,ST.length),idx=tshuf(ST.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));
-  return{t:'Kreuze alle richtigen Aussagen an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
+  return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
  zrTH.pk=[CK,Object.assign({},CK,{l:2})];
  zrNm.py='Pythagoras: Denkaufgaben';zrNm.pk='Pythagoras: Begriffe ankreuzen';Z40TH.pl='py,pk';Z40TH.py='py';Z40TH.pk='pk';
  {const _z=zrTheme;zrTheme=function(k){return /^py/.test(k)?'py,pk':_z(k);};}
@@ -3644,7 +3644,7 @@ function pnBlock(it){if(it.type==='pns')return pnsBlock(it);const sh=tlS(it),L=[
   return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
  /* pnz */
  const D=(it.d||[])[0];if(!D)return `<div class="tlx" style="${kst(it)}"></div>`;
- if(it.md==='ck'){h+=`<div style="font-weight:700;margin-bottom:.4em">Kreuze alle richtigen Aussagen an.</div>`+D.ck.map(c=>`<div style="display:flex;gap:.6em;align-items:flex-start;margin:.35em 0"><span style="display:inline-block;flex:none;width:1.05em;height:1.05em;border:1.6px solid #000;margin-top:.1em;text-align:center;line-height:.95em;color:${PNRED};font-weight:700">${sh&&c.ok?'✕':''}</span><span>${c.s}</span></div>`).join('');return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ if(it.md==='ck'){h+=`<div style="font-weight:700;margin-bottom:.4em">Kreuze die richtige(n) Aussage(n) an.</div>`+D.ck.map(c=>`<div style="display:flex;gap:.6em;align-items:flex-start;margin:.35em 0"><span style="display:inline-block;flex:none;width:1.05em;height:1.05em;border:1.6px solid #000;margin-top:.1em;text-align:center;line-height:.95em;color:${PNRED};font-weight:700">${sh&&c.ok?'✕':''}</span><span>${c.s}</span></div>`).join('');return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
  if(it.md==='sym'||it.md==='el'){h+=`<div style="font-weight:700;margin-bottom:.4em">${it.md==='el'?'Setze ∈ (ist Element von) oder ∉ (ist nicht Element von) ein!':'Setze ∥ (parallel) oder ⊥ (normal) ein!'}</div><div style="display:flex;gap:1.6em;align-items:flex-start;flex-wrap:wrap"><div style="flex:none">${pnFigLines(D.fig)}</div><div style="flex:1;min-width:10em">`+D.items.map((p,i)=>`<div style="margin:.45em 0;display:flex;align-items:center;gap:.5em"><b style="display:inline-block;width:1.5em">${lb(i)}</b><span style="display:inline-block;width:1.3em;text-align:right">${p.a}</span><span style="display:inline-block;flex:none;width:2.2em;height:1.6em;box-sizing:border-box;border:1.4px solid #000;text-align:center;line-height:1.45em;color:${PNRED};font-weight:700">${sh?p.rel:''}</span><span style="display:inline-block;width:1.3em">${p.b}</span></div>`).join('')+`</div></div>`;return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
  const bx=ok=>`<td style="border:1.6px solid #000;text-align:center;width:4.2em">${ok?`<span class="sv" style="font-weight:700">✕</span>`:''}</td>`;
  h+=`<div style="font-weight:700;margin-bottom:.4em">Kreuze an, ob die Aussagen zu dieser Abbildung richtig oder falsch sind:</div><div style="display:flex;gap:1.4em;align-items:flex-start;flex-wrap:wrap"><table style="border-collapse:collapse;flex:none"><tr><td style="border:0"></td><th style="border:1.6px solid #000;padding:.15em .5em">richtig</th><th style="border:1.6px solid #000;padding:.15em .5em">falsch</th></tr>`+D.items.map(x=>`<tr><td style="border:1.6px solid #000;padding:.35em .8em;font-size:1.05em">${x.t}</td>${bx(sh&&x.ok)}${bx(sh&&!x.ok)}</tr>`).join('')+`</table><div style="flex:none">${pnFigLines(D.fig)}</div></div>`;
@@ -3740,7 +3740,7 @@ const SSL1=[['Die Liste der gegebenen Daten nennt man {Urliste}. Wenn man diese 
 const SSL2=[['Der {Modalwert} x<sub>mod</sub> ist jener Wert, der am {häufigsten} vorkommt.'],['Der {Median} x<sub>med</sub> ist jener Wert einer {geordneten} Liste, der genau in der {Mitte} liegt.'],['Bei einer ungeraden Anzahl an Daten ist der Median jener Wert genau in der Mitte. Bei einer geraden Anzahl an Werten ist der Median der {arithmetische Mittelwert} der beiden mittleren Werte.'],['Das arithmetische Mittel '+ssX+' berechnet man, indem man die {Summe} der Werte durch die {Anzahl} der Werte teilt.']];
 const SSL3=[['Diagramme stellen Daten {grafisch} dar.'],['Es gibt unterschiedliche Diagrammarten, zum Beispiel das {Säulendiagramm}, das {Balkendiagramm}, das {Liniendiagramm} und das {Punktdiagramm}.'],['Zum Zeichnen eines Diagramms braucht man zwei {Achsen}, die {Beschriftung} und die {Achseneinteilung}.'],['Die Achsenbeschriftung kann man aus dem Text der {Aufgabenstellung} entnehmen. Die Achseneinteilung wählt man den {Daten} entsprechend.']];
 function ssbBlock(it){const sh=tlS(it);let h=it.mk?ssMk():'';const D=(it.d||[])[0]||{};
- if(it.md==='ck'){h+=`<div style="font-weight:700;margin-bottom:.4em">Kreuze alle richtigen Aussagen an.</div>`+(D.ck||[]).map(c=>`<div style="display:flex;gap:.6em;align-items:flex-start;margin:.35em 0"><span style="display:inline-block;flex:none;width:1.05em;height:1.05em;border:1.6px solid #000;margin-top:.1em;text-align:center;line-height:.95em;color:${PNRED};font-weight:700">${sh&&c.ok?'✕':''}</span><span>${c.s}</span></div>`).join('');return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ if(it.md==='ck'){h+=`<div style="font-weight:700;margin-bottom:.4em">Kreuze die richtige(n) Aussage(n) an.</div>`+(D.ck||[]).map(c=>`<div style="display:flex;gap:.6em;align-items:flex-start;margin:.35em 0"><span style="display:inline-block;flex:none;width:1.05em;height:1.05em;border:1.6px solid #000;margin-top:.1em;text-align:center;line-height:.95em;color:${PNRED};font-weight:700">${sh&&c.ok?'✕':''}</span><span>${c.s}</span></div>`).join('');return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
  const S={lt1:SSL1,lt2:SSL2,lt3:SSL3}[it.md]||SSL1,words=[];
  const body=S.map(([t])=>`<div style="margin:.55em 0;line-height:1.9">${t.replace(/\{([^}]+)\}/g,(_,w)=>{words.push(w);const wd=Math.max(4,Math.round(w.length*.62));return `<span style="display:inline-block;min-width:${wd}em;border-bottom:1.2px solid #444;text-align:center;line-height:1.2">${sh?`<span class="sv">${w}</span>`:'&nbsp;'}</span>`;})}</div>`).join('');
  if(it.wb)h+=`<div style="border:1.2px dashed #777;border-radius:4px;padding:.35em .7em;margin:.2em 0 .6em;font-weight:700;display:flex;flex-wrap:wrap;gap:.3em 1.2em">${tshuf(Array.from(new Set(words))).map(w=>`<span>${w}</span>`).join('')}</div>`;
@@ -3804,7 +3804,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ss-act]');
  {l:3,f:()=>{const a=R(50,56),b=a+R(2,5);return A(`Die Diagramm-Falle: Zwei Säulendiagramme zeigen dieselben Werte ${a} und ${b}. Im ersten beginnt die senkrechte Achse bei 0, im zweiten bei ${a-2}. Warum wirkt der Unterschied im zweiten Diagramm viel größer? Welchem Diagramm kann man mehr trauen?`,`Im zweiten Diagramm ist die Achse „abgeschnitten“. Die erste Säule ist dann nur sehr klein, die zweite sieht im Vergleich riesig aus, obwohl der Unterschied nur ${b-a} beträgt. Das erste Diagramm (Achse beginnt bei 0) zeigt die Größenverhältnisse ehrlich.`);}},
  {l:2,f:()=>{const a=R(2,6),b=a+R(1,4)*2,m=(a+b)/2;return A(`Der Median kommt nicht vor: Eine Rangliste hat sechs Werte. Die beiden mittleren Werte sind ${a} und ${b}. Wie groß ist der Median? Kann der Median ein Wert sein, der in der Liste gar nicht vorkommt? Begründe!`,`Median = (${a} + ${b}) : 2 = ${m}. Ja: Bei einer geraden Anzahl an Werten ist der Median das arithmetische Mittel der beiden mittleren Werte. Das muss kein Wert der Liste sein${m!==a&&m!==b?` (hier kommt ${m} nicht vor)`:''}.`);}}
  ];
- const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,SSCK.length),idx=tshuf(SSCK.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));return{t:'Kreuze alle richtigen Aussagen an.',ck:idx.map((i,j)=>({s:SSCK[i][ok[j]?0:1],ok:ok[j]}))};}};
+ const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,SSCK.length),idx=tshuf(SSCK.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map((i,j)=>({s:SSCK[i][ok[j]?0:1],ok:ok[j]}))};}};
  zrTH.sq=[CK,Object.assign({},CK,{l:2})];
  zrNm.ss='Statistik: Denkaufgaben';zrNm.sq='Statistik: Begriffe ankreuzen';Z40TH.ss='ss,sq';Z40TH.sq='sq';
  {const _z=zrTheme;zrTheme=function(k){return /^ss[dmhglb]$/.test(k)?'ss,sq':_z(k);};}
@@ -4103,7 +4103,7 @@ const CICK=[['Der Durchmesser ist doppelt so lang wie der Radius.','Der Radius i
  {l:1,f:()=>{const d=P([50,60,65,70,80]),n=P([10,20,50]);return A(`Der Radweg: Ein Fahrrad hat Räder mit d = ${d} cm. Wie viele Meter fährt es, wenn sich das Rad ${n}-mal dreht?`,`u = ${d} · 3,14 = ${F(d*p)} cm. ${n} · ${F(d*p)} = ${F(n*d*p)} cm = ${F(n*d*p/100)} m.`);}},
  {l:2,f:()=>{const r=R(3,9);return A(`Der halbe Umfang? Ein Halbkreis hat den Radius ${r} cm. Max meint: „Sein Umfang ist die Hälfte vom Kreisumfang.“ Stimmt das? Berechne den Umfang des Halbkreises!`,`Nein. Der Kreisbogen ist die Hälfte: ${F(r*p)} cm. Dazu kommt noch der Durchmesser ${2*r} cm. Umfang des Halbkreises: ${F(r*p)} + ${2*r} = ${F(r*p+2*r)} cm.`);}}
  ];
- const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,CICK.length),idx=tshuf(CICK.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));return{t:'Kreuze alle richtigen Aussagen an.',ck:idx.map((i,j)=>({s:CICK[i][ok[j]?0:1],ok:ok[j]}))};}};
+ const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,CICK.length),idx=tshuf(CICK.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map((i,j)=>({s:CICK[i][ok[j]?0:1],ok:ok[j]}))};}};
  zrTH.cq=[CK,Object.assign({},CK,{l:2})];
  zrNm.ci='Kreis: Denkaufgaben';zrNm.cq='Kreis: Aussagen ankreuzen';Z40TH.ci='ci,cq';Z40TH.cq='cq';
  {const _z=zrTheme;zrTheme=function(k){return /^ci[btuasrkxlgc]$/.test(k)?'ci,cq':_z(k);};}
@@ -4224,7 +4224,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-zn-act]');
  {l:2,f:()=>A('Eine periodische Dezimalzahl: Ist 0,333… eine rationale Zahl? Welcher Bruch ist das?','Ja, 0,333… ist rational, denn man kann sie als Bruch schreiben: 0,333… = 1/3. Periodische Dezimalzahlen sind immer rational.')},
  {l:3,f:()=>{const a=P([2,3,4,5]);return A(`Quadratwurzel oder Kubikwurzel?: Ein Würfel hat die Kante ${a} cm. Wie groß ist eine Seitenfläche, wie groß das Volumen? Mit welcher Wurzel kommst du von der Seitenfläche zur Kante, mit welcher vom Volumen zur Kante?`,`Seitenfläche A = ${a}² = ${a*a} cm², Volumen V = ${a}³ = ${a**3} cm³. Von A zur Kante: a = √${a*a} = ${a}. Vom Volumen zur Kante: a = ³√${a**3} = ${a}.`);}}
  ];
- const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,ZNRF.length),idx=tshuf(ZNRF.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(i=>!!ZNRF[i][1]);if(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1))break;idx.splice(0,idx.length,...tshuf(ZNRF.map((_,i)=>i)).slice(0,NN));}while(true);return{t:'Kreuze alle richtigen Aussagen an.',ck:idx.map(i=>({s:ZNRF[i][0],ok:!!ZNRF[i][1]}))};}};
+ const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,ZNRF.length),idx=tshuf(ZNRF.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(i=>!!ZNRF[i][1]);if(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1))break;idx.splice(0,idx.length,...tshuf(ZNRF.map((_,i)=>i)).slice(0,NN));}while(true);return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map(i=>({s:ZNRF[i][0],ok:!!ZNRF[i][1]}))};}};
  zrTH.zq=[CK,Object.assign({},CK,{l:2})];
  zrNm.zn='Zahlenmengen: Denkaufgaben';zrNm.zq='Zahlenmengen: Aussagen ankreuzen';Z40TH.zn='zn,zq';Z40TH.zq='zq';
  {const _z=zrTheme;zrTheme=function(k){return /^zn[a-z]$/.test(k)?'zn,zq':_z(k);};}
@@ -4309,7 +4309,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-mb-act]');
  {l:3,f:()=>{const m=P([2,3,5]),s=P([10,20,30]);return A(`Eine Vergrößerung: Eine Ameise ist in der Wirklichkeit ${m} mm lang. Auf einem Foto ist sie ${m*s} mm lang. Wie viel Mal so groß erscheint sie? Man schreibt dann den Maßstab ${s} : 1. Wie lang wäre sie bei 100 : 1?`,`${m*s} : ${m} = ${s}. Sie erscheint ${s}-mal so groß (Maßstab ${s} : 1). Bei 100 : 1: ${m} mm · 100 = ${m*100} mm = ${m*10} cm.`);}},
  {l:2,f:()=>{const d=P([6,9,12,15]);return A(`Der Spielplatz: Ein Spielplatz ist ${d} m lang. Du zeichnest ihn auf ein Blatt, das 21 cm breit ist. Welchen Maßstab (1 : 50, 1 : 100 oder 1 : 500) wählst du, damit der Spielplatz aufs Blatt passt und möglichst groß ist?`,`${d} m = ${d*100} cm. Bei 1 : 50: ${d*100/50} cm${d*100/50<=21?' (passt)':' (passt nicht, Blatt nur 21 cm)'}. Bei 1 : 100: ${d} cm. Bei 1 : 500: ${mbN(d/5)} cm. Man wählt den kleinsten Maßstab, bei dem es noch passt: ${d*100/50<=21?'1 : 50':'1 : 100'}.`);}}
  ];
- const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,MBRF.length);let idx,ok;do{idx=tshuf(MBRF.map((_,i)=>i)).slice(0,NN);ok=idx.map(i=>!!MBRF[i][1]);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));return{t:'Kreuze alle richtigen Aussagen an.',ck:idx.map(i=>({s:MBRF[i][0],ok:!!MBRF[i][1]}))};}};
+ const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,MBRF.length);let idx,ok;do{idx=tshuf(MBRF.map((_,i)=>i)).slice(0,NN);ok=idx.map(i=>!!MBRF[i][1]);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map(i=>({s:MBRF[i][0],ok:!!MBRF[i][1]}))};}};
  zrTH.mq=[CK,Object.assign({},CK,{l:2})];
  zrNm.mb='Maßstab: Denkaufgaben';zrNm.mq='Maßstab: Aussagen ankreuzen';Z40TH.mb='mb,mq';Z40TH.mq='mq';
  {const _z=zrTheme;zrTheme=function(k){return /^mb[a-z]$/.test(k)?'mb,mq':_z(k);};}
@@ -4620,7 +4620,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-k4-act]');
  {l:3,f:()=>{const r=P([3,4,5]);return A(`Die Eiswaffel: Eine Eiswaffel (Kegel) mit r = ${r} cm und h = ${2*r+1} cm ist bis zum Rand mit Eis gefüllt. Oben liegt noch eine Halbkugel Eis mit demselben Radius. Wie viel cm³ Eis sind das insgesamt? (π ≈ 3,14)`,`V(Kegel) = ${r}² · 3,14 · ${2*r+1} : 3 = ${k4F(3.14*r*r*(2*r+1)/3)} cm³. V(Halbkugel) = 2 · ${r}³ · 3,14 : 3 = ${k4F(2*3.14*r**3/3)} cm³. Zusammen ≈ ${k4F(3.14*r*r*(2*r+1)/3+2*3.14*r**3/3)} cm³.`);}},
  {l:2,f:()=>{const h=P([5,6,8,10]);return A(`Welcher Körper?: Ich habe kein Netz aus lauter Vielecken, meine Oberfläche besteht aus einer Kreisfläche und einem Kreissektor. Mein Volumen beträgt ein Drittel von r² · π · h. Welcher Körper bin ich? Wie berechnet man meine Mantelfläche?`,`Ich bin ein Kegel. Die Mantelfläche ist M = r · π · s (s = Mantellinie, s² = r² + h²).`);}}
  ];
- const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,K4CK.length);let idx,ok;do{idx=tshuf(K4CK.map((_,i)=>i)).slice(0,NN);ok=idx.map(i=>!!K4CK[i][1]);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));return{t:'Kreuze alle richtigen Aussagen an.',ck:idx.map(i=>({s:K4CK[i][0],ok:!!K4CK[i][1]}))};}};
+ const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,K4CK.length);let idx,ok;do{idx=tshuf(K4CK.map((_,i)=>i)).slice(0,NN);ok=idx.map(i=>!!K4CK[i][1]);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map(i=>({s:K4CK[i][0],ok:!!K4CK[i][1]}))};}};
  zrTH.kq=[CK,Object.assign({},CK,{l:2})];
  zrNm.ko='Körper: Denkaufgaben';zrNm.kq='Körper: Aussagen ankreuzen';Z40TH.ko='ko,kq';Z40TH.kq='kq';
  {const _z=zrTheme;zrTheme=function(k){return /^k4[a-z]$/.test(k)?'ko,kq':_z(k);};}
@@ -4656,7 +4656,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-k4-act]');
   X('a ⊥ b bedeutet: a steht normal auf b.','a ⊥ b bedeutet: a ist parallel zu b.'),
   X('Liegt der Punkt P auf der Geraden g, hat er von g den Normalabstand 0.','Liegt der Punkt P auf der Geraden g, hat er von g den Normalabstand 1 cm.')];
  const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,ST.length),idx=tshuf(ST.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));
-  return{t:'Kreuze alle richtigen Aussagen an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
+  return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
  zrTH.pq=[CK,Object.assign({},CK,{l:2})];
  zrNm.pn='Parallele und Normale: Denkaufgaben';zrNm.pq='Parallele und Normale: Begriffe ankreuzen';Z40TH.pn='pn,pq';Z40TH.pq='pq';
  {const _z=zrTheme;zrTheme=function(k){return /^pn/.test(k)?'pn,pq':_z(k);};}
@@ -4749,7 +4749,7 @@ function renderZr(){const g=$('#g-zr'),it=items.find(i=>i.id===sel&&ZRT.includes
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">4.0-Aufgabe aufs Blatt ziehen oder anklicken (in jedem Thema unten in der Auswahl). Zum Ändern auf dem Blatt markieren.</div>';return;}
  if(it.th==='-'){g.innerHTML='<div style="font-weight:700;margin-bottom:4px">4.0-Aufgabe</div><div style="font-size:12px;color:var(--mut)">Für dieses Thema gibt es noch keine 4.0-Beispiele.</div>';return;}
  const sl=(f,o)=>`<select data-zr="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`;
- g.innerHTML=`<div style="font-weight:700;margin-bottom:4px">4.0-Aufgabe</div><label>Anzahl der Aufgaben${sl('n',[1,2,3,4,5,6].map(x=>[x,x]))}</label><label>Thema${sl('th',[['mix','gemischt (Zahlen und Rechnen)'],...Object.entries(zrNm)])}</label><label>Schwierigkeit${sl('lv',[[1,'leicht'],[2,'mittel'],[3,'schwer']])}</label>${/kk|kd/.test(it.th||'')?`<label>Anzahl der Möglichkeiten (Ankreuzen)${sl('ko',[[5,'5 Möglichkeiten'],[4,'4 Möglichkeiten'],[3,'3 Möglichkeiten']])}</label>`:''}<label class="ck"><input type="checkbox" data-zr="star"${it.star?' checked':''}> ★ Stern als Kennzeichnung (schwierig)</label><label class="ck"><input type="checkbox" data-zr="show"${it.show?' checked':''}> Lösung zeigen</label><button data-zr-act="mix">Neu mischen</button>`;}
+ g.innerHTML=`<div style="font-weight:700;margin-bottom:4px">4.0-Aufgabe</div><label>Anzahl der Aufgaben${sl('n',[1,2,3,4,5,6].map(x=>[x,x]))}</label><label>Thema${sl('th',[['mix','gemischt (Zahlen und Rechnen)'],...Object.entries(zrNm)])}</label><label>Schwierigkeit${sl('lv',[[1,'leicht'],[2,'mittel'],[3,'schwer']])}</label>${/(^|,)(as|py|ss|ci|zn|mb|ko|pn|kd|kk)(,|$)/.test(it.th||'')?`<label>Anzahl der Antwortmöglichkeiten (Ankreuzen)${sl('ko',(/(^|,)as(,|$)/.test(it.th||'')?[3,4,5,6,7]:[3,4,5]).map(x=>[x,x+' Möglichkeiten']))}</label>`:''}<label class="ck"><input type="checkbox" data-zr="star"${it.star?' checked':''}> ★ Stern als Kennzeichnung (schwierig)</label><label class="ck"><input type="checkbox" data-zr="show"${it.show?' checked':''}> Lösung zeigen</label><button data-zr-act="mix">Neu mischen</button>`;}
 $('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.zr;if(!k)return;const it=items.find(i=>i.id===sel&&ZRT.includes(i.type));if(!it)return;rec('zr'+k);it[k]=t.type==='checkbox'?t.checked:k==='th'?t.value:+t.value;if(k!=='show'&&k!=='star')zrGen(it);render();});
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-zr-act]');if(!b)return;const it=items.find(i=>i.id===sel&&ZRT.includes(i.type));if(!it)return;rec();zrGen(it);render();});
 (function(){const P=$('#zrpal');P.innerHTML=`<div class="pal" draggable="true" data-t="zr"><svg viewBox="0 0 100 40"><text x="50" y="27" text-anchor="middle" font-size="20" font-weight="700" fill="#000">4.0</text></svg><span>4.0-Aufgabe (gemischt)</span></div>`;})();
@@ -5888,7 +5888,7 @@ function skElemB(kind,n){
 function skGen(o){
  const mode=o.kt||'theorie',n=Math.max(2,Math.min(mode==='theorie'||mode==='elem'?6:4,+o.kn||4));
  const kT=o.kk==='any'?rndi(1,n-1):Math.min(+o.kk,n-1);
- const instr=o.kk==='any'?'Kreuze alle richtigen Aussagen an!':'Kreuze '+NUMW[kT]+' an!';
+ const instr=o.kk==='any'?'Kreuze die richtige(n) Aussage(n) an!':'Kreuze '+NUMW[kT]+' an!';
  let items,fig=null;
  if(mode==='theorie'){items=[...shuf(SKT[0].slice()).slice(0,kT).map(t=>({t,ok:true})),...shuf(SKT[1].slice()).slice(0,n-kT).map(t=>({t,ok:false}))];}
  else if(mode==='elem'){
@@ -6403,7 +6403,7 @@ Object.entries(PRE).forEach(([c,list])=>{const box=document.querySelector('#left
   o=>({s:o?'Der Ursprung liegt auf der x-Achse und auf der y-Achse.':'Der Ursprung liegt nur auf der x-Achse.',ok:o}),
   o=>{const a=R(1,9),b=R(1,9);return{s:o?`Der Punkt S${pt(a,b)} liegt im ersten Quadranten (rechts oben).`:`Der Punkt S${q2(-a,b)} liegt im ersten Quadranten (rechts oben).`,ok:o};}];
  const CK={l:1,f:()=>{const NN=Math.min(+window.KKN||5,ST.length),idx=tshuf(ST.map((_,i)=>i)).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));
-  return{t:'Kreuze alle richtigen Aussagen an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
+  return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
  zrTH.kk=[CK,Object.assign({},CK,{l:2})];
  zrNm.kd='Koordinatensystem';zrNm.kk='Koordinatensystem: Aussagen ankreuzen';Z40TH.kd='kd,kk';Z40TH.kk='kk';
  const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t='zr:kk';d.style.marginTop='8px';d.style.borderColor='#c9a227';
