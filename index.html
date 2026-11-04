@@ -3541,6 +3541,28 @@ zrTH.as=(()=>{const R=kri,T=tfm;const W=[
  zrTH.as4=ex.map(e=>({l:e.l,f:()=>{let r=null,g=0;while(!r&&g++<50)r=e.f();return r||e.f();}}));zrTH.as.push(...zrTH.as4);
 })();
 
+/* ===== 4.0 Addition/Subtraktion: Rechnung zur Zeichnung (Streckenmodell) ===== */
+(function(){const R=kri,P=tpick,T=tfm,CF=window.CF=window.CF||{},r2=x=>Math.round(x*100)/100,BL='#2b6cb0',OR='#d9730d';
+ const ln=(x1,y1,x2,y2,c,w)=>`<path d="M${r2(x1)} ${r2(y1)}L${r2(x2)} ${r2(y2)}" stroke="${c||BL}" stroke-width="${w||.45}" fill="none"/>`,
+  tk=(x,y,c)=>ln(x,y-3,x,y+3,c),tx=(x,y,s,st)=>`<text x="${r2(x)}" y="${r2(y)}" font-size="5" font-family="inherit" text-anchor="middle" ${st||'fill="#333"'}>${s}</text>`,RT='fill="#d00" font-weight="700"';
+ const val=(p,k,sv)=>p[k]===undefined?'':sv&&p.u===k?`<tspan ${RT}>${T(p[k])}</tspan>`:p.u===k?'?':T(p[k]);
+ CF.bar=(p,sv)=>{const x0=14,M=p.k==='cmp'?p.A:p.T,s=142/M;let o='';
+  if(p.k==='sub'){const L=p.T*s,xb=x0+L-p.b*s;o+=ln(x0,13,x0+L,13)+tk(x0,13)+tk(x0+L,13)+tx(x0+L/2,9,T(p.T))+ln(x0,28,x0+L,28)+tk(x0,28)+tk(x0+L,28)+`<path d="M${r2(x0+L)} 28L${r2(xb)} 28" stroke="${OR}" stroke-width=".6" fill="none"/><path d="M${r2(xb)} 28l3 -1.6v3.2z" fill="${OR}"/>`+tx((x0+L+xb)/2,37,T(p.b))+(sv?tx((x0+xb)/2,37,T(p.T-p.b),RT):'');}
+  else if(p.k==='add'){const xa=x0+p.a*s,xe=x0+(p.a+p.b)*s;o+=ln(x0,16,xe,16)+tk(x0,16)+tk(xa,16)+tk(xe,16)+tx((x0+xa)/2,11,val(p,'a',sv),p.u==='a'&&sv?'':'fill="#333"')+tx((xa+xe)/2,11,val(p,'b',sv))+`<path d="M${r2(x0)} 26v3h${r2(xe-x0)}v-3" stroke="${OR}" stroke-width=".5" fill="none"/>`+tx((x0+xe)/2,37,val(p,'T',sv));}
+  else{const xa=x0+p.A*s,xb=x0+p.B*s;o+=ln(x0,13,xa,13)+tk(x0,13)+tk(xa,13)+tx((x0+xa)/2,9,T(p.A))+ln(x0,27,xb,27)+tk(x0,27)+tk(xb,27)+tx((x0+xb)/2,36,T(p.B))+`<path d="M${r2(xb)} 27H${r2(xa)}" stroke="${OR}" stroke-width=".6" stroke-dasharray="1.2 1" fill="none"/>`+tx((xb+xa)/2,36,sv?T(p.A-p.B):'?',sv?RT:'fill="#333"');}
+  return o;};
+ const Q='Wie lautet die Rechnung zur Zeichnung? Löse sie und schreibe eine kurze Rechengeschichte zu dieser Angabe.',mk=(l,f)=>({l,f:()=>Object.assign({cf:'bar',H:44,nf:1,sp:4,k:Math.random()},f())});
+ const STO={sub:[(T,b,n)=>`Im Regal stehen ${T} Bücher. ${b} Bücher werden ausgeliehen. Wie viele Bücher bleiben im Regal? (${n})`,(T,b,n)=>`Die Klasse hat ${T} € gesammelt. Für ${b} € wird ein Spiel gekauft. Wie viel Geld bleibt übrig? (${n})`,(T,b,n)=>`Ein Zug hat ${T} Fahrgäste. An der nächsten Station steigen ${b} aus. Wie viele bleiben im Zug? (${n})`],
+  add:[(a,b,n)=>`Lena liest ${a} Seiten, am nächsten Tag ${b} Seiten. Wie viele Seiten hat sie insgesamt gelesen? (${n})`,(a,b,n)=>`Im Bus sitzen ${a} Kinder, an der Haltestelle steigen ${b} ein. Wie viele Kinder sind es jetzt? (${n})`],
+  cmp:[(A,B,n)=>`Ein Berg ist ${A} m hoch, ein anderer ${B} m. Um wie viele Meter ist der erste höher? (${n})`,(A,B,n)=>`Anna hat ${A} Sticker, Ben hat ${B}. Wie viele Sticker hat Anna mehr? (${n})`]};
+ const sub=()=>{const T0=R(120,480),b=R(30,T0-30);return{t:Q,p:{k:'sub',T:T0,b},a:`Rechnung: ${T(T0)} − ${T(b)} = ${T(T0-b)}<br>Geschichte: ${P(STO.sub)(T(T0),T(b),T(T0-b))}`};};
+ const addS=()=>{const a=R(60,300),b=R(60,300);return{t:Q,p:{k:'add',a,b,T:a+b,u:'T'},a:`Rechnung: ${T(a)} + ${T(b)} = ${T(a+b)}<br>Geschichte: ${P(STO.add)(T(a),T(b),T(a+b))}`};};
+ const addP=()=>{const a=R(60,300),b=R(60,300),u=P(['a','b']),v=u==='a'?a:b,w=u==='a'?b:a;return{t:Q,p:{k:'add',a,b,T:a+b,u},a:`Rechnung: ${T(a+b)} − ${T(w)} = ${T(v)} (oder ${T(w)} + ? = ${T(a+b)})<br>Geschichte: Auf einem Konto sind ${T(a+b)} €. ${T(w)} € wurden eingezahlt, der Rest war schon vorher da. Wie viel war vorher auf dem Konto? (${T(v)} €)`};};
+ const cmp=()=>{const A=R(150,480),B=R(60,A-40);return{t:Q,p:{k:'cmp',A,B},a:`Rechnung: ${T(A)} − ${T(B)} = ${T(A-B)}<br>Geschichte: ${P(STO.cmp)(T(A),T(B),T(A-B))}`};};
+ const two=()=>{const a=R(60,300),b=R(60,300);return{t:'Schreibe zur Zeichnung eine Plus- und eine Minusrechnung. Löse sie und schreibe eine kurze Rechengeschichte zu dieser Angabe.',p:{k:'add',a,b,T:a+b,u:'b'},a:`Plus: ${T(a)} + ${T(b)} = ${T(a+b)}<br>Minus: ${T(a+b)} − ${T(a)} = ${T(b)}<br>Geschichte: ${T(a+b)} Bücher sind in der Bücherei. ${T(a)} sind ausgeliehen. Wie viele sind noch da? (${T(b)})`};};
+ zrTH.as5=[mk(1,sub),mk(1,addS),mk(2,addP),mk(2,cmp),mk(3,two)];zrTH.as.push(...zrTH.as5);
+})();
+
 /* ===== 4.0 Rechnen: Fehler finden (schriftlich Multiplizieren und Dividieren) ===== */
 (function(){const R=kri,P=tpick,T=tfm,COL=['Einer','Zehner','Hunderter','Tausender','Zehntausender','Hunderttausender'],NAMES=['Lena','Jonas','Mia','Ben','Sara','Luca','Emma','Tim','Nina','Paul'];
  const dg=n=>String(n).split('').reverse().map(Number),num=a=>a.slice().reverse().join('').replace(/^0+(?=\d)/,'');
@@ -4985,7 +5007,7 @@ function tfHtml(it,r){const sv=tlS(it),bx=(on)=>`<span style="display:inline-blo
 function bxHtml(it,r){const sv=tlS(it),b=()=>`<span style="display:inline-block;width:2.6em;height:1.9em;border:1.4px solid #000;vertical-align:middle"></span>`,sg=(c)=>`<span style="margin:0 .45em">${c}</span>`;
  return `<div style="break-inside:avoid;margin-bottom:.9em"><div>${r.t}</div><div style="text-align:center;margin:.6em 0">${b()}${sg('+')}${b()}${sg('−')}${b()}${sg('−')}${b()}${sg('=')}${r.T0}</div><div>${r.note}</div>${sv?`<div class="sv" style="margin-top:.4em">${r.sol.join('<br>')}</div>`:''}</div>`;}
 
-function cfHtml(it,r,i,n){const sv=tlS(it),W=170,Hh=r.H||90,svg=`<svg viewBox="0 0 ${W} ${Hh}" style="width:${W}mm;height:${Hh}mm;display:block;overflow:hidden;outline:1px solid #bbb;background:#fff" aria-hidden="true">${(window.CF[r.cf]||(()=>''))(r.p,sv)}</svg>`;
+function cfHtml(it,r,i,n){const sv=tlS(it),W=170,Hh=r.H||90,svg=`<svg viewBox="0 0 ${W} ${Hh}" style="width:${W}mm;height:${Hh}mm;display:block;overflow:hidden;${r.nf?'':'outline:1px solid #bbb;'}background:#fff" aria-hidden="true">${(window.CF[r.cf]||(()=>''))(r.p,sv)}</svg>`;
  const ans=r.q?`<div class="tlrw" style="margin-top:.2em"><span>${r.q}:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,r.a)}</span></div>`:`<div style="margin-top:.3em;line-height:1.7em;min-height:${(r.sp||2)*1.7}em;background:repeating-linear-gradient(transparent 0,transparent calc(1.7em - 1.2px),#777 calc(1.7em - 1.2px),#777 1.7em)">${sv?`<span class="sv">${r.a}</span>`:''}</div>`;
  return `<div style="display:flex;gap:.4em;align-items:flex-start;break-inside:avoid;margin-bottom:.9em">${n>1?`<b>${nlab(it,i,'n')}</b>`:''}<div style="flex:1;min-width:0"><div>${r.t}</div><div style="margin:.4em 0">${svg}</div>${ans}</div></div>`;}
 
