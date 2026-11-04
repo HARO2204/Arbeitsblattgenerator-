@@ -3424,6 +3424,40 @@ zrTH.as=(()=>{const R=kri,T=tfm;const W=[
  const CK={l:2,f:()=>{const NN=Math.min(+window.KKN||5,7),idx=tshuf([0,1,2,3,4,5,6]).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));
   return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
  return W.concat([CK,CK]);})();
+/* ===== 4.0 Rechnen: Fehler finden (schriftlich Multiplizieren und Dividieren) ===== */
+(function(){const R=kri,P=tpick,T=tfm,COL=['Einer','Zehner','Hunderter','Tausender','Zehntausender','Hunderttausender'],NAMES=['Lena','Jonas','Mia','Ben','Sara','Luca','Emma','Tim','Nina','Paul'];
+ const dg=n=>String(n).split('').reverse().map(Number),num=a=>a.slice().reverse().join('').replace(/^0+(?=\d)/,'');
+ const simAdd=(da,db,fg)=>{const L=Math.max(da.length,db.length),res=[],car=[];let c=0;for(let i=0;i<L;i++){const ci=(fg===i)?0:c;const s=(da[i]||0)+(db[i]||0)+ci;res[i]=s%10;c=Math.floor(s/10);car[i+1]=c;}if(c>0)res[L]=c;return{res,car};};
+ const mulD=(A,d,fg)=>{const da=dg(A),res=[],car=[0];let c=0;for(let i=0;i<da.length;i++){const ci=(fg===i)?0:c;const s=da[i]*d+ci;res[i]=s%10;c=Math.floor(s/10);car[i+1]=c;}if(c>0)res[da.length]=c;return{res,car};};
+ const mkMul=(Lt,kind)=>{for(let t=0;t<300;t++){const A=R(Math.pow(10,Lt-1)+11,Math.pow(10,Lt)-1),bt=R(2,9),bu=R(2,9),B=bt*10+bu,pp0=A*bt,pp1=A*bu,S=A*B;let rows,res,ans,circR=null;
+   const lenE=(a)=>String(a).length;
+   if(kind==='shift'){const W=pp0+pp1;rows=[{s:String(pp0),sh:0,circ:lenE(pp0)-1},{s:String(pp1),sh:0}];res=String(W);ans=`Das erste Teilprodukt (${T(A)} · ${bt} = ${T(pp0)}) muss um eine Stelle nach links eingerückt werden, weil ${bt} an der Zehnerstelle von ${B} steht.`;}
+   else if(kind==='pp'){const k=R(0,1),d=k?bu:bt,good=mulD(A,d,-1),cols=[];for(let i=1;i<good.car.length-0;i++)if(good.car[i]>0&&i<dg(A).length)cols.push(i);if(!cols.length)continue;const i=P(cols),w=mulD(A,d,i),wv=+num(w.res),cv=A*d;if(wv===cv)continue;
+    const p0=k?pp0:wv,p1=k?wv:pp1,W=p0*10+p1;rows=[{s:String(p0),sh:1,circ:k?undefined:lenE(wv)-1-i},{s:String(p1),sh:0,circ:k?lenE(wv)-1-i:undefined}];res=String(W);ans=`Im ${k?'zweiten':'ersten'} Teilprodukt ist ein Rechenfehler (Übertrag in der ${COL[i]}spalte vergessen): ${T(A)} · ${d} = ${T(cv)}, nicht ${T(wv)}.`;}
+   else{const a0=dg(pp0*10),a1=dg(pp1),good=simAdd(a0,a1,-1),cols=[];for(let i=1;i<good.car.length;i++)if(good.car[i]>0)cols.push(i);if(!cols.length)continue;const i=P(cols),w=simAdd(a0,a1,i),wv=num(w.res);if(+wv===S)continue;
+    rows=[{s:String(pp0),sh:1},{s:String(pp1),sh:0}];res=wv;ans=`Beim Addieren der Teilprodukte wurde in der ${COL[i]}spalte der Übertrag nicht mitgerechnet.`;circR=lenE(wv)-1-i;if(circR<0)continue;}
+   if(+res===S)continue;
+   const K=Math.max(res.length,rows[0].s.length+rows[0].sh,rows[1].s.length+rows[1].sh)+1;
+   const gr=rows.map(r=>({s:r.s,end:K-1-r.sh,sign:'',circ:r.circ})).concat([{s:res,end:K-1,sign:'+',rule:true,circ:circR===null?undefined:circR}]);
+   return{w:{kind:'mul',K,head:`${T(A)} · ${B}`,rows:gr},ans,right:`${T(A)} · ${B} = ${T(S)}`,t:`${T(A)} · ${B}`};}
+  return null;};
+ const simDiv=(Dd,div,errStep,delta)=>{const n=Dd.length;let cur=0,started=false,steps=[];for(let i=0;i<n;i++){cur=cur*10+Dd[i];if(!started&&cur<div)continue;started=true;const q=Math.floor(cur/div),sub=q*div;let rem=cur-sub;if(errStep===steps.length)rem+=delta;steps.push({i,cur,q,sub,rem});cur=rem;}return steps;};
+ const mkDiv=(qLen,kind)=>{for(let t=0;t<300;t++){const div=R(3,9);let Q;if(kind==='null'){const qd=[R(1,9)];for(let i=1;i<qLen;i++)qd.push(R(1,9));qd[R(1,qLen-2)]=0;Q=+qd.join('');}else Q=R(Math.pow(10,qLen-1)+3,Math.pow(10,qLen)-1);
+   const Ds=Q*div,Dd=dg(Ds).reverse(),n=Dd.length,good=simDiv(Dd,div,-1,0);let qs,ans,errRow=-1,steps=good;
+   if(good.some((s,i)=>s.rem!==(i===good.length-1?0:s.rem)))continue;
+   if(kind==='null'){if(!good.some((s,i)=>i>0&&s.q===0))continue;qs=good.filter((s,i)=>!(i>0&&s.q===0)).map(s=>s.q).join('').replace(/^0+/,'');const z=good.findIndex((s,i)=>i>0&&s.q===0);ans=`In der Antwort fehlt eine Null: Wenn die nächste Stelle noch zu klein ist, muss im Ergebnis eine 0 geschrieben werden (${T(good[z].cur)} : ${div} = 0).`;}
+   else{const c=good.map((s,i)=>i).filter(i=>{const s=good[i];return s.rem+1<div||s.rem>=1;});if(!c.length)continue;const j=P(c),delta=(good[j].rem+1<div&&Math.random()<.6)?1:(good[j].rem>=1?-1:1);if(good[j].rem+delta<0||good[j].rem+delta>=div)continue;steps=simDiv(Dd,div,j,delta);if(steps.length!==good.length)continue;
+    qs=steps.map(s=>s.q).join('');ans=`Im ${j+1}. Schritt wurde falsch subtrahiert: ${T(good[j].cur)} − ${T(good[j].sub)} = ${good[j].rem}, nicht ${good[j].rem+delta}.`;errRow=j;
+    if(qs===String(Q)&&steps[steps.length-1].rem===0)continue;}
+   const rows=[];steps.forEach((s,j)=>{if(s.q>0||j===0){rows.push({s:String(s.sub),end:1+s.i,sign:'−'});}
+    const nxt=(j<steps.length-1)?steps[j+1]:null;if(nxt){if(nxt.q>0||true){rows.push({s:String(s.rem*10+Dd[s.i+1]).replace(/^0+(?=\d)/,''),end:2+s.i,circ:errRow===j?0:undefined,rule:true});}}else{rows.push({s:String(s.rem),end:1+s.i,circ:errRow===j?0:undefined,rule:true});}});
+   const lastRem=steps[steps.length-1].rem,head=`${T(Ds)} : ${div} = ${qs}${lastRem>0?'  Rest '+lastRem:''}`;
+   return{w:{kind:'div',K:n+1,dd:Dd,head:` : ${div} = ${qs}${lastRem>0?'  Rest '+lastRem:''}`,rows},ans,right:`${T(Ds)} : ${div} = ${T(Q)}`,t:`${T(Ds)} : ${div}`};}
+  return null;};
+ const mk=(l,gen)=>({l,f:()=>{let r=null,g=0;while(!r&&g++<50)r=gen();const nm=P(NAMES);return{fw:true,t:`${nm} hat die Rechnung ${r.t} schriftlich gelöst. Dabei ist ein Fehler passiert. Finde den Fehler, erkläre ihn und rechne richtig!`,w:r.w,ans:r.ans,right:r.right};}});
+ zrTH.re.push(mk(1,()=>mkDiv(3,P(['sub','null']))),mk(1,()=>mkMul(2,P(['pp','shift']))),mk(2,()=>mkMul(3,P(['pp','shift','sum']))),mk(2,()=>mkDiv(3,P(['sub','null','sub']))),mk(3,()=>mkMul(4,P(['pp','shift','sum']))),mk(3,()=>mkDiv(4,P(['sub','null']))));
+})();
+
 /* ===== 4.0 Addition/Subtraktion: Fehler finden (schriftliche Rechnung) ===== */
 (function(){const R=kri,P=tpick,T=tfm,COL=['Einer','Zehner','Hunderter','Tausender','Zehntausender','Hunderttausender'],NAMES=['Lena','Jonas','Mia','Ben','Sara','Luca','Emma','Tim','Nina','Paul'];
  const dg=n=>String(n).split('').reverse().map(Number),num=a=>a.slice().reverse().join('').replace(/^0+(?=\d)/,'');
@@ -4768,6 +4802,15 @@ function zrClock(r,sv){let g='';for(let i=0;i<60;i++){const a=i*Math.PI/30,big=i
  let hands='';if(sv){const H=(a,l,w)=>`<path d="M60 60L${60+l*Math.sin(a*Math.PI/180)} ${60-l*Math.cos(a*Math.PI/180)}" stroke="#c0392b" stroke-width="${w}" stroke-linecap="round"/>`;hands=H(r.ha,26,3)+H(r.ma,38,2);}
  return `<svg viewBox="0 0 120 120" style="width:9.5em;height:9.5em;flex:none" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="#fff" stroke="#000" stroke-width="1"/>${g}${hands}<circle cx="60" cy="60" r="2" fill="${sv?'#c0392b':'#fff'}" stroke="#000" stroke-width=".6"/></svg>`;}
 function zrSt(it,h){return it.star?`<div style="position:relative;break-inside:avoid;padding-right:1.6em"><span class="zrstar" style="position:absolute;right:0;top:-.15em;font-size:1.3em;line-height:1;color:#000" title="Schwierige Aufgabe">★</span>${h}</div>`:h;}
+function fwHtml2(it,r){const sv=tlS(it),w=r.w,K=w.K,cell=(c,st)=>`<span style="display:inline-block;width:1.3em;text-align:center;${st||''}">${c===''?'&nbsp;':c}</span>`;
+ const rowHtml=(s,end,sign,circ)=>{const a=Array(K).fill('');const st=end-s.length+1;s.split('').forEach((c,i)=>{if(st+i>=0&&st+i<K)a[st+i]=c;});if(sign&&st-1>=0)a[st-1]=sign;
+  return a.map((c,i)=>cell(c,(sv&&circ!==undefined&&i===st+circ?'border:2px solid #c0392b;border-radius:50%;color:#c0392b;font-weight:700;width:1.1em;':'')+(c==='−'||c==='+'?'font-weight:700':''))).join('');};
+ let head;if(w.kind==='div'){const a=Array(K).fill('');w.dd.forEach((c,i)=>a[i+1]=c);head=`<div style="white-space:nowrap">${a.map(c=>cell(c)).join('')}<span>${w.head}</span></div>`;}else head=`<div style="white-space:nowrap;padding-left:.3em;font-weight:700">${w.head}</div>`;
+ const body=w.rows.map(rw=>`<div style="white-space:nowrap${rw.rule?';border-top:'+(w.kind==='mul'?'2px solid #000':'0 none'):''}">${rowHtml(rw.s,rw.end,rw.sign,rw.circ)}</div>`).join('');
+ const calc=`<div style="display:inline-block;font-size:1.15em;line-height:1.45;font-variant-numeric:tabular-nums">${head}${body}</div>`;
+ const ln=t=>`<div style="border-bottom:1.2px solid #555;min-height:1.7em;line-height:1.7em">${sv&&t?`<span class="sv">${t}</span>`:''}</div>`;
+ return `<div style="break-inside:avoid;margin-bottom:1em;display:flex;gap:1.6em;align-items:flex-start"><div style="flex:none;border:1.4px solid #999;border-radius:6px;padding:.5em .7em;background:#fcfcfc">${calc}</div><div style="flex:1;min-width:0"><div>${r.t}</div><div style="margin-top:.3em">${ln(r.ans)}${ln('')}<div style="display:flex;gap:.5em;align-items:flex-end;margin-top:.2em"><span>Richtig:</span><span style="flex:1;border-bottom:1.2px solid #555;min-height:1.7em;line-height:1.7em">${sv?`<span class="sv">${r.right}</span>`:''}</span></div></div></div></div>`;}
+
 /* Darstellung: schriftliche Rechnung mit Fehler */
 function fwHtml(it,r){const sv=tlS(it),w=r.w,K=Math.max(w.a.length,w.b.length,w.res.length)+1,fs='font-size:1.15em;font-variant-numeric:tabular-nums';
  const cell=(c,st)=>`<span style="display:inline-block;width:1.3em;text-align:center;${st||''}">${c===''?'&nbsp;':c}</span>`;
@@ -4781,7 +4824,7 @@ function fwHtml(it,r){const sv=tlS(it),w=r.w,K=Math.max(w.a.length,w.b.length,w.
  return `<div style="break-inside:avoid;margin-bottom:1em;display:flex;gap:1.6em;align-items:flex-start"><div style="flex:none;border:1.4px solid #999;border-radius:6px;padding:.5em .7em;background:#fcfcfc">${calc}</div><div style="flex:1;min-width:0"><div>${r.t}</div><div style="margin-top:.3em">${ln(r.ans)}${ln('')}<div style="display:flex;gap:.5em;align-items:flex-end;margin-top:.2em"><span>Richtig:</span><span style="flex:1;border-bottom:1.2px solid #555;min-height:1.7em;line-height:1.7em">${sv?`<span class="sv">${r.right}</span>`:''}</span></div></div></div></div>`;}
 
 function zrBlock(it){const s=tlS(it),n=(it.d||[]).length;if(it.th==='-')return `<div class="tlx" style="${kst(it)}"><div style="border:1.4px dashed #999;border-radius:6px;padding:.8em 1em;color:#777;font-style:italic">4.0-Aufgabe zum Thema „${(CATS[it.oc]||'').replace('Vergleichen','Vergleichen')}“ – Beispiele folgen. (Mit „Manueller Modus“ kann hier selbst eine Aufgabe geschrieben werden.)</div></div>`;
- const h=(it.d||[]).map((r,i)=>zrSt(it,r.fw?fwHtml(it,r):r.clk?`<div style="break-inside:avoid;margin-bottom:.9em;display:flex;gap:1em;align-items:flex-start;border-top:1.4px solid #000;padding-top:.5em"><div style="flex:1;min-height:9.5em"><div style="font-weight:700;display:flex;gap:.6em"><span>${TLL[i]})</span><span>${r.t.replace(' Berechne!','')} <span style="font-weight:400">Berechne!</span></span></div>${tlS(it)?`<div class="sv" style="margin-top:.8em">${r.a}</div>`:''}</div>${zrClock(r,tlS(it))}</div>`:r.zsa?(()=>{const sv=tlS(it),x0=30,w=36,red='#c0392b',X=k=>x0+k*w;let g='';
+ const h=(it.d||[]).map((r,i)=>zrSt(it,r.fw?(r.w&&r.w.rows?fwHtml2(it,r):fwHtml(it,r)):r.clk?`<div style="break-inside:avoid;margin-bottom:.9em;display:flex;gap:1em;align-items:flex-start;border-top:1.4px solid #000;padding-top:.5em"><div style="flex:1;min-height:9.5em"><div style="font-weight:700;display:flex;gap:.6em"><span>${TLL[i]})</span><span>${r.t.replace(' Berechne!','')} <span style="font-weight:400">Berechne!</span></span></div>${tlS(it)?`<div class="sv" style="margin-top:.8em">${r.a}</div>`:''}</div>${zrClock(r,tlS(it))}</div>`:r.zsa?(()=>{const sv=tlS(it),x0=30,w=36,red='#c0392b',X=k=>x0+k*w;let g='';
   for(let k=0;k<=10;k++){const big=k===0||k===10||(r.mid&&k===5);g+=`<path d="M${X(k)} ${big?30:34}v${big?24:16}" stroke="#000" stroke-width="${big?2:1.5}"/>`;if(big)g+=`<text x="${X(k)}" y="76" text-anchor="middle" font-size="17" font-family="inherit">${tfm(r.S+k*r.d)}</text>`;}
   r.pts.forEach(p=>{g+=`<path d="M${X(p.k)} 29v-14M${X(p.k)} 29l-4-6M${X(p.k)} 29l4-6" stroke="#000" stroke-width="2" fill="none"/><text x="${X(p.k)}" y="11" text-anchor="middle" font-size="17" font-weight="700" font-family="inherit">${p.l}</text>`;});
   const svg=`<svg viewBox="0 0 430 82" style="width:26em;max-width:96%;height:auto;display:block;overflow:visible;margin:.4em 0 .2em 1.2em" aria-hidden="true"><path d="M${x0-6} 54H416" stroke="#000" stroke-width="2" fill="none"/><path d="M416 54l-10-5v10z" fill="#000"/>${g}</svg>`;
