@@ -3424,6 +3424,72 @@ zrTH.as=(()=>{const R=kri,T=tfm;const W=[
  const CK={l:2,f:()=>{const NN=Math.min(+window.KKN||5,7),idx=tshuf([0,1,2,3,4,5,6]).slice(0,NN);let ok;do{ok=idx.map(()=>Math.random()<.45);}while(!(ok.filter(Boolean).length>=1&&ok.filter(Boolean).length<=Math.min(3,NN-1)));
   return{t:'Kreuze die richtige(n) Aussage(n) an.',ck:idx.map((i,j)=>ST[i](ok[j]))};}};
  return W.concat([CK,CK]);})();
+/* ===== 4.0 Addition/Subtraktion: Denk- und Knobelaufgaben ===== */
+(function(){const R=kri,P=tpick,T=tfm,NAMES=['Max','Anna','Ben','Lisa','Paul','Sophie','Noah','Mia','Luca','Emma'];
+ const nm2=()=>tshuf(NAMES.slice()).slice(0,3);
+ const eq=(s)=>`<div style="text-align:center;margin:.45em 0">${s}</div>`;
+ const abc=(a,b,c)=>`<div>a) ${a}</div><div>b) ${b}</div>`+(c?`<div>c) ${c}</div>`:'');
+ const ex=[];
+ /* 1 Wer findet den Fehler */
+ ex.push({l:1,f:()=>{const c=P([100,200,300,400,500]),d=P([1,2,3,4]),B=c-d,nm=P(NAMES),add=Math.random()<.4;let A,w,rt,wrong,right;
+  if(add){A=R(200,900);wrong=A+c+d;right=A+c-d;w=`${T(A)} + ${T(B)} = ${T(A)} + ${T(c)} + ${d} = ${T(wrong)}`;rt=`${T(A)} + ${T(c)} − ${d}`;}
+  else{A=R(c+100,c+600);wrong=A-c-d;right=A-c+d;w=`${T(A)} − ${T(B)} = ${T(A)} − ${T(c)} − ${d} = ${T(wrong)}`;rt=`${T(A)} − ${T(c)} + ${d}`;}
+  const why=add?`${T(B)} ist um ${d} kleiner als ${T(c)}. Man darf daher nur ${T(c)} addieren und muss ${d} wieder abziehen, nicht addieren.`:`${T(B)} ist um ${d} kleiner als ${T(c)}. Zieht man ${T(c)} ab, hat man ${d} zu viel abgezogen – diese ${d} muss man wieder dazuzählen.`;
+  return{t:`${nm} rechnet:${eq(w)}${abc(`Erkläre, was ${nm} falsch gemacht hat.`,'Berechne das richtige Ergebnis auf geschickte Weise.')}`,sp:4,a:`a) ${why}<br>b) ${rt} = ${T(right)}`};}});
+ /* 2 Wer hat richtig gerechnet */
+ ex.push({l:1,f:()=>{const c=P([100,200,300,400,500]),d=P([1,2,3,4]),B=c-d,X=R(c+100,c+600),nms=nm2();
+  const good=tshuf([[`${T(X)} − ${T(c)} + ${d}`,X-c+d],[`${T(X+d)} − ${T(c)}`,X+d-c],[`${T(X)} + ${d} − ${T(c)}`,X+d-c]]);
+  const bad=tshuf([[`${T(X)} − ${T(c)} − ${d}`,X-c-d],[`${T(X-d)} − ${T(c)}`,X-d-c],[`${T(X)} − ${d} − ${T(c)}`,X-d-c]]);
+  const k=R(1,2),L=tshuf(good.slice(0,k).map(x=>({e:x,ok:true})).concat(bad.slice(0,3-k).map(x=>({e:x,ok:false}))));
+  return{t:`Drei Kinder rechnen ${T(X)} − ${T(B)}. Kreuze die richtige(n) Aussage(n) an.`,ck:L.map((o,i)=>({s:`<b>${nms[i]}:</b> ${o.e[0]} = ${T(o.e[1])}`,ok:o.ok}))};}});
+ /* 3 Rechne besonders geschickt */
+ ex.push({l:2,f:()=>{const four=()=>{const N1=P([500,1000]),N2=P([500,1000]),x=R(110,N1-110),y=R(110,N2-110),L=tshuf([x,N1-x,y,N2-y]);return{L,s:`${L.map(T).join(' + ')}`,sol:`${T(x)} + ${T(N1-x)} + ${T(y)} + ${T(N2-y)} = ${T(N1)} + ${T(N2)} = ${T(N1+N2)}`};};
+  const a=four(),c=four(),M=P([600,1000]),x=R(101,M-101),y=M-x,A=R(M+300,M+1400),bl=tshuf([x,y]);
+  return{t:`Berechne ohne schriftliches Rechnen. Zeige, wie du die Zahlen geschickt zusammenfasst.<div style="margin-top:.4em">a) ${a.s}</div><div>b) ${T(A)} − ${bl.map(T).join(' − ')}</div><div>c) ${c.s}</div>`,sp:5,a:`a) ${a.sol}<br>b) ${T(A)} − (${T(x)} + ${T(y)}) = ${T(A)} − ${T(M)} = ${T(A-M)}<br>c) ${c.sol}`};}});
+ /* 4 Welche Rechnung passt */
+ ex.push({l:2,f:()=>{const A=R(500,990),B=R(100,A-300),C=R(50,Math.min(300,A-B-50)),S=B+C,NN=Math.min(+window.KKN||5,7);
+  const good=[`${T(A)} − (${T(B)} + ${T(C)})`,`${T(A)} − ${T(C)} − ${T(B)}`,`${T(A)} − ${T(S)}`],bad=[`${T(A)} − ${T(B)} + ${T(C)}`,`${T(A)} − (${T(B)} − ${T(C)})`,`${T(A)} + ${T(B)} − ${T(C)}`,`${T(A)} − ${T(B)} + ${T(C)} − ${T(C)} − ${T(C)}`,`(${T(A)} − ${T(B)}) + ${T(C)}`];
+  const bad2=bad.slice(0,3).concat([`${T(A)} − ${T(B+C+10)}`]);
+  const kg=R(1,Math.min(3,NN-1)),kb=NN-kg;if(kb>bad2.length)return null;
+  const L=tshuf(tshuf(good.slice()).slice(0,kg).map(s=>({s,ok:true})).concat(tshuf(bad2.slice()).slice(0,kb).map(s=>({s,ok:false}))));
+  return{t:`Gegeben ist ${T(A)} − ${T(B)} − ${T(C)}. Welche Rechnungen liefern dasselbe Ergebnis? Kreuze die richtige(n) Aussage(n) an.`,ck:L};}});
+ /* 5 Geheimnisvolle Zahl */
+ ex.push({l:2,f:()=>{const v=Math.random()<.5,a=R(10,50)*10,b=R(3,Math.max(4,a/10-1))*10;let x,r,t,s;
+  if(v){x=R(100,900);r=x+a-b;t=`Ich addiere ${T(a)}, subtrahiere anschließend ${T(b)} und erhalte ${T(r)}.`;s=`${T(r)} − ${T(a)} + ${T(b)} = ${T(x)}<br><b>Kurz:</b> Insgesamt wurden ${T(a-b)} addiert, also ${T(r)} − ${T(a-b)} = ${T(x)}.`;}
+  else{x=R(a+50,a+800);r=x-a+b;t=`Ich subtrahiere ${T(a)}, addiere anschließend ${T(b)} und erhalte ${T(r)}.`;s=`${T(r)} + ${T(a)} − ${T(b)} = ${T(x)}<br><b>Kurz:</b> Insgesamt wurden ${T(a-b)} subtrahiert, also ${T(r)} + ${T(a-b)} = ${T(x)}.`;}
+  return{t:`Ich denke mir eine natürliche Zahl. ${t} Welche Zahl habe ich mir gedacht?<div style="margin-top:.3em"><b>Zusatz:</b> Finde einen möglichst kurzen Rechenweg.</div>`,sp:3,a:s};}});
+ /* 6 Wahr oder falsch (Tabelle) */
+ const TF=[(o,d)=>({s:`Wenn ich zu beiden Zahlen einer Addition ${d} dazuzähle, wird das Ergebnis um ${o?2*d:d} größer.`,ok:o,r:`Beide Zahlen werden um ${d} größer, die Summe also um ${2*d}.`}),
+  (o,d)=>({s:o?`Wenn ich bei einer Subtraktion von beiden Zahlen ${d} abziehe, bleibt das Ergebnis gleich.`:`Wenn ich bei einer Subtraktion von beiden Zahlen ${d} abziehe, wird das Ergebnis um ${d} kleiner.`,ok:o,r:'Der Unterschied der beiden Zahlen ändert sich nicht.'}),
+  (o,d)=>({s:`Wenn ich bei einer Subtraktion die zweite Zahl um ${d} erhöhe, wird das Ergebnis um ${d} ${o?'kleiner':'größer'}.`,ok:o,r:'Es wird mehr abgezogen, daher wird das Ergebnis kleiner.'}),
+  (o,d)=>({s:o?'Bei einer Addition darf ich die Zahlen beliebig vertauschen.':'Bei einer Subtraktion darf ich die Zahlen beliebig vertauschen.',ok:o,r:o?'Es gilt das Vertauschungsgesetz: a + b = b + a.':'Zum Beispiel ist 9 − 4 = 5, aber 4 − 9 geht in den natürlichen Zahlen nicht.'}),
+  (o,d)=>({s:o?`Wird ein Summand um ${d} größer und der andere um ${d} kleiner, bleibt die Summe gleich.`:`Wird ein Summand um ${d} größer und der andere um ${d} kleiner, wird die Summe um ${d} größer.`,ok:o,r:`Es wird gleich viel dazugegeben wie weggenommen.`}),
+  (o,d)=>({s:`Wenn ich bei einer Subtraktion die erste Zahl um ${d} erhöhe, wird das Ergebnis um ${o?d:2*d} größer.`,ok:o,r:`Das Ergebnis wird genau um ${d} größer.`}),
+  (o,d)=>({s:`Wenn ich bei einer Addition einen Summanden um ${d} verkleinere, ${o?`wird die Summe um ${d} kleiner`:'bleibt die Summe gleich'}.`,ok:o,r:`Die Summe wird um ${d} kleiner.`})];
+ ex.push({l:2,f:()=>{let L;do{L=tshuf(TF.slice()).slice(0,4).map(f=>f(Math.random()<.5,P([20,50,100,200])));}while(L.every(x=>x.ok)||L.every(x=>!x.ok));
+  return{tf:true,t:'Entscheide, ob die Behauptung wahr oder falsch ist, und begründe deine Antwort.',rows:L};}});
+ /* 7 Zahlenrätsel mit Kästchen */
+ ex.push({l:2,f:()=>{let best=null;for(let t=0;t<40;t++){const sc=P([10,100]),nums=tshuf([1,2,3,4,5,6,7,8,9]).slice(0,4).map(x=>x*sc);const S=nums.reduce((a,b)=>a+b,0),sols=[];
+   for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){const rest=nums.filter((_,k)=>k!==i&&k!==j);sols.push({p:[nums[i],nums[j]].sort((a,b)=>b-a),q:rest.sort((a,b)=>b-a)});}
+   const pick=P(sols),T0=pick.p[0]+pick.p[1]-pick.q[0]-pick.q[1],all=sols.filter(s=>s.p[0]+s.p[1]-s.q[0]-s.q[1]===T0);
+   if(T0>0&&(!best||all.length>best.all.length))best={nums:nums.slice().sort((a,b)=>a-b),T0,all};if(best&&best.all.length>=2)break;}
+  const nm=best.nums;return{bx:true,t:`Setze die Zahlen ${nm.slice(0,-1).map(T).join(', ')} und ${T(nm[3])} jeweils genau einmal ein.`,T0:T(best.T0),note:'Finde alle Möglichkeiten. Wenn du nur die beiden Zahlen vor dem Minuszeichen vertauschst, zählt das nicht als neue Möglichkeit. Dasselbe gilt für die beiden Zahlen, die abgezogen werden.',sol:best.all.map(s=>`${T(s.p[0])} + ${T(s.p[1])} − ${T(s.q[0])} − ${T(s.q[1])} = ${T(best.T0)}`)};}});
+ /* 8 Besonders schlauer Rechenweg */
+ ex.push({l:3,f:()=>{const m=P([50,100,200,300]),C=R(200,600),B=C+m,A=R(m+400,2000),nm=P(NAMES);
+  return{t:`${nm} soll rechnen:${eq(`${T(A)} − ${T(B)} + ${T(C)}`)}${nm} behauptet: „Ich muss gar nicht alle Zahlen einzeln ausrechnen. Ich sehe das Ergebnis sofort!“${abc('Welchen Rechenweg könnte '+nm+' verwenden?','Erkläre, warum dieser Weg besonders geschickt ist.')}`,sp:4,a:`a) − ${T(B)} + ${T(C)} = − ${T(m)}, also ${T(A)} − ${T(m)} = ${T(A-m)}<br>b) ${T(B)} ist um ${T(m)} größer als ${T(C)}. Was man abzieht, wird zum Teil wieder dazugezählt – es bleibt nur der Unterschied ${T(m)}.`};}});
+ /* 9 Fehler beim Umformen */
+ ex.push({l:2,f:()=>{const nm=P(NAMES),A=R(500,990),B=R(100,400),C=R(50,Math.min(300,A-B-50)),S=B+C,wr=A-S,rt=A-B+C,lhs=`${T(A)} − ${T(B)} + ${T(C)}`,pad=`<span style="visibility:hidden">${lhs} </span>`;
+  return{t:`${nm} rechnet:<div style="margin:.45em 0 .45em 1.5em;line-height:1.55"><div>${lhs} = ${T(A)} − (${T(B)} + ${T(C)})</div><div>${pad}= ${T(A)} − ${T(S)}</div><div>${pad}= ${T(wr)}</div></div>${abc('Finde den Fehler.','Berechne das richtige Ergebnis.','Erkläre mit eigenen Worten, warum '+nm+'s Rechenweg nicht funktioniert.')}`,sp:5,a:`a) Beim Auflösen der Klammer wurde ${T(C)} falsch behandelt: Die Klammer in „${T(A)} − (${T(B)} + ${T(C)})“ bedeutet, dass ${T(C)} abgezogen wird.<br>b) ${lhs} = ${T(A-B)} + ${T(C)} = ${T(rt)}<br>c) Es soll ${T(C)} addiert werden, aber nach der Klammer wird ${T(C)} mit abgezogen.`};}});
+ /* 10 Knobelaufgabe */
+ ex.push({l:3,f:()=>{const half=R(150,900),S=2*half,d=P([50,100,150,200]);if(d>=half)return null;
+  return{t:`Zwei natürliche Zahlen ergeben zusammen ${T(S)}.<div style="margin-top:.3em">Wenn man die größere Zahl um ${d} verkleinert und die kleinere Zahl um ${d} vergrößert, sind beide Zahlen gleich groß.</div><div style="margin-top:.3em"><b>Welche beiden Zahlen sind gesucht?</b> Erkläre deinen Lösungsweg.</div>`,sp:4,a:`Beide Zahlen sind danach gleich groß: ${T(S)} : 2 = ${T(half)}.<br>Größere Zahl: ${T(half)} + ${d} = ${T(half+d)}, kleinere Zahl: ${T(half)} − ${d} = ${T(half-d)}.<br>Probe: ${T(half+d)} + ${T(half-d)} = ${T(S)}`};}});
+ /* 11 Zusatzaufgabe */
+ ex.push({l:3,f:()=>{const d=P([100,200,300,500]),sub=Math.random()<.65;
+  return sub?{t:`Eine Schülerin behauptet:<div style="margin:.3em 0">„Wenn ich bei einer Subtraktion die erste Zahl um ${d} erhöhe und die zweite Zahl ebenfalls um ${d} erhöhe, bleibt das Ergebnis gleich.“</div>${abc('Überprüfe die Behauptung mit zwei selbst gewählten Beispielen.','Erkläre, warum die Behauptung stimmt.',`Was passiert, wenn du nur die zweite Zahl um ${d} erhöhst?`)}`,sp:6,a:`a) z. B. 80 − 30 = 50 und ${T(80+d)} − ${T(30+d)} = 50<br>b) Der Unterschied (Abstand) der beiden Zahlen bleibt gleich.<br>c) Es wird um ${d} mehr abgezogen, das Ergebnis wird um ${d} kleiner.`}
+   :{t:`Eine Schülerin behauptet:<div style="margin:.3em 0">„Wenn ich bei einer Addition den ersten Summanden um ${d} erhöhe und den zweiten Summanden um ${d} verkleinere, bleibt das Ergebnis gleich.“</div>${abc('Überprüfe die Behauptung mit zwei selbst gewählten Beispielen.','Erkläre, warum die Behauptung stimmt.',`Was passiert, wenn du nur den ersten Summanden um ${d} erhöhst?`)}`,sp:6,a:`a) z. B. 400 + 500 = 900 und ${T(400+d)} + ${T(500-d)} = 900<br>b) Was beim einen Summanden dazukommt, wird beim anderen weggenommen.<br>c) Die Summe wird um ${d} größer.`};}});
+ zrTH.as3=ex.map(e=>({l:e.l,f:()=>{let r=null,g=0;while(!r&&g++<50)r=e.f();return r||e.f();}}));zrTH.as.push(...zrTH.as3);
+})();
+
 /* ===== 4.0 Rechnen: Fehler finden (schriftlich Multiplizieren und Dividieren) ===== */
 (function(){const R=kri,P=tpick,T=tfm,COL=['Einer','Zehner','Hunderter','Tausender','Zehntausender','Hunderttausender'],NAMES=['Lena','Jonas','Mia','Ben','Sara','Luca','Emma','Tim','Nina','Paul'];
  const dg=n=>String(n).split('').reverse().map(Number),num=a=>a.slice().reverse().join('').replace(/^0+(?=\d)/,'');
@@ -4811,6 +4877,11 @@ function fwHtml2(it,r){const sv=tlS(it),w=r.w,K=w.K,cell=(c,st)=>`<span style="d
  const ln=t=>`<div style="border-bottom:1.2px solid #555;min-height:1.7em;line-height:1.7em">${sv&&t?`<span class="sv">${t}</span>`:''}</div>`;
  return `<div style="break-inside:avoid;margin-bottom:1em;display:flex;gap:1.6em;align-items:flex-start"><div style="flex:none;border:1.4px solid #999;border-radius:6px;padding:.5em .7em;background:#fcfcfc">${calc}</div><div style="flex:1;min-width:0"><div>${r.t}</div><div style="margin-top:.3em">${ln(r.ans)}${ln('')}<div style="display:flex;gap:.5em;align-items:flex-end;margin-top:.2em"><span>Richtig:</span><span style="flex:1;border-bottom:1.2px solid #555;min-height:1.7em;line-height:1.7em">${sv?`<span class="sv">${r.right}</span>`:''}</span></div></div></div></div>`;}
 
+function tfHtml(it,r){const sv=tlS(it),bx=(on)=>`<span style="display:inline-block;width:1.1em;height:1.1em;border:1.6px solid #000;position:relative;vertical-align:middle">${sv&&on?'<span class="sv" style="position:absolute;left:.12em;top:-.3em;font-size:1.15em;line-height:1">✓</span>':''}</span>`;
+ return `<div style="break-inside:avoid;margin-bottom:.9em"><div>${r.t}</div><table style="border-collapse:collapse;width:100%;margin-top:.4em"><tr><th style="text-align:left;border-bottom:1.6px solid #000;padding:.2em">Behauptung</th><th style="border-bottom:1.6px solid #000;width:4em">Wahr</th><th style="border-bottom:1.6px solid #000;width:4em">Falsch</th></tr>${r.rows.map(x=>`<tr><td style="padding:.35em .2em;border-bottom:1px solid #bbb">${x.s}<div style="min-height:1.5em;line-height:1.5em;border-bottom:1px dotted #888;margin-top:.15em">${sv?`<span class="sv" style="font-size:.9em">${x.r}</span>`:''}</div></td><td style="text-align:center;border-bottom:1px solid #bbb">${bx(x.ok)}</td><td style="text-align:center;border-bottom:1px solid #bbb">${bx(!x.ok)}</td></tr>`).join('')}</table></div>`;}
+function bxHtml(it,r){const sv=tlS(it),b=()=>`<span style="display:inline-block;width:2.6em;height:1.9em;border:1.4px solid #000;vertical-align:middle"></span>`,sg=(c)=>`<span style="margin:0 .45em">${c}</span>`;
+ return `<div style="break-inside:avoid;margin-bottom:.9em"><div>${r.t}</div><div style="text-align:center;margin:.6em 0">${b()}${sg('+')}${b()}${sg('−')}${b()}${sg('−')}${b()}${sg('=')}${r.T0}</div><div>${r.note}</div>${sv?`<div class="sv" style="margin-top:.4em">${r.sol.join('<br>')}</div>`:''}</div>`;}
+
 /* Darstellung: schriftliche Rechnung mit Fehler */
 function fwHtml(it,r){const sv=tlS(it),w=r.w,K=Math.max(w.a.length,w.b.length,w.res.length)+1,fs='font-size:1.15em;font-variant-numeric:tabular-nums';
  const cell=(c,st)=>`<span style="display:inline-block;width:1.3em;text-align:center;${st||''}">${c===''?'&nbsp;':c}</span>`;
@@ -4824,7 +4895,7 @@ function fwHtml(it,r){const sv=tlS(it),w=r.w,K=Math.max(w.a.length,w.b.length,w.
  return `<div style="break-inside:avoid;margin-bottom:1em;display:flex;gap:1.6em;align-items:flex-start"><div style="flex:none;border:1.4px solid #999;border-radius:6px;padding:.5em .7em;background:#fcfcfc">${calc}</div><div style="flex:1;min-width:0"><div>${r.t}</div><div style="margin-top:.3em">${ln(r.ans)}${ln('')}<div style="display:flex;gap:.5em;align-items:flex-end;margin-top:.2em"><span>Richtig:</span><span style="flex:1;border-bottom:1.2px solid #555;min-height:1.7em;line-height:1.7em">${sv?`<span class="sv">${r.right}</span>`:''}</span></div></div></div></div>`;}
 
 function zrBlock(it){const s=tlS(it),n=(it.d||[]).length;if(it.th==='-')return `<div class="tlx" style="${kst(it)}"><div style="border:1.4px dashed #999;border-radius:6px;padding:.8em 1em;color:#777;font-style:italic">4.0-Aufgabe zum Thema „${(CATS[it.oc]||'').replace('Vergleichen','Vergleichen')}“ – Beispiele folgen. (Mit „Manueller Modus“ kann hier selbst eine Aufgabe geschrieben werden.)</div></div>`;
- const h=(it.d||[]).map((r,i)=>zrSt(it,r.fw?(r.w&&r.w.rows?fwHtml2(it,r):fwHtml(it,r)):r.clk?`<div style="break-inside:avoid;margin-bottom:.9em;display:flex;gap:1em;align-items:flex-start;border-top:1.4px solid #000;padding-top:.5em"><div style="flex:1;min-height:9.5em"><div style="font-weight:700;display:flex;gap:.6em"><span>${TLL[i]})</span><span>${r.t.replace(' Berechne!','')} <span style="font-weight:400">Berechne!</span></span></div>${tlS(it)?`<div class="sv" style="margin-top:.8em">${r.a}</div>`:''}</div>${zrClock(r,tlS(it))}</div>`:r.zsa?(()=>{const sv=tlS(it),x0=30,w=36,red='#c0392b',X=k=>x0+k*w;let g='';
+ const h=(it.d||[]).map((r,i)=>zrSt(it,r.tf?tfHtml(it,r):r.bx?bxHtml(it,r):r.fw?(r.w&&r.w.rows?fwHtml2(it,r):fwHtml(it,r)):r.clk?`<div style="break-inside:avoid;margin-bottom:.9em;display:flex;gap:1em;align-items:flex-start;border-top:1.4px solid #000;padding-top:.5em"><div style="flex:1;min-height:9.5em"><div style="font-weight:700;display:flex;gap:.6em"><span>${TLL[i]})</span><span>${r.t.replace(' Berechne!','')} <span style="font-weight:400">Berechne!</span></span></div>${tlS(it)?`<div class="sv" style="margin-top:.8em">${r.a}</div>`:''}</div>${zrClock(r,tlS(it))}</div>`:r.zsa?(()=>{const sv=tlS(it),x0=30,w=36,red='#c0392b',X=k=>x0+k*w;let g='';
   for(let k=0;k<=10;k++){const big=k===0||k===10||(r.mid&&k===5);g+=`<path d="M${X(k)} ${big?30:34}v${big?24:16}" stroke="#000" stroke-width="${big?2:1.5}"/>`;if(big)g+=`<text x="${X(k)}" y="76" text-anchor="middle" font-size="17" font-family="inherit">${tfm(r.S+k*r.d)}</text>`;}
   r.pts.forEach(p=>{g+=`<path d="M${X(p.k)} 29v-14M${X(p.k)} 29l-4-6M${X(p.k)} 29l4-6" stroke="#000" stroke-width="2" fill="none"/><text x="${X(p.k)}" y="11" text-anchor="middle" font-size="17" font-weight="700" font-family="inherit">${p.l}</text>`;});
   const svg=`<svg viewBox="0 0 430 82" style="width:26em;max-width:96%;height:auto;display:block;overflow:visible;margin:.4em 0 .2em 1.2em" aria-hidden="true"><path d="M${x0-6} 54H416" stroke="#000" stroke-width="2" fill="none"/><path d="M416 54l-10-5v10z" fill="#000"/>${g}</svg>`;
