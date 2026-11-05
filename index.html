@@ -5910,7 +5910,7 @@ function zsBlock(l){
  const n=Math.round((b-a)/s);
  if(n<1||n>200)return bad('Zu viele oder zu wenige Teilstriche (1 bis 200).');
  const cm=lc/n,d=Math.max(zsDec(a),zsDec(s),zsDec(b)),len=n*cm*10,mL=8,mR=12,W=mL+len+mR,HH=34,y=12;
- let g=`<line x1="${mL-4}" y1="${y}" x2="${mL+len+8}" y2="${y}" stroke="#111" stroke-width=".4"/>`;
+ let g=`<line x1="${a>=0?mL:mL-4}" y1="${y}" x2="${mL+len+8}" y2="${y}" stroke="#111" stroke-width=".4"/>`;
  g+=`<path d="M${mL+len+9} ${y} l-3 -1.4 M${mL+len+9} ${y} l-3 1.4" stroke="#111" stroke-width=".4" fill="none"/>`;
  const every=l.lab==='all'?1:l.lab==='five'?5:l.lab==='ends'?n:0;
  for(let k=0;k<=n;k++){
