@@ -5091,7 +5091,7 @@ function ckBuild(P,size){
  try{
   const g=id=>{const e=document.getElementById(id);return e&&e.checked;},set=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v){e.checked=v;e.dispatchEvent(new Event('change'));}};
   $('#ft').value=$('#ck-ft')?$('#ck-ft').value:'0';set('hn',g('ck-nd'));set('hdt',g('ck-nd'));set('hu',g('ck-un'));set('rahm',false);
-  const o={pts:g('ck-pts'),fb:true,un:g('ck-un'),rh:false,fs:+$('#ck-sz').value,nmax:size==='wenig'?2:size==='viel'?4:3,top:g('ck-nd')?72:14};
+  const o={pts:g('ck-pts'),fb:true,un:g('ck-un'),rh:false,fs:+$('#ck-sz').value,nmax:size==='wenig'?2:size==='viel'?4:3,top:g('ck-nd')?50:14};
   window.CKO={o:Object.assign({},o),size};
   const f0=size==='wenig'?.7:size==='viel'?1.3:1;let ok=false;
   const c0=o.fs;for(const [m,c] of [[1,c0],[.85,c0]]){res=ckPass(P,f0*m,o,Math.min(c0,c));if(!res.fail){ok=true;break;}}
@@ -5106,6 +5106,7 @@ function renumberCk(){ckFrames().forEach((f,k)=>{const n=items.find(i=>i.id===f.
 function ckReflow(){const fs=ckFrames();if(!fs.length)return;const C=window.CKO,BM=(C&&C.o&&C.o.un?78:36);let cur=window.CKY0!=null?Math.min(window.CKY0,fs[0].y):fs[0].y;
  fs.forEach(f=>{const n=items.find(i=>i.id===f.fa.num);if(!n)return;const mem=items.filter(i=>i.gid===n.gid&&i.type!=='ckf'&&i.type!=='frm'),y0=f.y,h=f.h;let top=cur;const pg=Math.floor(top/PH),lim=(pg+1)*PH-BM;
   if(top+h>lim&&h<PH-BM-TOPM)top=(pg+1)*PH+TOPM;const d=Math.round(top-y0);if(d)mem.forEach(i=>{i.y=Math.round(i.y+d);});f.y=top;cur=top+h+12;});}
+function ckShiftAll(d){const mv=items.filter(i=>i.type!=='frm'&&typeof i.y==='number');if(!mv.length)return;const mn=Math.min(...mv.map(i=>i.y));d=Math.max(d,-mn);if(!d)return;rec();mv.forEach(i=>{i.y=Math.round(i.y+d);});if(window.CKY0!=null)window.CKY0+=d;render();const t=items.find(i=>i.id===sel);if(t)select(t.id);}
 function ckOfGid(gid){return ckFrames().find(f=>{const n=items.find(i=>i.id===f.fa.num);return n&&n.gid===gid;});}
 function ckAppend(lz,tp){
  const fs=ckFrames();if(!fs.length)return{ok:false,fail:true};
@@ -5122,7 +5123,8 @@ function ckAppend(lz,tp){
   try{gDel0(it);items=items.filter(i=>!(i.type==='ckf'&&i.id===f.id));
    renumberCk();ckReflow();render();}finally{rec=R0;}};
  const ghBar0=ghBar;ghBar=function(){ghBar0();const gh=sheet.querySelector('.ghf'),it=items.find(i=>i.id===sel);if(!gh||!it||!it.gid||!ckOfGid(it.gid))return;
-  const b=document.createElement('button');b.textContent='⇄ Lernziel ersetzen';b.title='Dieses ganze Lernziel (a, b, c …) durch ein neues ersetzen';b.onpointerdown=ev=>ev.stopPropagation();b.onclick=ev=>{ev.stopPropagation();ckOpen('replace',it.gid);};gh.appendChild(b);};
+  const b=document.createElement('button');b.textContent='⇄ Lernziel ersetzen';b.title='Dieses ganze Lernziel (a, b, c …) durch ein neues ersetzen';b.onpointerdown=ev=>ev.stopPropagation();b.onclick=ev=>{ev.stopPropagation();ckOpen('replace',it.gid);};gh.appendChild(b);
+  [['⇡ Check-up höher','Den ganzen Check-up (Überschrift und alle Tabellen) um 8 px nach oben schieben',-8],['⇣ Check-up tiefer','Den ganzen Check-up (Überschrift und alle Tabellen) um 8 px nach unten schieben',8]].forEach(([t,ti,d])=>{const c=document.createElement('button');c.textContent=t;c.title=ti;c.onpointerdown=ev=>ev.stopPropagation();c.onclick=ev=>{ev.stopPropagation();ckShiftAll(d);};gh.appendChild(c);});};
  const m=document.createElement('div');m.id='ckam';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:none;align-items:center;justify-content:center';document.body.appendChild(m);
  const opts=s=>AST.map(g=>`<optgroup label="${g[0]}">${g[1].map(x=>`<option value="${x[0]}"${x[0]===s?' selected':''}>${x[1]}</option>`).join('')}</optgroup>`).join('')+`<optgroup label="Sonstiges"><option value="frei"${s==='frei'?' selected':''}>Freie Aufgabe (selbst schreiben)</option></optgroup>`;
  let mode='add',rg=null;
