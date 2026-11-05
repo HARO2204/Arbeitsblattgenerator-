@@ -5045,14 +5045,14 @@ function ckAll(){const L=[];AST.forEach(g=>g[1].forEach(x=>L.push({k:x[0],n:x[1]
 function ckPass(P,f,o,cap0){
  const E=id=>sheet.querySelector('[data-id="'+id+'"]'),H=id=>{const e=E(id);return e?e.offsetHeight:0;},TB=id=>{const e=E(id),t=e&&e.querySelector('.tb');return t?t.offsetHeight:0;},HD=id=>{const e=E(id),t=e&&e.querySelector('.h');return t?t.offsetHeight:0;},last=()=>items[items.length-1];
  const BM=(o.un?78:36)+(o.rh?10:0),MAXY=o.multi?PH*8:PH-BM,cap=cap0||o.fs,pad=3,labW=46,pw=o.pts?66:0,cx=40+labW+10,cw=714-labW-pw-20,cwt=714-labW-20;
- items.length=0;uid=1;
- add('head',40,o.top);const hd=last();hd.text=P.title||'Check-up';hd.w=714;hd.mh=10;render();
- let end=o.top+HD(hd.id)+TB(hd.id)+12,made=0,fail=false,fl='';const hdr=0;
+ if(!o.append){items.length=0;uid=1;}
+ let hd=null;if(!o.append){add('head',40,o.top);hd=last();hd.text=P.title||'Check-up';hd.w=714;hd.mh=10;render();}
+ let end=o.append?o.gy:o.top+HD(hd.id)+TB(hd.id)+12,made=0,fail=false,fl='';const hdr=0;
  const meta=ckAll();
  for(let g=0;g<P.lz.length&&!fail;g++){
   const n0=items.length;let gTop=end;const fa={num:0,pad,b:[]};
   const tx=(x,y,t,w,fs,fb)=>{add('text',x,y);const e=last();e.text=t;e.w=w;e.mh=10;e.fs=fs;e.fb=!!fb;e.nh=true;e.y=y;render();return e;};
-  const num=tx(42,gTop+pad,(g+1)+'.',labW-4,cap>18?24:22,true),lz=tx(cx,gTop+pad,P.lz[g]||'',cw,cap>18?20:18,true);
+  const num=tx(42,gTop+pad,(g+1+(o.k0||0))+'.',labW-4,cap>18?24:22,true),lz=tx(cx,gTop+pad,P.lz[g]||'',cw,cap>18?20:18,true);
   const hh=pad*2+Math.max(TB(num.id),TB(lz.id),22);end=gTop+hh;const rowsY=[hh];fa.num=num.id;fa.b.push({ids:[num.id,lz.id],pad,min:pad*2+22});
   for(let j=0;j<P.tp[g].length;j++){
    const t=P.tp[g][j],m=meta.find(x=>x.k===t),rowTop=end,V0=rowTop+pad,hardest=j===P.tp[g].length-1;
@@ -5089,13 +5089,56 @@ function ckBuild(P,size){
   const g=id=>{const e=document.getElementById(id);return e&&e.checked;},set=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v){e.checked=v;e.dispatchEvent(new Event('change'));}};
   $('#ft').value=$('#ck-ft')?$('#ck-ft').value:'0';set('hn',g('ck-nd'));set('hdt',g('ck-nd'));set('hu',g('ck-un'));set('rahm',false);
   const o={pts:g('ck-pts'),fb:true,un:g('ck-un'),rh:false,fs:+$('#ck-sz').value,nmax:size==='wenig'?2:size==='viel'?4:3,top:g('ck-nd')?72:14};
+  window.CKO={o:Object.assign({},o),size};
   const f0=size==='wenig'?.7:size==='viel'?1.3:1;let ok=false;
   const c0=o.fs;for(const [m,c] of [[1,c0],[.85,c0]]){res=ckPass(P,f0*m,o,Math.min(c0,c));if(!res.fail){ok=true;break;}}
   if(!ok){res=ckPass(P,f0,Object.assign({},o,{multi:true}),c0);ok=!res.fail;}
-  res.ok=ok;sel=null;render();try{sync();renderProps();}catch(e){}
+  res.ok=ok;{const f1=items.find(i=>i.type==='ckf');window.CKY0=f1?f1.y:null;}sel=null;render();try{sync();renderProps();}catch(e){}
  }finally{rec=R0;RF=true;}
  return res;
 }
+/* ===== Check-up: Lernziele tauschen, löschen, anfügen, ersetzen (Nummern automatisch) ===== */
+function ckFrames(){return items.filter(i=>i.type==='ckf'&&i.fa).sort((a,b)=>a.y-b.y);}
+function renumberCk(){ckFrames().forEach((f,k)=>{const n=items.find(i=>i.id===f.fa.num);if(n)n.text=(k+1)+'.';});}
+function ckReflow(){const fs=ckFrames();if(!fs.length)return;const C=window.CKO,BM=(C&&C.o&&C.o.un?78:36);let cur=window.CKY0!=null?Math.min(window.CKY0,fs[0].y):fs[0].y;
+ fs.forEach(f=>{const n=items.find(i=>i.id===f.fa.num);if(!n)return;const mem=items.filter(i=>i.gid===n.gid&&i.type!=='ckf'&&i.type!=='frm'),y0=f.y,h=f.h;let top=cur;const pg=Math.floor(top/PH),lim=(pg+1)*PH-BM;
+  if(top+h>lim&&h<PH-BM-TOPM)top=(pg+1)*PH+TOPM;const d=Math.round(top-y0);if(d)mem.forEach(i=>{i.y=Math.round(i.y+d);});f.y=top;cur=top+h+12;});}
+function ckOfGid(gid){return ckFrames().find(f=>{const n=items.find(i=>i.id===f.fa.num);return n&&n.gid===gid;});}
+function ckAppend(lz,tp){
+ const fs=ckFrames();if(!fs.length)return{ok:false,fail:true};
+ const C=window.CKO||{o:{pts:fs[0].pw>0,fb:true,un:false,rh:false,fs:18,nmax:3,top:14},size:'normal'};
+ const o=Object.assign({},C.o,{append:true,multi:true,k0:fs.length,gy:Math.max(...fs.map(f=>f.y+f.h))+12});
+ const f0=C.size==='wenig'?.7:C.size==='viel'?1.3:1;
+ const R0=rec;R0();rec=()=>{};RF=false;let res;
+ try{res=ckPass({title:'',lz:[lz],tp:[tp]},f0,o,o.fs);renumberCk();render();try{sync();}catch(e){}}finally{rec=R0;RF=true;}
+ return res;}
+(function(){
+ const gSwap0=gSwap;gSwap=function(it,dir){const ck=!!ckOfGid(it.gid);gSwap0(it,dir);if(ck){renumberCk();ckReflow();render();}};
+ const gDel0=gDel;gDel=function(it){const f=ckOfGid(it.gid);if(!f){gDel0(it);return;}
+  const mem=gMem(it),bot=f.y+f.h,top=f.y,dh=f.h+12;rec();const R0=rec;rec=()=>{};
+  try{gDel0(it);items=items.filter(i=>!(i.type==='ckf'&&i.id===f.id));
+   renumberCk();ckReflow();render();}finally{rec=R0;}};
+ const ghBar0=ghBar;ghBar=function(){ghBar0();const gh=sheet.querySelector('.ghf'),it=items.find(i=>i.id===sel);if(!gh||!it||!it.gid||!ckOfGid(it.gid))return;
+  const b=document.createElement('button');b.textContent='⇄ Lernziel ersetzen';b.title='Dieses ganze Lernziel (a, b, c …) durch ein neues ersetzen';b.onpointerdown=ev=>ev.stopPropagation();b.onclick=ev=>{ev.stopPropagation();ckOpen('replace',it.gid);};gh.appendChild(b);};
+ const m=document.createElement('div');m.id='ckam';m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:none;align-items:center;justify-content:center';document.body.appendChild(m);
+ const opts=s=>AST.map(g=>`<optgroup label="${g[0]}">${g[1].map(x=>`<option value="${x[0]}"${x[0]===s?' selected':''}>${x[1]}</option>`).join('')}</optgroup>`).join('')+`<optgroup label="Sonstiges"><option value="frei"${s==='frei'?' selected':''}>Freie Aufgabe (selbst schreiben)</option></optgroup>`;
+ let mode='add',rg=null;
+ window.ckOpen=function(md,gid){mode=md;rg=gid;const fs=ckFrames(),ns=Math.max(3,Math.min(4,(fs[fs.length-1].fa.b.length-1)||3)),DT=['st','cmp','nb','rd','tdv','ttm','tgg','tkm'].filter(k=>ckAll().some(x=>x.k===k));
+  const nxt=md==='add'?fs.length+1:(fs.findIndex(f=>ckOfGid(gid)===f)+1);
+  let h=`<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;width:min(520px,94vw);max-height:90vh;overflow:auto;padding:18px 20px;box-shadow:0 8px 40px rgba(0,0,0,.35);font:14px system-ui,sans-serif"><div style="font-weight:700;font-size:17px;margin-bottom:10px">${md==='add'?'＋ Lernziel anfügen (Nr. '+nxt+')':'⇄ Lernziel '+nxt+' ersetzen'}</div><label style="display:block;margin-bottom:8px">Lernziel<input id="cka-l" type="text" placeholder="Ich kann …" value="Ich kann …" style="width:100%;box-sizing:border-box;font:inherit;padding:6px;margin-top:4px"></label>`;
+  for(let j=0;j<ns;j++){const last=j===ns-1;h+=`<label style="display:block;margin-bottom:6px">${'abcd'[j]})${last?' (schwerer)':''}<select class="cka-t" style="width:100%;font:inherit;padding:6px;margin-top:3px">${opts(last?'zr':DT[(fs.length*(ns-1)+j)%DT.length])}</select></label>`;}
+  h+=`<div id="cka-m" style="font-size:13px;min-height:1.2em;color:#555;margin:8px 0">Die Nummer ergibt sich automatisch aus der Reihenfolge.</div><div style="display:flex;gap:10px;justify-content:flex-end"><button id="cka-x" style="font:inherit;padding:8px 14px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer">Schließen</button><button id="cka-g" style="font:inherit;padding:8px 14px;border-radius:8px;border:1px solid #2f6fed;background:#2f6fed;color:#fff;cursor:pointer">${md==='add'?'Anfügen':'Ersetzen'}</button></div></div>`;
+  m.innerHTML=h;m.style.display='flex';
+  m.querySelector('#cka-x').onclick=()=>{m.style.display='none';};
+  m.querySelector('#cka-g').onclick=()=>{const lz=m.querySelector('#cka-l').value.trim()||'Ich kann …',tp=[...m.querySelectorAll('.cka-t')].map(s=>s.value);
+   const nOld=ckFrames().length,oldF=md==='replace'?ckOfGid(rg):null,oldIdx=oldF?ckFrames().indexOf(oldF):-1;
+   const r=ckAppend(lz,tp);if(r.fail){m.querySelector('#cka-m').textContent='Es ist kein Platz mehr (maximal 8 Seiten).';return;}
+   if(md==='replace'&&oldF){const nf=ckFrames().pop(),nid=items.find(i=>i.id===nf.fa.num).gid;
+    const R0=rec;rec=()=>{};try{for(let k=0;k<nOld-1-oldIdx;k++){const mem=items.find(i=>i.gid===nid&&i.type!=='ckf');gSwap(mem,-1);}
+     const om=items.find(i=>i.gid===rg&&i.type!=='ckf'&&i.type!=='frm');if(om)gDel(om);}finally{rec=R0;}}
+   m.querySelector('#cka-m').textContent=md==='add'?'Angefügt. Du kannst gleich das nächste anfügen.':'Ersetzt.';if(md==='replace')setTimeout(()=>{m.style.display='none';},500);};};
+ const qa=document.getElementById('qadd'),old=qa.onclick;qa.onclick=function(){if(ckFrames().length)ckOpen('add');else old&&old.call(this);};
+})();
 /* ===== Stellenwerttabelle ===== */
 const SWC=[['B','Billionen'],['HMd','Hundertmilliarden'],['ZMd','Zehnmilliarden'],['Md','Milliarden'],['HM','Hundertmillionen'],['ZM','Zehnmillionen'],['M','Millionen'],['HT','Hunderttausender'],['ZT','Zehntausender'],['T','Tausender'],['H','Hunderter'],['Z','Zehner'],['E','Einer']];
 const SWD=[['z','Zehntel'],['h','Hundertstel'],['t','Tausendstel'],['zt','Zehntausendstel'],['ht','Hunderttausendstel'],['m','Millionstel']];
