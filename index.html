@@ -3753,7 +3753,7 @@ function pnTxt(x,y,t,col,an,fs){return `<text x="${x.toFixed(2)}" y="${y.toFixed
 function pnLine(a,b,col,w,dash){return `<path d="M${a[0].toFixed(2)} ${a[1].toFixed(2)}L${b[0].toFixed(2)} ${b[1].toFixed(2)}" stroke="${col||'#000'}" stroke-width="${w||.45}" fill="none"${dash?` stroke-dasharray="${dash}"`:''} stroke-linecap="round"/>`;}
 function pnCross(p,col){const r=1.6;return pnLine([p[0]-r,p[1]-r],[p[0]+r,p[1]+r],col,.45)+pnLine([p[0]-r,p[1]+r],[p[0]+r,p[1]-r],col,.45);}
 function pnRA(F,u,v,col,s){s=s||3;const a=[F[0]+u[0]*s,F[1]+u[1]*s],c=[F[0]+v[0]*s,F[1]+v[1]*s],b=[a[0]+v[0]*s,a[1]+v[1]*s];return `<path d="M${a[0].toFixed(2)} ${a[1].toFixed(2)}L${b[0].toFixed(2)} ${b[1].toFixed(2)}L${c[0].toFixed(2)} ${c[1].toFixed(2)}" stroke="${col}" stroke-width=".4" fill="none"/><circle cx="${((a[0]+c[0])/2+ (F[0]-(a[0]+c[0])/2)*.0).toFixed(2)}" cy="${((a[1]+c[1])/2).toFixed(2)}" r="0" fill="${col}"/>`;}
-const pnSvg=(W,H,g,extra)=>{const q=7,px=(q*MMPX).toFixed(1);const sv=(st)=>`<svg width="${((W+2*q)*MMPX).toFixed(1)}" height="${((H+2*q)*MMPX).toFixed(1)}" viewBox="${-q} ${-q} ${W+2*q} ${H+2*q}" style="${st}" font-family="inherit">${g}</svg>`;
+const pnSvg=(W,H,g,extra)=>{const q=7,px=(q*MMPX).toFixed(1);const sv=(st)=>`<svg width="${((W+2*q)*MMPX).toFixed(1)}" height="${((H+2*q)*MMPX).toFixed(1)}" viewBox="0 0 ${W+2*q} ${H+2*q}" style="${st}" font-family="inherit"><g transform="translate(${q} ${q})">${g}</g></svg>`;
  if(extra)return sv(`display:block;width:${((W+2*q)*MMPX).toFixed(1)}px;height:${((H+2*q)*MMPX).toFixed(1)}px;max-width:none;overflow:visible;margin:-${px}px${extra}`);
  /* ohne negative Ränder (html2canvas/PDF): Hülle mit Figurengröße, Zeichnung absolut um den Rand versetzt */
  return `<div style="position:relative;display:block;width:${(W*MMPX).toFixed(1)}px;height:${(H*MMPX).toFixed(1)}px;max-width:none">${sv(`position:absolute;left:-${px}px;top:-${px}px;display:block;width:${((W+2*q)*MMPX).toFixed(1)}px;height:${((H+2*q)*MMPX).toFixed(1)}px;max-width:none;overflow:visible`)}</div>`;};
@@ -6215,7 +6215,7 @@ function spOne(o){
  const nm=i=>pts[i].n;let lines=[],text=[],meas=null;
  if(mode==='str'){text=[`Zeichne vom Punkt ${nm(0)} aus Strahlen durch die Punkte ${nm(1)}, ${nm(2)} und ${nm(3)}.`];lines=[1,2,3].map(k=>({k:'ray',a:0,b:k}));}
  else if(mode==='ger'){text=[`Zeichne eine Gerade g<sub>1</sub> durch die Punkte ${nm(0)} und ${nm(1)} und eine Gerade g<sub>2</sub> durch die Punkte ${nm(2)} und ${nm(3)}.`];lines=[{k:'line',a:0,b:1,n:'g₁'},{k:'line',a:2,b:3,n:'g₂'}];}
- else{const ids=shuf([0,1,2,3]);const g=[ids[0],ids[1]],h=[ids[2],ids[0]],s=shuf([0,1,2,3]).slice(0,2);
+ else{const ids=shuf([0,1,2,3]);const g=[ids[0],ids[1]],h=[ids[2],ids[0]];let s=shuf([0,1,2,3]).slice(0,2);const sm=(a,b)=>a.includes(b[0])&&a.includes(b[1]);while(sm(s,g)||sm(s,h))s=shuf([0,1,2,3]).slice(0,2);
   text=['Zeichne:',`a) eine Gerade g (${nm(g[0])}${nm(g[1])})`,`b) einen Strahl h (${nm(h[0])}${nm(h[1])})`,`c) eine Strecke ${nm(s[0])}${nm(s[1])}. Miss die Länge der Strecke ${nm(s[0])}${nm(s[1])} ab!`];
   lines=[{k:'line',a:g[0],b:g[1],n:'g'},{k:'ray',a:h[0],b:h[1],n:'h'},{k:'seg',a:s[0],b:s[1]}];const dd=dist(pts[s[0]],pts[s[1]]),vv=Math.round(dd),A0=pts[s[0]],B0=pts[s[1]];if(dd>0&&vv!==dd){B0.x=+(A0.x+(B0.x-A0.x)*vv/dd).toFixed(2);B0.y=+(A0.y+(B0.y-A0.y)*vv/dd).toFixed(2);}meas={name:nm(s[0])+nm(s[1]),v:vv};}
  return{pts,lines,text,meas,W,H};
