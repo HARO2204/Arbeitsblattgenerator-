@@ -5249,6 +5249,42 @@ function planBuild(key,o){
   sel=null;render();try{sync();renderProps();}catch(e){}
  }finally{rec=R0;RF=true;}
  return res;}
+/* ===== Erklaervideo-QR ===== */
+(function(){
+ const KEY='vqVideos',DEF=[{t:'Strecke, Strahl, Gerade',u:'https://www.youtube.com/watch?v=DY3f-EaIIps'},{t:'Parallele, Normale, Normalabstand',u:'https://www.youtube.com/watch?v=WPlv2Nuj7HM'}];
+ const ld=()=>{try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(Array.isArray(v))return v;}catch(e){}return DEF.slice();};
+ const sv=a=>{try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}};
+ const m=document.createElement('div');m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:none;align-items:center;justify-content:center';
+ m.innerHTML='<div style="background:var(--panel,#fff);color:var(--ink,#111);border-radius:12px;width:min(480px,92vw);padding:18px 20px;box-shadow:0 8px 40px rgba(0,0,0,.35);font:14px system-ui,sans-serif"><div style="font-weight:700;font-size:17px;margin-bottom:10px">🎬 Erklärvideo als QR-Code aufs Blatt</div>'
+ +'<label style="display:block;margin-bottom:8px">Meine Videos<select id="vq-s" style="width:100%;margin-top:3px"></select></label>'
+ +'<label style="display:block;margin-bottom:8px">Link zum Video<input type="text" id="vq-u" placeholder="https://www.youtube.com/watch?v=…" style="width:100%;margin-top:3px;box-sizing:border-box"></label>'
+ +'<label style="display:block;margin-bottom:8px">Beschriftung<input type="text" id="vq-t" placeholder="z. B. Strecke, Strahl, Gerade" style="width:100%;margin-top:3px;box-sizing:border-box"></label>'
+ +'<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px"><label>Größe <select id="vq-z"><option value="80">klein</option><option value="100" selected>normal</option><option value="130">groß</option></select></label><label><input type="checkbox" id="vq-l" checked> Link als Text dazu</label><label><input type="checkbox" id="vq-v" checked> in „Meine Videos“ merken</label></div>'
+ +'<div style="font-size:12px;color:#777;margin-bottom:8px">Der QR-Code kommt unter den bisherigen Inhalt. Du kannst ihn danach frei verschieben.</div><div style="display:flex;gap:8px;justify-content:flex-end;align-items:center"><span id="vq-m" style="flex:1;font-size:12px;color:#2a7"></span><button id="vq-x">Schließen</button><button id="vq-del" title="Gewähltes Video aus der Liste entfernen">Aus Liste löschen</button><button id="vq-g" style="background:#2563eb;color:#fff;border:0;border-radius:8px;padding:6px 14px">QR-Code einfügen</button></div></div>';
+ document.body.appendChild(m);const $q=s=>m.querySelector(s);
+ const fill=()=>{const a=ld();$q('#vq-s').innerHTML='<option value="">– neues Video –</option>'+a.map((v,i)=>'<option value="'+i+'">'+v.t.replace(/</g,'&lt;')+'</option>').join('');};
+ $q('#vq-s').onchange=()=>{const v=ld()[+$q('#vq-s').value];if(v){$q('#vq-u').value=v.u;$q('#vq-t').value=v.t;}};
+ $q('#vq-x').onclick=()=>{m.style.display='none';};m.addEventListener('click',e=>{if(e.target===m)m.style.display='none';});
+ $q('#vq-del').onclick=()=>{const i=$q('#vq-s').value;if(i==='')return;const a=ld();a.splice(+i,1);sv(a);fill();$q('#vq-u').value='';$q('#vq-t').value='';};
+ window.vqAdd=(url,cap,z,withLink,x0)=>{
+  const R0=rec;R0();rec=()=>{};RF=false;let ok=false;
+  try{
+   const shR=sheet.getBoundingClientRect();let yb=0;sheet.querySelectorAll('.item').forEach(e=>{yb=Math.max(yb,e.getBoundingClientRect().bottom-shR.top);});
+   z=+z||100;const y=items.length?yb+16:30;
+   const dk=dkNew('qr|'+url);dk.w=z;addX(dk,x0||40,y);
+   add('text',40,y);const t=items[items.length-1];t.x=(x0||40)+z+14;t.y=y+Math.max(4,z/2-34);t.w=Math.min(520,714-z-14);t.fs=15;t.nh=1;
+   t.html='<b>🎬 Erklärvideo'+(cap?': '+cap.replace(/</g,'&lt;'):'')+'</b><br>QR-Code mit dem iPad scannen'+(withLink?'<br><span style="font-size:.85em">'+url.replace(/</g,'&lt;')+'</span>':'');t.text='Erklärvideo';
+   sel=null;render();ok=true;
+  }finally{rec=R0;RF=true;}
+  try{sync();}catch(e){}return ok;};
+ $q('#vq-g').onclick=()=>{const u=$q('#vq-u').value.trim();if(!/^https?:\/\/\S+$/.test(u)){$q('#vq-m').style.color='#c0392b';$q('#vq-m').textContent='Bitte einen Link eintragen (beginnt mit https://).';return;}
+  const cap=$q('#vq-t').value.trim();window.vqAdd(u,cap,$q('#vq-z').value,$q('#vq-l').checked);
+  if($q('#vq-v').checked){const a=ld();if(!a.some(v=>v.u===u)){a.push({t:cap||u,u});sv(a);fill();}}
+  $q('#vq-m').style.color='#2a7';$q('#vq-m').textContent=PGN>1?'Eingefügt. Achtung: Das Blatt hat jetzt '+PGN+' Seiten.':'Eingefügt.';};
+ const bt=document.createElement('button');bt.id='vqb';bt.title='Eigenes Erklärvideo als QR-Code aufs Blatt setzen';bt.textContent='🎬 Video-QR';
+ document.getElementById('qadd').insertAdjacentElement('afterend',bt);
+ bt.onclick=()=>{fill();$q('#vq-m').textContent='';m.style.display='flex';};
+})();
 /* ===== Stellenwerttabelle ===== */
 const SWC=[['B','Billionen'],['HMd','Hundertmilliarden'],['ZMd','Zehnmilliarden'],['Md','Milliarden'],['HM','Hundertmillionen'],['ZM','Zehnmillionen'],['M','Millionen'],['HT','Hunderttausender'],['ZT','Zehntausender'],['T','Tausender'],['H','Hunderter'],['Z','Zehner'],['E','Einer']];
 const SWD=[['z','Zehntel'],['h','Hundertstel'],['t','Tausendstel'],['zt','Zehntausendstel'],['ht','Hunderttausendstel'],['m','Millionstel']];
