@@ -3755,8 +3755,8 @@ function pnCross(p,col){const r=1.6;return pnLine([p[0]-r,p[1]-r],[p[0]+r,p[1]+r
 function pnRA(F,u,v,col,s){s=s||3;const a=[F[0]+u[0]*s,F[1]+u[1]*s],c=[F[0]+v[0]*s,F[1]+v[1]*s],b=[a[0]+v[0]*s,a[1]+v[1]*s];return `<path d="M${a[0].toFixed(2)} ${a[1].toFixed(2)}L${b[0].toFixed(2)} ${b[1].toFixed(2)}L${c[0].toFixed(2)} ${c[1].toFixed(2)}" stroke="${col}" stroke-width=".4" fill="none"/><circle cx="${((a[0]+c[0])/2+ (F[0]-(a[0]+c[0])/2)*.0).toFixed(2)}" cy="${((a[1]+c[1])/2).toFixed(2)}" r="0" fill="${col}"/>`;}
 const pnSvg=(W,H,g,extra)=>{const q=7,px=(q*MMPX).toFixed(1);const sv=(st)=>`<svg width="${((W+2*q)*MMPX).toFixed(1)}" height="${((H+2*q)*MMPX).toFixed(1)}" viewBox="0 0 ${W+2*q} ${H+2*q}" style="${st}" font-family="inherit"><g transform="translate(${q} ${q})">${g}</g></svg>`;
  if(extra)return sv(`display:block;width:${((W+2*q)*MMPX).toFixed(1)}px;height:${((H+2*q)*MMPX).toFixed(1)}px;max-width:none;overflow:visible;margin:-${px}px${extra}`);
- /* ohne negative Ränder (html2canvas/PDF): Hülle mit Figurengröße, Zeichnung absolut um den Rand versetzt */
- return `<div style="position:relative;display:block;width:${(W*MMPX).toFixed(1)}px;height:${(H*MMPX).toFixed(1)}px;max-width:none">${sv(`position:absolute;left:-${px}px;top:-${px}px;display:block;width:${((W+2*q)*MMPX).toFixed(1)}px;height:${((H+2*q)*MMPX).toFixed(1)}px;max-width:none;overflow:visible`)}</div>`;};
+ /* wie die übrigen Figuren: Zeichenfläche genau W×H, viewBox ab 0 (html2canvas/PDF-sicher) */
+ return `<svg width="${(W*MMPX).toFixed(1)}" height="${(H*MMPX).toFixed(1)}" viewBox="0 0 ${W} ${H}" style="display:block;width:${(W*MMPX).toFixed(1)}px;height:${(H*MMPX).toFixed(1)}px;max-width:none" font-family="inherit">${g}</svg>`;};
 /* Aufgabe: Punkt P und Gerade g im Originalmaß (mm) */
 const PNL=['g','f','h','k','m','a','b','c'],PNP='ABCDEFGHKLMNPQRST'.split(''),PNSUB=['','₁','₂','₃','₄','₅'];
 function pnGeo(k){k=Math.max(1,Math.min(4,k||1));const W=k>1?92:82,H=k>1?64:56;let G=null;
@@ -3770,8 +3770,8 @@ function pnGeo(k){k=Math.max(1,Math.min(4,k||1));const W=k>1?92:82,H=k>1?64:56;l
  if(!G){const a=0,u=[1,0],n=[0,1],C=[W/2,H/2],pts=[{nm:'A',F:[W/2,H/2],P:[W/2,H/2+15],d:15,s:1}];G={W,H,u,n,C,al:0,gn:'g',pts,P:pts[0].P,F:pts[0].F,d:15,s:1};}
  return G;}
 function pnClip(P,v,W,H,m){const x0=m,x1=W-m,y0=m,y1=H-m;let lo=-1e9,hi=1e9;const upd=(d,mn,mx,o)=>{if(Math.abs(d)<1e-9)return;let a=(mn-o)/d,b=(mx-o)/d;if(a>b)[a,b]=[b,a];lo=Math.max(lo,a);hi=Math.min(hi,b);};upd(v[0],x0,x1,P[0]);upd(v[1],y0,y1,P[1]);return [[P[0]+v[0]*lo,P[1]+v[1]*lo],[P[0]+v[0]*hi,P[1]+v[1]*hi]];}
-function pnFigGP(t,sh,nm){const G=t.geo,e=pnClip(G.C,G.u,G.W,G.H,3),k=G.pts.length;let g=pnLine(e[0],e[1],'#000',.5);
- const R=e[1][0]>=e[0][0]?e[1]:e[0];g+=pnTxt(R[0]-2,R[1]+(G.n[1]*-1>0?-2.2:5.4),G.gn,'#000','middle');
+function pnFigGP(t,sh,nm){const G=t.geo,e=pnClip(G.C,G.u,G.W,G.H,6),k=G.pts.length;let g=pnLine(e[0],e[1],'#000',.5);
+ const R=e[1][0]>=e[0][0]?e[1]:e[0];g+=pnTxt(R[0]-2,R[1]+(G.n[1]*-1>0?-2.2:4.6),G.gn,'#000','middle');
  G.pts.forEach((q,i)=>{g+=pnCross(q.P,'#000')+pnTxt(q.P[0]+3,q.P[1]-1.6,q.nm,'#000','start');
   if(sh&&(t.k==='nor'||t.k==='mess')){const f=pnClip(q.P,G.n,G.W,G.H,6);g+=pnLine(f[0],f[1],PNRED,.5);g+=pnRA(q.F,[G.u[0],G.u[1]],[G.n[0]*q.s,G.n[1]*q.s],PNRED,3);if(t.k==='nor'){const dt=e=>(e[0]-q.F[0])*G.n[0]*-q.s+(e[1]-q.F[1])*G.n[1]*-q.s,lo=dt(f[0])>dt(f[1])?f[0]:f[1],nn='n'+(k>1?PNSUB[i+1]:'');g+=pnTxt(lo[0]+3,lo[1]+(lo[1]<G.H/2?5:-1.5),nn,PNRED,'start');}}
   if(sh&&t.k==='par'){const f=pnClip(q.P,G.u,G.W,G.H,6);g+=pnLine(f[0],f[1],PNRED,.5);const r=f[1][0]>=f[0][0]?f[1]:f[0];g+=pnTxt(r[0]-2,r[1]-2,'p'+(k>1?PNSUB[i+1]:''),PNRED,'middle');}});
