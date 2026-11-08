@@ -2369,6 +2369,7 @@ const AST=[
  ['ke','Koordinaten ablesen','Ermittle die Koordinaten der eingezeichneten Punkte!'],['kz','Punkte einzeichnen','Zeichne folgende Punkte ein!'],['ke4','Kartesisch: ablesen','Ermittle die Koordinaten der eingezeichneten Punkte!'],['kz4','Kartesisch: einzeichnen','Zeichne folgende Punkte ein!'],['kt','Ecken, Kanten, Flächen','Zähle die Ecken, Kanten und Flächen und trage sie in die Tabelle ein!'],['ob','Oberfläche berechnen','Berechne den Oberflächeninhalt.']]]];
 const ASTOPT='<h4>Gestaltung</h4><div class="aopt"><label>Schrift <select id="ast-sz"><option value="18">normal</option><option value="22">groß</option></select></label><label>Abstand <select id="ast-gp"><option value="18">eng</option><option value="30" selected>normal</option><option value="46">weit</option></select></label><label><input type="checkbox" id="ast-ind" checked> Aufgaben einrücken</label><label>Tabelle <select id="ast-tb"><option value="0">keine</option><option value="1">Nr. | Aufgabe | Hakerl</option><option value="2">Nr. | Aufgabe</option></select></label><label><input type="checkbox" id="ast-fb" checked> Angaben fett</label><label><input type="checkbox" id="ast-nd"> Name und Datum</label><label><input type="checkbox" id="ast-un"> Unterschrift</label><label><input type="checkbox" id="ast-rh"> Rahmen</label></div><h4>Lösungsbox</h4><div class="aopt"><label><input type="checkbox" id="ast-lb"> ✅ Lösungsbox am Ende (alle Lösungen)</label><label>Form <select id="ast-lbf"><option value="tier">Schlange (Tier)</option><option value="frame">gerahmtes Rechteck</option><option value="snake">Rechenschlange</option><option value="cards">Kärtchen</option></select></label><label>Anordnung <select id="ast-lbm"><option value="mix">ungeordnet</option><option value="sort">geordnet</option></select></label></div>';
 AST.push(['Terme',[['tea','Terme: Wert, Art, Schreibweise','Löse die Aufgaben zu den Termen!'],['tez','Terme zusammenfassen','Fasse die Terme so weit wie möglich zusammen!'],['tek','Klammern auflösen (Plus / Minus)','Löse die Klammern auf und fasse zusammen!'],['tpo','Potenzen: multiplizieren, dividieren, potenzieren','Berechne! Schreibe als Potenz!'],['tem','Terme multiplizieren','Multipliziere und vereinfache!'],['tkx','Klammerterme: Mischaufgaben','Löse die Klammern auf, multipliziere und fasse zusammen!'],['teh','Herausheben','Hebe die gemeinsamen Faktoren heraus!'],['tbf','Binomische Formeln: Ausmultiplizieren','Berechne mithilfe der binomischen Formeln!'],['tbr','Binomische Formeln: Rückwärts','Schreibe als Quadrat oder als Produkt!'],['tbk','Binomische Formeln: Kopfrechnen','Rechne im Kopf mithilfe der binomischen Formeln!'],['tbw','Binomische Formeln: Richtig oder falsch?','Sind die Aussagen richtig oder falsch?']]]);
+AST.push(['Bruchterme',[['bfd','Bruchterme: Definitionsmenge','Gib die Definitionsmenge an!'],['bfk','Bruchterme: Kürzen','Kürze so weit wie möglich!'],['bfa','Bruchterme: Addieren und Subtrahieren','Berechne und vereinfache!'],['bfm','Bruchterme: Multiplizieren und Dividieren','Multipliziere bzw. dividiere und vereinfache!']]]);
 AST.push(['Addition und Subtraktion (Schulbuch)',[['vr','Vorteilhaft rechnen','Rechne vorteilhaft!'],['vk','Klammern zuerst berechnen','Berechne! Rechne zuerst die Klammern aus.'],['vl','Rechnung vervollständigen','Vervollständige die Rechnung!'],['vp','Probe anschreiben','Schreibe für die Rechnung eine passende Probe an!'],['vt','Textrechnungen (Summe/Differenz)','Schreibe als Rechnung an und berechne anschließend!'],['vf','Richtig oder falsch (Rechengesetze)','Gib an, ob die Aussagen richtig oder falsch sind!']]]);
 const ZRV={t:'zr',lbl:'4.0-Aufgabe',ins:'Löse die 4.0-Aufgabe!'};
 const AST_FAM={
@@ -2772,7 +2773,7 @@ const teHandler=e=>{const t=e.target,k=t.dataset.te;if(!k)return;const it=items.
 $('#rp').addEventListener('input',teHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-te-act]');if(!b)return;const it=items.find(i=>i.id===sel&&TET.includes(i.type));if(!it)return;rec();teGen(it);render();});
 (function(){const P=$('#tepal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
- G=[['Terme',[['tea',T(50,17,'T(x) = 4x + 5',12)+T(50,33,'T(3) = 17',12)]]],['Rechnen mit Termen',[['tez',T(50,17,'4x + 7y − 3x + 2y',10)+T(50,33,'= x + 9y',11)],['tek',T(50,17,'3x − (2x − 4)',12)+T(50,33,'= x + 4',12)],['tem',T(50,17,'3a · (3b + 4c)',12)+T(50,33,'= 9ab + 12ac',11)],['teh',T(50,17,'18a + 24b',12)+T(50,33,'= 6 · (3a + 4b)',10)]]],['Potenzen und Klammern',[['tpo',T(50,17,'4a² · 3a³',12)+T(50,33,'= 12a⁵',12)],['tkx',T(50,17,'5x − [3x − (7 + 2x)]',9.5)+T(50,33,'= 4x + 7',12)]]],['Binomische Formeln',[['tbf',T(50,17,'(a + b)² =',13)+T(50,33,'a² + 2ab + b²',11)],['tbr',T(50,17,'x² + 6x + 9',12)+T(50,33,'= (x + 3)²',12)],['tbk',T(50,17,'102² = (100 + 2)²',9.5)+T(50,33,'= 10 404',12)],['tbw',T(50,17,'(a + b)² = a² + b²',10)+T(50,33,'☐ richtig ☐ falsch',9.5)]]]];
+ G=[['Terme',[['tea',T(50,17,'T(x) = 4x + 5',12)+T(50,33,'T(3) = 17',12)]]],['Rechnen mit Termen',[['tez',T(50,17,'4x + 7y − 3x + 2y',10)+T(50,33,'= x + 9y',11)],['tek',T(50,17,'3x − (2x − 4)',12)+T(50,33,'= x + 4',12)],['tem',T(50,17,'3a · (3b + 4c)',12)+T(50,33,'= 9ab + 12ac',11)],['teh',T(50,17,'18a + 24b',12)+T(50,33,'= 6 · (3a + 4b)',10)]]],['Potenzen und Klammern',[['tpo',T(50,17,'4a² · 3a³',12)+T(50,33,'= 12a⁵',12)],['tkx',T(50,17,'5x − [3x − (7 + 2x)]',9.5)+T(50,33,'= 4x + 7',12)]]],['Bruchterme',[['bfd',T(50,17,'3x : (2x − 1)',11)+T(50,33,'x ≠ 1/2',12)],['bfk',T(50,17,'10x : (20x − 15)',10)+T(50,33,'= 2x : (4x − 3)',10)],['bfa',T(50,17,'1/x + 1/2',12)+T(50,33,'= (2 + x) : 2x',11)],['bfm',T(50,17,'x/y · 2y²/4x',11)+T(50,33,'= y : 2',12)]]],['Binomische Formeln',[['tbf',T(50,17,'(a + b)² =',13)+T(50,33,'a² + 2ab + b²',11)],['tbr',T(50,17,'x² + 6x + 9',12)+T(50,33,'= (x + 3)²',12)],['tbk',T(50,17,'102² = (100 + 2)²',9.5)+T(50,33,'= 10 404',12)],['tbw',T(50,17,'(a + b)² = a² + b²',10)+T(50,33,'☐ richtig ☐ falsch',9.5)]]]];
  P.innerHTML=G.map(([h,L])=>`<div style="font-weight:700;font-size:12px;color:#555;margin:10px 0 5px;padding-left:2px">${h}</div>`+L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('')).join('');})();
 /* ===== Verhältnisse / Zuordnungen ===== */
 const VHT=['vhw','vhs','vhk','vhg','vhd','vhr'];
@@ -5441,6 +5442,126 @@ TEX.tkx={gen:(it,lv)=>teKM(it,lv),
  blk:(it,X)=>{const md=it.md||'mix',t=md==='mm'?'Multipliziere, löse die Klammern auf und fasse zusammen!':md==='ek'?'Löse zuerst die runden, dann die eckigen Klammern auf und fasse zusammen!':'Löse die Klammern auf, multipliziere und fasse zusammen!';
   return (it.mk?teMk('Rechne von innen nach außen: zuerst die runden Klammern, dann die eckigen. Vor einer Klammer mit <b>−</b> ändern sich alle Rechenzeichen in der Klammer. Beim Multiplizieren: jedes Glied in der Klammer mal das Monom.'):'')+X.H1(t)+tlGrid(X.co,X.D.map((t,i)=>`<div style="position:relative;break-inside:avoid">${X.BT(it,i)}${X.row(i,t.q,it.zw&&t.w?'':t.a,6)}${it.zw&&t.w?X.sub('=',t.w,6)+X.sub('=',t.a,6):''}</div>`).join(''));},
  pan:(it,X)=>`<label>Aufgabenart${X.sl('md',[['mix','gemischt'],['mm','Multiplizieren und Subtrahieren'],['ek','Eckige und runde Klammern']])}</label>`+X.nn([2,3,4,6,8,10])+X.lv([[1,'1 · eine Variable'],[2,'2 · zwei Variablen'],[3,'3 · mit Potenzen']])+X.co([1,2])+X.ck('zw','Zwischenzeilen')+X.ck('mk','Merkkasten')};
+/* ===== Bruchterme ===== */
+(function(){const st=document.createElement('style');st.textContent='.bfr{display:inline-block;text-align:center;vertical-align:middle;margin:0 .12em;line-height:1.3;white-space:nowrap}.bfr>span{display:block;padding:0 .3em}.bfr>span:first-child{border-bottom:1.6px solid #000}.tlx .bfrw{display:flex;align-items:center;gap:.35em;margin:.45em 0}';document.head.appendChild(st);})();
+TET.push('bfd','bfk','bfa','bfm');TLT.push('bfd','bfk','bfa','bfm');
+Object.assign(TLD,{bfd:{n:6,lv:1,fm:'dm',co:2,mk:false},bfk:{n:6,lv:1,co:2,zw:false,dm:false,mk:false},bfa:{n:4,lv:1,co:1,zw:true,mk:false},bfm:{n:6,md:'mix',lv:1,co:1,zw:false,mk:false}});
+Object.assign(TLN,{bfd:'Bruchterme: Definitionsmenge',bfk:'Bruchterme: Kürzen',bfa:'Bruchterme: Addieren und Subtrahieren',bfm:'Bruchterme: Multiplizieren und Dividieren'});
+const bfFr=(n,d)=>d==null||d===''||d==='1'?n:`<span class="bfr"><span>${n}</span><span>${d}</span></span>`;
+const bfGcd=(a,b)=>b?bfGcd(b,a%b):Math.abs(a);
+const bfLcm=(a,b)=>a/bfGcd(a,b)*b;
+const bfP1=(v,c)=>teN([teC(1,v),teC(c,'')]);
+const bfAtP=k=>{const p=k.split(':');return p[0]==='v'?[teC(1,p[1])]:bfP1(p[1],+p[2]);};
+const bfAtS=(k,e)=>{const p=k.split(':'),s=p[0]==='v'?p[1]+(e>1?'<sup>'+e+'</sup>':''):'('+teS(bfP1(p[1],+p[2]))+')'+(e>1?'<sup>'+e+'</sup>':'');return s;};
+const bfFmP=f=>{let P=[{c:f.num,e:{}}];Object.keys(f.at).forEach(k=>{for(let i=0;i<f.at[k];i++)P=teMul(P,bfAtP(k));});return P;};
+/* Faktor-Anzeige: Zahl, dann Atome */
+const bfFmS=(f,ex)=>{const ks=Object.keys(f.at).filter(k=>f.at[k]>0);if(ex&&ks.length===1&&f.at[ks[0]]===1&&f.num>1&&ks[0][0]==='b')return teS(bfFmP(f));
+ const sorted=ks.sort((a,b)=>(a[0]==='v'?0:1)-(b[0]==='v'?0:1)||a.localeCompare(b));const parts=sorted.map(k=>bfAtS(k,f.at[k]));
+ let s=(f.num!==1||!parts.length?String(f.num):'')+parts.join('');if(!s)s='1';return s;};
+const bfLcmF=fs=>{const r={num:1,at:{}};fs.forEach(f=>{r.num=bfLcm(r.num,f.num);Object.keys(f.at).forEach(k=>r.at[k]=Math.max(r.at[k]||0,f.at[k]));});return r;};
+const bfCof=(L,f)=>{const r={num:L.num/f.num,at:{}};Object.keys(L.at).forEach(k=>{const d=L.at[k]-(f.at[k]||0);if(d>0)r.at[k]=d;});return r;};
+const bfDivB=(P,c)=>{/* Polynom in x durch (x + c) teilen, falls ohne Rest */const vs=new Set();P.forEach(t=>Object.keys(t.e).forEach(k=>vs.add(k)));if(vs.size!==1)return null;const v=[...vs][0],dg=Math.max(...P.map(t=>t.e[v]||0)),co=Array(dg+1).fill(0);P.forEach(t=>{co[t.e[v]||0]+=t.c;});
+ const r=-c,q=Array(dg).fill(0);let carry=0;for(let i=dg;i>=1;i--){carry=co[i]+carry*r;q[i-1]=carry;}const rem=co[0]+carry*r;if(rem!==0)return null;
+ return teN(q.map((c2,i)=>({c:c2,e:i?{[v]:i}:{}})).filter(t=>t.c!==0));};
+const bfRed=(N,L0)=>{let L={num:L0.num,at:Object.assign({},L0.at)};N=N.map(t=>({c:t.c,e:Object.assign({},t.e)}));
+ let g=N.reduce((x,t)=>bfGcd(x,t.c),0);g=bfGcd(g,L.num);if(g>1){N=N.map(t=>({c:t.c/g,e:t.e}));L.num/=g;}
+ Object.keys(L.at).forEach(k=>{while(L.at[k]>0){if(k[0]==='v'){const v=k.split(':')[1];if(N.every(t=>(t.e[v]||0)>=1)){N=N.map(t=>{const e=Object.assign({},t.e);e[v]--;if(!e[v])delete e[v];return{c:t.c,e};});L.at[k]--;}else break;}
+  else{const c=+k.split(':')[2],q=bfDivB(N,c);if(q&&N.length>1){N=q;L.at[k]--;}else break;}}});
+ return{N,L};};
+const bfRes=(N,L)=>{const ns=teS(N),ds=bfFmS(L,false);return ds==='1'?ns:bfFr(N.length>1||ns.includes(' ')?ns:ns,ds);};
+const bfRoots=fs=>{const out=[];fs.forEach(f=>Object.keys(f.at).forEach(k=>{if(f.at[k]>0){const p=k.split(':');const r=p[0]==='v'?0:-(+p[2]);if(!out.includes(r))out.push(r);}}));return out.sort((a,b)=>a-b);};
+const bfNg=n=>String(n).replace('-','−');
+const bfDM=(roots,fm,v)=>{v=v||'x';if(!roots.length)return fm==='ne'?'keine Einschränkung':'D = ℚ';
+ if(fm==='ne')return roots.map(r=>v+' ≠ '+bfNg(r)).join(' und ');return 'D = ℚ \\ {'+roots.map(bfNg).join('; ')+'}';};
+/* ---- Definitionsmenge ---- */
+const bfRt=(a,b)=>{const g=bfGcd(a,b)||1,nu=-b/g,de=a/g;return de===1?bfNg(nu):bfNg(nu)+'/'+de;};
+const bfVal=r=>{r=String(r).replace('−','-');const p=r.split('/');return p.length>1?(+p[0])/(+p[1]):+p[0];};
+const bfSg=s=>s>0?' + ':' − ';
+const bfRs=rs=>[...new Set(rs)].sort((p,q)=>bfVal(p)-bfVal(q));
+const bfDMs=(rs,fm,x)=>{rs=bfRs(rs);return fm==='ne'?(rs.length?rs.map(r=>x+' ≠ '+r).join(' und '):'keine Einschränkung'):(rs.length?'D = ℚ \\ {'+rs.join('; ')+'}':'D = ℚ');};
+function bfDg(it,lv){const fm=it.fm||'dm',x=tpick(['x','x','x','a','y','z']),sg=Math.random()<.3?-1:1;
+ const np=tpick([teC(kri(2,7),x),teC(1,x),teC(kri(2,9),''),teC(1,'')]);const N=(sg<0?'−':'')+teMo(np);let D,roots;
+ if(lv===1){const a=tpick([1,1,2,2,3,4,5]),b=tpick([1,-1])*kri(1,9);D=teS(teN([teC(a,x),teC(b,'')]));roots=[bfRt(a,b)];}
+ else if(lv===2){const w=kri(0,2),c=kri(1,7),d=kri(1,7),s1=tpick([1,-1]),s2=tpick([1,-1]);
+  if(w===0){D=x+'('+x+bfSg(s1)+c+')';roots=['0',bfNg(-s1*c)];}
+  else if(w===1){if(c===d&&s1===s2)return bfDg(it,lv);D='('+x+bfSg(s1)+c+')('+x+bfSg(s2)+d+')';roots=[bfNg(-s1*c),bfNg(-s2*d)];}
+  else{const a=kri(2,5);D='('+teS(teN([teC(a,x),teC(s1*c,'')]))+')('+x+bfSg(s2)+d+')';roots=[bfRt(a,s1*c),bfNg(-s2*d)];}}
+ else{const w=kri(0,3),c=kri(2,9),k=kri(1,9);
+  if(w===0){D=x+'<sup>2</sup> − '+c*c;roots=[bfNg(-c),String(c)];}
+  else if(w===1){D=x+'<sup>2</sup> + '+k;roots=[];}
+  else if(w===2){D=x+'<sup>2</sup> − '+k+x;roots=['0',String(k)];}
+  else{D=x+'<sup>2</sup> + '+k+x;roots=[bfNg(-k),'0'];}}
+ return{q:bfFr(N,D),a:bfDMs(roots,fm,x)};}
+TEX.bfd={gen:(it,lv)=>bfDg(it,lv),
+ blk:(it,X)=>(it.mk?teMk('Der Nenner darf nie <b>0</b> werden! Setze den Nenner gleich 0 und löse. Diese Werte heißen <b>Ausschlusswerte</b>. Definitionsmenge: D = ℚ \\ {Ausschlusswerte}. Ein Produkt ist 0, wenn ein Faktor 0 ist: x · (x + 1) = 0 für x = 0 oder x = −1.'):'')+X.H1('Gib die Definitionsmenge an. Für welche Zahlen darf man nicht einsetzen?')+tlGrid(X.co,X.D.map((t,i)=>`<div style="position:relative;break-inside:avoid">${X.BT(it,i)}<div class="bfrw"><b>${poL(i)}</b><span style="white-space:nowrap">${t.q}</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,t.a)}</span></div></div>`).join('')),
+ pan:(it,X)=>X.nn([2,4,6,8,10,12])+X.lv([[1,'1 · linearer Nenner (2x − 1)'],[2,'2 · Produkt (x(x + 1))'],[3,'3 · x² − 9, x² + 2, x² − 3x']])+X.co([1,2,3])+`<label>Schreibweise${X.sl('fm',[['dm','D = ℚ \\ {…}'],['ne','x ≠ …']])}</label>`+X.ck('mk','Merkkasten')};
+/* ---- Kürzen ---- */
+function bfKg(it,lv){const x=tpick(['x','x','a','y','z']),one=[{c:1,e:{}}],isOne=P=>P.length===1&&P[0].c===1&&!Object.keys(P[0].e).length;
+ if(lv===1){const a=kri(0,2),b=a?0:kri(1,2),c1=kri(1,5),c2=kri(1,5);
+  if(bfGcd(c1,c2)>1||(!a&&!b))return bfKg(it,lv);
+  const m=kri(0,2),k=m?tpick([1,2,3,4,5,6]):tpick([2,3,4,5,6]),n=teC(c1,a?x:'',a||1),d=teC(c2,b?x:'',b||1),K=teC(k,m?x:'',m||1);
+  const N=teMul([n],[K]),D=teMul([d],[K]),dm=(m||b)?['0']:[];
+  return{q:bfFr(teS(N),teS(D)),a:(c2===1&&!b)?teS([n]):bfFr(teS([n]),teS([d])),dm:bfDMs(dm,'dm',x)};}
+ if(lv===2){const kk=tpick([2,3,4,5,6,7]),a=kri(1,4),b=kri(1,9),sg=Math.random()<.5?-1:1;if(bfGcd(a,b)>1)return bfKg(it,lv);
+  const bin=teN([teC(a,x),teC(sg*b,'')]),n=Math.random()<.5?teC(kri(1,6),x):teC(kri(1,6),''),hx=Math.random()<.4,K=hx?teC(kk,x):teC(kk,'');
+  const N=teMul([K],[n]),D=teMul([K],bin),dm=[bfRt(a,sg*b)];if(hx)dm.push('0');
+  return{q:bfFr(teS(N),teS(D)),a:bfFr(teS([n]),teS(bin)),dm:bfDMs(dm,'dm',x)};}
+ const c=kri(1,6),B=s=>bfP1(x,s*c),w=kri(0,5);let n,d,K=B(1),dm=[String(-c)];
+ if(w===0){n=B(-1);d=one;}else if(w===1){n=B(1);d=one;}else if(w===2){n=B(-1);d=B(1);}else if(w===3){n=[teC(1,x)];d=B(1);}
+ else if(w===4){const b2=kri(1,6);if(b2===c)return bfKg(it,lv);n=bfP1(x,b2);d=[teC(1,x)];dm=['0',String(-c)];}
+ else{n=[{c:kri(2,5),e:{}}];d=B(-1);dm=[String(-c),String(c)];}
+ const N=teMul(K,n),D=teMul(K,d);if(w===0||w===1||w===2)dm=w===2?[String(-c)]:[String(-c)];
+ return{q:bfFr(teS(N),teS(D)),a:isOne(d)?teS(n):bfFr(teS(n),teS(d)),dm:bfDMs(dm.map(bfNg),'dm',x)};}
+TEX.bfk={gen:(it,lv)=>bfKg(it,lv),
+ blk:(it,X)=>(it.mk?teMk('Gekürzt werden dürfen nur <b>Faktoren</b>, niemals Summanden! Zuerst im Zähler und im Nenner <b>herausheben</b> oder mit den <b>binomischen Formeln</b> in Faktoren zerlegen, dann kürzen: (x<sup>2</sup> − 4) : (x + 2) = (x − 2)(x + 2) : (x + 2) = x − 2.'):'')+X.H1('Kürze so weit wie möglich!'+(it.dm?' Gib auch die Definitionsmenge an.':''))+tlGrid(X.co,X.D.map((t,i)=>`<div style="position:relative;break-inside:avoid">${X.BT(it,i)}<div class="bfrw"><b>${poL(i)}</b><span style="white-space:nowrap">${t.q} =</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,t.a)}</span></div>${it.dm?X.sub('Definitionsmenge:',t.dm,6):''}</div>`).join('')),
+ pan:(it,X)=>X.nn([2,4,6,8,10,12])+X.lv([[1,'1 · Monome (6x² : 9x)'],[2,'2 · Herausheben (10x : (20x − 15))'],[3,'3 · Binomische Formeln (x² − 4 : (x + 2))']])+X.co([1,2])+X.ck('dm','Definitionsmenge dazuschreiben')+X.ck('mk','Merkkasten')};
+/* ---- Addieren und Subtrahieren ---- */
+function bfAg(it,lv){const x=tpick(['x','x','a','y']),y=x==='a'?'b':x==='x'?'y':'x',op=Math.random()<.65?1:-1;let D,Nn;
+ const mk=(num,at)=>({num,at:at||{}}),nm=()=>tpick([teC(kri(1,7),x),teC(kri(1,9),''),teC(1,x)]);
+ if(lv===1){const ds=tshuf([2,3,4,5,6,8,9,10,12]).slice(0,2);D=ds.map(d=>mk(d));
+  Nn=D.map(()=>Math.random()<.6?teN([teC(kri(1,3),x),teC(tpick([1,-1])*kri(1,6),'')]):[nm()]);}
+ else if(lv===2){const two=Math.random()<.5,k1=tpick([1,2,3,4,6]),k2=tpick([1,2,3,4,6,9]);
+  const vv=two?[y,y]:[x,x];
+  D=[mk(k1,{['v:'+(two?y:x)]:kri(1,2)}),mk(k2,{['v:'+(two?y:x)]:kri(1,2)})];if(Math.random()<.4)D[1].at={['v:'+(two?x:x)]:kri(1,2)};
+  Nn=D.map(()=>[Math.random()<.7?teC(kri(1,7),two?x:x):teC(kri(1,9),'')]);}
+ else{const c=kri(1,6),pr=kri(0,2),b1='b:'+x+':'+c,b2='b:'+x+':'+(-kri(1,6));
+  if(pr===0){const k=tpick([2,3,4]);D=[mk(1,{[b1]:1}),mk(k,{[b1]:1})];}
+  else if(pr===1){D=[mk(1,{[b1]:1}),mk(1,{[b2]:1})];}
+  else{D=[mk(1,{['v:'+x]:1,[b1]:1}),mk(1,{[b1]:1})];}
+  Nn=D.map(()=>[nm()]);}
+ if(JSON.stringify(D[0])===JSON.stringify(D[1]))return bfAg(it,lv);
+ const L=bfLcmF(D),cf=D.map(d=>bfCof(L,d)),T=Nn.map((N,i)=>teMul(N,bfFmP(cf[i]))),sgn=[1,op];
+ const NT=teN([].concat(...T.map((P,i)=>sgn[i]<0?teNeg(P):P)));if(!NT.length)return bfAg(it,lv);
+ const R=bfRed(NT,L);if(R.N.some(t=>Math.abs(t.c)>120))return bfAg(it,lv);
+ const dd=D.map(d=>bfFmS(d,true)),nS=Nn.map(N=>N.length>1?teS(N):teS(N));
+ const q=bfFr(nS[0],dd[0])+' '+(op<0?'−':'+')+' '+bfFr(nS[1],dd[1])+' =';
+ const Ls=bfFmS(L,false),par=(P,m)=>P.length>1&&m?'('+teS(P)+')':teS(P);
+ const w1=bfFr(teS(T[0]),Ls)+' '+(op<0?'−':'+')+' '+bfFr(par(T[1],op<0),Ls),w2=bfFr(teS(T[0])+(op<0?' − ':' + ')+par(T[1],op<0),Ls);
+ return{q,hn:Ls,w:w1+' = '+w2,a:bfRes(R.N,R.L)};}
+TEX.bfa={gen:(it,lv)=>bfAg(it,lv),
+ blk:(it,X)=>(it.mk?teMk('Zuerst den <b>Hauptnenner</b> bestimmen (kleinstes gemeinsames Vielfaches der Nenner). Beide Brüche auf den Hauptnenner <b>erweitern</b>. Dann die Zähler addieren bzw. subtrahieren (bei „−“ die Klammer beachten!) und wenn möglich kürzen.'):'')+X.H1('Berechne und vereinfache so weit wie möglich!')+tlGrid(X.co,X.D.map((t,i)=>`<div style="position:relative;break-inside:avoid">${X.BT(it,i)}<div class="bfrw"><b>${poL(i)}</b><span style="white-space:nowrap">${t.q}</span><span class="tlln" style="flex:1;min-width:6em">${it.zw?'':tlSv(it,t.a)}</span></div>${it.zw?X.sub('Hauptnenner:',t.hn,6)+X.sub('=',t.w,6)+X.sub('=',t.a,6):''}</div>`).join('')),
+ pan:(it,X)=>X.nn([1,2,3,4,6]).replace('Anzahl der Aufgaben','Anzahl der Aufgaben')+X.lv([[1,'1 · Nenner nur Zahlen'],[2,'2 · Nenner mit Variablen'],[3,'3 · Nenner mit Binomen']])+X.co([1,2])+X.ck('zw','Zwischenzeilen (Hauptnenner)')+X.ck('mk','Merkkasten')};
+/* ---- Multiplizieren und Dividieren ---- */
+function bfMg(it,lv){const dv=(it.md==='mul')?false:(it.md==='div'?true:Math.random()<.4);
+ const vs=lv===3?['x','y','z']:['x','y'],bs=['b:x:1','b:x:-2','b:x:3','b:x:-1'],mkf=()=>{const at={};
+  if(lv===2){const pool=tshuf(['v:x',...bs.slice(0,3)]);pool.slice(0,kri(1,2)).forEach(k=>at[k]=1);}
+  else vs.forEach(v=>{if(Math.random()<(lv===3?.7:.6)){at['v:'+v]=kri(1,lv===3?3:2);}});
+  return{num:tpick(lv===1?[1,1,2,3,4,5]:[1,1,2,3]),at};};
+ let A,B,C,Dn;for(let g=0;g<30;g++){A=mkf();B=mkf();C=mkf();Dn=mkf();
+  if(lv===2){/* Kürzen erzwingen: gleiche Atome gegenüber */const ks=Object.keys(A.at);if(ks.length&&!B.at[ks[0]]&&!Dn.at[ks[0]]&&!C.at[ks[0]]){B.at[ks[0]]=1;}}
+  if(Object.keys(A.at).length+Object.keys(B.at).length>0&&Object.keys(C.at).length+Object.keys(Dn.at).length>0&&(A.num!==B.num||Object.keys(A.at).some(k=>B.at[k]))){break;}}
+ const frS=(n,d)=>bfFr(bfFmS(n,false)||'1',(Object.keys(d.at).length||d.num!==1)?bfFmS(d,false):'');
+ const q=frS(A,B)+(dv?' : ':' · ')+frS(C,Dn)+' =';
+ let nn=A.num*(dv?Dn.num:C.num),dd=B.num*(dv?C.num:Dn.num);const g2=bfGcd(nn,dd);nn/=g2;dd/=g2;
+ const up={num:nn,at:{}},lo={num:dd,at:{}},ex={};
+ const add=(f,sg)=>Object.keys(f.at).forEach(k=>ex[k]=(ex[k]||0)+sg*f.at[k]);add(A,1);add(B,-1);add(dv?Dn:C,1);add(dv?C:Dn,-1);
+ Object.keys(ex).forEach(k=>{if(ex[k]>0)up.at[k]=ex[k];else if(ex[k]<0)lo.at[k]=-ex[k];});
+ const us=bfFmS(up,false)||'1',ls=(Object.keys(lo.at).length||lo.num!==1)?bfFmS(lo,false):'';
+ if(us==='1'&&!ls&&Math.random()<.0)return bfMg(it,lv);
+ return{q,a:bfFr(us,ls)};}
+TEX.bfm={gen:(it,lv)=>bfMg(it,lv),
+ blk:(it,X)=>(it.mk?teMk('<b>Multiplizieren:</b> Zähler mal Zähler, Nenner mal Nenner. Vorher und nachher kürzen! <b>Dividieren:</b> Mit dem <b>Kehrwert</b> multiplizieren: a/b : c/d = a/b · d/c. Potenzen mit gleicher Basis: Hochzahlen subtrahieren.'):'')+X.H1('Multipliziere bzw. dividiere und vereinfache so weit wie möglich!')+tlGrid(X.co,X.D.map((t,i)=>`<div style="position:relative;break-inside:avoid">${X.BT(it,i)}<div class="bfrw"><b>${poL(i)}</b><span style="white-space:nowrap">${t.q}</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,t.a)}</span></div></div>`).join('')),
+ pan:(it,X)=>`<label>Aufgabenart${X.sl('md',[['mix','gemischt'],['mul','Multiplizieren'],['div','Dividieren']])}</label>`+X.nn([2,4,6,8,10]).replace('','')+X.lv([[1,'1 · Monome mit x und y'],[2,'2 · mit Binomen (x + 1)'],[3,'3 · drei Variablen']])+X.co([1,2])+X.ck('mk','Merkkasten')};
 /* ===== Stellenwerttabelle ===== */
 const SWC=[['B','Billionen'],['HMd','Hundertmilliarden'],['ZMd','Zehnmilliarden'],['Md','Milliarden'],['HM','Hundertmillionen'],['ZM','Zehnmillionen'],['M','Millionen'],['HT','Hunderttausender'],['ZT','Zehntausender'],['T','Tausender'],['H','Hunderter'],['Z','Zehner'],['E','Einer']];
 const SWD=[['z','Zehntel'],['h','Hundertstel'],['t','Tausendstel'],['zt','Zehntausendstel'],['ht','Hunderttausendstel'],['m','Millionstel']];
