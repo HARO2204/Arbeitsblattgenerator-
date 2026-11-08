@@ -5237,7 +5237,7 @@ function planBuild(key,o){
  const last=()=>items[items.length-1],P=PLAN[key]||PLAN.sg,R0=rec;R0();rec=()=>{};RF=false;let res={};
  try{
   const set=(id,v)=>{const e=document.getElementById(id);if(e&&e.checked!==v){e.checked=v;e.dispatchEvent(new Event('change'));}};
-  items.length=0;uid=1;set('hn',!!o.nm);set('hdt',!!o.dt);set('rahm',false);
+  items.length=0;uid=1;set('hn',!!o.nm);set('hdt',!!o.dt);set('rahm',false);set('solpdf',false);
   const top=(o.nm||o.dt)?50:14;
   add('head',40,top);const hd=last();hd.text=o.title||P.t;hd.w=714;hd.mh=10;render();
   add('text',40,top+64);const it0=last();it0.text=P.intro;it0.w=714;it0.fs=14;render();
