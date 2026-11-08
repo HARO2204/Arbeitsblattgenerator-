@@ -2368,6 +2368,7 @@ const AST=[
  ['wk','Winkel messen','Gib den Winkel und die Winkelart an!'],['wkk','Winkel konstruieren','Konstruiere die Winkel mit dem Geodreieck!'],['sa','Strecken messen','Gib jeweils die Länge der gezeichneten Strecke an.'],['sz','Strecken zeichnen','Zeichne folgende Strecken daneben und beschrifte sie! (mit Bleistift!)'],['sp','Gerade, Strahl, Strecke','Zeichne die angegebenen Sachverhalte in dein Heft. Beschrifte die Geraden und die Schnittpunkte.'],
  ['ke','Koordinaten ablesen','Ermittle die Koordinaten der eingezeichneten Punkte!'],['kz','Punkte einzeichnen','Zeichne folgende Punkte ein!'],['ke4','Kartesisch: ablesen','Ermittle die Koordinaten der eingezeichneten Punkte!'],['kz4','Kartesisch: einzeichnen','Zeichne folgende Punkte ein!'],['kt','Ecken, Kanten, Flächen','Zähle die Ecken, Kanten und Flächen und trage sie in die Tabelle ein!'],['ob','Oberfläche berechnen','Berechne den Oberflächeninhalt.']]]];
 const ASTOPT='<h4>Gestaltung</h4><div class="aopt"><label>Schrift <select id="ast-sz"><option value="18">normal</option><option value="22">groß</option></select></label><label>Abstand <select id="ast-gp"><option value="18">eng</option><option value="30" selected>normal</option><option value="46">weit</option></select></label><label><input type="checkbox" id="ast-ind" checked> Aufgaben einrücken</label><label>Tabelle <select id="ast-tb"><option value="0">keine</option><option value="1">Nr. | Aufgabe | Hakerl</option><option value="2">Nr. | Aufgabe</option></select></label><label><input type="checkbox" id="ast-fb" checked> Angaben fett</label><label><input type="checkbox" id="ast-nd"> Name und Datum</label><label><input type="checkbox" id="ast-un"> Unterschrift</label><label><input type="checkbox" id="ast-rh"> Rahmen</label></div><h4>Lösungsbox</h4><div class="aopt"><label><input type="checkbox" id="ast-lb"> ✅ Lösungsbox am Ende (alle Lösungen)</label><label>Form <select id="ast-lbf"><option value="tier">Schlange (Tier)</option><option value="frame">gerahmtes Rechteck</option><option value="snake">Rechenschlange</option><option value="cards">Kärtchen</option></select></label><label>Anordnung <select id="ast-lbm"><option value="mix">ungeordnet</option><option value="sort">geordnet</option></select></label></div>';
+AST.push(['Terme',[['tea','Terme: Wert, Art, Schreibweise','Löse die Aufgaben zu den Termen!'],['tez','Terme zusammenfassen','Fasse die Terme so weit wie möglich zusammen!'],['tek','Klammern auflösen (Plus / Minus)','Löse die Klammern auf und fasse zusammen!'],['tpo','Potenzen: multiplizieren, dividieren, potenzieren','Berechne! Schreibe als Potenz!'],['tem','Terme multiplizieren','Multipliziere und vereinfache!'],['tkx','Klammerterme: Mischaufgaben','Löse die Klammern auf, multipliziere und fasse zusammen!'],['teh','Herausheben','Hebe die gemeinsamen Faktoren heraus!'],['tbf','Binomische Formeln: Ausmultiplizieren','Berechne mithilfe der binomischen Formeln!'],['tbr','Binomische Formeln: Rückwärts','Schreibe als Quadrat oder als Produkt!'],['tbk','Binomische Formeln: Kopfrechnen','Rechne im Kopf mithilfe der binomischen Formeln!'],['tbw','Binomische Formeln: Richtig oder falsch?','Sind die Aussagen richtig oder falsch?']]]);
 AST.push(['Addition und Subtraktion (Schulbuch)',[['vr','Vorteilhaft rechnen','Rechne vorteilhaft!'],['vk','Klammern zuerst berechnen','Berechne! Rechne zuerst die Klammern aus.'],['vl','Rechnung vervollständigen','Vervollständige die Rechnung!'],['vp','Probe anschreiben','Schreibe für die Rechnung eine passende Probe an!'],['vt','Textrechnungen (Summe/Differenz)','Schreibe als Rechnung an und berechne anschließend!'],['vf','Richtig oder falsch (Rechengesetze)','Gib an, ob die Aussagen richtig oder falsch sind!']]]);
 const ZRV={t:'zr',lbl:'4.0-Aufgabe',ins:'Löse die 4.0-Aufgabe!'};
 const AST_FAM={
@@ -2723,7 +2724,7 @@ function teH(lv){const[v1,v2]=teVP(),V=['x','y','a','b','z','m'];let G,F,g=0;
  F=teN(F);const E=teMul([G],F);if(lv>=2&&Object.keys(G.e).some(k=>F.every(t=>(t.e[k]||0)>=1)))return teH(lv);
  if(lv===1&&F.every(t=>t.c%1===0)&&F.reduce((x,t)=>teGcd(x,t.c),0)!==1)return teH(lv);
  return{q:teS(E)+' =',a:`${teMo(G)} · (${teS(F)})`,_l:E,_G:G,_F:F};}
-function teGen(it){const n=Math.max(1,+it.n||1),k=it.type,lv=+it.lv||1,F={tea:()=>teA(it,lv),tez:()=>teZ(it,lv),tek:()=>teK2(it,lv),tem:()=>teM(it,lv),teh:()=>teH(lv),tbf:()=>teBF(it,lv),tbr:()=>teBR(it,lv),tbk:()=>teBK(it),tbw:()=>teBW(it,lv)}[k];it.d=tuniq(n,F);}
+function teGen(it){const n=Math.max(1,+it.n||1),k=it.type,lv=+it.lv||1,F={tea:()=>teA(it,lv),tez:()=>teZ(it,lv),tek:()=>teK2(it,lv),tem:()=>teM(it,lv),teh:()=>teH(lv),tbf:()=>teBF(it,lv),tbr:()=>teBR(it,lv),tbk:()=>teBK(it),tbw:()=>teBW(it,lv)}[k]||(TEX[k]&&(()=>TEX[k].gen(it,lv)));it.d=tuniq(n,F);}
 const BT=(it,i)=>`<span class="pxb no-print"><button type="button" title="Diese Aufgabe durch eine andere ersetzen" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();teAct(${it.id},${i},'sw')">⇄</button><button type="button" title="Diese Aufgabe löschen" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();teAct(${it.id},${i},'del')">🗑</button></span>`;
 function teAct(id,i,w){const it=items.find(x=>x.id===id);if(!it||!it.d||!it.d[i])return;rec();
  if(w==='del'){if(it.d.length<=1){gDel(it);return;}it.d.splice(i,1);it.n=it.d.length;}
@@ -2746,6 +2747,7 @@ function teBlock(it){NUMIT=it;const k=it.type,co=+it.co||1,D=it.d||[],S=tlS(it);
  else if(k==='tbr'){const hasE=D.some(t=>t.k==='e'),hasP=D.some(t=>t.k==='p');h=(it.mk?teMk(teBF3):'')+H1(hasP&&!hasE?'Schreibe als Quadrat oder als Produkt (binomische Formel rückwärts)!':hasE&&!hasP?'Ergänze das fehlende Glied (□)!':'Schreibe als Quadrat bzw. Produkt oder ergänze das fehlende Glied (□)!')+tlGrid(co,D.map((t,i)=>t.k==='p'?`<div style="position:relative;break-inside:avoid">${BT(it,i)}${row(i,t.q,t.a,8)}</div>`:`<div style="position:relative;break-inside:avoid">${BT(it,i)}<div><b>${poL(i)}</b> ${t.q}</div>${sub(teBox+' =',t.a,6)}</div>`).join(''));}
  else if(k==='tbk')h=(it.mk?teMk('Zahlen so zerlegen, dass man die binomischen Formeln im Kopf anwenden kann: 102<sup>2</sup> = (100 + 2)<sup>2</sup> = 10 000 + 400 + 4 = 10 404 · 49 · 51 = (50 − 1) · (50 + 1) = 2 500 − 1 = 2 499.'):'')+H1('Rechne geschickt mit den binomischen Formeln im Kopf!')+tlGrid(co,D.map((t,i)=>`<div style="position:relative;break-inside:avoid">${BT(it,i)}${row(i,t.q,it.zw?'':t.a,6)}${it.zw?sub('=',t.w,6)+sub('=',t.a,6):''}</div>`).join(''));
  else if(k==='tbw')h=(it.mk?teMk(teBF3):'')+H1('Sind die Aussagen richtig oder falsch? Kreuze an'+(it.ko?' und korrigiere die falschen Aussagen!':'!'))+`<table style="border-collapse:collapse;width:100%"><tr><th style="${th}">Nr.</th><th style="${th}">Aussage</th><th style="${th}">richtig</th><th style="${th}">falsch</th></tr>${D.map((t,i)=>`<tr><td style="${th}text-align:center;position:relative">${BT(it,i)}${i+1}</td><td style="${th}">${t.q}${it.ko?`<div class="tlrw" style="margin-top:.3em"><span style="white-space:nowrap;font-size:.9em">richtig:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,t.ok?'':t.l+' = '+t.a)}</span></div>`:''}</td>${bx(S&&t.ok)}${bx(S&&!t.ok)}</tr>`).join('')}</table>`;
+ if(TEX[k])h=TEX[k].blk(it,{row,sub,H1,BT,co,D,S});
  return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
 function renderTe(){const g=$('#g-te'),it=items.find(i=>i.id===sel&&TET.includes(i.type));if(!g)return;
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern auf dem Blatt markieren.</div>';return;}
@@ -2762,6 +2764,7 @@ function renderTe(){const g=$('#g-te'),it=items.find(i=>i.id===sel&&TET.includes
  if(k==='tbr')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['prod','Quadrat erkennen (a ± b)²'],['dif','Produkt erkennen (a + b)(a − b)'],['erg','fehlendes Glied ergänzen □']])}</label>`+nn([2,4,6,8,10,12])+lv(L4.slice(0,3))+co([1,2])+ck('mk','Merkkasten (Formeln)');
  if(k==='tbk')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['q','Quadrate (z. B. 102²)'],['p','Produkte (z. B. 49 · 51)']])}</label>`+nn([2,3,4,6,8,10])+co([1,2])+ck('zw','Zwischenzeile (Rechenweg)')+ck('mk','Merkkasten');
  if(k==='tbw')H+=nn([3,4,5,6,8,10])+lv(L4.slice(0,3))+ck('ko','Falsche Aussagen korrigieren')+ck('mk','Merkkasten (Formeln)');
+ if(TEX[k])H+=TEX[k].pan(it,{sl,nn,co,lv,ck,tN,L4});
  H+=ck('show','Lösung zeigen')+'<button data-te-act="mix">Neu mischen</button>';g.innerHTML=H;}
 const teHandler=e=>{const t=e.target,k=t.dataset.te;if(!k)return;const it=items.find(i=>i.id===sel&&TET.includes(i.type));if(!it)return;if(e.type==='change')return;
  rec('te'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','lv','co','nt'].includes(k))v=+v;it[k]=v;
@@ -2769,7 +2772,7 @@ const teHandler=e=>{const t=e.target,k=t.dataset.te;if(!k)return;const it=items.
 $('#rp').addEventListener('input',teHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-te-act]');if(!b)return;const it=items.find(i=>i.id===sel&&TET.includes(i.type));if(!it)return;rec();teGen(it);render();});
 (function(){const P=$('#tepal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
- G=[['Terme',[['tea',T(50,17,'T(x) = 4x + 5',12)+T(50,33,'T(3) = 17',12)]]],['Rechnen mit Termen',[['tez',T(50,17,'4x + 7y − 3x + 2y',10)+T(50,33,'= x + 9y',11)],['tek',T(50,17,'3x − (2x − 4)',12)+T(50,33,'= x + 4',12)],['tem',T(50,17,'3a · (3b + 4c)',12)+T(50,33,'= 9ab + 12ac',11)],['teh',T(50,17,'18a + 24b',12)+T(50,33,'= 6 · (3a + 4b)',10)]]],['Binomische Formeln',[['tbf',T(50,17,'(a + b)² =',13)+T(50,33,'a² + 2ab + b²',11)],['tbr',T(50,17,'x² + 6x + 9',12)+T(50,33,'= (x + 3)²',12)],['tbk',T(50,17,'102² = (100 + 2)²',9.5)+T(50,33,'= 10 404',12)],['tbw',T(50,17,'(a + b)² = a² + b²',10)+T(50,33,'☐ richtig ☐ falsch',9.5)]]]];
+ G=[['Terme',[['tea',T(50,17,'T(x) = 4x + 5',12)+T(50,33,'T(3) = 17',12)]]],['Rechnen mit Termen',[['tez',T(50,17,'4x + 7y − 3x + 2y',10)+T(50,33,'= x + 9y',11)],['tek',T(50,17,'3x − (2x − 4)',12)+T(50,33,'= x + 4',12)],['tem',T(50,17,'3a · (3b + 4c)',12)+T(50,33,'= 9ab + 12ac',11)],['teh',T(50,17,'18a + 24b',12)+T(50,33,'= 6 · (3a + 4b)',10)]]],['Potenzen und Klammern',[['tpo',T(50,17,'4a² · 3a³',12)+T(50,33,'= 12a⁵',12)],['tkx',T(50,17,'5x − [3x − (7 + 2x)]',9.5)+T(50,33,'= 4x + 7',12)]]],['Binomische Formeln',[['tbf',T(50,17,'(a + b)² =',13)+T(50,33,'a² + 2ab + b²',11)],['tbr',T(50,17,'x² + 6x + 9',12)+T(50,33,'= (x + 3)²',12)],['tbk',T(50,17,'102² = (100 + 2)²',9.5)+T(50,33,'= 10 404',12)],['tbw',T(50,17,'(a + b)² = a² + b²',10)+T(50,33,'☐ richtig ☐ falsch',9.5)]]]];
  P.innerHTML=G.map(([h,L])=>`<div style="font-weight:700;font-size:12px;color:#555;margin:10px 0 5px;padding-left:2px">${h}</div>`+L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('')).join('');})();
 /* ===== Verhältnisse / Zuordnungen ===== */
 const VHT=['vhw','vhs','vhk','vhg','vhd','vhr'];
@@ -5388,6 +5391,56 @@ function planBuild(key,o){
  document.getElementById('qadd').insertAdjacentElement('afterend',bt);
  bt.onclick=()=>{fill();$q('#vq-m').textContent='';m.style.display='flex';};
 })();
+/* ===== Terme erweitert: Potenzen, Klammer-Mischaufgaben ===== */
+const TEX={};
+TET.push('tpo','tkx');TLT.push('tpo','tkx');
+Object.assign(TLD,{tpo:{n:8,md:'mix',lv:1,zw:false,co:2,mk:false},tkx:{n:6,md:'mix',lv:1,zw:true,co:1,mk:false}});
+Object.assign(TLN,{tpo:'Potenzen: multiplizieren, dividieren, potenzieren',tkx:'Klammerterme: Mischaufgaben'});
+const teSg=t=>(t.c<0?'−':'')+teMo(t);
+const teSeg=segs=>segs.map((g,i)=>{if(i>0&&!g.b&&g.t.length===1&&g.t[0].c<0){return (g.s<0?' + ':' − ')+teS([{c:-g.t[0].c,e:g.t[0].e}]);}const body=g.b?`(${teS(g.b)})`:teS(g.t);return i===0?body:(g.s<0?' − ':' + ')+body;}).join('');
+const teExp=segs=>segs.flatMap(g=>g.b?g.b.map(t=>({c:g.s*t.c,e:t.e})):g.t.map(t=>({c:g.s*t.c,e:t.e})));
+function tePo(it,lv){let md=it.md||'mix';if(md==='mix')md=tpick(['mul','mul','mul','div','div','pot','pot']);
+ const[v1,v2]=teVP(),sg=()=>Math.random()<.3?-1:1;
+ if(md==='mul'){let A,B;
+  if(lv===1){A=teC(1,v1,kri(1,4));B=teC(1,v1,kri(1,4));}
+  else if(lv===2){A=teC(kri(2,6),v1,kri(1,4));B=teC(kri(2,5),v1,kri(1,4));}
+  else{A={c:kri(2,6),e:{[v1]:kri(1,3),[v2]:kri(1,3)}};B={c:kri(1,4),e:{[v1]:kri(1,3),[v2]:kri(1,3)}};if(Math.random()<.4)B.c=-B.c;}
+  const P=teMul([A],[B]);if(!P.length)return teMo.call?tePo(it,lv):null;
+  const c1=Math.abs(A.c)>1||lv>1,w=lv===2?`${A.c} · ${B.c} · ${v1}<sup>${A.e[v1]}</sup> · ${v1}<sup>${B.e[v1]}</sup> = ${A.c*B.c} ${v1}<sup>${A.e[v1]}+${B.e[v1]}</sup>`:'';
+  return{q:`${teSg(A)} · ${(B.c<0?'(':'')+teSg(B)+(B.c<0?')':'')} =`,w,a:teS(P)};}
+ if(md==='div'){let Q,Dv;
+  if(lv===1){Dv=teC(1,v1,kri(1,3));Q=teC(1,v1,kri(1,4));}
+  else if(lv===2){Dv=teC(kri(2,5),v1,kri(1,3));Q=teC(kri(2,6),v1,kri(1,4));}
+  else{Dv={c:kri(2,5),e:{[v1]:kri(1,2),[v2]:kri(1,2)}};Q={c:kri(2,6),e:{[v1]:kri(1,3),[v2]:kri(0,3)}};if(!Q.e[v2])delete Q.e[v2];}
+  const Dd=teMul([Q],[Dv]);const w=lv===2?`${Dd[0].c} : ${Dv.c} · ${v1}<sup>${Dd[0].e[v1]}−${Dv.e[v1]}</sup>`:'';
+  return{q:`${teMo(Dd[0])} : ${teMo(Dv)} =`,w:'',a:teMo(Q)};}
+ /* pot */
+ let B,p;
+ if(lv===1){B=teC(1,v1,kri(2,4));p=kri(2,3);}
+ else if(lv===2){B=teC(sg()*kri(2,4),v1,kri(1,3));p=kri(2,3);if(B.c<0&&p===3)p=2;}
+ else{B={c:kri(2,3),e:{[v1]:kri(1,2),[v2]:kri(1,2)}};if(Math.random()<.3)B.c=-B.c;p=kri(2,3);}
+ const R={c:Math.pow(B.c,p),e:Object.fromEntries(Object.entries(B.e).map(([k,x])=>[k,x*p]))};
+ const bs=teSg(B),w=Object.keys(B.e).length&&lv>=2?`${B.c<0?'(−'+Math.abs(B.c)+')':B.c}<sup>${p}</sup> · ${Object.keys(B.e).map(k=>k+'<sup>'+B.e[k]+'·'+p+'</sup>').join(' · ')}`:'';
+ return{q:`(${bs})<sup>${p}</sup> =`,w,a:teS([R])};}
+TEX.tpo={gen:(it,lv)=>tePo(it,lv),
+ blk:(it,X)=>{const md=it.md||'mix',t=md==='mul'?'Multipliziere und schreibe als eine Potenz!':md==='div'?'Dividiere und schreibe als eine Potenz!':md==='pot'?'Potenziere!':'Berechne! (multiplizieren, dividieren, potenzieren)';
+  return (it.mk?teMk('Gleiche Basis, <b>multiplizieren</b>: Hochzahlen addieren: a<sup>2</sup> · a<sup>3</sup> = a<sup>5</sup>. <b>Dividieren</b>: Hochzahlen subtrahieren: x<sup>5</sup> : x<sup>3</sup> = x<sup>2</sup>. <b>Potenzieren</b>: Hochzahlen multiplizieren: (2a<sup>2</sup>)<sup>3</sup> = 8a<sup>6</sup>. Koeffizienten (Zahlen) rechnet man extra.'):'')+X.H1(t)+tlGrid(X.co,X.D.map((t,i)=>`<div style="position:relative;break-inside:avoid">${X.BT(it,i)}${X.row(i,t.q,it.zw&&t.w?'':t.a,6)}${it.zw&&t.w?X.sub('=',t.w,6)+X.sub('=',t.a,6):''}</div>`).join(''));},
+ pan:(it,X)=>`<label>Aufgabenart${X.sl('md',[['mix','gemischt'],['mul','Multiplizieren'],['div','Dividieren'],['pot','Potenzieren']])}</label>`+X.nn([2,4,6,8,10,12,16])+X.lv([[1,'1 · nur Variable'],[2,'2 · mit Zahlen'],[3,'3 · zwei Variablen']])+X.co([1,2,3])+X.ck('zw','Zwischenzeile (bei Stufe 2)')+X.ck('mk','Merkkasten')};
+function teKM(it,lv){let md=it.md||'mix';if(md==='mix')md=tpick(['mm','ek']);const[v1,v2]=teVP(),sg=()=>Math.random()<.5?1:-1,T=(c,v,e)=>teC(c,v,e);
+ if(md==='mm'){const vv=lv>=2&&Math.random()<.5?v2:'';
+  const M1=lv<3?T(kri(1,5),v1):T(kri(1,4),v1,kri(1,2)),M2=lv<3?T(kri(1,4),v1):T(kri(1,3),v1,kri(1,2));
+  const q1=lv===3?[T(kri(1,4),v1,2),T(sg()*kri(1,5),vv||v1)]:[T(kri(1,5),v1),T(sg()*kri(1,6),vv)],q2=lv===3?[T(kri(1,4),v1),T(sg()*kri(1,5),'')]:[T(kri(1,5),v1),T(sg()*kri(1,6),vv)];
+  const op=Math.random()<.65?-1:1,P1=teMul([M1],q1),P2=teMul([M2],q2),first=Math.random()<.5,qq=first?`${teMo(M1)} · (${teS(q1)})`:`(${teS(q1)}) · ${teMo(M1)}`,q=`${qq} ${op<0?'−':'+'} ${teMo(M2)} · (${teS(q2)}) =`;
+  const w=`${teS(P1)} ${op<0?'− ('+teS(P2)+')':'+ '+teS(P2)}`,L=[...P1,...(op<0?teNeg(P2):P2)];return{q,w,a:teS(teN(L)),_l:L};}
+ /* eckige Klammern */
+ const ct=()=>kri(1,9),IN=[T(kri(1,5),v1),T(sg()*ct(),lv>=2&&Math.random()<.5?v2:'')],mid=[{s:1,t:[Math.random()<.5?T(kri(1,6),v1):T(ct(),'')]},{s:Math.random()<.8?-1:1,b:Math.random()<.5?IN:IN.slice().reverse()},{s:sg(),t:[T(sg()*ct(),Math.random()<.4?v1:'')]}];
+ const o1=T(kri(2,9),v1),so=Math.random()<.7?-1:1,mL=teExp(mid),L=[...[o1],...mL.map(t=>({c:so*t.c,e:t.e}))],midS=teSeg(mid),
+  q=`${teMo(o1)} ${so<0?'−':'+'} [${midS}] =`,w1=`${teMo(o1)} ${so<0?'−':'+'} [${teS(mL)}]`,w2=teS(L);
+ return{q,w:w1+' = '+w2,a:teS(teN(L)),_l:L};}
+TEX.tkx={gen:(it,lv)=>teKM(it,lv),
+ blk:(it,X)=>{const md=it.md||'mix',t=md==='mm'?'Multipliziere, löse die Klammern auf und fasse zusammen!':md==='ek'?'Löse zuerst die runden, dann die eckigen Klammern auf und fasse zusammen!':'Löse die Klammern auf, multipliziere und fasse zusammen!';
+  return (it.mk?teMk('Rechne von innen nach außen: zuerst die runden Klammern, dann die eckigen. Vor einer Klammer mit <b>−</b> ändern sich alle Rechenzeichen in der Klammer. Beim Multiplizieren: jedes Glied in der Klammer mal das Monom.'):'')+X.H1(t)+tlGrid(X.co,X.D.map((t,i)=>`<div style="position:relative;break-inside:avoid">${X.BT(it,i)}${X.row(i,t.q,it.zw&&t.w?'':t.a,6)}${it.zw&&t.w?X.sub('=',t.w,6)+X.sub('=',t.a,6):''}</div>`).join(''));},
+ pan:(it,X)=>`<label>Aufgabenart${X.sl('md',[['mix','gemischt'],['mm','Multiplizieren und Subtrahieren'],['ek','Eckige und runde Klammern']])}</label>`+X.nn([2,3,4,6,8,10])+X.lv([[1,'1 · eine Variable'],[2,'2 · zwei Variablen'],[3,'3 · mit Potenzen']])+X.co([1,2])+X.ck('zw','Zwischenzeilen')+X.ck('mk','Merkkasten')};
 /* ===== Stellenwerttabelle ===== */
 const SWC=[['B','Billionen'],['HMd','Hundertmilliarden'],['ZMd','Zehnmilliarden'],['Md','Milliarden'],['HM','Hundertmillionen'],['ZM','Zehnmillionen'],['M','Millionen'],['HT','Hunderttausender'],['ZT','Zehntausender'],['T','Tausender'],['H','Hunderter'],['Z','Zehner'],['E','Einer']];
 const SWD=[['z','Zehntel'],['h','Hundertstel'],['t','Tausendstel'],['zt','Zehntausendstel'],['ht','Hunderttausendstel'],['m','Millionstel']];
