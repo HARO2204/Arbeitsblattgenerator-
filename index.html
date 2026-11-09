@@ -5600,7 +5600,7 @@ TEX.trf={gen:(it,lv)=>trGen(it,lv),
  pan:(it,X)=>`<label>Figur${X.sl('md',[['mix','gemischt'],['rect','Rechteck: Umfang und Fläche'],['szg','Streckenzug'],['dre','Dreieck: Umfang']])}</label>`+X.nn([1,2,3,4,6]).replace('x','x')+X.lv([[1,'1 · Monome'],[2,'2 · mit Binomen'],[3,'3 · zwei Variablen']])+X.co([1,2])+X.ck('zw','Zwischenzeilen')+X.ck('mk','Merkkasten')};
 /* ===== Terme: Wertetabellen, Gleichungen, Text, Abbildungen ===== */
 TET.push('twt','tgl','ttx','tza');TLT.push('twt','tgl','ttx','tza');
-Object.assign(TLD,{twt:{n:3,md:'mix',lv:1,mk:false},tgl:{n:4,md:'mix',lv:1,co:2,zw:false,pr:false,mk:false},ttx:{n:6,md:'mix',lv:1,co:2,mk:false},tza:{n:1,md:'mix',lv:1,mk:false}});
+Object.assign(TLD,{twt:{n:3,md:'mix',lv:1,co:1,mk:false},tgl:{n:4,md:'mix',lv:1,co:2,zw:false,pr:false,mk:false},ttx:{n:6,md:'mix',lv:1,co:2,mk:false},tza:{n:1,md:'mix',lv:1,mk:false}});
 Object.assign(TLN,{twt:'Wertetabelle zu einem Term',tgl:'Terme und Gleichungen',ttx:'Terme aus Text aufstellen',tza:'Terme zu Abbildungen zuordnen'});
 const tx4Fa={2:'Doppelte',3:'Dreifache',4:'Vierfache',5:'Fünffache',6:'Sechsfache',7:'Siebenfache',8:'Achtfache',9:'Neunfache'};
 const tx4M=v=>(v<0?'−'+(-v):String(v));
@@ -5615,19 +5615,24 @@ function twGen(it,lv){let md=it.md||'mix';if(md==='mix')md=tpick(['ein','ein','z
   else if(lv===2){T=tpick([{s:`${a} · (x + ${b})`,f:x=>a*(x+b)},{s:`(x + ${b}) · ${a}`,f:x=>a*(x+b)},{s:`${a}x + ${b}x`,f:x=>(a+b)*x},{s:`${b+a*10} − ${a}x`,f:x=>b+a*10-a*x},{s:`${a}x + ${b} · ${c}`,f:x=>a*x+b*c},{s:`${a} · (x + ${b}) + ${c}`,f:x=>a*(x+b)+c},{s:`${a+b}x − ${b}x`,f:x=>a*x},{s:`${a}x + ${b}x + ${c}`,f:x=>(a+b)*x+c},{s:`${c} · (${a}x + ${b})`,f:x=>c*(a*x+b)}]);}
   else{const cc=kri(1,4);T=tpick([{s:`x<sup>2</sup> + ${b}`,f:x=>x*x+b},{s:`${a}x<sup>2</sup> − ${b}`,f:x=>a*x*x-b},{s:`(x + ${cc})<sup>2</sup>`,f:x=>(x+cc)*(x+cc)},{s:`(x − ${cc})<sup>2</sup>`,f:x=>(x-cc)*(x-cc)},{s:`${a}x − ${b}`,f:x=>a*x-b},{s:`x<sup>2</sup> + ${a}x`,f:x=>x*x+a*x},{s:`(x + ${cc}) · (x − ${cc})`,f:x=>x*x-cc*cc},{s:`${a} − x<sup>2</sup>`,f:x=>a-x*x},{s:`${c}x<sup>2</sup> + ${b}x`,f:x=>c*x*x+b*x}]);}
  }else{
-  const d=kri(1,9);gl=Math.random()<.5;
-  if(lv===3){const q=tpick([0,1,2]);T=q<2?{s:`(x + ${d})<sup>2</sup>`,f:x=>(x+d)*(x+d)}:{s:`(x − ${d})<sup>2</sup>`,f:x=>(x-d)*(x-d)};
-   T2=q<2?(gl?{s:`x<sup>2</sup> + ${2*d}x + ${d*d}`,f:x=>x*x+2*d*x+d*d}:tpick([{s:`x<sup>2</sup> + ${d*d}`,f:x=>x*x+d*d},{s:`x<sup>2</sup> + ${d}x + ${d*d}`,f:x=>x*x+d*x+d*d}])):(gl?{s:`x<sup>2</sup> − ${2*d}x + ${d*d}`,f:x=>x*x-2*d*x+d*d}:tpick([{s:`x<sup>2</sup> − ${d*d}`,f:x=>x*x-d*d},{s:`x<sup>2</sup> − ${2*d}x − ${d*d}`,f:x=>x*x-2*d*x-d*d}]));}
-  else{const o=tpick([0,1]);
+  const d=kri(1,9);it._gl=it._gl===undefined?Math.random()<.5:!it._gl;gl=it._gl;
+  const NT=lv===3?3:4;it._ord=(it._ord&&it._ord.length===NT&&it._i<NT-1)?it._ord:tshuf(Array.from({length:NT},(_,z)=>z));it._i=(it._ord===it._o2&&it._i!==undefined)?it._i+1:0;it._o2=it._ord;const o=it._ord[it._i];
+  if(lv===3){
+   if(o===0){T={s:`(x + ${d})<sup>2</sup>`,f:x=>(x+d)*(x+d)};T2=gl?{s:`x<sup>2</sup> + ${2*d}x + ${d*d}`,f:x=>x*x+2*d*x+d*d}:tpick([{s:`x<sup>2</sup> + ${d*d}`,f:x=>x*x+d*d},{s:`x<sup>2</sup> + ${d}x + ${d*d}`,f:x=>x*x+d*x+d*d}]);}
+   else if(o===1){T={s:`(x − ${d})<sup>2</sup>`,f:x=>(x-d)*(x-d)};T2=gl?{s:`x<sup>2</sup> − ${2*d}x + ${d*d}`,f:x=>x*x-2*d*x+d*d}:tpick([{s:`x<sup>2</sup> − ${d*d}`,f:x=>x*x-d*d},{s:`x<sup>2</sup> − ${2*d}x − ${d*d}`,f:x=>x*x-2*d*x-d*d}]);}
+   else{T={s:`(x + ${d}) · (x − ${d})`,f:x=>x*x-d*d};T2=gl?{s:`x<sup>2</sup> − ${d*d}`,f:x=>x*x-d*d}:tpick([{s:`x<sup>2</sup> + ${d*d}`,f:x=>x*x+d*d},{s:`x<sup>2</sup> − ${2*d}x`,f:x=>x*x-2*d*x}]);}}
+  else{
    if(o===0){T={s:`${c} · (x + ${d})`,f:x=>c*(x+d)};T2=gl?{s:`${c}x + ${c*d}`,f:x=>c*x+c*d}:tpick([{s:`${c}x + ${d}`,f:x=>c*x+d},{s:`${c}x + ${c*d+1}`,f:x=>c*x+c*d+1},{s:`${c+1}x + ${c*d}`,f:x=>(c+1)*x+c*d}]);}
-   else{T={s:`${c}x + ${d}x`,f:x=>(c+d)*x};T2=gl?{s:`${c+d}x`,f:x=>(c+d)*x}:tpick([{s:`${c+d}x<sup>2</sup>`,f:x=>(c+d)*x*x},{s:`${c*d}x`,f:x=>c*d*x}]);if(!gl&&c+d===c*d){T2={s:`${c+d}x<sup>2</sup>`,f:x=>(c+d)*x*x};}}}
+   else if(o===1){T={s:`${c}x + ${d}x`,f:x=>(c+d)*x};T2=gl?{s:`${c+d}x`,f:x=>(c+d)*x}:tpick([{s:`${c+d}x<sup>2</sup>`,f:x=>(c+d)*x*x},{s:`${c*d}x`,f:x=>c*d*x}]);if(!gl&&c+d===c*d)T2={s:`${c+d}x<sup>2</sup>`,f:x=>(c+d)*x*x};}
+   else if(o===2){T={s:`x + ${c}x`,f:x=>(1+c)*x};T2=gl?{s:`${c+1}x`,f:x=>(c+1)*x}:{s:`${c}x`,f:x=>c*x};}
+   else{const e2=Math.max(2,d);T={s:`${c} · ${e2}x`,f:x=>c*e2*x};T2=gl?{s:`${c*e2}x`,f:x=>c*e2*x}:tpick([{s:`${c+e2}x`,f:x=>(c+e2)*x},{s:`${c*e2}`,f:x=>c*e2}]);if(!gl&&c*e2===c+e2)T2={s:`${c*e2}`,f:x=>c*e2};}}
  }
  return{md,xs,T,T2,gl:T2?gl:null};}
-function twTab(it,d,rows,xs){return `<table style="border-collapse:collapse;margin:.3em 0"><tr><th style="${tx4Th}">x</th>${xs.map(x=>`<td style="${tx4Th}width:3.2em">${tx4M(x)}</td>`).join('')}</tr>${rows.map(r=>`<tr><th style="${tx4Th}white-space:nowrap">${r.l}</th>${xs.map(x=>`<td style="${tx4Th}height:1.9em">${tlSv(it,tx4M(r.f(x)))}</td>`).join('')}</tr>`).join('')}</table>`;}
+function twTab(it,d,rows,xs,cp){const W=cp?'2.4em':'3.2em',Th=cp?tx4Th.replace('.15em .5em','.15em .3em'):tx4Th;return `<table style="border-collapse:collapse;margin:.3em 0"><tr><th style="${Th}">x</th>${xs.map(x=>`<td style="${Th}width:${W}">${tx4M(x)}</td>`).join('')}</tr>${rows.map(r=>`<tr><th style="${Th}white-space:nowrap">${r.l}</th>${xs.map(x=>`<td style="${Th}height:1.9em">${tlSv(it,tx4M(r.f(x)))}</td>`).join('')}</tr>`).join('')}</table>`;}
 TEX.twt={gen:(it,lv)=>twGen(it,lv),
  blk:(it,X)=>{const md=it.md||'mix',t=md==='zwei'?'Berechne die Werte beider Terme. Sind die Terme gleichwertig?':md==='ein'?'Erstelle eine Wertetabelle! Setze für x die Zahlen ein und berechne den Term.':'Erstelle Wertetabellen! Setze für x die Zahlen ein. Bei zwei Termen: Sind sie gleichwertig?';
-  return (it.mk?teMk('Eine <b>Wertetabelle</b> zeigt, welchen Wert ein Term für verschiedene Zahlen annimmt: Man setzt für x der Reihe nach Zahlen ein und rechnet aus. <b>Gleichwertige Terme</b> haben für jede eingesetzte Zahl denselben Wert.'):'')+X.H1(t)+X.D.map((d,i)=>`<div style="position:relative;break-inside:avoid;margin-bottom:.7em">${X.BT(it,i)}<div><b>${poL(i)}</b> ${d.T2?`T<sub>1</sub>(x) = ${d.T.s} &nbsp;&nbsp; T<sub>2</sub>(x) = ${d.T2.s}`:`T(x) = ${d.T.s}`}</div>${twTab(it,d,d.T2?[{l:'T<sub>1</sub>(x)',f:d.T.f},{l:'T<sub>2</sub>(x)',f:d.T2.f}]:[{l:'T(x)',f:d.T.f}],d.xs)}${d.T2?`<div>Die Terme sind gleichwertig: ${tx4Box(tlS(it)&&d.gl)} ja &nbsp; ${tx4Box(tlS(it)&&!d.gl)} nein</div>`:''}</div>`).join('');},
- pan:(it,X)=>`<label>Aufgabenart${X.sl('md',[['mix','gemischt'],['ein','ein Term: Wertetabelle'],['zwei','zwei Terme vergleichen']])}</label>`+X.nn([1,2,3,4]).replace('x','x')+X.lv([[1,'1 · einfache Terme'],[2,'2 · mit Klammern'],[3,'3 · Quadrate, negative x']])+X.ck('mk','Merkkasten')};
+  return (it.mk?teMk('Eine <b>Wertetabelle</b> zeigt, welchen Wert ein Term für verschiedene Zahlen annimmt: Man setzt für x der Reihe nach Zahlen ein und rechnet aus. <b>Gleichwertige Terme</b> haben für jede eingesetzte Zahl denselben Wert.'):'')+X.H1(t)+tlGrid(X.co,X.D.map((d,i)=>`<div style="position:relative;break-inside:avoid;margin-bottom:.7em">${X.BT(it,i)}<div><b>${poL(i)}</b> ${d.T2?`T<sub>1</sub>(x) = ${d.T.s} &nbsp;&nbsp; T<sub>2</sub>(x) = ${d.T2.s}`:`T(x) = ${d.T.s}`}</div>${twTab(it,d,d.T2?[{l:'T<sub>1</sub>(x)',f:d.T.f},{l:'T<sub>2</sub>(x)',f:d.T2.f}]:[{l:'T(x)',f:d.T.f}],d.xs,+it.co===2)}${d.T2?`<div>Die Terme sind gleichwertig: ${tx4Box(tlS(it)&&d.gl)} ja &nbsp; ${tx4Box(tlS(it)&&!d.gl)} nein</div>`:''}</div>`).join(''));},
+ pan:(it,X)=>`<label>Aufgabenart${X.sl('md',[['mix','gemischt'],['ein','ein Term: Wertetabelle'],['zwei','zwei Terme vergleichen']])}</label>`+X.nn([1,2,3,4,6]).replace('x','x')+X.lv([[1,'1 · einfache Terme'],[2,'2 · mit Klammern'],[3,'3 · Quadrate, negative x']])+X.co([1,2])+X.ck('mk','Merkkasten')};
 /* ---------- Gleichungen ---------- */
 function tgLoes(lv){let x0,s,st,pr;
  if(lv===1){const w=kri(0,2);x0=kri(2,12);const a=kri(2,9);
