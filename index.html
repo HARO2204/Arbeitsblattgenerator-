@@ -98,6 +98,7 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 .tlx .tlc{display:inline-flex;align-items:center;justify-content:center;width:1.5em;height:1.5em;border:1.4px solid #000;border-radius:50%;vertical-align:middle;margin:0 .15em;box-sizing:border-box}
 .tlx .item.zfk [style*="repeating-linear-gradient"]{background:linear-gradient(#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm,linear-gradient(90deg,#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm!important;min-height:15mm!important;border:1px solid #9cc3e6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .item.zfk .tlln[style*="display:block"],.item.zfk [style*="flex:1"]>.ln,.item.zfk [style*="border-bottom:1.2px solid #bbb"]{border:none!important;min-height:10mm!important;height:auto;background:linear-gradient(#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm,linear-gradient(90deg,#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.tlnol .tlln{border-bottom-color:transparent!important}
 .tlln{display:inline-block;border-bottom:1.2px solid #555;min-width:6em;min-height:1.35em;vertical-align:bottom;text-align:left;padding:0 .2em;box-sizing:border-box}
 .tlx .sv{color:#c0392b;font-weight:700}.tlx .tlrw{display:flex;align-items:flex-end;gap:.35em;margin:.3em 0}
 .tlx table.tltb{border-collapse:collapse;width:100%;table-layout:fixed}.tlx .tltb th,.tlx .tltb td{border:1.5px solid #000;text-align:center;height:1.9em;padding:.15em .3em;font-weight:inherit}.tlx .tltb th{font-weight:700}
@@ -2752,7 +2753,7 @@ function teBlock(it){NUMIT=it;const k=it.type,co=+it.co||1,D=it.d||[],S=tlS(it);
  else if(k==='tbk')h=(it.mk?teMk('Zahlen so zerlegen, dass man die binomischen Formeln im Kopf anwenden kann: 102<sup>2</sup> = (100 + 2)<sup>2</sup> = 10 000 + 400 + 4 = 10 404 · 49 · 51 = (50 − 1) · (50 + 1) = 2 500 − 1 = 2 499.'):'')+H1('Rechne geschickt mit den binomischen Formeln im Kopf!')+tlGrid(co,D.map((t,i)=>`<div style="position:relative;break-inside:avoid">${BT(it,i)}${row(i,t.q,it.zw?'':t.a,6)}${it.zw?sub('=',t.w,6)+sub('=',t.a,6):''}</div>`).join(''));
  else if(k==='tbw')h=(it.mk?teMk(teBF3):'')+H1('Sind die Aussagen richtig oder falsch? Kreuze an'+(it.ko?' und korrigiere die falschen Aussagen!':'!'))+`<table style="border-collapse:collapse;width:100%"><tr><th style="${th}">Nr.</th><th style="${th}">Aussage</th><th style="${th}">richtig</th><th style="${th}">falsch</th></tr>${D.map((t,i)=>`<tr><td style="${th}text-align:center;position:relative">${BT(it,i)}${i+1}</td><td style="${th}">${t.q}${it.ko?`<div class="tlrw" style="margin-top:.3em"><span style="white-space:nowrap;font-size:.9em">richtig:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,t.ok?'':t.l+' = '+t.a)}</span></div>`:''}</td>${bx(S&&t.ok)}${bx(S&&!t.ok)}</tr>`).join('')}</table>`;
  if(TEX[k])h=TEX[k].blk(it,{row,sub,H1,BT,co,D,S});
- return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ return `<div class="tlx${it.nl?' tlnol':''}" style="${kst(it)}">${h}</div>`;}
 function renderTe(){const g=$('#g-te'),it=items.find(i=>i.id===sel&&TET.includes(i.type));if(!g)return;
  if(!it){g.innerHTML='<div style="font-size:12px;color:var(--mut)">Aufgabe links anklicken bzw. aufs Blatt ziehen. Zum Ändern auf dem Blatt markieren.</div>';return;}
  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o)=>`<select data-te="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-te="${f}"${it[f]?' checked':''}> ${t}</label>`;
@@ -2769,7 +2770,7 @@ function renderTe(){const g=$('#g-te'),it=items.find(i=>i.id===sel&&TET.includes
  if(k==='tbk')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['q','Quadrate (z. B. 102²)'],['p','Produkte (z. B. 49 · 51)']])}</label>`+nn([2,3,4,6,8,10])+co([1,2])+ck('zw','Zwischenzeile (Rechenweg)')+ck('mk','Merkkasten');
  if(k==='tbw')H+=nn([3,4,5,6,8,10])+lv(L4.slice(0,3))+ck('ko','Falsche Aussagen korrigieren')+ck('mk','Merkkasten (Formeln)');
  if(TEX[k])H+=TEX[k].pan(it,{sl,nn,co,lv,ck,tN,L4});
- H+=ck('show','Lösung zeigen')+'<button data-te-act="mix">Neu mischen</button>';g.innerHTML=H;}
+ H+=ck('nl','Ohne Antwortlinien (Kinder rechnen ins Heft)')+ck('show','Lösung zeigen')+'<button data-te-act="mix">Neu mischen</button>';g.innerHTML=H;}
 const teHandler=e=>{const t=e.target,k=t.dataset.te;if(!k)return;const it=items.find(i=>i.id===sel&&TET.includes(i.type));if(!it)return;if(e.type==='change')return;
  rec('te'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','lv','co','nt'].includes(k))v=+v;it[k]=v;
  if(['n','lv','md','nt'].includes(k))teGen(it);render();if(['md'].includes(k))renderProps();};
