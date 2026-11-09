@@ -2687,9 +2687,9 @@ function teA(it,lv){const md=it.md||'wert';
  const nm=`T(${vs.join('; ')})`;
  return{k:'w',T:`${nm} = ${teS(P)}`,rows:vals.map(v=>({q:`T(${v.map(x=>String(x).replace('-','−')).join('; ')}) =`,a:`${sub(v)} = ${String(teEv(P,Object.fromEntries(vs.map((k,i)=>[k,v[i]])))).replace('-','−')}`}))};}
 /* Zusammenfassen */
-function teZ(it,lv){const nt=Math.max(3,+it.nt||5),[v1,v2]=teVP(),sh=lv===1?[teC(1,v1)]:lv===2?[teC(1,v1),teC(1,v2)]:tshuf([teC(1,v1),teC(1,v2),teC(1,v1,2),teC(1,'')]).slice(0,3);
+function teZ(it,lv){const VS=lv>=4?tpick([['x','y','z','w'],['a','b','c','d'],['m','n','p','q'],['r','s','t','u']]).slice(0,lv-1):null,nt=Math.max(lv>=4?lv:3,+it.nt||5),[v1,v2]=VS?[VS[0],VS[1]]:teVP(),sh=VS?VS.map(v=>teC(1,v)):lv===1?[teC(1,v1)]:lv===2?[teC(1,v1),teC(1,v2)]:tshuf([teC(1,v1),teC(1,v2),teC(1,v1,2),teC(1,'')]).slice(0,3);
  let L,R,g=0;do{L=[];for(let i=0;i<nt;i++){const t=i<sh.length?sh[i]:tpick(sh),c=kri(1,lv===1?9:8);L.push({c:(Math.random()<(i?.45:.2)?-1:1)*c,e:t.e});}L=tshuf(L);R=teN(L);g++;}while((!R.length||R.length>=L.length||(lv>1&&R.length<2&&g<40))&&g<80);
- const pv={[v1]:kri(1,4),[v2]:kri(1,4),};return{q:teS(L)+' =',a:teS(R),pv:`${v1} = ${pv[v1]}${lv>1?'; '+v2+' = '+pv[v2]:''}`,p1:String(teEv(L,pv)).replace('-','−'),p2:String(teEv(R,pv)).replace('-','−'),_l:L,_r:R};}
+ const pv={[v1]:kri(1,4),[v2]:kri(1,4)};if(VS)VS.forEach(v=>pv[v]=kri(1,4));return{q:teS(L)+' =',a:teS(R),pv:VS?VS.map(v=>`${v} = ${pv[v]}`).join('; '):`${v1} = ${pv[v1]}${lv>1?'; '+v2+' = '+pv[v2]:''}`,p1:String(teEv(L,pv)).replace('-','−'),p2:String(teEv(R,pv)).replace('-','−'),_l:L,_r:R};}
 /* Klammern */
 function teK2(it,lv){const[v1,v2]=teVP();let segs=[];const sg=()=>Math.random()<.5?1:-1,T=(c,v)=>({c,e:v?{[v]:1}:{}}),ct=()=>kri(1,9);
  if(lv===1){segs=[{s:1,t:[Math.random()<.5?T(ct()+1,''):T(kri(2,5),v1)]},{s:sg(),b:[T(Math.random()<.5?kri(1,5):1,v1),T(sg()*ct(),'')]}];if(segs[0].t[0].e[v1]===undefined&&segs[1].b[0].c===0)segs[1].b[0].c=1;}
@@ -2761,7 +2761,7 @@ function renderTe(){const g=$('#g-te'),it=items.find(i=>i.id===sel&&TET.includes
  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
  const L4=[[1,'1 · einfach'],[2,'2 · mittel'],[3,'3 · schwerer'],[4,'4 · knifflig']];
  if(k==='tea')H+=`<label>Aufgabenart${sl('md',[['wert','Wert eines Terms berechnen'],['art','Monom, Binom oder Polynom?'],['sch','Kürzeste Schreibweise']])}</label>`+nn([2,4,6,8,10])+(it.md==='art'?'':lv([[1,'1 · eine Variable, linear'],[2,'2 · zwei Variablen / x²'],[3,'3 · auch negative Zahlen']]))+co([1,2,3])+ck('mk','Merkkasten');
- if(k==='tez')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · eine Variable'],[2,'2 · zwei Variablen'],[3,'3 · Potenzen und Zahlen']])+`<label>Anzahl der Glieder${sl('nt',tN([3,4,5,6,7,8]))}</label>`+co([1,2])+ck('pr','Probe mit Zahlen')+ck('mk','Merkkasten');
+ if(k==='tez')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · eine Variable'],[2,'2 · zwei Variablen'],[3,'3 · Potenzen und Zahlen'],[4,'4 · drei Variablen'],[5,'5 · vier Variablen']])+`<label>Anzahl der Glieder${sl('nt',tN([3,4,5,6,7,8]))}</label>`+co([1,2])+ck('pr','Probe mit Zahlen')+ck('mk','Merkkasten');
  if(k==='tek')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · Zahl und Variable'],[2,'2 · Variablen, auch zwei'],[3,'3 · zwei Klammern']])+co([1,2])+ck('zw','Zwischenzeile (Klammern aufgelöst)')+ck('mk','Merkkasten (Klammerregeln)');
  if(k==='tem')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['mm','Monom · Monom'],['mb','Monom · Binom'],['mp','Monom · Polynom'],['bb','Binom · Binom']])}</label>`+nn([2,4,6,8,10,12,14,16])+lv(L4)+co([1,2,3])+ck('zw','Zwischenzeile (jedes Glied einzeln)')+ck('mk','Merkkasten');
  if(k==='teh')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · nur Zahlen herausheben'],[2,'2 · nur Variable herausheben'],[3,'3 · Zahl und Variable'],[4,'4 · auch Potenzen']])+co([1,2])+ck('pr','Probe (Ausmultiplizieren)')+ck('mk','Merkkasten');
