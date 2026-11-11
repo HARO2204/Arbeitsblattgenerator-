@@ -8401,8 +8401,8 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
 /* ===== Drei Niveaus (leicht / mittel / schwer) ===== */
 (function(){
  const NAMES=['Niveau 1 · leicht','Niveau 2 · mittel','Niveau 3 · schwer'];
- const LVK={'*':['lv'],cmp:['max'],nb:['max'],as:['nd'],ugk:['mx'],sa:['ar'],sz:['zm'],swt:['nd'],swl:['nd'],tpr:['mx'],tsv:['mx'],ssm:['mx'],vs:['zr'],vk:['zr','gr'],vr:['zr'],vl:['zr'],vp:['zr'],vt:['zr'],vf:['zr']};
- const KL={lv:'Stufe',max:'Zahlenraum',mx:'Zahlenraum',nd:'Stellen',zr:'Stufe',gr:'Summanden',ar:'längste Strecke',zm:'längste Strecke'};
+ const LVK={'*':['lv'],cmp:['max'],nb:['max'],as:['nd'],ugk:['mx'],sa:['ar'],sz:['zm'],swt:['nd'],swl:['nd'],tpr:['mx'],tsv:['mx'],ssm:['mx'],vs:['zr'],vk:['zr','gr'],vr:['zr'],vl:['zr'],vp:['zr'],vt:['zr'],vf:['zr'],at:['xr'],ak:['la'],mm:['la','lb'],mv:['la','lb'],ms:['la','lb'],py:['pm'],rh:['hm'],rt:['tr'],rs:['sr'],mq:['qz'],poz:['mx'],um:['ur'],gzs:['mx'],bd:['bx'],be:['ex'],bz:['zx'],bvg:['mx']};
+ const KL={xr:'Zahlenraum',la:'Stellen (1. Zahl)',lb:'Stellen (2. Zahl)',pm:'Zahlenraum',hm:'Zahlenraum',tr:'Zahlenraum',sr:'Zahlenraum',qz:'Stufe',ur:'Umrechnung bis',bx:'größter Nenner',ex:'größter Nenner',zx:'größter Nenner',lv:'Stufe',max:'Zahlenraum',mx:'Zahlenraum',nd:'Stellen',zr:'Stufe',gr:'Summanden',ar:'längste Strecke',zm:'längste Strecke'};
  const SKIP=['frm','ckf','text','head','num','img','deko','tb'];
  const SELS=document.querySelector?'button[data-act="roll"],button[data-act="zroll"],button[data-act="rnd"],button[data-zzk-act="mix"],button[data-fk-act="mix"],button[data-wkk-act="mix"],button[data-zr-act="mix"],button[data-ug-act="mix"],button[data-tl-act="mix"],button[data-sw-act="mix"],button[data-ra-act="mix"],button[data-py-act="mix"],button[data-pr-act="mix"],button[data-po-act="mix"],button[data-md-act="mix"],button[data-ko-act="roll"],button[data-bd-act="roll"]':'';
  const wait=ms=>new Promise(r=>setTimeout(r,ms));
