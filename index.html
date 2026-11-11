@@ -99,6 +99,7 @@ body.pv .item{pointer-events:none}body.pv .item.sel{outline:none}body.pv .tb{bor
 .tlx .item.zfk [style*="repeating-linear-gradient"]{background:linear-gradient(#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm,linear-gradient(90deg,#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm!important;min-height:15mm!important;border:1px solid #9cc3e6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .item.zfk .tlln[style*="display:block"],.item.zfk [style*="flex:1"]>.ln,.item.zfk [style*="border-bottom:1.2px solid #bbb"]{border:none!important;min-height:10mm!important;height:auto;background:linear-gradient(#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm,linear-gradient(90deg,#9cc3e6 1px,transparent 1px) 0 0/5mm 5mm!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .tlnol .tlln{border-bottom-color:transparent!important}
+#sheet.heft .ln,#sheet.heft .tlln,#sheet.heft .tlrw .tlln{border-bottom-color:transparent!important}#sheet.heft .ln[style*="background-image"]{background-image:none!important}#sheet.heft .hk{border-color:transparent!important}#sheet.heft .hl{visibility:hidden}
 .tlln{display:inline-block;border-bottom:1.2px solid #555;min-width:6em;min-height:1.35em;vertical-align:bottom;text-align:left;padding:0 .2em;box-sizing:border-box}
 .tlx .sv{color:#c0392b;font-weight:700}.tlx .tlrw{display:flex;align-items:flex-end;gap:.35em;margin:.3em 0}
 .tlx table.tltb{border-collapse:collapse;width:100%;table-layout:fixed}.tlx .tltb th,.tlx .tltb td{border:1.5px solid #000;text-align:center;height:1.9em;padding:.15em .3em;font-weight:inherit}.tlx .tltb th{font-weight:700}
@@ -157,7 +158,7 @@ body.pv .pgb{display:none}
 <strong>Arbeitsblatt-Generator</strong> <button type="button" class="tg" id="tgL">☰ Elemente</button><button type="button" class="tg" id="tgR">⚙ Eigenschaften</button>
 <label><input type="checkbox" id="hn"> Name</label><select id="hnp" title="Name links oder rechts oben"><option value="l">links</option><option value="r">rechts</option></select><label><input type="checkbox" id="hdt"> Datum</label><label><input type="checkbox" id="hpg"> Seite</label><label><input type="checkbox" id="hu"> Unterschrift</label>
 <label><input type="checkbox" id="rahm"> Rahmen</label><label title="Wenn du eine Aufgabe aus der linken Spalte aufs Blatt ziehst, entsteht sie automatisch mit Nummer und Angabe (sobald das Blatt schon nummerierte Aufgaben enthält)"><input type="checkbox" id="autot" checked> Aufgabe automatisch nummerieren</label><label title="Art des Rahmens">Rahmenart <select id="rst"><option value="l">Linie</option><option value="b">Herbstblätter</option><option value="f">Blumen</option><option value="s">Schneeflocken</option><option value="h">Halloween</option><option value="e">Eistüten</option><option value="p">Bunte Punkte</option></select></label><label title="Farbe des Rahmens"><input type="color" id="rahmc" value="#000000" style="width:30px;height:24px;padding:0;border:1px solid #bbb;vertical-align:middle"></label><label title="Fußzeile auf jeder Seite: links | Mitte | Schuljahr">Fußzeile <select id="ft"><option value="0">keine</option><option value="1">Standard AHS | MS1 | Schuljahr</option><option value="2">Standard | MS1 | Schuljahr</option><option value="3">M1 | MS1 | Schuljahr</option><option value="4">frei wählbar …</option></select></label><button id="hfb" title="Kopfzeile und Fußzeile frei gestalten">✏️ Kopf-/Fußzeile</button><label title="Das Blatt wächst automatisch, wenn mehr Platz gebraucht wird. Hier kann eine Mindestzahl an Seiten festgelegt werden.">Seiten ab <select id="npg"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
-<label><input type="checkbox" id="solpdf" checked> Lösungsblatt im PDF</label><button id="symb" type="button" title="Mathematische Symbole und griechische Buchstaben einfügen">Σ Symbole</button>
+<label><input type="checkbox" id="solpdf" checked> Lösungsblatt im PDF</label><label title="Für alle Aufgaben auf dem Blatt: keine Antwortlinien, Karozeilen und Beschriftungen wie „Rechnung:“. Nur die Angabe bleibt, der Platz bleibt frei – die Kinder rechnen ins Heft."><input type="checkbox" id="heft"> Heft-Modus (nur Angabe)</label><button id="symb" type="button" title="Mathematische Symbole und griechische Buchstaben einfügen">Σ Symbole</button>
 <span class="sp"></span>
 <button id="undo" title="Rückgängig (Strg+Z)" disabled>↶ Rückgängig</button><button id="redo" title="Wiederholen (Strg+Y)" disabled>↷ Wiederholen</button><button id="del">Löschen</button><button id="clr">Blatt leeren</button><button id="pgo" title="Verschiebt Aufgaben, die über einen Seitenumbruch ragen, auf die nächste Seite">Seitenumbrüche ordnen</button><button id="qadd" title="Eine weitere Aufgabe unten am Blatt anfügen (Nummerierung läuft weiter, Tabelle wächst mit)">＋ Aufgabe anfügen</button><button id="pv">Vorschau</button><button class="pri" id="pdfb">PDF speichern</button><button id="prn">Drucken</button>
 <button class="pvonly" id="pvx">← Zurück zum Bearbeiten</button><button class="pvonly" id="pvl">Lösung anzeigen</button><button class="pvonly pri" id="pvp">Als PDF speichern</button><button class="pvonly" id="pvd">Drucken</button>
@@ -7497,7 +7498,7 @@ Object.entries(PRE).forEach(([c,list])=>{const box=document.querySelector('#left
 })();
 /* ===== Arbeitsblätter speichern / öffnen / alles neu würfeln ===== */
 (function(){
- const KEY='vk_blaetter_v1',CKS=['hn','hdt','hpg','hu','rahm','solpdf'];
+ const KEY='vk_blaetter_v1',CKS=['hn','hdt','hpg','hu','rahm','solpdf','heft'];
  const SELS='button[data-act="roll"],button[data-act="zroll"],button[data-act="rnd"],button[data-zzk-act="mix"],button[data-fk-act="mix"],button[data-wkk-act="mix"],button[data-zr-act="mix"],button[data-ug-act="mix"],button[data-tl-act="mix"],button[data-sw-act="mix"],button[data-ra-act="mix"],button[data-py-act="mix"],button[data-pr-act="mix"],button[data-po-act="mix"],button[data-md-act="mix"],button[data-ko-act="roll"],button[data-bd-act="roll"]';
  window.rollAll=function(){
   if(!items.length){toast('Das Blatt ist leer.');return;}
@@ -10239,4 +10240,17 @@ const S=SIM[k];o.querySelector("#smm").textContent="";o.querySelector("#smt").te
 document.addEventListener("click",e=>{if(e.target.closest("#smOpen"))open("fu");else if(e.target.closest("#smOpen2"))open("wi");else if(e.target.closest("#smOpen3"))open("br");else if(e.target.closest("#smOpen4"))open("ko");else if(e.target.closest("#smOpen5"))open("ge");else if(e.target.closest("#smOpen6"))open("kd");else if(e.target.closest("#smOpen7"))open("gl");else if(e.target.closest("#smOpen8"))open("py");else if(e.target.closest("#smOpen9"))open("kr");else if(e.target.closest("#smOpen10"))open("du");else if(e.target.closest("#smOpen11"))open("bi");else if(e.target.closest("#smOpen12"))open("er");else if(e.target.closest("#smOpen13"))open("gk");else if(e.target.closest("#smOpen14"))open("pe");else if(e.target.closest("#smOpenR"))open("pe");else if(e.target.closest("#smOpen15"))open("sk");else if(e.target.closest("#smOpen16"))open("dp");else if(e.target.closest("#smOpen17"))open("lq");else if(e.target.closest("#smOpen18"))open("jr");else if(e.target.closest("#smOpen19"))open("aw");else if(e.target.closest("#smOpen20"))open("kt");else if(e.target.closest("#smOpen21"))open("ab");});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&o)o.classList.remove("on");});
 for(const k in SIM)if(location.hash==="#"+SIM[k].h)setTimeout(()=>open(k),300);})();</script>
-</body></html>
+<script id="heftjs">(function(){try{
+const cb=document.getElementById('heft'),sh=document.getElementById('sheet');if(!cb||!sh)return;
+const RE=/^(➲\s*)?(Rechnung|Antwort(satz)?|Probe(\s*\(.*\))?|Gleichung|Lösung|Ergebnis|Zwischenrechnung|Rechenweg|Term|Hauptnenner|Fehlendes Glied):?$|^(\S{0,3}\s?)?=$/;
+let busy=false;
+function ap(){busy=true;try{sh.classList.toggle('heft',cb.checked);
+ sh.querySelectorAll('.hl').forEach(e=>{if(!cb.checked)e.classList.remove('hl')});
+ sh.querySelectorAll('div.hk').forEach(e=>{if(!cb.checked)e.classList.remove('hk')});
+ if(cb.checked){sh.querySelectorAll('span,div').forEach(e=>{if(!e.children.length&&RE.test((e.textContent||'').trim()))e.classList.add('hl');});
+  sh.querySelectorAll('div').forEach(e=>{if(e.style&&/border:\s*1px solid (#9cc3e6|rgb\(156, 195, 230\))/.test(e.getAttribute('style')||'')&&e.querySelector('.ln'))e.classList.add('hk');});}
+ }finally{busy=false;}}
+cb.addEventListener('change',()=>{ap();});
+let t=0;new MutationObserver(()=>{if(busy||!cb.checked)return;cancelAnimationFrame(t);t=requestAnimationFrame(ap);}).observe(sh,{childList:true,subtree:true});
+window.heftApply=ap;ap();
+}catch(e){console.error(e)}})();</script></body></html>
