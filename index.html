@@ -2766,6 +2766,66 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-p3-act]');
  L=[['pvr',T(50,17,'2 + 3 · 5²',12)+T(50,33,'= 77',12)],['pvz',T(50,17,'(−2)⁴ = ?',12)+T(50,33,'−2⁴ = ?',12)],['pka',T(50,17,'☐ −2³ = (−2)³',10)+T(50,33,'☐ −2⁴ = (−2)⁴',10)]];
  P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));
  const a=AST.find(x=>x[0]==='Potenzen');if(a)a[1].push(['pvr','Vorrangregeln mit Potenzen','Berechne! Beachte die Rechenreihenfolge.'],['pvz','Vorzeichen von Potenzen','Berechne und begründe, dass das Ergebnis positiv bzw. negativ ist!'],['pka','Potenzen: Aussagen prüfen','Kreuze die richtigen Aussagen an!']);})();
+/* ===== Potenzen 3: Zuordnen, Lücken, Produkt/Quotient potenzieren ===== */
+const P4T=['pvm','pvl','ppq'];POT.push(...P4T);TLT.push(...P4T);NUMT.push(...P4T);
+Object.assign(TLN,{pvm:'Potenzen: Ergebnis zuordnen',pvl:'Potenzen: Lücken ergänzen',ppq:'Produkt und Quotient potenzieren'});
+Object.assign(TLD,{pvm:{n:2,lv:2,co:1,mk:false},pvl:{n:6,lv:1,md:'a',co:2,mk:false},ppq:{n:6,md:'gem',lv:1,co:2,mk:false}});
+const p4Val=ts=>{let tot=rI(0);ts.forEach(t=>{const v=p3Tv(t);tot=rA(tot,t.s<0?{n:-v.n,d:v.d}:v);});return tot;};
+const p4Sg=v=>(v>0?'+':v<0?'−':'')+tfm(Math.abs(v));
+const p4Blank=(it,sol,w)=>`<span style="display:inline-block;min-width:${w||3.6}em;border-bottom:1.4px solid #000;text-align:center;vertical-align:bottom;line-height:1.25">${tlSv(it,sol)||'&nbsp;'}</span>`;
+function p4GenVm(it){const n=+it.n||2,lv=+it.lv||2,ABC='ABCDEF';
+ it.d=Array.from({length:n},()=>{let L=[],g=0;
+  while(L.length<4&&g++<300){const ts=p3Gen1(lv===1?1:lv);if(!p3Ok(ts,lv===1?1:lv))continue;const v=p4Val(ts);if(v.d!==1)continue;const q=ts.map((t,i)=>p3Tx(t,t.f.map(p3F0),!i)).join('');if(L.some(x=>x.v===v.n||x.q===q))continue;L.push({q,v:v.n});}
+  const vals=L.map(x=>x.v),dist=[];
+  for(const c of tshuf(vals.map(v=>-v).concat(vals.map(v=>v+tpick([-10,10,-1,1])),vals.map(v=>v*2)))){if(dist.length<2&&!vals.includes(c)&&!dist.includes(c)&&c!==0)dist.push(c);}
+  const R=tshuf(vals.concat(dist)).map((v,i)=>({l:ABC[i],v}));
+  return{L:L.map(x=>({q:x.q,l:R.find(r=>r.v===x.v).l})),R};});}
+function p4GenVl(it){const n=+it.n||4,lv=+it.lv||1;
+ it.d=tuniq(n,()=>{const b=tpick(lv===1?[2,3,4,5,6,-2,-3,-4]:[2,3,4,5,6,7,8,-2,-3,-4,-5,-6]),e=b<0?(lv===1?tpick([2,3,4]):kri(2,4)):(lv===1?tpick([2,3]):kri(2,3)),k=tpick(lv===1?[2,3,4,5,6]:[2,3,4,5,6,7,8,9,-2,-3,-4]),V=Math.pow(b,e),bs=b<0?`(−${-b})`:String(b),ks=k<0?`(−${-k})`:String(k),first=Math.random()<.7,res=first?k*V:V*k;
+  if(Math.abs(res)>900)return{q:'',a:'',b:''};
+  const pw=`${bs}${poS(e)}`,prod=Array(e).fill(bs).join(' · ');
+  return first?{k:ks,pw,pv:poM(V),pr:prod,res:poM(res),first:1}:{k:ks,pw,pv:poM(V),pr:prod,res:poM(res),first:0};}).filter(x=>x.k);}
+function p4GenPq(it){const n=+it.n||4,lv=+it.lv||1,md=it.md||'gem';
+ const mk=kind=>{
+  if(kind==='mt'){const a=kri(1,lv===1?6:9);let b=kri(1,lv===1?6:9);const m=Math.random()<.65;if(!m)while(b===a)b=kri(1,9);const L=m?(a+b)*(a+b):(a-b)*(a-b),R=m?a*a+b*b:a*a-b*b,o=m?'+':'−';
+   return{k:'mt',q:`(${a} ${o} ${b})${poS(2)} ≠ ${a}${poS(2)} ${o} ${b}${poS(2)}`,l:`(${a} ${o} ${b})${poS(2)} = ${m?(a+b):(a-b)}${poS(2)} = ${poM(L)}`,r:`${a}${poS(2)} ${o} ${b}${poS(2)} = ${a*a} ${o} ${b*b} = ${poM(R)}`};}
+  if(kind==='qu'){const k=kri(2,lv===1?4:6),b=kri(2,lv===1?6:9),e=kri(2,lv===1?5:9);if(k*b>(lv===1?30:60))return null;return{k:'qu',q:poF(`${k*b}${poS(e)}`,`${b}${poS(e)}`)+' =',s:`(${k*b} : ${b})${poS(e)} = ${k}${poS(e)}`};}
+  const a=kri(2,lv===1?5:7);let b=kri(2,lv===1?5:7);const e=kri(2,lv===1?5:8);if(lv>1&&Math.random()<.3){return{k:'pr',q:`${a}${poS(e)} · ${a*b}${poS(e)}`+' =',s:'',x:1};}
+  return{k:'pr',q:`${a}${poS(e)} · ${b}${poS(e)} =`,s:`(${a} · ${b})${poS(e)} = ${a*b}${poS(e)}`};};
+ it.d=tuniq(n,()=>{let t,g=0;do{const kd=md==='gem'?tpick(['pr','pr','qu','qu']):md;t=mk(kd);}while((!t||t.x)&&g++<50);return t||mk('pr');});}
+function p4Gen(it){if(it.type==='pvm')return p4GenVm(it);if(it.type==='pvl')return p4GenVl(it);return p4GenPq(it);}
+function p4Block(it){const k=it.type,co=+it.co||1;let h='';
+ if(k==='pvm'){h=it.d.map((B,bi)=>`<div style="display:flex;gap:1.6em;align-items:flex-start;margin:0 0 1.1em;break-inside:avoid"><b>${poL(bi)}</b><table class="tltb" style="flex:1"><tbody>${B.L.map(x=>`<tr><td style="text-align:left;padding:.15em .6em;white-space:nowrap">${x.q} =</td><td style="width:2.6em">${tlSv(it,x.l)}</td></tr>`).join('')}</tbody></table><table class="tltb" style="width:11em;flex:0 0 11em"><tbody>${B.R.map(r=>`<tr><td style="width:2.4em"><b>${r.l}</b></td><td>${p4Sg(r.v)}</td></tr>`).join('')}</tbody></table></div>`).join('');
+  h=(it.mk?poMk('Rechne jede Aufgabe aus und trage den passenden <b>Buchstaben</b> in das Feld ein. Zwei Ergebnisse bleiben übrig.'):'')+(co>1?tlGrid(co,h):h);}
+ else if(k==='pvl'){const md=it.md||'a';
+  h=(it.mk?poMk('Zuerst die <b>Potenz</b> berechnen, dann multiplizieren: 3 · (−2)² = 3 · 4 = 12.'):'')+tlGrid(co,it.d.map((t,i)=>{const lhs=t.first?`${t.k} · ${t.pw}`:`${t.pw} · ${t.k}`,mid=md==='b'?t.pr:t.pv,w=md==='b'?(t.pr.length>12?9:6):3;
+   const m=t.first?`${t.k} · ${p4Blank(it,md==='b'?t.pr:t.pv,w)}`:`${p4Blank(it,md==='b'?t.pr:t.pv,w)} · ${t.k}`;
+   return `<div style="white-space:nowrap;margin:0 0 1em;line-height:1.9"><b>${poL(i)}</b> ${lhs} = ${m} = ${p4Blank(it,t.res,3.6)}</div>`;}).join(''));}
+ else{h=(it.mk?poMk(`<b>Produkt:</b> (a · b)${poS('n')} = a${poS('n')} · b${poS('n')}<br><b>Quotient:</b> (a : b)${poS('n')} = a${poS('n')} : b${poS('n')}, b ≠ 0<br>Achtung: (a + b)${poS(2)} ≠ a${poS(2)} + b${poS(2)}!`):'');
+  const rows=it.d.map((t,i)=>{
+   if(t.k==='mt')return `<div style="margin:0 0 1em;break-inside:avoid"><div><b>${poL(i)}</b> Zeige: ${t.q}</div><div class="tlrw" style="margin:.4em 0 0 1.9em"><span style="white-space:nowrap">linke Seite:</span><span class="tlln" style="flex:1;min-width:8em">${tlSv(it,t.l)}</span></div><div class="tlrw" style="margin:.4em 0 0 1.9em"><span style="white-space:nowrap">rechte Seite:</span><span class="tlln" style="flex:1;min-width:8em">${tlSv(it,t.r)}</span></div></div>`;
+   return `<div class="tlrw" style="margin:0 0 .9em"><b>${poL(i)}</b><span style="white-space:nowrap">${t.q}</span><span class="tlln" style="flex:1;min-width:5em">${tlSv(it,t.s)}</span></div>`;});
+  h+=(it.md==='mt'?rows.join(''):tlGrid(co,rows.join('')));}
+ return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+{const _g=poGen,_b=poBlock,_r=renderPo;
+ poGen=function(it){return P4T.includes(it.type)?p4Gen(it):_g(it);};
+ poBlock=function(it){return P4T.includes(it.type)?p4Block(it):_b(it);};
+ renderPo=function(){const g=$('#g-po'),it=items.find(i=>i.id===sel&&P4T.includes(i.type));if(!g||!it)return _r();
+  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o,lab)=>`<label>${lab}<select data-p4="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-p4="${f}"${it[f]?' checked':''}> ${t}</label>`;
+  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+  if(k==='pvm')H+=sl('lv',[[1,'1 · Potenz und Punktrechnung'],[2,'2 · mit Strichrechnung'],[3,'3 · mit Klammern']],'Schwierigkeit')+sl('n',tN([1,2,3,4]),'Anzahl der Zuordnungen (a, b, c)')+sl('co',tN([1,2]),'Spalten')+ck('mk','Hinweis');
+  else if(k==='pvl')H+=sl('md',[['a','Potenz ausrechnen, dann Ergebnis'],['b','Potenz als Produkt schreiben, dann Ergebnis']],'Aufgabenart')+sl('lv',[[1,'1 · kleine Zahlen'],[2,'2 · größere Zahlen']],'Schwierigkeit')+sl('n',tN([2,4,6,8,10,12]),'Anzahl')+sl('co',tN([1,2,3]),'Spalten')+ck('mk','Merkkasten');
+  else H+=sl('md',[['gem','gemischt (Produkt, Quotient)'],['pr','Produkt: als Potenz schreiben'],['qu','Quotient: als Potenz schreiben'],['mt','(a + b)² ≠ a² + b² zeigen']],'Aufgabenart')+sl('lv',[[1,'1 · kleine Zahlen'],[2,'2 · größere Zahlen']],'Schwierigkeit')+sl('n',tN([2,3,4,6,8,10]),'Anzahl')+(it.md==='mt'?'':sl('co',tN([1,2,3]),'Spalten'))+ck('mk','Merkkasten (Regel)');
+  H+=ck('show','Lösung zeigen')+'<button data-p4-act="mix">Neu mischen</button>';g.innerHTML=H;};}
+$('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.p4;if(!k)return;const it=items.find(i=>i.id===sel&&P4T.includes(i.type));if(!it)return;
+ rec('p4'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','lv','co'].includes(k))v=+v;it[k]=v;
+ if(['n','lv','md'].includes(k))poGen(it);
+ render();if(k==='md')renderProps();});
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-p4-act]');if(!b)return;const it=items.find(i=>i.id===sel&&P4T.includes(i.type));if(!it)return;rec();poGen(it);render();});
+(function(){const P=$('#popal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
+ L=[['pvm',T(50,17,'4 · 3² = ☐   A  −24',9)+T(50,33,'(−4)·3² = ☐   B  36',9)],['pvl',T(50,17,'3 · (−2)² = 3 · __',11)+T(50,33,'= __',11)],['ppq',T(50,17,'3⁴ · 2⁴ = 6⁴',12)+T(50,33,'(a · b)ⁿ = aⁿ · bⁿ',10)]];
+ P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));
+ const a=AST.find(x=>x[0]==='Potenzen');if(a)a[1].push(['pvm','Potenzen: Ergebnis zuordnen','Ordne jeweils das richtige Ergebnis zu!'],['pvl','Potenzen: Lücken ergänzen','Ergänze die Lücken!'],['ppq','Produkt und Quotient potenzieren','Schreibe als Potenz mit einer Hochzahl!']);})();
 /* ===== Terme ===== */
 const TET=['tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw'];
 Object.assign(TLD,{tea:{n:6,md:'wert',lv:1,co:2,mk:false},tez:{n:6,lv:1,nt:5,pr:false,co:1,mk:false},tek:{n:6,lv:1,zw:true,co:2,mk:false},tem:{n:8,md:'mix',lv:1,zw:false,co:2,mk:false},teh:{n:6,lv:1,pr:false,co:2,mk:false},tbf:{n:6,md:'mix',lv:1,zw:true,co:2,mk:false},tbr:{n:6,md:'mix',lv:1,co:2,mk:false},tbk:{n:6,md:'mix',zw:true,co:1,mk:false},tbw:{n:6,lv:1,ko:false,co:1,mk:false}});
