@@ -2404,7 +2404,7 @@ function astPass(title,sel2,f,o){
  add('head',40,o.top);const hd=last();hd.text=title||'Arbeitsblatt';hd.w=714;hd.mh=10;render();
  end=o.top+HD(hd.id)+TB(hd.id);}
  if(seedRows)trows.push(...seedRows);else if(o.tbl){tblTop=end;end+=34;}
- astEntries(sel2,o.fam).forEach(({t,lbl,ins,th,own})=>{
+ astEntries(sel2,o.fam).forEach(({t,lbl,ins,th,own,set})=>{
   const n0=items.length;let rowTop=end;
   add('text',o.tbl?100:72,end);const tx=last();tx.text=ins;tx.w=o.tbl?(o.nc?650:566):682;tx.mh=10;tx.fs=cap>18?20:18;tx.fb=!!o.fb;render();const hdr=HD(tx.id)||18;tx.y=end+(o.tbl?5:o.gap)-hdr;
   add('n',40,tx.y+hdr);const nm=last();nm.fs=cap>18?26:23;render();if(o.tbl){nm.x=Math.round(68-E(nm.id).offsetWidth/2);}
@@ -2412,6 +2412,7 @@ function astPass(title,sel2,f,o){
   const top=tx.y+hdr+tb+(o.tbl?6:10);
   add(t,IX,top);const it=last();let lastIt=it;if(own){it.text='Aufgabe hier eingeben …\n\n\n';it.mh=10;it.fs=cap>18?20:18;}
   if('show' in it)it.show=false;if(it.fs>cap)it.fs=cap;if(th){it.th=th;try{zrGen(it);}catch(e){}}
+  if(set){Object.assign(it,set);try{tlGen(it);}catch(e){}}
   astScale(it,f,o.fam);
   if(it.type==='zs'){const cap2=z=>{z.len=String(Math.min(+z.len||10,Math.max(6,Math.floor((IW-40)/37.8))));};zsRoll(it,true);cap2(it);const rp=o.fam&&f>1.3?Math.min(4,Math.round(f)):1;it.w=Math.min(it.w,IW);it.x=IX;it.y=top;render();let yy=top+H(it.id)+8;for(let q=1;q<rp;q++){add(t,IX,yy);const c2=last();if('show' in c2)c2.show=false;zsRoll(c2,true);cap2(c2);c2.x=IX;c2.y=yy;render();yy+=H(c2.id)+8;lastIt=c2;}}
   if(it.w>IW)it.w=IW;if(o.tbl)it.mw=IW;it.x=IX;it.y=top;render();
@@ -2898,6 +2899,20 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-p5-act]');
  L=[['pfe',T(50,17,'(−2)² = −4 ✗',12)+T(50,33,'Fehler finden',11)],['pbv',T(50,17,'(2/3)³ und 2³/3',12)+T(50,33,'Unterschied?',11)],['pgx',T(50,17,'23 000 = 2,3 · 10⁴',10)+T(50,33,'3,2 E 4',12)],['pbs',T(50,17,'a · a · b · b · b',12)+T(50,33,'= a² · b³',12)]];
  P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));
  const a=AST.find(x=>x[0]==='Potenzen');if(a)a[1].push(['pfe','Fehler in der Rechnung finden','In der Rechnung ist ein Fehler. Finde ihn und stelle die Rechnung richtig!'],['pbv','Potenz eines Bruchs: Vergleich','Berechne den Wert der Potenzen und erkläre den Unterschied!'],['pgx','Gleitkomma: Darstellungen erkennen','Löse die Aufgaben zur Gleitkommadarstellung!'],['pbs','Potenzschreibweise','Schreibe in Potenzschreibweise!']);})();
+/* ===== Fertige Themenblätter Potenzen (Assistent, Seite füllen) ===== */
+{const PO=(t,lbl,ins,set)=>({t,lbl,ins,set}),Z=Object.assign({},ZRV,{th:'po'});
+ Object.assign(AST_FAM,{
+  pf1:[PO('pob','Potenzen berechnen','Berechne den Wert der Potenzen!',{fm:'wert',ba:'mix',lv:1,co:3,n:6}),PO('pbs','Potenzschreibweise','Schreibe in Potenzschreibweise!',{md:'pot',n:4,co:2}),PO('pvz','Vorzeichen von Potenzen','Berechne und begründe, dass das Ergebnis positiv bzw. negativ ist!',{n:6,co:3,wv:true,vk:true,bg:0}),PO('pka','Richtig oder falsch','Gib an, ob die Aussagen richtig oder falsch sind!',{md:'rf',n:4,lv:1}),Z],
+  pf2:[PO('pom','Potenzen mit gleicher Basis','Schreibe als Potenz mit einer Hochzahl!',{op:'mix',bt:'zahl',lv:1,n:8,co:4}),PO('pov','Rechnen mit Variablen','Multipliziere bzw. dividiere die Potenzen!',{op:'mix',n:6,co:3}),PO('ppq','Produkt und Quotient potenzieren','Schreibe als Potenz mit einer Hochzahl!',{md:'gem',n:6,co:3}),PO('pbv','Potenz eines Bruchs','Berechne den Wert der Potenzen und erkläre den Unterschied!',{n:3,un:true}),PO('pka','Lückentext','Kreuze die Lücken so an, dass eine richtige Aussage entsteht!',{md:'lt',n:2}),Z],
+  pf3:[PO('pvr','Vorrangregeln','Berechne! Beachte die Rechenreihenfolge.',{lv:2,n:4,co:2,zl:1}),PO('pvr','Vorrangregeln mit Klammern','Berechne das Ergebnis! Beachte die Klammern.',{lv:3,n:2,co:1,zl:2}),PO('pvm','Ergebnis zuordnen','Ordne jeweils das richtige Ergebnis zu!',{n:1,lv:2}),Z],
+  pf5:[PO('pos','Sachaufgaben','Löse die Sachaufgaben! Schreibe die Rechnung als Potenz und einen Antwortsatz auf!',{n:3}),PO('pfe','Fehler finden','In der Rechnung ist ein Fehler. Finde ihn und stelle die Rechnung richtig!',{n:1}),PO('pka','Richtige Aussagen ankreuzen','Kreuze die richtigen Aussagen an!',{md:'kr',n:3,pr:3}),Z],
+  pf4:[PO('poz','Zehnerpotenzen','Schreibe als Zehnerpotenz!',{md:'tab',n:5}),PO('pog','Gleitkommadarstellung','Schreibe in Gleitkommadarstellung!',{md:'zg',n:6,co:2}),PO('pog','Gleitkomma → Zahl','Schreibe als Zahl!',{md:'gz',n:6,co:2}),PO('pgx','Gleitkommadarstellungen einkreisen','Kreise alle Gleitkommadarstellungen ein!',{md:'kr',n:2,co:4}),PO('pgx','Taschenrechner-Schreibweise','Manche Taschenrechner stellen die Basis der Zehnerpotenz durch „E“ dar. Schreibe die Zahl im Gleitkommaformat mit einer Zehnerpotenz an!',{md:'er',n:3,co:3}),Z]});
+ Object.assign(AST_FM,{pf1:'pf1',pf2:'pf2',pf3:'pf3',pf4:'pf4',pf5:'pf5'});
+ Object.assign(AST_FN,{pf1:'Potenzen: Grundwissen',pf2:'Potenzen: Rechenregeln',pf3:'Potenzen: Vorrang und Vorzeichen',pf4:'Zehnerpotenzen und Gleitkomma',pf5:'Potenzen: Sachaufgaben und Fehler'});
+ const PS=['pf1','pf2','pf3','pf4','pf5'],_ae=astEntries;astEntries=function(s,f){return f?_ae(s,f):_ae(s.filter(k=>!PS.includes(k)),f);};
+ const ab=document.getElementById('ast-ab'),h4=ab&&ab.querySelector('h4');
+ if(h4){const d=document.createElement('div');d.innerHTML='<h4>⭐ Fertige Themenblätter (füllen ein ganzes A4-Blatt – nur eines auswählen)</h4><div class="ach">'+PS.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join('')+'</div>';
+  const nodes=[...d.childNodes];h4.before(...nodes);nodes[1].querySelectorAll('label').forEach(l=>l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0)));}}
 /* ===== Terme ===== */
 const TET=['tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw'];
 Object.assign(TLD,{tea:{n:6,md:'wert',lv:1,co:2,mk:false},tez:{n:6,lv:1,nt:5,pr:false,co:1,mk:false},tek:{n:6,lv:1,zw:true,co:2,mk:false},tem:{n:8,md:'mix',lv:1,zw:false,co:2,mk:false},teh:{n:6,lv:1,pr:false,co:2,mk:false},tbf:{n:6,md:'mix',lv:1,zw:true,co:2,mk:false},tbr:{n:6,md:'mix',lv:1,co:2,mk:false},tbk:{n:6,md:'mix',zw:true,co:1,mk:false},tbw:{n:6,lv:1,ko:false,co:1,mk:false}});
