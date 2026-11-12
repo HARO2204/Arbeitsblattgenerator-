@@ -2826,6 +2826,78 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-p4-act]');
  L=[['pvm',T(50,17,'4 · 3² = ☐   A  −24',9)+T(50,33,'(−4)·3² = ☐   B  36',9)],['pvl',T(50,17,'3 · (−2)² = 3 · __',11)+T(50,33,'= __',11)],['ppq',T(50,17,'3⁴ · 2⁴ = 6⁴',12)+T(50,33,'(a · b)ⁿ = aⁿ · bⁿ',10)]];
  P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));
  const a=AST.find(x=>x[0]==='Potenzen');if(a)a[1].push(['pvm','Potenzen: Ergebnis zuordnen','Ordne jeweils das richtige Ergebnis zu!'],['pvl','Potenzen: Lücken ergänzen','Ergänze die Lücken!'],['ppq','Produkt und Quotient potenzieren','Schreibe als Potenz mit einer Hochzahl!']);})();
+/* ===== Potenzen 4: Fehler finden, Bruch-Vergleich, Gleitkomma-Darstellungen, Potenzschreibweise ===== */
+const P5T=['pfe','pbv','pgx','pbs'];POT.push(...P5T);TLT.push(...P5T);NUMT.push(...P5T);
+Object.assign(TLN,{pfe:'Fehler in der Rechnung finden',pbv:'Potenz eines Bruchs: Vergleich',pgx:'Gleitkomma: Darstellungen erkennen',pbs:'Potenzschreibweise (Produkt ↔ Potenz)'});
+Object.assign(TLD,{pfe:{n:2,lv:2,co:1,b2:true,mk:false},pbv:{n:5,co:1,un:true,mk:false},pgx:{n:3,md:'gl',co:3,mk:false},pbs:{n:6,md:'gem',co:2,mk:false}});
+const p5Mant=(m,e)=>String(m).replace('.',',')+' · 10'+poS(e);
+function p5Lines(ts,ti,fi,wr){const val=(t,i2,j,f)=>i2===ti&&j===fi?wr:rW(p3Base(f),f.e);
+ const tv=(t,i2)=>{let v=val(t,i2,0,t.f[0]);for(let j=1;j<t.f.length;j++){const w=val(t,i2,j,t.f[j]);v=t.o[j-1]==='·'?rM(v,w):rQ(v,w);}return v;};
+ const st=[ts.map((t,i)=>p3Tx(t,t.f.map((f,j)=>rP(val(t,i,j,f))),!i)).join('')];let tot=rI(0);
+ const cs=ts.map((t,i)=>{const v=tv(t,i),c=t.s<0?{n:-v.n,d:v.d}:v;tot=rA(tot,c);return c;});
+ st.push(cs.map((c,i)=>(i?(c.n<0?' − ':' + '):(c.n<0?'−':''))+rS({n:Math.abs(c.n),d:c.d})).join(''));st.push(rS(tot));
+ const out=[st[0]];for(let i=1;i<st.length;i++)if(st[i]!==out[out.length-1])out.push(st[i]);return{st:out,tot};}
+function p5GenFe(it){const n=+it.n||2,lv=+it.lv||2;
+ it.d=tuniq(n,()=>{for(let g=0;g<300;g++){const ts=p3Gen1(lv===1?1:2);if(!p3Ok(ts,2))continue;
+   const cand=[];ts.forEach((t,ti)=>t.f.forEach((f,fi)=>{if(f.k!=='num'||f.e<2)return;const b=f.v.n,c=Math.pow(b,f.e);
+    if(b*f.e!==c&&Math.random()<.6)cand.push({ti,fi,w:b*f.e,d:`Die Potenz ${f.v.n<0?'('+poM(b)+')':b}${poS(f.e)} wurde als Produkt Basis · Hochzahl gerechnet (${b<0?'('+poM(b)+')':b} · ${f.e}). Richtig: ${Array(f.e).fill(b<0?'('+poM(b)+')':b).join(' · ')} = ${poM(c)}.`});
+    if(b<0)cand.push({ti,fi,w:-c,d:`Das Vorzeichen der Potenz stimmt nicht: Bei ${f.e%2===0?'gerader':'ungerader'} Hochzahl ist das Ergebnis ${f.e%2===0?'positiv':'negativ'}, also (${poM(b)})${poS(f.e)} = ${poM(c)}.`});}));
+   if(!cand.length)continue;const c=tpick(cand),cor=p3Steps(ts),wrong=p5Lines(ts,c.ti,c.fi,rI(c.w)),right=p5Lines(ts,-1,-1,rI(0));
+   if(wrong.tot.n===right.tot.n&&wrong.tot.d===right.tot.d)continue;
+   const q=ts.map((t,i)=>p3Tx(t,t.f.map(p3F0),!i)).join('');
+   return{q,w:wrong.st,ok:cor.slice(1),d:c.d};}
+  return{q:'2 + 3 · 4² =',w:['2 + 3 · 8','2 + 24','26'],ok:['2 + 3 · 16','2 + 48','50'],d:'Die Potenz 4² wurde als Produkt 4 · 2 gerechnet. Richtig: 4 · 4 = 16.'};});}
+function p5GenBv(it){const n=+it.n||5;
+ it.d=tuniq(n,()=>{const b=kri(2,6);let a=kri(2,b+2);while(rG(a,b)>1||a===b)a=kri(2,b+2);const e=kri(2,3);return{a,b,e,s1:poF(Math.pow(a,e),Math.pow(b,e)),s2:poF(Math.pow(a,e),b)};});}
+function p5GenGx(it){const n=+it.n||3,md=it.md||'gl';
+ if(md==='gl'){const used=new Set(),G=[];let g=0;while(G.length<n&&g++<100){const D=kri(11,99);if(D%10===0||used.has(D))continue;used.add(D);const k=kri(1,3),v=D*Math.pow(10,k);G.push({a:tfm(v),b:`${D} · 10${k>1?poS(k):''}`.replace(/10$/,'10'),c:p5Mant(D/10,k+1)});}
+  const items=[];G.forEach((x,gi)=>[x.a,x.b,x.c].forEach(t=>items.push({t,g:gi})));it.d=tshuf(items);}
+ else if(md==='kr'){const ok=[],bad=[];for(let i=0;i<Math.max(4,Math.ceil(n*2));i++){const e=kri(2,9);ok.push({t:p5Mant(String(kri(10,99)/10).replace(/\.0$/,''),e),ok:1});}
+  const ex=[()=>`${kri(11,99)} · 10${poS(kri(2,9))}`,()=>`0,${kri(11,99)} · 10${poS(kri(2,9))}`,()=>`${kri(10,99)},${kri(1,9)} · 10${poS(kri(2,9))}`,()=>`${kri(11,19)} · 10${poS(kri(2,9))}`];
+  const tot=n*4;const A=[],B=[];for(let i=0;i<Math.floor(tot/2);i++){const m=Math.random()<.4?String(kri(1,9)):String(kri(11,99)/10).replace(/\.0$/,'').replace('.',','),e=kri(2,9);A.push({t:`${m.replace('.',',')} · 10${poS(e)}`,ok:1});}
+  while(B.length<tot-A.length)B.push({t:tpick(ex)(),ok:0});it.d=tshuf(A.concat(B));}
+ else{it.d=tuniq(n*2,()=>{const m=String(kri(10,99)/10).replace(/\.0$/,'').replace('.',','),e=kri(2,9);return{q:`${m} E ${e}`,s:`${m} · 10${poS(e)}`};});}}
+function p5GenBs(it){const n=+it.n||6,md=it.md||'gem';
+ it.d=tuniq(n,()=>{const kind=md==='gem'?tpick(['p','p','r']):md==='rev'?'r':'p';
+  const vs=tshuf(['a','b','c','m','n','r','s','x','y','z']),zahl=Math.random()<.3;
+  if(kind==='r'){const v=zahl?String(kri(2,9)):vs[0],e=kri(2,8);return{k:'r',q:`${v}${poS(e)} =`,s:Array(e).fill(v).join(' · ')};}
+  const nv=kri(1,3),parts=[];for(let i=0;i<nv;i++)parts.push({v:zahl&&i===0?String(kri(2,9)):vs[i],e:kri(1,6)});const f=md==='gem'||true;
+  const q=parts.map(p=>Array(p.e).fill(p.v).join(' · ')).join(' · ')+' =',s=parts.map(p=>p.e>1?p.v+poS(p.e):p.v).join(' · ');return{k:'p',q,s};});}
+function p5Gen(it){return it.type==='pfe'?p5GenFe(it):it.type==='pbv'?p5GenBv(it):it.type==='pgx'?p5GenGx(it):p5GenBs(it);}
+const P5COL=['#ffd9d9','#d9ecff','#d9f5d9','#fff2c4','#ead9ff'],P5KARO='background-image:linear-gradient(#c9d5e8 1px,transparent 1px),linear-gradient(90deg,#c9d5e8 1px,transparent 1px);background-size:5mm 5mm;background-color:#fff';
+function p5Block(it){const k=it.type,co=+it.co||1;let h='';
+ if(k==='pfe'){h=it.d.map((t,i)=>{const lines=[t.q+' =',...t.w.map((x,j)=>'= '+x+(j<t.w.length-1?' =':''))];
+   return `<div style="break-inside:avoid;margin:0 0 1.2em"><div style="display:flex;gap:.6em"><b>${poL(i)}</b><div style="flex:1"><div style="${P5KARO};border:1.2px solid #889;padding:.3em .8em;line-height:1.7;color:#1c3d9a;font-style:italic">${lines.map(l=>`<div style="white-space:nowrap">${l}</div>`).join('')}</div>
+   <div style="margin-top:.5em"><b>i)</b> Finde den Fehler und stelle die Rechnung richtig.</div><div class="tlrw" style="margin-top:.3em"><span class="tlln" style="flex:1;min-height:1.4em">${tlSv(it,t.q.replace(/ =$/,'')+' = '+t.ok.join(' = '))}</span></div><div class="tlrw" style="margin-top:.3em"><span class="tlln" style="flex:1;min-height:1.4em"></span></div>
+   ${it.b2?`<div style="margin-top:.5em"><b>ii)</b> Beschreibe den Fehler.</div><div class="tlrw" style="margin-top:.3em"><span class="tlln" style="flex:1;min-height:1.4em">${tlSv(it,t.d)}</span></div><div class="tlrw" style="margin-top:.3em"><span class="tlln" style="flex:1;min-height:1.4em"></span></div>`:''}</div></div></div>`;}).join('');}
+ else if(k==='pbv'){h=(it.mk?poMk(`Bei <b>(a/b)${poS('n')}</b> gehört die Hochzahl zum ganzen Bruch: (a/b)${poS('n')} = a${poS('n')}/b${poS('n')}. Bei <b>a${poS('n')}/b</b> wird nur der Zähler potenziert.`):'')+it.d.map((t,i)=>`<div style="break-inside:avoid;margin:0 0 1em"><div class="tlrw" style="gap:1.2em"><b>${poL(i)}</b><span style="white-space:nowrap">(${poF(t.a,t.b)})${poS(t.e)} =</span><span class="tlln" style="flex:1;min-width:4.5em">${tlSv(it,t.s1)}</span><span style="white-space:nowrap">${poF(`${t.a}${poS(t.e)}`,t.b)} =</span><span class="tlln" style="flex:1;min-width:4.5em">${tlSv(it,t.s2)}</span></div>${it.un?`<div class="tlrw" style="margin:.4em 0 0 1.9em"><span>Unterschied:</span><span class="tlln" style="flex:1;min-width:8em"></span></div>`:''}</div>`).join('');}
+ else if(k==='pgx'){const md=it.md||'gl';
+  if(md==='gl')h=`<div style="display:flex;flex-wrap:wrap;gap:.7em 1.6em;padding:.4em 0">${it.d.map((x,i)=>`<span style="white-space:nowrap;padding:.15em .5em;border-radius:.4em;transform:translateY(${((i*7)%5-2)*.35}em);${tlS(it)?`background:${P5COL[x.g%5]}`:''}">${x.t}</span>`).join('')}</div>`;
+  else if(md==='kr')h=tlGrid(co,it.d.map(x=>`<div style="white-space:nowrap"><span style="display:inline-block;padding:.1em .6em;border:1.6px solid ${x.ok&&tlS(it)?'#c0392b':'transparent'};border-radius:50%">${x.t}</span></div>`).join(''));
+  else h=tlGrid(co,it.d.map((t,i)=>`<div class="tlrw"><b>${poL(i)}</b><span style="white-space:nowrap">${t.q} =</span><span class="tlln" style="flex:1;min-width:5em">${tlSv(it,t.s)}</span></div>`).join(''));}
+ else h=(it.mk?poMk(`${'a · a · a · a = a'+poS(4)}: <b>a</b> ist die Basis, <b>4</b> die Hochzahl (so viele gleiche Faktoren). Ein Faktor ohne Hochzahl ist a${poS(1)} = a.`):'')+tlGrid(co,it.d.map((t,i)=>`<div class="tlrw"><b>${poL(i)}</b><span style="white-space:nowrap">${t.q}</span><span class="tlln" style="flex:1;min-width:${t.k==='r'?9:5}em">${tlSv(it,t.s)}</span></div>`).join(''));
+ return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+{const _g=poGen,_b=poBlock,_r=renderPo;
+ poGen=function(it){return P5T.includes(it.type)?p5Gen(it):_g(it);};
+ poBlock=function(it){return P5T.includes(it.type)?p5Block(it):_b(it);};
+ renderPo=function(){const g=$('#g-po'),it=items.find(i=>i.id===sel&&P5T.includes(i.type));if(!g||!it)return _r();
+  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o,lab)=>`<label>${lab}<select data-p5="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-p5="${f}"${it[f]?' checked':''}> ${t}</label>`;
+  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+  if(k==='pfe')H+=sl('lv',[[1,'1 · eine Rechnung mit Potenz'],[2,'2 · mit Plus und Minus']],'Schwierigkeit')+sl('n',tN([1,2,3,4]),'Anzahl der Rechnungen')+ck('b2','Teil ii) Fehler beschreiben');
+  else if(k==='pbv')H+=sl('n',tN([2,3,4,5,6,8]),'Anzahl')+sl('co',tN([1,2]),'Spalten')+ck('un','Zeile „Unterschied“')+ck('mk','Merkkasten');
+  else if(k==='pgx')H+=sl('md',[['gl','Gleiche Darstellungen farbig markieren'],['kr','Gleitkommadarstellungen einkreisen'],['er','Taschenrechner-Schreibweise (E)']],'Aufgabenart')+sl('n',it.md==='gl'?tN([2,3,4]):it.md==='kr'?[[2,'8 Zahlen'],[3,'12 Zahlen'],[4,'16 Zahlen']]:tN([2,3,4,5,6]),it.md==='gl'?'Anzahl der Gruppen':'Anzahl')+(it.md==='gl'?'':sl('co',tN([1,2,3,4]),'Spalten'));
+  else H+=sl('md',[['gem','gemischt'],['pot','Produkt → Potenz'],['rev','Potenz → Produkt']],'Aufgabenart')+sl('n',tN([2,4,6,8,10,12]),'Anzahl')+sl('co',tN([1,2,3]),'Spalten')+ck('mk','Merkkasten');
+  H+=ck('show','Lösung zeigen')+'<button data-p5-act="mix">Neu mischen</button>';g.innerHTML=H;};}
+$('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.p5;if(!k)return;const it=items.find(i=>i.id===sel&&P5T.includes(i.type));if(!it)return;
+ rec('p5'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','lv','co'].includes(k))v=+v;it[k]=v;
+ if(k==='md'&&it.type==='pgx'){it.n=v==='gl'?3:v==='kr'?3:4;it.co=v==='kr'?4:v==='er'?2:3;}
+ if(['n','lv','md'].includes(k))poGen(it);
+ render();if(k==='md')renderProps();});
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-p5-act]');if(!b)return;const it=items.find(i=>i.id===sel&&P5T.includes(i.type));if(!it)return;rec();poGen(it);render();});
+(function(){const P=$('#popal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
+ L=[['pfe',T(50,17,'(−2)² = −4 ✗',12)+T(50,33,'Fehler finden',11)],['pbv',T(50,17,'(2/3)³ und 2³/3',12)+T(50,33,'Unterschied?',11)],['pgx',T(50,17,'23 000 = 2,3 · 10⁴',10)+T(50,33,'3,2 E 4',12)],['pbs',T(50,17,'a · a · b · b · b',12)+T(50,33,'= a² · b³',12)]];
+ P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));
+ const a=AST.find(x=>x[0]==='Potenzen');if(a)a[1].push(['pfe','Fehler in der Rechnung finden','In der Rechnung ist ein Fehler. Finde ihn und stelle die Rechnung richtig!'],['pbv','Potenz eines Bruchs: Vergleich','Berechne den Wert der Potenzen und erkläre den Unterschied!'],['pgx','Gleitkomma: Darstellungen erkennen','Löse die Aufgaben zur Gleitkommadarstellung!'],['pbs','Potenzschreibweise','Schreibe in Potenzschreibweise!']);})();
 /* ===== Terme ===== */
 const TET=['tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw'];
 Object.assign(TLD,{tea:{n:6,md:'wert',lv:1,co:2,mk:false},tez:{n:6,lv:1,nt:5,pr:false,co:1,mk:false},tek:{n:6,lv:1,zw:true,co:2,mk:false},tem:{n:8,md:'mix',lv:1,zw:false,co:2,mk:false},teh:{n:6,lv:1,pr:false,co:2,mk:false},tbf:{n:6,md:'mix',lv:1,zw:true,co:2,mk:false},tbr:{n:6,md:'mix',lv:1,co:2,mk:false},tbk:{n:6,md:'mix',zw:true,co:1,mk:false},tbw:{n:6,lv:1,ko:false,co:1,mk:false}});
