@@ -2608,6 +2608,164 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-po-act]');
 (function(){const P=$('#popal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
  L=[['pob',T(50,17,'2⁴ = ?',14)+T(50,33,'(−5)³ = ?',12)],['poz',T(50,17,'10⁶ =',13)+T(50,33,'1 000 000',12)],['pog',T(50,18,'2,43 · 10⁸',13)+T(50,33,'243 000 000',10)],['pom',T(50,17,'a³ · a² = a⁵',12)+T(50,33,'3⁵ : 3² = 3³',11)],['pov',T(50,17,'3x² · 7x³',12)+T(50,33,'= 21x⁵',12)],['pot',T(50,17,'4² + 3³ − 5²',11)+T(50,33,'= 18',12)],['pos',T(50,16,'3 Personen, je 3 …',10)+T(50,32,'3⁴ = 81',12)]];
  P.innerHTML=L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('');})();
+/* ===== Potenzen 2: Vorrangregeln, Vorzeichen, Aussagen prüfen ===== */
+const P3T=['pvr','pvz','pka'];POT.push(...P3T);TLT.push(...P3T);NUMT.push(...P3T);
+Object.assign(TLN,{pvr:'Vorrangregeln mit Potenzen',pvz:'Vorzeichen von Potenzen',pka:'Potenzen: Aussagen prüfen'});
+Object.assign(TLD,{pvr:{n:6,lv:2,co:2,zl:2,zw:true,mk:false},pvz:{n:6,md:'gem',lv:1,co:3,wv:true,vk:true,bg:0,mk:false},pka:{n:4,md:'kr',lv:1,pr:3,kb:false,mk:false}});
+/* rationale Zahlen {n,d} */
+const rG=(a,b)=>b?rG(b,a%b):Math.abs(a),rN=(n,d)=>{if(d<0){n=-n;d=-d;}const g=rG(n,d)||1;return{n:n/g,d:d/g};},rI=n=>({n,d:1});
+const rA=(a,b)=>rN(a.n*b.d+b.n*a.d,a.d*b.d),rM=(a,b)=>rN(a.n*b.n,a.d*b.d),rQ=(a,b)=>rN(a.n*b.d,a.d*b.n),rW=(a,e)=>rN(Math.pow(a.n,e),Math.pow(a.d,e));
+const rS=v=>v.d===1?poM(v.n):(v.n<0?'−':'')+poF(Math.abs(v.n),v.d),rP=v=>v.n<0?'('+rS(v)+')':rS(v);
+const p3Base=f=>f.k==='br'?(f.op==='+'?rA(f.a,f.b):rA(f.a,{n:-f.b.n,d:f.b.d})):f.v;
+const p3Dp=(b,e)=>(b.n<0||(b.d>1&&e>1)?'('+rS(b)+')':rS(b))+(e>1?poS(e):'');
+const p3F0=f=>f.k==='br'?'('+rS(f.a)+' '+f.op+' '+rS(f.b)+')'+(f.e>1?poS(f.e):''):p3Dp(f.v,f.e);
+const p3Tx=(t,fs,first)=>(first?(t.s<0?'−':''):(t.s<0?' − ':' + '))+fs.map((x,j)=>(j?' '+t.o[j-1]+' ':'')+x).join('');
+const p3Tv=t=>{let v=rW(p3Base(t.f[0]),t.f[0].e);for(let j=1;j<t.f.length;j++){const w=rW(p3Base(t.f[j]),t.f[j].e);v=t.o[j-1]==='·'?rM(v,w):rQ(v,w);}return v;};
+function p3Steps(ts){const st=[],bigs=[];
+ st.push(ts.map((t,i)=>p3Tx(t,t.f.map(p3F0),!i)).join(''));
+ st.push(ts.map((t,i)=>p3Tx(t,t.f.map(f=>f.k==='br'?p3Dp(p3Base(f),f.e):p3F0(f)),!i)).join(''));
+ st.push(ts.map((t,i)=>p3Tx(t,t.f.map(f=>rP(rW(p3Base(f),f.e))),!i)).join(''));
+ let tot=rI(0);const cs=ts.map(t=>{const v=p3Tv(t),c=t.s<0?{n:-v.n,d:v.d}:v;tot=rA(tot,c);return c;});
+ st.push(cs.map((c,i)=>(i?(c.n<0?' − ':' + '):(c.n<0?'−':''))+rS({n:Math.abs(c.n),d:c.d})).join(''));
+ st.push(rS(tot));
+ const out=[st[0]];for(let i=1;i<st.length;i++)if(st[i]!==out[out.length-1])out.push(st[i]);
+ return out;}
+function p3Ok(ts,lv){const C=[[150,500,500],[150,300,400],[100,250,400],[3000,4000,6000]][(lv||2)-1];let tot=rI(0);for(const t of ts){for(const f of t.f){const w=rW(p3Base(f),f.e);if(Math.abs(w.n)>C[0]||w.d>200)return false;}const v=p3Tv(t);if(!isFinite(v.n)||!v.d||Math.abs(v.n)>C[1]||v.d>200)return false;tot=rA(tot,t.s<0?{n:-v.n,d:v.d}:v);}return Math.abs(tot.n)<=C[2]&&tot.d<=150;}
+function p3Pw(neg,hi){const b=kri(2,hi),e=b<=3?kri(2,3):2;return{k:'num',v:rI(neg?-b:b),e};}
+function p3Br(){let a=kri(1,8),b=kri(1,6);while(a===b)b=kri(1,9);const op=Math.random()<.5?'+':'−',base=op==='+'?a+b:a-b,e=Math.abs(base)<=4?kri(2,3):2;return{k:'br',a:rI(a),b:rI(b),op,e};}
+function p3Gen1(lv){
+ if(lv===1){const b=tpick([2,3,4,5,6,7,-2,-3,-4,-5,-6]),e=b<0?kri(2,4):kri(2,3),kk=tpick([2,3,4,5,6,8,9,10,-1,-2,-3,-5]);const pw={k:'num',v:rI(b),e},kn={k:'num',v:rI(kk),e:1};return[{s:1,f:Math.random()<.5?[kn,pw]:[pw,kn],o:['·']}];}
+ if(lv===4){const D=tpick([4,6,8,10,12]),den=tpick([2,3,4,5]);let a=kri(1,den-1);while(rG(a,den)>1)a=kri(1,den-1);
+  const T1={s:1,f:[{k:'num',v:rN(Math.random()<.6?-a:a,den),e:2}],o:[]};
+  let x=kri(1,D-1),y=kri(1,D-1);while(x===y)y=kri(1,D-1);
+  const T2={s:tpick([1,-1]),f:[{k:'br',a:rN(x,D),b:rN(y,D),op:Math.random()<.5?'+':'−',e:2}],o:[]};
+  T2.f[0].a=rN(x,D);T2.f[0].b=rN(y,D);
+  T2.f[0].aS=1;
+  const q=tpick([-1,-1,1]),T3={s:tpick([1,-1]),f:[{k:'num',v:rI(q),e:kri(2,5)}],o:[]};
+  return tshuf([T1,T2,T3]);}
+ const nt=lv===2?kri(2,3):3,ts=[];
+ for(let i=0;i<nt;i++){const s=(i===0?Math.random()<.3:Math.random()<.5)?-1:1;let t;const r=Math.random();
+  const kk=()=>kri(2,9);
+  if(lv===3&&(i===1||(i===0&&Math.random()<.3)||(i===2&&!ts.some(x=>x.f.some(f=>f.k==='br'))))){
+   const br=p3Br();
+   if(Math.random()<.25&&Math.abs(p3Base(br).n)>0){const w=rW(p3Base(br),br.e);const m=Math.abs(w.n)*kri(1,6);t={s,f:[{k:'num',v:rI(m),e:1},br],o:[':']};}
+   else if(r<.4)t={s,f:[br],o:[]};else if(r<.6)t={s,f:[br,{k:'num',v:rI(kri(2,5)),e:1}],o:['·']};else t={s,f:[{k:'num',v:rI(kri(2,5)),e:1},br],o:['·']};}
+  else{const pw=p3Pw(Math.random()<.25,i===0&&lv===3?6:6);
+   if(r<.35)t={s,f:[pw],o:[]};else if(r<.75)t={s,f:[{k:'num',v:rI(kk()),e:1},pw],o:['·']};else t={s,f:[pw,{k:'num',v:rI(kk()),e:1}],o:['·']};}
+  ts.push(t);}
+ return ts;}
+function p3GenVr(it){const lv=+it.lv||2,n=+it.n||4;
+ it.d=tuniq(n,()=>{let ts,g=0;do{ts=p3Gen1(lv);}while(!p3Ok(ts,lv)&&g++<200);const st=p3Steps(ts);return{q:ts.map((t,i)=>p3Tx(t,t.f.map(p3F0),!i)).join(''),st:st.slice(1)};});}
+/* Vorzeichen */
+function p3Vz(lv,kind){const eh=lv===1?4:lv===2?5:6,bh=lv===1?5:9;
+ if(kind==='eins'){const hi=lv===1?99:lv===2?999:99999;let e=kri(2,hi);if(lv===3&&Math.random()<.4)e=kri(2,99)*(Math.random()<.5?100:1)+kri(0,1)*kri(0,9);const raw=Math.random()<(lv===1?0:.2);
+  if(raw)return{q:'−1'+poS(e),v:-1,why:`Das Minus gehört nicht zur Basis: −1${poS(e)} = −(1${poS(e)}) = −1.`};
+  const ev=e%2===0;return{q:'(−1)'+poS(e),v:ev?1:-1,why:`Die Hochzahl ${tfm(e)} ist ${ev?'gerade':'ungerade'}, daher ist das Ergebnis ${ev?'+1':'−1'}.`};}
+ const b=kri(2,bh),r=Math.random(),e=r<.4?2*kri(1,Math.floor(eh/2)):r<.7?2*kri(0,Math.floor((eh-1)/2))+1:kri(1,eh),neg=r<.7,V=Math.pow(b,e);
+ if(neg){const ev=e%2===0;return{q:`(−${b})${e>1?poS(e):poS(1)}`,v:ev?V:-V,why:`Die Basis ist negativ, die Hochzahl ${e} ist ${ev?'gerade → positiv':'ungerade → negativ'}.`};}
+ return{q:`−${b}${poS(e)}`,v:-V,why:`Das Minus gehört nicht zur Basis: −${b}${poS(e)} = −(${b}${poS(e)}) = ${poM(-V)}, also negativ.`};}
+function p3GenVz(it){const n=+it.n||6,lv=+it.lv||1,md=it.md||'gem';
+ it.d=tuniq(n,()=>p3Vz(lv,md==='eins'?'eins':md==='vz'?'vz':(Math.random()<.35?'eins':'vz')));}
+/* Aussagen */
+const P3RF=[
+ [1,'Eine Potenz ist eine Kurzschreibweise für ein Produkt aus gleichen Faktoren.',1,''],
+ [1,'Der Exponent einer Potenz gibt die Anzahl der gleichen Faktoren an.',1,''],
+ [1,'Bei einer Potenz multipliziert man den Exponenten mit der Basis.',0,'Man multipliziert die Basis so oft mit sich selbst, wie der Exponent angibt.'],
+ [1,'Eine Potenz ist eine Abkürzung für die Summe gleicher Summanden.',0,'Eine Potenz ist eine Abkürzung für das Produkt gleicher Faktoren.'],
+ [1,'Potenziert man eine negative Zahl, dann ist das Ergebnis immer negativ.',0,'Nur bei ungerader Hochzahl ist das Ergebnis negativ, bei gerader Hochzahl positiv.'],
+ [1,'Potenzen mit negativer Basis und gerader Hochzahl sind positiv.',1,''],
+ [1,'Potenzen mit negativer Basis und ungerader Hochzahl sind negativ.',1,''],
+ [1,'Die Potenz 5² hat den Wert 10.',0,'5² = 5 · 5 = 25'],
+ [1,'Die Potenz 2³ hat den Wert 8.',1,''],
+ [1,'Jede Potenz mit der Basis 1 hat den Wert 1.',1,''],
+ [1,'Die Potenz 10³ hat den Wert 30.',0,'10³ = 10 · 10 · 10 = 1 000'],
+ [1,'In der Potenz 7⁴ ist 7 die Basis und 4 die Hochzahl.',1,''],
+ [2,'(−3)² und −3² haben denselben Wert.',0,'(−3)² = +9, aber −3² = −9'],
+ [2,'Bei einer Rechnung wird zuerst die Potenz berechnet, dann die Punktrechnung.',1,''],
+ [2,'Bei einer Rechnung wird zuerst die Strichrechnung berechnet, dann die Potenz.',0,'Zuerst Klammern, dann Potenzen, dann Punkt-, dann Strichrechnung.'],
+ [2,'Beim Multiplizieren von Potenzen mit gleicher Basis werden die Hochzahlen addiert.',1,''],
+ [2,'Beim Dividieren von Potenzen mit gleicher Basis werden die Hochzahlen subtrahiert.',1,''],
+ [2,'Beim Potenzieren einer Potenz werden die Hochzahlen addiert.',0,'Beim Potenzieren einer Potenz werden die Hochzahlen multipliziert.'],
+ [2,'(a · b)ⁿ = aⁿ · bⁿ',1,''],
+ [2,'(a + b)² = a² + b²',0,'(a + b)² = a² + 2ab + b² (z. B. (1 + 1)² = 4, aber 1² + 1² = 2)'],
+ [3,'Die Mantisse einer Gleitkommazahl liegt zwischen 1 und 10 (1 ≤ m < 10).',1,''],
+ [3,'12 · 10⁵ ist eine Gleitkommadarstellung.',0,'Die Mantisse muss zwischen 1 und 10 liegen: 12 · 10⁵ = 1,2 · 10⁶'],
+ [3,'10ⁿ ist eine 1 mit n Nullen.',1,''],
+ [3,'(−1) hoch eine gerade Zahl ergibt −1.',0,'(−1) hoch eine gerade Zahl ergibt +1.'],
+ [3,'(−1) hoch eine ungerade Zahl ergibt −1.',1,''],
+ [3,'Das Quadrat einer negativen Zahl ist negativ.',0,'Das Quadrat einer negativen Zahl ist positiv, z. B. (−4)² = 16.']];
+function p3Kr(lv){const b=kri(2,lv===1?5:6),e=kri(2,5),V=Math.pow(b,e),B=poS,mk=[];
+ const F=[
+  ()=>({t:`−${b}${B(e)} = (−${b})${B(e)}`,ok:e%2===1}),
+  ()=>{const s=Math.random()<.5?'+':'−',ok=(e%2===0)===(s==='+');return{t:`(−${b})${B(e)} = ${s}${tfm(V)}`,ok};},
+  ()=>({t:`−${b}${B(e)} = −${tfm(V)}`,ok:true}),
+  ()=>{const ok=Math.random()<.5;return{t:`${b}${B(e)} = ${tfm(ok?V:b*e)}`,ok};},
+  ()=>{const n=kri(2,30),s=Math.random()<.5?'+1':'−1',ev=n%2===0;return{t:`(−1)${B(n)} = ${s}`,ok:(s==='+1')===ev};},
+  ()=>{const n=kri(2,30);return{t:`−1${B(n)} = (−1)${B(n)}`,ok:n%2===1};},
+  ()=>{const n=kri(2,30);return{t:`−1${B(n)} = −1`,ok:true};}];
+ const fam=lv===1?[0,1,2,3]:[0,1,2,3,4,5,6];return F[tpick(fam)]();}
+const P3LT=[
+ {s:'Potenzen mit gleicher Basis werden ① , indem man die Exponenten ② .',o:[['multipliziert','dividiert','potenziert'],['addiert','subtrahiert','multipliziert']],c:[[0,0],[1,1]]},
+ {s:'Ein Produkt wird potenziert, indem man ① .',o:[['jeden Faktor potenziert','nur den ersten Faktor potenziert','die Faktoren addiert']],c:[[0]]},
+ {s:'Ein Quotient wird potenziert, indem man ① .',o:[['Dividend und Divisor potenziert','nur den Dividenden potenziert','die Hochzahlen subtrahiert']],c:[[0]]},
+ {s:'Eine Potenz wird potenziert, indem man die Hochzahlen ① .',o:[['multipliziert','addiert','dividiert']],c:[[0]]},
+ {s:'Der Wert einer Potenz mit negativer Basis ist positiv, wenn die Hochzahl ① ist.',o:[['gerade','ungerade','null']],c:[[0]]},
+ {s:'Der Wert einer Potenz mit negativer Basis ist negativ, wenn die Hochzahl ① ist.',o:[['gerade','ungerade','null']],c:[[1]]},
+ {s:'In der Potenz 7⁴ ist 7 die ① und 4 die ② .',o:[['Basis','Hochzahl','Wert'],['Hochzahl','Basis','Wert']],c:[[0,0]]},
+ {s:'Eine Potenz ist eine Kurzschreibweise für ein ① aus gleichen Faktoren.',o:[['Produkt','Summe','Quotient']],c:[[0]]},
+ {s:'In einer Rechnung werden zuerst ① berechnet, dann ② .',o:[['Klammern','Potenzen','Strichrechnungen'],['Potenzen','Klammern','Wurzeln']],c:[[0,0]]},
+ {s:'Beim Dividieren von Potenzen mit gleicher Basis werden die Hochzahlen ① .',o:[['subtrahiert','addiert','multipliziert']],c:[[0]]}];
+function p3GenKa(it){const n=+it.n||4,lv=+it.lv||1,md=it.md||'kr';
+ if(md==='kr'){const pr=+it.pr||3,seen=new Set();it.d=Array.from({length:n},()=>{let row,g=0,loc;do{loc=new Set();row=[];let h=0;while(row.length<pr&&h++<80){const s=p3Kr(lv);if(!seen.has(s.t)&&!loc.has(s.t)){loc.add(s.t);row.push(s);}}g++;}while(g<40&&(!row.some(x=>x.ok)||!row.some(x=>!x.ok)));loc.forEach(x=>seen.add(x));return row;});}
+ else if(md==='rf'){const pool=P3RF.filter(x=>x[0]<=lv),ps=tshuf(pool).slice(0,Math.min(n,pool.length));it.d=ps.map(([,t,ok,fix])=>({t,ok:!!ok,fix}));}
+ else{const ps=tshuf(P3LT).slice(0,Math.min(n,P3LT.length));it.d=ps.map(p=>{const c=tpick(p.c),opts=p.o.map((os,j)=>{const idx=tshuf(os.map((_,i)=>i));return idx.map(i=>({t:os[i],ok:i===c[j]}));});return{s:p.s,o:opts};});}}
+function p3Gen(it){if(it.type==='pvr')return p3GenVr(it);if(it.type==='pvz')return p3GenVz(it);return p3GenKa(it);}
+/* Block */
+const P3CB='<span style="font-family:inherit">☐</span>';
+function p3Block(it){const k=it.type,s=tlS(it),co=+it.co||1;let h='';
+ const lb=i=>poL(i);
+ if(k==='pvr'){const zl=+it.zl||0,zw=it.zw!==false;
+  h=(it.mk?poMk(`<b>Rechenreihenfolge:</b><div style="margin:.2em 0 .1em .6em">1. Klammern<br>2. Potenzen<br>3. Punktrechnung (· und :)<br>4. Strichrechnung (+ und −)</div>Man rechnet von links nach rechts. Achtung: (−2)² = +4, aber −2² = −4.`):'')+
+  tlGrid(co,it.d.map((t,i)=>{const m=t.st.length,fin=t.st[m-1];let ls='';
+   if(zl>0){for(let j=0;j<zl;j++){const idx=m-zl+j,c=!zw?(j===zl-1?fin:''):(idx>=0?t.st[idx]:'');ls+=`<div class="tlrw" style="margin-left:1.9em;margin-top:.35em"><span>=</span><span class="tlln" style="flex:1;min-width:6em">${c?tlSv(it,c):''}</span></div>`;}}
+   return `<div style="break-inside:avoid;margin:0 0 .9em"><div class="tlrw"><b>${lb(i)}</b><span style="white-space:nowrap">${t.q} =</span>${zl===0?`<span class="tlln" style="flex:1;min-width:4em">${tlSv(it,fin)}</span>`:''}</div>${ls}</div>`;}).join(''));}
+ else if(k==='pvz'){const bg=+it.bg||0;
+  h=(it.mk?poMk(`<b>Vorzeichen von Potenzen:</b><div style="margin:.2em 0 0 .6em">Negative Basis, <b>gerade</b> Hochzahl: Ergebnis <b>positiv</b>.<br>Negative Basis, <b>ungerade</b> Hochzahl: Ergebnis <b>negativ</b>.<br>(−2)² = +4, aber −2² = −(2²) = −4.<br>(−1) hoch gerade = +1, (−1) hoch ungerade = −1.</div>`):'')+
+  tlGrid(co,it.d.map((t,i)=>{const pos=t.v>0;
+   let r=`<div class="tlrw"><b>${lb(i)}</b><span style="white-space:nowrap">${t.q}${it.wv?' =':''}</span>${it.wv?`<span class="tlln" style="flex:1;min-width:3.2em">${tlSv(it,(pos?'+':'')+poM(t.v))}</span>`:''}</div>`;
+   if(it.vk)r+=`<div style="margin:.35em 0 0 1.9em;white-space:nowrap">☐ positiv &nbsp; ☐ negativ ${tlSv(it,'→ '+(pos?'positiv':'negativ'))}</div>`;
+   for(let j=0;j<bg;j++)r+=`<div class="tlrw" style="margin:.35em 0 0 1.9em"><span class="tlln" style="flex:1;min-width:6em">${j===0?tlSv(it,t.why):''}</span></div>`;
+   return `<div style="break-inside:avoid;margin:0 0 .9em">${r}</div>`;}).join(''));}
+ else{const md=it.md||'kr';
+  if(md==='kr'){h=it.d.map((row,i)=>`<div class="tlrw" style="align-items:baseline;margin:0 0 .9em;gap:1.4em;break-inside:avoid"><b>${lb(i)}</b>${row.map(x=>`<span style="white-space:nowrap">☐ ${x.t}${x.ok?' '+tlSv(it,'✓'):''}</span>`).join('')}</div>`).join('');}
+  else if(md==='rf'){const kb=!!it.kb;h=`<table class="tltb"><tr><th style="text-align:left;padding-left:.6em">Aussage</th><th style="width:4.6em">richtig</th><th style="width:4.6em">falsch</th></tr>`+it.d.map((t,i)=>`<tr><td style="text-align:left;padding:.3em .6em">${t.t}${kb?`<div class="tlrw" style="margin-top:.5em"><span class="tlln" style="flex:1;min-height:1.4em">${t.ok?'':tlSv(it,t.fix)}</span></div>`:''}</td><td>☐${t.ok?' '+tlSv(it,'✓'):''}</td><td>☐${t.ok?'':' '+tlSv(it,'✓')}</td></tr>`).join('')+'</table>';}
+  else{h=it.d.map((t,i)=>{let n=0;const sent=t.s.replace(/①|②/g,m=>`<span style="display:inline-block;min-width:4.5em;border-bottom:1.4px solid #000;text-align:center">${m}</span>`);
+   const tabs=t.o.map((os,j)=>`<table class="tltb" style="${t.o.length>1?'flex:1':'flex:0 0 55%'}"><tr><th colspan="2">${j?'②':'①'}</th></tr>`+os.map(o=>`<tr><td style="text-align:left;padding:.1em .5em">${o.t}</td><td style="width:2.4em">☐${o.ok?' '+tlSv(it,'✓'):''}</td></tr>`).join('')+'</table>').join('');
+   return `<div style="break-inside:avoid;margin:0 0 1em"><div style="margin-bottom:.4em"><b>${lb(i)}</b> ${sent}</div><div style="display:flex;gap:1.4em;margin-left:1.9em">${tabs}</div></div>`;}).join('');}}
+ return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+/* Panel */
+{const _g=poGen,_b=poBlock,_r=renderPo;
+ poGen=function(it){return P3T.includes(it.type)?p3Gen(it):_g(it);};
+ poBlock=function(it){return P3T.includes(it.type)?p3Block(it):_b(it);};
+ renderPo=function(){const g=$('#g-po'),it=items.find(i=>i.id===sel&&P3T.includes(i.type));if(!g||!it)return _r();
+  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o,lab)=>`<label>${lab}<select data-p3="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-p3="${f}"${it[f]?' checked':''}> ${t}</label>`;
+  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+  if(k==='pvr')H+=sl('lv',[[1,'1 · Potenz und Punktrechnung'],[2,'2 · mit Strichrechnung'],[3,'3 · mit Klammern'],[4,'4 · mit Brüchen']],'Schwierigkeit')+sl('n',tN([2,3,4,5,6,8,10,12]),'Anzahl der Aufgaben')+sl('co',tN([1,2,3]),'Spalten')+sl('zl',[[0,'keine Zeilen (nur Angabe)'],[1,'1 Zeile'],[2,'2 Zeilen'],[3,'3 Zeilen'],[4,'4 Zeilen']],'Rechenzeilen')+ck('zw','Rechenweg in der Lösung zeigen')+ck('mk','Merkkasten (Rechenreihenfolge)');
+  else if(k==='pvz')H+=sl('md',[['gem','gemischt'],['vz','Basis negativ oder Minus vor der Potenz'],['eins','(−1) mit großen Hochzahlen']],'Aufgabenart')+sl('lv',[[1,'1 · kleine Zahlen'],[2,'2 · mittel'],[3,'3 · große Hochzahlen']],'Schwierigkeit')+sl('n',tN([2,3,4,6,8,9,12]),'Anzahl der Aufgaben')+sl('co',tN([1,2,3,4]),'Spalten')+ck('wv','Wert berechnen')+ck('vk','Vorzeichen ankreuzen (positiv / negativ)')+sl('bg',[[0,'keine Begründungszeile'],[1,'1 Zeile'],[2,'2 Zeilen']],'Begründung')+ck('mk','Merkkasten (Vorzeichen)');
+  else{H+=sl('md',[['kr','Richtige Aussagen ankreuzen'],['rf','Richtig oder falsch (Tabelle)'],['lt','Lückentext mit Auswahl']],'Aufgabenart');
+   if(it.md==='kr')H+=sl('n',tN([1,2,3,4,5,6]),'Zeilen')+sl('pr',tN([2,3,4]),'Aussagen pro Zeile')+sl('lv',[[1,'1 · Basis und Hochzahl'],[2,'2 · auch (−1)ⁿ und Werte']],'Schwierigkeit');
+   else if(it.md==='rf')H+=sl('n',tN([2,3,4,5,6,8,10]),'Anzahl der Aussagen')+sl('lv',[[1,'1 · Grundwissen'],[2,'2 · mit Rechenregeln und Vorrang'],[3,'3 · auch Gleitkomma und (−1)ⁿ']],'Schwierigkeit')+ck('kb','Zeile zum Richtigstellen falscher Aussagen');
+   else H+=sl('n',tN([1,2,3,4,5,6]),'Anzahl der Sätze');}
+  H+=ck('show','Lösung zeigen')+'<button data-p3-act="mix">Neu mischen</button>';g.innerHTML=H;};}
+$('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.p3;if(!k)return;const it=items.find(i=>i.id===sel&&P3T.includes(i.type));if(!it)return;
+ rec('p3'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','lv','co','zl','bg','pr'].includes(k))v=+v;it[k]=v;
+ if(['n','lv','md','pr'].includes(k)){if(k==='lv'&&it.type==='pvr')it.co=v>=3?1:2;poGen(it);}
+ render();if(['md','lv'].includes(k))renderProps();});
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-p3-act]');if(!b)return;const it=items.find(i=>i.id===sel&&P3T.includes(i.type));if(!it)return;rec();poGen(it);render();});
+(function(){const P=$('#popal'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
+ L=[['pvr',T(50,17,'2 + 3 · 5²',12)+T(50,33,'= 77',12)],['pvz',T(50,17,'(−2)⁴ = ?',12)+T(50,33,'−2⁴ = ?',12)],['pka',T(50,17,'☐ −2³ = (−2)³',10)+T(50,33,'☐ −2⁴ = (−2)⁴',10)]];
+ P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));
+ const a=AST.find(x=>x[0]==='Potenzen');if(a)a[1].push(['pvr','Vorrangregeln mit Potenzen','Berechne! Beachte die Rechenreihenfolge.'],['pvz','Vorzeichen von Potenzen','Berechne und begründe, dass das Ergebnis positiv bzw. negativ ist!'],['pka','Potenzen: Aussagen prüfen','Kreuze die richtigen Aussagen an!']);})();
 /* ===== Terme ===== */
 const TET=['tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw'];
 Object.assign(TLD,{tea:{n:6,md:'wert',lv:1,co:2,mk:false},tez:{n:6,lv:1,nt:5,pr:false,co:1,mk:false},tek:{n:6,lv:1,zw:true,co:2,mk:false},tem:{n:8,md:'mix',lv:1,zw:false,co:2,mk:false},teh:{n:6,lv:1,pr:false,co:2,mk:false},tbf:{n:6,md:'mix',lv:1,zw:true,co:2,mk:false},tbr:{n:6,md:'mix',lv:1,co:2,mk:false},tbk:{n:6,md:'mix',zw:true,co:1,mk:false},tbw:{n:6,lv:1,ko:false,co:1,mk:false}});
