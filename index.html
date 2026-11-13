@@ -2924,7 +2924,7 @@ const WNG=['α','β','γ','δ','ε','φ','ρ','λ','μ','τ'],WNGN=[['α','Alpha
 const wnArt=d=>d===90?'rechter Winkel':d<90?'spitzer Winkel':d<180?'stumpfer Winkel':d===180?'gestreckter Winkel':d<360?'erhabener Winkel':'voller Winkel';
 const wnRad=a=>a*Math.PI/180,wnF=x=>(+x).toFixed(1);
 const wnRow=(it,l,v,w)=>`<div class="tlrw"><span style="white-space:nowrap">${l}</span><span class="tlln" style="flex:1;min-width:${w||4}em">${tlSv(it,v)}</span></div>`;
-const wnH1=t=>`<div style="font-weight:700;margin-bottom:.5em">${t}</div>`;
+const wnH1=t=>`<div class="wnh" style="font-weight:700;margin-bottom:.5em">${t}</div>`;
 /* --- Winkel benennen --- */
 function wnFigB(t){const sx=t.mir?-1:1,vx=t.mir?168:32,vy=60,al=t.al,a1=t.base-al/2,a2=t.base+al/2;
  const L=a=>Math.min(125,46/Math.max(.25,Math.abs(Math.sin(wnRad(a))))),P=(a,r)=>[vx+sx*r*Math.cos(wnRad(a)),vy-r*Math.sin(wnRad(a))];
@@ -2972,14 +2972,14 @@ function wnBlock(it){const k=it.type,sh=tlS(it),co=+it.co||1,red='#c0392b';let h
    +(it.gr?`<div style="border:1.4px solid #000;border-radius:4px;padding:.3em .8em;margin:0 0 1em;display:flex;flex-wrap:wrap;gap:.1em 1.4em">${WNGN.map(([a,b])=>`<span style="white-space:nowrap">${a} … ${b}</span>`).join('')}</div>`:'')
    +wnH1('Benenne die Teile der abgebildeten Winkel!')+tlGrid(co,it.d.map((t,i)=>`<div style="break-inside:avoid;margin:.1em 0 .9em"><b>${poL(i)}</b>${wnFigB(t)}${wnRow(it,'Name des Winkels:',t.g,3)}${wnRow(it,'Schenkel:',t.l.join(', '),3)}${wnRow(it,'Scheitel:',t.S,3)}</div>`).join(''));}
  else if(k==='wal'){const md=it.md||'ein';h=(md==='mk'||it.mk?wnMkA():'');
-  if(md==='ein'){const C={s:'#2e9e4f',t:'#2f6fd0',e:'#d33'};h+=it.d.map((r,i)=>`<div style="break-inside:avoid;margin:.2em 0 1em"><b>${poL(i)}</b> Kreise spitze Winkel grün, stumpfe Winkel blau und erhabene Winkel rot ein. Welche Winkelart bleibt übrig?<div style="display:flex;flex-wrap:wrap;gap:.5em 1.1em;margin:.6em 0 .5em 1.4em">${r.vals.map(x=>`<span style="display:inline-block;padding:.05em .5em;border-radius:1em;border:2px solid ${sh&&x.c!=='x'?C[x.c]:'transparent'}">${x.g} = ${x.v}°</span>`).join('')}</div>${wnRow(it,'Übrig bleibt:',r.over,12)}</div>`).join('');}
+  if(md==='ein'){const C={s:'#2e9e4f',t:'#2f6fd0',e:'#d33'};h+=it.d.map((r,i)=>`<div style="break-inside:avoid;margin:.2em 0 1em"><b>${poL(i)}</b>${it.nh?'':' Kreise spitze Winkel grün, stumpfe Winkel blau und erhabene Winkel rot ein. Welche Winkelart bleibt übrig?'}<div style="display:flex;flex-wrap:wrap;gap:.5em 1.1em;margin:.6em 0 .5em 1.4em">${r.vals.map(x=>`<span style="display:inline-block;padding:.05em .5em;border-radius:1em;border:2px solid ${sh&&x.c!=='x'?C[x.c]:'transparent'}">${x.g} = ${x.v}°</span>`).join('')}</div>${wnRow(it,'Übrig bleibt:',r.over,12)}</div>`).join('');}
   else if(md==='art')h+=wnH1('Gib die Winkelart an!')+tlGrid(co,it.d.map((r,i)=>`<div class="tlrw"><b>${poL(i)}</b><span style="white-space:nowrap">${r.g} = ${r.v}°</span><span class="tlln" style="flex:1;min-width:8em">${tlSv(it,wnArt(r.v))}</span></div>`).join(''));}
  else{const md=it.md||'be',cell=(r,i)=>{
    if(md==='zw'){const q=r.p+r.w;return `<div style="break-inside:avoid;margin:.1em 0 .9em"><b>${poL(i)}</b>${wnDisc({inner:45,rays:[[r.p],[q]],arcs:sh?[[r.p,r.w,28,'α',red,38],[q,360-r.w,62,'β',red,73]]:[]})}${wnRow(it,'α =',r.w+'°',4)}${wnRow(it,'Winkelart:',wnArt(r.w),6)}${wnRow(it,'β =',(360-r.w)+'°',4)}${wnRow(it,'Winkelart:',wnArt(360-r.w),6)}</div>`;}
    if(md==='ei')return `<div style="break-inside:avoid;margin:.1em 0 .9em"><b>${poL(i)}</b> <b>${r.g} = ${r.d}°</b>${wnDisc({dot:1,rays:sh?[[0,red],[r.d,red]]:[],arcs:sh?[[0,r.d,36,r.g,red,r.d<45?50:24]]:[]})}${wnRow(it,'Winkelart:',wnArt(r.d),6)}</div>`;
    return `<div style="break-inside:avoid;margin:.1em 0 .9em"><b>${poL(i)}</b>${wnDisc({inner:0,rays:[[0],[r.d]],arcs:[[0,r.d,36,r.g,'#000',r.d<45?50:24]]})}${wnRow(it,r.g+' =',r.d+'°',4)}${wnRow(it,'Winkelart:',wnArt(r.d),6)}</div>`;};
   h=wnH1(md==='zw'?'Auf diesen Winkelscheiben siehst du jeweils zwei Winkel. Beschrifte beide mit griechischen Buchstaben und bestimme ihre Größe und ihre Art.':md==='ei'?'Zeichne in diese leeren Winkelscheiben den gegebenen Winkel ein. Bestimme auch die Winkelart.':'Bestimme die Größe und die Art der eingezeichneten Winkel!')+tlGrid(co,it.d.map(cell).join(''));}
- return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ return `<div class="tlx" style="${kst(it)}">${it.nh?h.replace(/<div class="wnh"[^>]*>[^<]*<\/div>/g,''):h}</div>`;}
 {const _g=poGen,_b=poBlock,_r=renderPo;
  poGen=function(it){return WNT.includes(it.type)?wnGen(it):_g(it);};
  poBlock=function(it){return WNT.includes(it.type)?wnBlock(it):_b(it);};
@@ -3055,7 +3055,7 @@ function w2Block(it){const k=it.type,sh=tlS(it),co=+it.co||1;let h='';
  else if(k==='wsx'){h=wnH1('Die Winkelsumme der Winkel ist jeweils angegeben. Berechne den unbekannten Winkel mit x°.')+tlGrid(co,it.d.map((t,i)=>{const gs=t.g.reduce((a,b)=>a+b,0),eq=`${t.g.join('° + ')}° + ${t.m>1?t.m+'·x':'x'} = ${t.T}°`;return `<div style="break-inside:avoid;margin:.1em 0 .9em"><b>${poL(i)}</b> <span style="font-size:.9em">Winkelsumme ${t.T}°</span>${w2FigSx(t)}${it.rz?wnRow(it,'Rechnung:',eq,3):''}${wnRow(it,'x =',t.x+'°',4)}</div>`;}).join(''));}
  else{const o=W2LT[it.md||'g'];let i=0;const txt=o.t.replace(/\[([^\]]+)\]/g,(m,w)=>`<span class="tlln" style="min-width:${Math.max(3,w.length*.62+1)}em;text-align:center;margin:0 .15em">${tlSv(it,w)}</span>`);
   h=wnH1('Ergänze den Lückentext!')+(it.wb?`<div style="border:1.4px solid #000;border-radius:4px;padding:.4em .8em;margin:0 0 .9em;display:flex;flex-wrap:wrap;gap:.2em 1.3em">${it.d.wb.map(w=>`<span>${w}</span>`).join('')}</div>`:'')+`<div style="line-height:2.3">${txt}</div>`;}
- return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ return `<div class="tlx" style="${kst(it)}">${it.nh?h.replace(/<div class="wnh"[^>]*>[^<]*<\/div>/g,''):h}</div>`;}
 const w2Gen=it=>it.type==='wst'?w2GenSt(it):it.type==='wzu'?w2GenZu(it):it.type==='wgk'?w2GenGk(it):it.type==='wsx'?w2GenSx(it):w2GenLt(it);
 {const _g=poGen,_b=poBlock,_r=renderPo;
  poGen=function(it){return W2T.includes(it.type)?w2Gen(it):_g(it);};
@@ -3089,9 +3089,10 @@ const W3WL={4:['GRAD','ECKE','NULL','ZAHL'],5:['MATHE','KREIS','SPITZ','LINIE','
 const W3NW={3:'drei',4:'vier',5:'fünf',6:'sechs',8:'acht',9:'neun',10:'zehn',12:'zwölf',15:'fünfzehn',18:'achtzehn',20:'zwanzig',24:'vierundzwanzig',30:'dreißig',36:'sechsunddreißig'};
 function w3GenLw(it){const wl=+it.wl||5,st=+it.st||5,word=tpick(W3WL[wl]||W3WL[5]),L=word.split(''),ex=tshuf('ABCDEFGHIKLMNOPRTUVWZ'.split('').filter(c=>!L.includes(c))).slice(0,3),all=[...L.map(c=>({c,w:1})),...ex.map(c=>({c,w:0}))],used=[],pts=[];
  const SX=150,SY=170;
- for(const p of all){let a,g=0;do{a=st*kri(Math.ceil(10/st),Math.floor(170/st));}while(used.some(u=>Math.abs(u-a)<(st===1?7:10))&&g++<200);used.push(a);
-  const rad=wnRad(a),sn=Math.sin(rad),cs=Math.cos(rad),rm=Math.min(150/Math.max(.17,sn),cs>.05?290/cs:cs<-.05?135/-cs:400,400),r=Math.max(50,rm*(.5+Math.random()*.42));
-  pts.push({c:p.c,w:p.w,a,x:SX+r*cs,y:SY-r*sn});}
+ for(const p of all){let best=null;for(let t=0;t<400;t++){const a=st*kri(Math.ceil(10/st),Math.floor(170/st));if(used.some(u=>Math.abs(u-a)<(st===1?7:10))&&t<390)continue;
+  const rad=wnRad(a),sn=Math.sin(rad),cs=Math.cos(rad),rm=Math.min(150/Math.max(.17,sn),cs>.05?290/cs:cs<-.05?135/-cs:400,400),r=Math.max(50,rm*(.5+Math.random()*.42)),x=SX+r*cs,y=SY-r*sn;
+  best={a,x,y};if(pts.every(q=>Math.hypot(q.x-x,q.y-y)>38))break;}
+  used.push(best.a);pts.push({c:p.c,w:p.w,a:best.a,x:best.x,y:best.y});}
  it.d={word,pts,ang:L.map((c,i)=>pts[i].a)};}
 function w3FigLw(t,sh){const SX=150,SY=170,red='#c0392b';let s='<svg viewBox="0 0 460 190" style="width:100%;height:auto;display:block;border:1px solid #bbb;border-radius:4px" aria-hidden="true">';
  s+=`<path d="M${SX} ${SY}H450" stroke="#000" stroke-width="1.6"/><circle cx="${SX}" cy="${SY}" r="2.4" fill="#000"/><text x="${SX-12}" y="${SY+14}" text-anchor="middle" font-size="13" font-family="inherit">S</text>`;
@@ -3104,7 +3105,7 @@ function w3Block(it){const k=it.type,sh=tlS(it),co=+it.co||1;let h='';
   h=wnH1('Zeichne ausgehend von S Winkel mit den angegebenen Größen und notiere immer den Buchstaben, den du dabei triffst. Welches Lösungswort entsteht?')+`<div style="margin:.2em 0 .6em;display:flex;flex-wrap:wrap;gap:.3em 1.4em">${d.ang.map((a,i)=>`<span style="white-space:nowrap"><b>${R[i]})</b> ${a}°</span>`).join('')}</div>${w3FigLw(d,sh)}<div class="tlrw" style="display:flex;gap:.6em;align-items:flex-end;margin-top:.7em"><span style="white-space:nowrap"><b>Lösungswort:</b></span><span class="tlln" style="flex:1;min-width:8em;letter-spacing:.25em">${tlSv(it,d.word)}</span></div>`;}
  else{h=(it.mk?poMk('In einem <b>Winkelstern</b> bilden alle Winkel zusammen einen <b>vollen Winkel</b> (360°). Sind alle Winkel gleich groß, rechnest du: <b>360° : Anzahl der Winkel</b>.'):'')+wnH1('Konstruiere in deinem Heft einen Winkelstern, der aus der gegebenen Anzahl an gleich großen Winkeln besteht.')
    +tlGrid(co,it.d.map((n,i)=>`<div style="break-inside:avoid;margin:.2em 0 .6em"><div><b>${poL(i)}</b> ${it.wd?W3NW[n]:n+' Winkel'}${it.wd?' Winkel':''}</div>${it.rz?`<div class="tlrw" style="display:flex;gap:.6em;align-items:flex-end;margin:.3em 0 0 1.4em"><span style="white-space:nowrap">Rechnung:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,'360° : '+n+' = '+360/n+'°')}</span></div>`:''}<div class="tlrw" style="display:flex;gap:.6em;align-items:flex-end;margin:.3em 0 0 1.4em"><span style="white-space:nowrap">Jeder Winkel hat</span><span class="tlln" style="min-width:4em">${tlSv(it,360/n+'°')}</span></div></div>`).join(''));}
- return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ return `<div class="tlx" style="${kst(it)}">${it.nh?h.replace(/<div class="wnh"[^>]*>[^<]*<\/div>/g,''):h}</div>`;}
 const w3Gen=it=>it.type==='wlw'?w3GenLw(it):w3GenSk(it);
 {const _g=poGen,_b=poBlock,_r=renderPo;
  poGen=function(it){return W3T.includes(it.type)?w3Gen(it):_g(it);};
@@ -3124,6 +3125,23 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-w3-act]');
  L=[['wlw','<path d="M10 34H90M10 34L70 8M10 34L40 6" stroke="#000" stroke-width="1.3"/>'+T(74,10,'× M',10)+T(44,8,'× A',10)],['wsk','<circle cx="50" cy="20" r="5" fill="none" stroke="#000" stroke-width="1.2"/><path d="M50 20L90 20M50 20L78 6M50 20L50 2M50 20L22 6M50 20L10 20M50 20L22 34M50 20L50 38M50 20L78 34" stroke="#000" stroke-width="1.2"/>']];
  if(P)P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));
  const a=AST.find(g=>g[1]&&g[1].some&&g[1].some(e=>e[0]==='wk'));if(a)a[1].push(['wlw','Lösungswort-Winkel','Zeichne die Winkel und finde das Lösungswort!'],['wsk','Winkelstern konstruieren','Konstruiere Winkelsterne in deinem Heft!']);})();
+/* ===== Fertige Themenblätter Winkel ===== */
+{const PO=(t,lbl,ins,set)=>({t,lbl,ins,set:Object.assign({nh:true},set)});
+ Object.assign(AST_FAM,{
+  wf0:[PO('wal','Merkkasten Winkelarten','Schreibe den Merktext genau so in dein Heft!',{md:'mk'}),PO('wbn','Merkkasten Winkel','Schreibe den Merktext genau so in dein Heft!',{n:1,co:1,mk:true,gr:true})],
+  wf1:[PO('wbn','Winkel benennen','Benenne die Teile der abgebildeten Winkel!',{n:3,co:3}),PO('wal','Winkel einkreisen','Kreise spitze Winkel grün, stumpfe Winkel blau und erhabene Winkel rot ein. Welche Winkelart bleibt übrig?',{md:'ein',n:1,k:7}),PO('wal','Winkelart bestimmen','Gib die Winkelart an!',{md:'art',n:6,co:3})],
+  wf2:[PO('wk','Winkel messen','Schätze zuerst, miss dann genau und gib die Art der Winkel an!',{n:4,co:2,w:714,qG:true,qA:true,qS:true}),PO('wzu','Winkel zuordnen','Ordne die Winkel den passenden Abbildungen zu, ohne ihre Größe zu messen!',{n:5,co:2})],
+  wf3:[PO('wkk','Winkel konstruieren','Konstruiere die Winkel mit dem Geodreieck!',{n:4,co:2,ar:'mix'}),PO('wkk','Erhabene Winkel konstruieren','Konstruiere die Winkel. Tipp: Konstruiere zuerst 360° − α!',{n:2,co:2,ar:'er'})],
+  wf4:[PO('wsc','Winkelscheibe: bestimmen','Bestimme die Größe und die Art der eingezeichneten Winkel!',{md:'be',n:3,co:3}),PO('wsc','Winkelscheibe: einzeichnen','Zeichne in diese leeren Winkelscheiben den gegebenen Winkel ein. Bestimme auch die Winkelart!',{md:'ei',n:3,co:3})],
+  wf5:[PO('wgk','Zwei Geraden schneiden einander','Miss die Größen der Winkel und kreuze wahre Aussagen zu diesem Bild an!',{md:'mess',n:1,ak:true}),PO('wgk','Winkel berechnen','Ein Winkel ist gegeben. Berechne die anderen drei Winkel!',{md:'ber',n:2,co:2}),PO('wlt','Lückentext','Ergänze den Lückentext!',{md:'a',wb:true})],
+  wf6:[PO('wlw','Lösungswort','Zeichne ausgehend von S die Winkel und notiere die Buchstaben, die du triffst. Welches Lösungswort entsteht?',{wl:5}),PO('wst','Winkelstern','Miss alle Winkel in diesem Winkelstern und gib auch die Art der Winkel an!',{n:1,k:5,co:1,qa:true,sm:true})],
+  wf7:[PO('wsx','Winkelsumme mit x','Berechne den unbekannten Winkel x!',{md:'mix',n:6,co:3}),PO('wsk','Winkelstern konstruieren','Konstruiere in deinem Heft einen Winkelstern, der aus der gegebenen Anzahl an gleich großen Winkeln besteht!',{n:4,co:2})]});
+ Object.assign(AST_FM,{wf0:'wf0',wf1:'wf1',wf2:'wf2',wf3:'wf3',wf4:'wf4',wf5:'wf5',wf6:'wf6',wf7:'wf7'});
+ Object.assign(AST_FN,{wf0:'Winkel: Merkblatt',wf1:'Winkel: Benennen und Winkelarten',wf2:'Winkel: Messen und Zuordnen',wf3:'Winkel: Konstruieren',wf4:'Winkel: Winkelscheibe',wf5:'Winkel: Geraden und Lückentext',wf6:'Winkel: Lösungswort und Winkelstern',wf7:'Winkelsumme mit x und Winkelstern'});
+ const WS=['wf0','wf1','wf2','wf3','wf4','wf5','wf6','wf7'],_ae2=astEntries;astEntries=function(s,f){return f?_ae2(s,f):_ae2(s.filter(k=>!WS.includes(k)),f);};
+ const ach=document.querySelector('#ast-ab .ach');
+ if(ach){ach.insertAdjacentHTML('beforeend',WS.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join(''));
+  WS.forEach(k=>{const l=ach.querySelector(`input[value="${k}"]`).parentNode;l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0));});}}
 /* ===== Terme ===== */
 const TET=['tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw'];
 Object.assign(TLD,{tea:{n:6,md:'wert',lv:1,co:2,mk:false},tez:{n:6,lv:1,nt:5,pr:false,co:1,mk:false},tek:{n:6,lv:1,zw:true,co:2,mk:false},tem:{n:8,md:'mix',lv:1,zw:false,co:2,mk:false},teh:{n:6,lv:1,pr:false,co:2,mk:false},tbf:{n:6,md:'mix',lv:1,zw:true,co:2,mk:false},tbr:{n:6,md:'mix',lv:1,co:2,mk:false},tbk:{n:6,md:'mix',zw:true,co:1,mk:false},tbw:{n:6,lv:1,ko:false,co:1,mk:false}});
@@ -5870,6 +5888,22 @@ rows:[
 MERK.po=()=>MKB('Potenzen',[['Potenz','aⁿ = a · a · … · a (n Faktoren). a ist die Basis, n die Hochzahl (der Exponent).'],['Vorzeichen','Negative Basis: gerade Hochzahl gibt +, ungerade gibt −. (−2)⁴ = +16, (−2)³ = −8. Achtung: −2⁴ = −16.'],['Rechenregeln','aᵐ · aⁿ = aᵐ⁺ⁿ, aᵐ : aⁿ = aᵐ⁻ⁿ, (aᵐ)ⁿ = aᵐ·ⁿ, (a · b)ⁿ = aⁿ · bⁿ. Achtung: (a + b)² ist nicht a² + b²!'],['Rechenreihenfolge','1. Klammern, 2. Potenzen, 3. Punktrechnung, 4. Strichrechnung. Von links nach rechts.'],['Gleitkomma','m · 10ⁿ mit 1 ≤ m < 10, zum Beispiel 84 000 000 = 8,4 · 10⁷.']]);
 {const sel=document.getElementById('pl-th');if(sel&&!sel.querySelector('option[value="po"]')){const o=document.createElement('option');o.value='po';o.textContent='Potenzen';sel.appendChild(o);}}
 
+PLAN.wi={t:'Planarbeit: Winkel',v:'',intro:'Arbeite die Aufträge der Reihe nach ab. Hake ab (☑), was du fertig hast. Kontrolle: Partner/in oder Lehrerin.',
+rows:[
+['1','Schreibe die Überschrift „Winkel“ ins Heft und unterstreiche sie mit dem Lineal.','Heft'],
+['2','Schreibe den Merktext aus dem Merkkasten ab. Schreibe genau so wie dort: Überschrift, eigene Zeilen, Zeichen.','Heft'],
+['3','Sieh dir das Video zum Thema an (iPad + Kopfhörer, QR-Code unten). Notiere 2 Dinge, die du gelernt hast.','iPad / Heft'],
+['4','Zeichne zwei Winkel ins Heft. Beschrifte Scheitel (K, L), Schenkel (u, v, h, t) und den Winkel (β, ε).','Heft'],
+['5','Kreise spitze Winkel grün, stumpfe Winkel blau und erhabene Winkel rot ein. Welche Winkelart bleibt übrig? α = 120°, β = 36°, γ = 42°, δ = 178°, ε = 289°, ρ = 90°, λ = 9°','Heft'],
+['6','Löse das Aufgabenblatt „Winkel messen“: Schätze zuerst, miss dann genau und gib die Winkelart an.','Blatt'],
+['7','Konstruiere mit dem Geodreieck: 45°, 145°, 30°, 124°, 165°. Beschrifte jeden Winkel mit Bogen und griechischem Buchstaben.','Heft'],
+['8','Konstruiere die erhabenen Winkel 270°, 345°, 230°, 194° (zuerst 360° − α zeichnen).','Heft'],
+['9','Konstruiere einen Winkelstern mit 5, 8 und 9 gleich großen Winkeln. Rechne zuerst 360° : Anzahl.','Heft'],
+['10','Zeichne zwei Geraden, die einander schneiden. Miss die vier Winkel und schreibe auf, was dir auffällt.','Heft'],
+['★11','Zusatz: Berechne x: 35° + x + x + 35° = 90°. Zeichne zuerst eine Skizze.','Heft'],
+['★12','Zusatz: Löse das Winkelrätsel: Rechnet man mich vier Mal, ergibt das einen vollen Winkel. Welche Winkelart bin ich und wie viel Grad habe ich?','Heft']]};
+MERK.wi=()=>MKB('Winkel',[['Winkel','Zwei Strahlen (Schenkel) mit gemeinsamem Anfangspunkt (Scheitel). Benennung mit griechischen Kleinbuchstaben: α, β, γ, δ, ε. Markierung mit einem kleinen Bogen.'],['Winkelarten','spitz: 0° < α < 90°; recht: α = 90°; stumpf: 90° < α < 180°; gestreckt: α = 180°; erhaben: 180° < α < 360°; voll: α = 360°.'],['Messen','Null des Geodreiecks an den Scheitel, eine Kante an einen Schenkel. Kleiner als 90°: kleine Zahl, sonst große Zahl.'],['Winkel über 180°','Nicht direkt messbar: Miss β und rechne α = 360° − β.'],['Konstruieren','Schenkel zeichnen, Null an den Scheitel, bei der Gradzahl markieren, Scheitel und Markierung verbinden, beschriften.'],['Winkelstern, Geraden','Alle Winkel um einen Punkt ergeben 360°. Nebenwinkel ergeben 180°, gegenüberliegende Winkel sind gleich groß.']]);
+{const sel=document.getElementById('pl-th');if(sel&&!sel.querySelector('option[value="wi"]')){const o=document.createElement('option');o.value='wi';o.textContent='Winkel';sel.appendChild(o);}}
 function planBuild(key,o){
  const last=()=>items[items.length-1],P=PLAN[key]||PLAN.sg,R0=rec;R0();rec=()=>{};RF=false;let res={};
  try{
