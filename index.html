@@ -2914,6 +2914,91 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-p5-act]');
  if(h4){const d=document.createElement('div');d.innerHTML='<h4>⭐ Fertige Themenblätter (füllen ein ganzes A4-Blatt – nur eines auswählen)</h4><div class="ach">'+PS.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join('')+'</div>';
   const nodes=[...d.childNodes];h4.before(...nodes);nodes[1].querySelectorAll('label').forEach(l=>l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0)));}}
 
+/* ===== Winkel 2: benennen, Winkelarten, Winkelscheibe ===== */
+const WNT=['wbn','wal','wsc'];POT.push(...WNT);TLT.push(...WNT);NUMT.push(...WNT);
+Object.assign(TLN,{wbn:'Winkel benennen',wal:'Winkelarten',wsc:'Winkelscheibe'});
+Object.assign(TLD,{wbn:{n:3,co:3,ar:'mix',mk:false,gr:false},wal:{md:'ein',n:1,k:7,co:1,mk:false},wsc:{md:'be',n:3,co:3,ar:'mix'}});
+const WNG=['α','β','γ','δ','ε','φ','ρ','λ','μ','τ'],WNGN=[['α','Alpha'],['β','Beta'],['γ','Gamma'],['δ','Delta'],['ε','Epsilon'],['λ','Lambda'],['ρ','Rho'],['φ','Phi']];
+const wnArt=d=>d===90?'rechter Winkel':d<90?'spitzer Winkel':d<180?'stumpfer Winkel':d===180?'gestreckter Winkel':d<360?'erhabener Winkel':'voller Winkel';
+const wnRad=a=>a*Math.PI/180,wnF=x=>(+x).toFixed(1);
+const wnRow=(it,l,v,w)=>`<div class="tlrw"><span style="white-space:nowrap">${l}</span><span class="tlln" style="flex:1;min-width:${w||4}em">${tlSv(it,v)}</span></div>`;
+const wnH1=t=>`<div style="font-weight:700;margin-bottom:.5em">${t}</div>`;
+/* --- Winkel benennen --- */
+function wnFigB(t){const sx=t.mir?-1:1,vx=t.mir?168:32,vy=60,al=t.al,a1=t.base-al/2,a2=t.base+al/2;
+ const L=a=>Math.min(125,46/Math.max(.25,Math.abs(Math.sin(wnRad(a))))),P=(a,r)=>[vx+sx*r*Math.cos(wnRad(a)),vy-r*Math.sin(wnRad(a))];
+ const e1=P(a1,L(a1)),e2=P(a2,L(a2)),s1=P(a1,22),s2=P(a2,22),lr=al<50?50:36,m=P(t.base,lr),o=P(t.base+180,13),k1=P(a1,L(a1)+9),k2=P(a2,L(a2)+9);
+ const tx=(p,s,it)=>`<text x="${wnF(p[0])}" y="${wnF(p[1]+4.5)}" text-anchor="middle" font-size="14" font-family="inherit"${it?' font-style="italic"':''}>${s}</text>`;
+ return `<svg viewBox="0 0 200 120" style="width:100%;max-width:240px;height:auto;display:block" aria-hidden="true"><path d="M${wnF(vx)} ${vy}L${wnF(e1[0])} ${wnF(e1[1])}M${wnF(vx)} ${vy}L${wnF(e2[0])} ${wnF(e2[1])}" stroke="#000" stroke-width="1.5" fill="none"/><path d="M${wnF(s1[0])} ${wnF(s1[1])}A22 22 0 0 ${t.mir?1:0} ${wnF(s2[0])} ${wnF(s2[1])}" stroke="#000" stroke-width="1.1" fill="none"/><circle cx="${vx}" cy="${vy}" r="2.2" fill="#000"/>${tx(o,t.S)}${tx(k2,t.l[0])}${tx(k1,t.l[1])}${tx(m,t.g)}</svg>`;}
+function wnGenB(it){const n=+it.n||3,SC=tshuf('ABCDEFGHKLMNPQRSTUVWZ'.split('')),LC=tshuf('abcdefghkmnpqrstuvw'.split('')),GR=tshuf(['α','β','γ','δ','ε','φ','ρ','λ']);
+ it.d=Array.from({length:n},(_,i)=>({S:SC[i],l:[LC[2*i],LC[2*i+1]],g:GR[i%8],al:it.ar==='sp'?5*kri(5,16):5*kri(5,28),base:kri(-12,12),mir:Math.random()<.5}));}
+/* --- Winkelarten: Merkkasten --- */
+const WNA=[['Spitzer','0° &lt; α &lt; 90°',40],['Rechter','α = 90°',90],['Stumpfer','90° &lt; α &lt; 180°',135],['Gestreckter','α = 180°',180],['Erhabener','180° &lt; α &lt; 360°',225],['Voller','α = 360°',360]];
+function wnFigA(d){const cfg={40:[[26,58],72,58],90:[[26,58],66,40],135:[[62,58],52,50],180:[[66,52],52,52],225:[[60,30],54,38],360:[[60,38],48,48]}[d],V=cfg[0],aL=cfg[1],bL=cfg[2],r=d===180?24:20,f='#cfe0f1';
+ const c=(a,l)=>[V[0]+l*Math.cos(wnRad(a)),V[1]-l*Math.sin(wnRad(a))],q=p=>wnF(p[0])+' '+wnF(p[1]),aE=c(0,aL),bE=c(d%360,bL);
+ const sec=d===360?`<circle cx="${V[0]}" cy="${V[1]}" r="${r}" fill="${f}" stroke="#000" stroke-width=".8"/>`:`<path d="M${q(V)}L${q(c(0,r))}A${r} ${r} 0 ${d>180?1:0} 0 ${q(c(d,r))}Z" fill="${f}" stroke="#000" stroke-width=".8"/>`;
+ const T=(p,s,an,dy)=>`<text x="${wnF(p[0])}" y="${wnF(p[1]+(dy||0))}" text-anchor="${an||'middle'}" font-size="11" font-family="inherit">${s}</text>`;
+ const al=d===360?'':T(c(d/2,d<60?r*.85:r*.62),'α','middle',4),ux=Math.cos(wnRad(d)),uy=Math.sin(wnRad(d));
+ const bl=d===360?T([V[0]+aL+5,V[1]+10],'b','start'):T([bE[0]+7*ux,bE[1]-7*uy],'b',ux<-.3?'end':ux>.3?'start':'middle',uy>.3?-1:uy<-.3?9:4);
+ const aa=d===360?T([V[0]+aL+5,V[1]-3],'a','start'):T([aE[0]+6,aE[1]+4],'a','start');
+ return `<svg viewBox="0 0 130 74" style="width:100%;height:auto;display:block" aria-hidden="true">${sec}<path d="M${q(V)}L${q(aE)}M${q(V)}L${q(bE)}" stroke="#000" stroke-width="1.3" fill="none"/>${al}${aa}${bl}${T([V[0]-1,V[1]+12],'S')}</svg>`;}
+function wnMkA(){return `<div style="border:1.4px solid #000;border-radius:4px;margin:0 0 1em;break-inside:avoid"><div style="padding:.4em .8em"><b>Merke:</b> Die Größe eines Winkels wird in <b>Grad</b> gemessen. Eine ganze Umdrehung hat 360°. Ein Winkel mit 360° heißt <b>voller Winkel</b>. Man unterscheidet zwischen <b>6 Winkelarten</b>.</div><div style="display:grid;grid-template-columns:repeat(3,1fr);border-top:1.4px solid #000">${WNA.map(([n,r,d],i)=>`<div style="padding:.3em .5em;text-align:center;${i%3<2?'border-right:1.4px solid #000;':''}${i<3?'border-bottom:1.4px solid #000;':''}">${wnFigA(d)}<div><u>${n}</u> Winkel</div><div style="font-size:.9em">${r}</div></div>`).join('')}</div></div>`;}
+function wnGenA(it){const md=it.md||'ein',n=+it.n||1;it.d=[];if(md==='mk')return;
+ if(md==='ein'){const k=+it.k||7;for(let s=0;s<n;s++){const left=tpick([90,180,360]),ne=k>=8?2:1,nt=k>=9?3:2,ns=k-1-ne-nt,used=new Set([left]),vs=[{v:left,c:'x'}];
+   const add=(cnt,lo,hi,c)=>{for(let i=0;i<cnt;i++){let v,g=0;do{v=kri(lo,hi);}while((used.has(v)||v%10===0)&&g++<60);used.add(v);vs.push({v,c});}};
+   add(ns,5,88,'s');add(nt,92,178,'t');add(ne,182,358,'e');
+   const sh=tshuf(vs).map((x,i)=>({g:WNG[i],v:x.v,c:x.c}));it.d.push({vals:sh,over:wnArt(left)});}return;}
+ for(let i=0;i<n;i++){const v=Math.random()<.3?tpick([90,180,360]):tpick([kri(5,89),kri(91,179),kri(181,359)]);it.d.push({g:WNG[i%WNG.length],v});}}
+/* --- Winkelscheibe --- */
+function wnDisc(o){const R=100,pt=(a,r)=>[wnF(r*Math.cos(wnRad(a))),wnF(-r*Math.sin(wnRad(a)))],red='#c0392b';
+ let tk='';for(let a=0;a<360;a+=5){const l=a%90===0?10:a%10===0?7:4,p=pt(a,R),q=pt(a,R-l);tk+=`M${p[0]} ${p[1]}L${q[0]} ${q[1]}`;}
+ const T=(x,y,t,an)=>`<text x="${x}" y="${y}" text-anchor="${an}" dominant-baseline="central" font-size="11" font-family="inherit">${t}</text>`;
+ let s=`<circle r="${R}" fill="none" stroke="#000" stroke-width="1.3"/><path d="${tk}" stroke="#000" stroke-width=".8" fill="none"/>${T(106,0,'0','start')}${T(0,-108,'90','middle')}${T(-106,0,'180','end')}${T(0,110,'270','middle')}`;
+ if(o.inner)s+=`<circle r="${o.inner}" fill="none" stroke="#000" stroke-width="1.2"/>`;
+ (o.rays||[]).forEach(([a,col])=>{const p=pt(a,R);s+=`<line x1="0" y1="0" x2="${p[0]}" y2="${p[1]}" stroke="${col||'#000'}" stroke-width="1.5"/>`;});
+ (o.arcs||[]).forEach(([a1,sp,r,lab,col,lr])=>{const p=pt(a1,r),q=pt(a1+sp,r),m=pt(a1+sp/2,lr||r+11);s+=`<path d="M${p[0]} ${p[1]}A${r} ${r} 0 ${sp>180?1:0} 0 ${q[0]} ${q[1]}" fill="none" stroke="${col||'#000'}" stroke-width="1.3"/>`+(lab?`<text x="${m[0]}" y="${m[1]}" text-anchor="middle" dominant-baseline="central" font-size="14" fill="${col||'#000'}" font-family="inherit">${lab}</text>`:'');});
+ if(o.dot)s+='<circle r="2" fill="#000"/>';
+ return `<svg viewBox="-132 -114 264 232" style="width:100%;max-width:250px;height:auto;display:block;margin:0 auto" aria-hidden="true">${s}</svg>`;}
+function wnGenS(it){const n=+it.n||3,md=it.md||'be',sp=it.ar==='sp',ty=[];
+ const dv=t=>t==='s'?5*kri(2,17):t==='t'?5*kri(19,35):5*kri(37,70);
+ while(ty.length<n)tshuf(sp?['s','t','s','t']:['s','t','e']).forEach(x=>ty.length<n&&ty.push(x));
+ it.d=ty.map((t,i)=>{const g=WNG[i%WNG.length];
+  if(md==='zw'){const w=5*kri(3,34),p=5*kri(0,71);return{g,p,w};}
+  let d;do{d=dv(t);}while(d===90||d===180||d===270);return{g,d};});}
+const wnGen=it=>it.type==='wbn'?wnGenB(it):it.type==='wal'?wnGenA(it):wnGenS(it);
+function wnBlock(it){const k=it.type,sh=tlS(it),co=+it.co||1,red='#c0392b';let h='';
+ if(k==='wbn'){h=(it.mk?poMk('Ein Winkel wird von zwei <b>Strahlen</b> mit gemeinsamem Anfangspunkt gebildet. Die Strahlen heißen <b>Schenkel</b>, der gemeinsame Punkt heißt <b>Scheitel</b>. Winkel werden mit <b>griechischen Kleinbuchstaben</b> benannt und durch einen kleinen <b>Bogen</b> markiert.'):'')
+   +(it.gr?`<div style="border:1.4px solid #000;border-radius:4px;padding:.3em .8em;margin:0 0 1em;display:flex;flex-wrap:wrap;gap:.1em 1.4em">${WNGN.map(([a,b])=>`<span style="white-space:nowrap">${a} … ${b}</span>`).join('')}</div>`:'')
+   +wnH1('Benenne die Teile der abgebildeten Winkel!')+tlGrid(co,it.d.map((t,i)=>`<div style="break-inside:avoid;margin:.1em 0 .9em"><b>${poL(i)}</b>${wnFigB(t)}${wnRow(it,'Name des Winkels:',t.g,3)}${wnRow(it,'Schenkel:',t.l.join(', '),3)}${wnRow(it,'Scheitel:',t.S,3)}</div>`).join(''));}
+ else if(k==='wal'){const md=it.md||'ein';h=(md==='mk'||it.mk?wnMkA():'');
+  if(md==='ein'){const C={s:'#2e9e4f',t:'#2f6fd0',e:'#d33'};h+=it.d.map((r,i)=>`<div style="break-inside:avoid;margin:.2em 0 1em"><b>${poL(i)}</b> Kreise spitze Winkel grün, stumpfe Winkel blau und erhabene Winkel rot ein. Welche Winkelart bleibt übrig?<div style="display:flex;flex-wrap:wrap;gap:.5em 1.1em;margin:.6em 0 .5em 1.4em">${r.vals.map(x=>`<span style="display:inline-block;padding:.05em .5em;border-radius:1em;border:2px solid ${sh&&x.c!=='x'?C[x.c]:'transparent'}">${x.g} = ${x.v}°</span>`).join('')}</div>${wnRow(it,'Übrig bleibt:',r.over,12)}</div>`).join('');}
+  else if(md==='art')h+=wnH1('Gib die Winkelart an!')+tlGrid(co,it.d.map((r,i)=>`<div class="tlrw"><b>${poL(i)}</b><span style="white-space:nowrap">${r.g} = ${r.v}°</span><span class="tlln" style="flex:1;min-width:8em">${tlSv(it,wnArt(r.v))}</span></div>`).join(''));}
+ else{const md=it.md||'be',cell=(r,i)=>{
+   if(md==='zw'){const q=r.p+r.w;return `<div style="break-inside:avoid;margin:.1em 0 .9em"><b>${poL(i)}</b>${wnDisc({inner:45,rays:[[r.p],[q]],arcs:sh?[[r.p,r.w,28,'α',red,38],[q,360-r.w,62,'β',red,73]]:[]})}${wnRow(it,'α =',r.w+'°',4)}${wnRow(it,'Winkelart:',wnArt(r.w),6)}${wnRow(it,'β =',(360-r.w)+'°',4)}${wnRow(it,'Winkelart:',wnArt(360-r.w),6)}</div>`;}
+   if(md==='ei')return `<div style="break-inside:avoid;margin:.1em 0 .9em"><b>${poL(i)}</b> <b>${r.g} = ${r.d}°</b>${wnDisc({dot:1,rays:sh?[[0,red],[r.d,red]]:[],arcs:sh?[[0,r.d,36,r.g,red,r.d<45?50:24]]:[]})}${wnRow(it,'Winkelart:',wnArt(r.d),6)}</div>`;
+   return `<div style="break-inside:avoid;margin:.1em 0 .9em"><b>${poL(i)}</b>${wnDisc({inner:0,rays:[[0],[r.d]],arcs:[[0,r.d,36,r.g,'#000',r.d<45?50:24]]})}${wnRow(it,r.g+' =',r.d+'°',4)}${wnRow(it,'Winkelart:',wnArt(r.d),6)}</div>`;};
+  h=wnH1(md==='zw'?'Auf diesen Winkelscheiben siehst du jeweils zwei Winkel. Beschrifte beide mit griechischen Buchstaben und bestimme ihre Größe und ihre Art.':md==='ei'?'Zeichne in diese leeren Winkelscheiben den gegebenen Winkel ein. Bestimme auch die Winkelart.':'Bestimme die Größe und die Art der eingezeichneten Winkel!')+tlGrid(co,it.d.map(cell).join(''));}
+ return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+{const _g=poGen,_b=poBlock,_r=renderPo;
+ poGen=function(it){return WNT.includes(it.type)?wnGen(it):_g(it);};
+ poBlock=function(it){return WNT.includes(it.type)?wnBlock(it):_b(it);};
+ renderPo=function(){const g=$('#g-po'),it=items.find(i=>i.id===sel&&WNT.includes(i.type));if(!g||!it)return _r();
+  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o,lab)=>`<label>${lab}<select data-wn="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-wn="${f}"${it[f]?' checked':''}> ${t}</label>`;
+  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+  if(k==='wbn')H+=sl('n',tN([1,2,3,4,6,9]),'Anzahl der Winkel')+sl('co',tN([1,2,3]),'Spalten')+sl('ar',[['mix','spitze und stumpfe Winkel'],['sp','nur spitze Winkel']],'Winkelart')+ck('mk','Merkkasten (Schenkel, Scheitel)')+ck('gr','Kasten „Griechische Buchstaben“');
+  else if(k==='wal')H+=sl('md',[['ein','Einkreisen nach Winkelart (Farben)'],['art','Winkelart bestimmen'],['mk','Nur Merkkasten (6 Winkelarten)']],'Aufgabe')+(it.md==='mk'?'':(it.md==='ein'?sl('n',tN([1,2,3]),'Anzahl der Aufgaben')+sl('k',[[6,'6 Winkel'],[7,'7 Winkel'],[8,'8 Winkel'],[9,'9 Winkel']],'Winkel pro Aufgabe'):sl('n',tN([4,6,8,10,12]),'Anzahl')+sl('co',tN([1,2,3]),'Spalten'))+ck('mk','Merkkasten (6 Winkelarten)'));
+  else H+=sl('md',[['be','Größe und Art der eingezeichneten Winkel'],['zw','Zwei Winkel pro Scheibe'],['ei','Winkel einzeichnen']],'Aufgabe')+sl('n',tN([1,2,3,4,6,9]),'Anzahl der Scheiben')+sl('co',tN([1,2,3]),'Spalten')+(it.md==='zw'?'':sl('ar',[['mix','spitze, stumpfe, erhabene'],['sp','nur spitze und stumpfe']],'Winkelarten'));
+  H+=ck('show','Lösung zeigen')+'<button data-wn-act="mix">Neu mischen</button>';g.innerHTML=H;};}
+$('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.wn;if(!k)return;const it=items.find(i=>i.id===sel&&WNT.includes(i.type));if(!it)return;
+ rec('wn'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','co','k'].includes(k))v=+v;it[k]=v;
+ if(k==='md'&&it.type==='wsc'){it.co=v==='zw'?2:3;it.n=v==='zw'?2:3;}
+ if(k==='md'&&it.type==='wal'){it.n=v==='ein'?1:6;it.co=v==='art'?2:1;}
+ if(['n','k','md','ar'].includes(k))poGen(it);
+ render();if(k==='md')renderProps();});
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-wn-act]');if(!b)return;const it=items.find(i=>i.id===sel&&WNT.includes(i.type));if(!it)return;rec();poGen(it);render();});
+(function(){const P=document.querySelector('.catp[data-c="wk"]'),T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||12}" fill="#000">${t}</text>`,
+ L=[['wbn',T(50,17,'Scheitel · Schenkel',11)+T(50,33,'Name des Winkels',11)],['wal',T(50,17,'spitz · stumpf · erhaben',10)+T(50,33,'Winkelarten',12)],['wsc','<circle cx="50" cy="20" r="17" fill="none" stroke="#000" stroke-width="1.4"/><path d="M50 20H67M50 20L62 8" stroke="#000" stroke-width="1.4"/>']];
+ if(P)P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));
+ const a=AST.find(g=>g[1]&&g[1].some&&g[1].some(e=>e[0]==='wk'));if(a)a[1].push(['wbn','Winkel benennen','Benenne die Teile der abgebildeten Winkel!'],['wal','Winkelarten','Löse die Aufgaben zu den Winkelarten!'],['wsc','Winkelscheibe','Löse die Aufgaben mit der Winkelscheibe!']);})();
 /* ===== Terme ===== */
 const TET=['tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw'];
 Object.assign(TLD,{tea:{n:6,md:'wert',lv:1,co:2,mk:false},tez:{n:6,lv:1,nt:5,pr:false,co:1,mk:false},tek:{n:6,lv:1,zw:true,co:2,mk:false},tem:{n:8,md:'mix',lv:1,zw:false,co:2,mk:false},teh:{n:6,lv:1,pr:false,co:2,mk:false},tbf:{n:6,md:'mix',lv:1,zw:true,co:2,mk:false},tbr:{n:6,md:'mix',lv:1,co:2,mk:false},tbk:{n:6,md:'mix',zw:true,co:1,mk:false},tbw:{n:6,lv:1,ko:false,co:1,mk:false}});
