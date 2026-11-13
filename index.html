@@ -2913,6 +2913,7 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-p5-act]');
  const ab=document.getElementById('ast-ab'),h4=ab&&ab.querySelector('h4');
  if(h4){const d=document.createElement('div');d.innerHTML='<h4>⭐ Fertige Themenblätter (füllen ein ganzes A4-Blatt – nur eines auswählen)</h4><div class="ach">'+PS.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join('')+'</div>';
   const nodes=[...d.childNodes];h4.before(...nodes);nodes[1].querySelectorAll('label').forEach(l=>l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0)));}}
+
 /* ===== Terme ===== */
 const TET=['tea','tez','tek','tem','teh','tbf','tbr','tbk','tbw'];
 Object.assign(TLD,{tea:{n:6,md:'wert',lv:1,co:2,mk:false},tez:{n:6,lv:1,nt:5,pr:false,co:1,mk:false},tek:{n:6,lv:1,zw:true,co:2,mk:false},tem:{n:8,md:'mix',lv:1,zw:false,co:2,mk:false},teh:{n:6,lv:1,pr:false,co:2,mk:false},tbf:{n:6,md:'mix',lv:1,zw:true,co:2,mk:false},tbr:{n:6,md:'mix',lv:1,co:2,mk:false},tbk:{n:6,md:'mix',zw:true,co:1,mk:false},tbw:{n:6,lv:1,ko:false,co:1,mk:false}});
@@ -5637,6 +5638,24 @@ rows:[
 ['6','Der Normalabstand eines Punktes P von einer Geraden g ist die kürzeste Verbindung von P zu g. Zeichne ihn ein und miss ihn.','Heft'],
 ['★7','Zusatz: Zwei verschiedene Geraden stehen normal auf derselben Geraden. Was weißt du über ihre Lage? Begründe.','Heft'],
 ['★8','Zusatz: Zeichne ein Rechteck und erkläre mit den Wörtern „parallel“ und „normal“, woran man es erkennt.','Heft']]}};
+/* ===== Planarbeit Potenzen ===== */
+PLAN.po={t:'Planarbeit: Potenzen',v:'',intro:'Arbeite die Aufträge der Reihe nach ab. Hake ab (☑), was du fertig hast. Kontrolle: Partner/in oder Lehrerin.',
+rows:[
+['1','Schreibe die Überschrift „Potenzen“ ins Heft und unterstreiche sie mit dem Lineal.','Heft'],
+['2','Schreibe den Merktext aus dem Merkkasten ab. Schreibe genau so wie dort: Überschrift, eigene Zeilen, Zeichen.','Heft'],
+['3','Sieh dir das Video zum Thema an (iPad + Kopfhörer, QR-Code unten). Notiere 2 Dinge, die du gelernt hast.','iPad / Heft'],
+['4','Schreibe als Produkt und berechne: 2³, 5², 10⁴, (−3)², (−2)³, (2/3)².','Heft'],
+['5','Schreibe in Potenzschreibweise: 7 · 7 · 7 · 7, 5 · 5 · 5 · 5 · 5 · 5, a · a · b · b · b.','Heft'],
+['6','Berechne und begründe, ob das Ergebnis positiv oder negativ ist: (−2)⁴, −2⁴, (−1)⁹⁹, (−1)¹⁰⁰, −3².','Heft'],
+['7','Schreibe als eine Potenz: 3⁴ · 3², 5⁷ : 5³, (2³)², 3⁴ · 2⁴, 16⁵ : 8⁵.','Heft'],
+['8','Berechne Schritt für Schritt (Klammer, Potenz, Punkt, Strich): 3 + 2 · 4², (3 + 2) · 4², −2 + (5 − 7)² · 3.','Heft'],
+['9','Schreibe in Gleitkommadarstellung: 23 000, 450 000 000, 7 800 000 000. Schreibe als Zahl: 3,2 · 10⁴.','Heft'],
+['10','Löse das Aufgabenblatt „Potenzen“ und vergleiche mit deinem/deiner Partner/in.','Blatt'],
+['★11','Zusatz: Schachbrett-Legende: Auf Feld 1 liegt 1 Reiskorn, auf jedem Feld doppelt so viele wie auf dem vorigen. Wie viele sind es auf Feld 10? Schreibe als Potenz.','Heft'],
+['★12','Zusatz: Zeige mit Zahlen, dass (a + b)² nicht a² + b² ist. Wähle selbst a und b.','Heft']]};
+MERK.po=()=>MKB('Potenzen',[['Potenz','aⁿ = a · a · … · a (n Faktoren). a ist die Basis, n die Hochzahl (der Exponent).'],['Vorzeichen','Negative Basis: gerade Hochzahl gibt +, ungerade gibt −. (−2)⁴ = +16, (−2)³ = −8. Achtung: −2⁴ = −16.'],['Rechenregeln','aᵐ · aⁿ = aᵐ⁺ⁿ, aᵐ : aⁿ = aᵐ⁻ⁿ, (aᵐ)ⁿ = aᵐ·ⁿ, (a · b)ⁿ = aⁿ · bⁿ. Achtung: (a + b)² ist nicht a² + b²!'],['Rechenreihenfolge','1. Klammern, 2. Potenzen, 3. Punktrechnung, 4. Strichrechnung. Von links nach rechts.'],['Gleitkomma','m · 10ⁿ mit 1 ≤ m < 10, zum Beispiel 84 000 000 = 8,4 · 10⁷.']]);
+{const sel=document.getElementById('pl-th');if(sel&&!sel.querySelector('option[value="po"]')){const o=document.createElement('option');o.value='po';o.textContent='Potenzen';sel.appendChild(o);}}
+
 function planBuild(key,o){
  const last=()=>items[items.length-1],P=PLAN[key]||PLAN.sg,R0=rec;R0();rec=()=>{};RF=false;let res={};
  try{
