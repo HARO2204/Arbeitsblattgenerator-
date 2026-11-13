@@ -4546,65 +4546,94 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-ss-act]');
  P.innerHTML=hd(1,'1. Klasse')+`<div class="ssg1">`+L.map(([t,s],i)=>`<div class="pal" draggable="true" data-t="${t}"${i<L.length-1?' style="margin-bottom:8px"':''}><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join('')+`</div>`+hd(4,'4. Klasse')+`<div class="ssg4"><div style="font-size:12px;color:#6b7686;padding:6px 2px 0">Weitere Aufgaben für die 4. Klasse folgen.</div></div>`;
  P.addEventListener('click',e=>{const h=e.target.closest('.ssh');if(!h)return;const g=P.querySelector('.ssg'+h.dataset.k);if(!g)return;const hide=g.style.display!=='none';g.style.display=hide?'none':'';h.querySelector('.ssar').textContent=hide?'▸':'▾';});
  setTimeout(()=>{const z=P.querySelector('.pal[data-t="zr:ss"]'),g=P.querySelector('.ssg1');const g4=P.querySelector('.ssg4');if(z&&g){const c=z.cloneNode(true);c.dataset.t='zr:ss:4';z.style.marginTop='8px';g.appendChild(z);c.style.marginTop='6px';c.ondragstart=e=>e.dataTransfer.setData('text/plain',c.dataset.t);let nn=0;c.onclick=()=>{nn++;add(c.dataset.t,60+(nn%6)*30,100+(nn%6)*30);};if(g4)g4.insertBefore(c,g4.firstChild);}},0);})();
-/* ===== Diagramm erstellen (eigene Daten): Säulen, Balken, Linie, Punkte, Kreis ===== */
+/* ===== Diagramm erstellen (eigene Daten): Säulen, Balken, Linie, Punkte, Kreis; mehrere Reihen ===== */
 const SDT=['sdg'];POT.push(...SDT);TLT.push(...SDT);
 Object.assign(TLN,{sdg:'Diagramm erstellen'});
-Object.assign(TLD,{sdg:{w:560,kd:'saeule',md:'voll',txt:'Montag; 35\nDienstag; 50\nMittwoch; 30\nDonnerstag; 25\nFreitag; 15',tt:'Hausaufgaben',xl:'Tag',yl:'Minuten',sz:2,col:'#2f6f8f',ymx:'',yst:'',vl:false,tb:false,num:false,pw:'prozent'}});
-const SDP=['#2f6f9f','#e0913b','#5aa469','#c0504d','#8064a2','#4bacc6','#f2c14e','#8c8c8c','#d98cb3','#7a9a2e'];
-const SDS={1:[330,210],2:[460,280],3:[600,340],4:[714,400]};
-const sdFv=v=>String(Math.round(v*100)/100).replace('.',',');
-function sdParse(t){const r=[];String(t||'').split('\n').forEach(l=>{l=l.trim();if(!l)return;const p=l.split(/[;\t]/).map(x=>x.trim());let c,v;if(p.length>=2){c=p.slice(0,-1).join(' ');v=p[p.length-1];}else{const m=l.match(/^(.*?)[\s:=]+(-?[\d.,]+)$/);if(!m)return;c=m[1];v=m[2];}
-  const n=parseFloat(String(v).replace(/\s/g,'').replace(',','.'));if(isNaN(n)||n<0)return;r.push({c:c.replace(/</g,'&lt;'),v:n});});return r.slice(0,14);}
+Object.assign(TLD,{sdg:{w:560,kd:'saeule',md:'voll',txt:'Montag; 35\nDienstag; 50\nMittwoch; 30\nDonnerstag; 25\nFreitag; 15',sn:'',tt:'Hausaufgaben',xl:'Tag',yl:'Minuten',sz:2,col:'#2f6f8f',col2:'#e0913b',col3:'#5aa469',col4:'#c0504d',bt:false,pal:'bunt',ymx:'',yst:'',vl:false,tb:false,num:false,pw:'prozent'}});
+const SDPAL={bunt:['#2f6f9f','#e0913b','#5aa469','#c0504d','#8064a2','#4bacc6','#f2c14e','#8c8c8c','#d98cb3','#7a9a2e','#1f4e79','#b5651d','#3d7a5a','#a0a0ff'],blau:['#0b3c5d','#1d5f8a','#2f7fb5','#4a98cc','#6fb0dc','#92c5e8','#b4d8f0','#d2e7f7','#164e73','#3b8bbf','#5aa6d6','#80bde4','#a3d0ee','#c6e2f5'],pastell:['#a8d5ba','#f7c59f','#a0c4ff','#ffd6a5','#cdb4db','#fdffb6','#bde0fe','#ffc8dd','#caffbf','#ffadad','#9bf6ff','#e4c1f9','#d0f4de','#fcf6bd'],warm:['#7f1d1d','#b91c1c','#dc2626','#ea580c','#f97316','#f59e0b','#fbbf24','#fcd34d','#fde68a','#9a3412','#c2410c','#d97706','#eab308','#fef08a'],grau:['#222','#444','#666','#888','#aaa','#ccc','#333','#555','#777','#999','#bbb','#ddd','#111','#eee']};
+const SDS={1:[330,210],2:[460,280],3:[600,340],4:[714,400]},SDCL=['col','col2','col3','col4'];
+const sdFv=v=>String(Math.round(v*100)/100).replace('.',','),sdEsc=t=>String(t==null?'':t).replace(/</g,'&lt;');
+function sdParse(t){const r=[];String(t||'').split('\n').forEach(l=>{l=l.trim();if(!l)return;let c,vs=[];const p=l.split(/[;\t]/).map(x=>x.trim());
+  if(p.length>=2){c=p[0];vs=p.slice(1).map(x=>parseFloat(String(x).replace(/\s/g,'').replace(',','.')));}
+  else{const m=l.match(/^(.*?)[\s:=]+(-?[\d.,]+)$/);if(!m)return;c=m[1];vs=[parseFloat(m[2].replace(',','.'))];}
+  vs=vs.map(x=>isNaN(x)||x<0?0:x).slice(0,4);if(!vs.length)return;r.push({c:sdEsc(c),vs,v:vs[0]});});return r.slice(0,14);}
 function sdGen(it){it.d=sdParse(it.txt);}
-function sdPie(it,rows,show,leer){const sz=SDS[+it.sz||2],W=sz[0],H=sz[1],tot=rows.reduce((a,r)=>a+r.v,0)||1,ttl=it.tt?34:8,R=Math.min((H-ttl-12)/2,W*.3),cx=R+16,cy=ttl+R+4;let g='',a0=-90;
- if(it.tt)g+=`<text x="${W/2}" y="21" text-anchor="middle" font-size="16" font-weight="700">${it.tt.replace(/</g,'&lt;')}</text>`;
+const sdK=rows=>Math.max(1,...rows.map(r=>r.vs.length));
+function sdSer(it,rows){const k=sdK(rows),nm=String(it.sn||'').split(',').map(x=>sdEsc(x.trim())).filter(Boolean);return Array.from({length:k},(_,j)=>({name:nm[j]||(k>1?'Reihe '+(j+1):sdEsc(it.yl||'Wert')),vals:rows.map(r=>r.vs[j]||0),col:it[SDCL[j]]||SDPAL.bunt[j]}));}
+function sdPie(it,rows,show,leer){const sz=SDS[+it.sz||2],W=sz[0],H=sz[1],tot=rows.reduce((a,r)=>a+r.v,0)||1,ttl=it.tt?34:8,R=Math.min((H-ttl-12)/2,W*.3),cx=R+16,cy=ttl+R+4,pal=SDPAL[it.pal]||SDPAL.bunt;let g='',a0=-90;
+ if(it.tt)g+=`<text x="${W/2}" y="21" text-anchor="middle" font-size="16" font-weight="700">${sdEsc(it.tt)}</text>`;
  if(leer){g+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#000" stroke-width="1.5"/><circle cx="${cx}" cy="${cy}" r="2.4" fill="#000"/><path d="M${cx} ${cy}V${cy-R}" stroke="#000" stroke-width="1.5"/>`;}
- else rows.forEach((r,i)=>{const fr=r.v/tot,a1=a0+fr*360,col=SDP[i%SDP.length],p=(a,rr)=>[cx+rr*Math.cos(a*Math.PI/180),cy+rr*Math.sin(a*Math.PI/180)],s=p(a0,R),e=p(a1,R);
+ else rows.forEach((r,i)=>{const fr=r.v/tot,a1=a0+fr*360,col=pal[i%pal.length],p=(a,rr)=>[cx+rr*Math.cos(a*Math.PI/180),cy+rr*Math.sin(a*Math.PI/180)],s=p(a0,R),e=p(a1,R);
   g+=rows.length===1?`<circle cx="${cx}" cy="${cy}" r="${R}" fill="${col}" stroke="#fff" stroke-width="1.5"/>`:`<path d="M${cx} ${cy}L${s[0].toFixed(1)} ${s[1].toFixed(1)}A${R} ${R} 0 ${fr>.5?1:0} 1 ${e[0].toFixed(1)} ${e[1].toFixed(1)}Z" fill="${col}" stroke="#fff" stroke-width="1.5"/>`;
   if(show!=='keine'&&fr>=.045){const m=p((a0+a1)/2,R*.64),tx=show==='wert'?sdFv(r.v):show==='winkel'?sdFv(Math.round(fr*3600)/10)+'°':sdFv(Math.round(fr*1000)/10)+' %';g+=`<text x="${m[0].toFixed(1)}" y="${(m[1]+4).toFixed(1)}" text-anchor="middle" font-size="12.5" font-weight="700" fill="#fff" stroke="#000" stroke-width=".35" paint-order="stroke">${tx}</text>`;}
   a0=a1;});
- const lx=cx+R+26,ly=Math.max(ttl+8,cy-rows.length*11);if(!leer||true)g+=rows.map((r,i)=>`<rect x="${lx}" y="${ly+i*22}" width="13" height="13" fill="${leer?'none':SDP[i%SDP.length]}" stroke="#000" stroke-width="${leer?1.2:.6}"/><text x="${lx+20}" y="${ly+i*22+11}" font-size="13">${r.c}${leer&&it.md==='zeichnen'?'':''}</text>`).join('');
+ const lx=cx+R+26,ly=Math.max(ttl+8,cy-rows.length*11);g+=rows.map((r,i)=>`<rect x="${lx}" y="${ly+i*22}" width="13" height="13" fill="${leer?'none':pal[i%pal.length]}" stroke="#000" stroke-width="${leer?1.2:.6}"/><text x="${lx+20}" y="${ly+i*22+11}" font-size="13">${r.c}</text>`).join('');
  return `<svg viewBox="0 0 ${W} ${H}" style="width:${W}px;height:${H}px;max-width:100%;display:block" font-family="inherit">${g}</svg>`;}
-function sdChartHtml(it,rows,leer){const sz=SDS[+it.sz||2],kd=it.kd,num=!!it.num&&(kd==='linie'||kd==='punkt');
- let vals=rows.map(r=>r.v),cats=rows.map(r=>r.c),o={W:sz[0],H:sz[1],kind:kd,hor:kd==='balken',title:it.tt?it.tt.replace(/</g,'&lt;'):'',xl:(it.xl||'').replace(/</g,'&lt;'),yl:(it.yl||'').replace(/</g,'&lt;'),col:it.col,vl:!!it.vl,fill:leer?'none':'blue',vals};
- const mx=Math.max(...vals,1);let sc=ssScale(mx);const ym=parseFloat(String(it.ymx).replace(',','.')),ys=parseFloat(String(it.yst).replace(',','.'));
- if(ym>0&&ys>0&&ym/ys<=40){sc={mx:ym,st:ys};}else if(mx===sc.mx)sc={mx:sc.mx+sc.st,st:sc.st};
- o.ymax=sc.mx;o.ystep=sc.st;o.cats=cats;
- if(num){const xs=cats.map(c=>parseFloat(String(c).replace(',','.')));if(xs.every(x=>!isNaN(x))){const xm=Math.max(...xs,1),s2=ssScale(xm);o.xs=xs;o.xmax=s2.mx;o.xstep=s2.st;o.cats=[];}}
- if(kd==='balken'){o.hor=true;}
- return ssChart(o);}
-function sdTable(it,rows,hide,sh){const th='border:1.5px solid #000;padding:.25em .7em;text-align:center;min-width:3em;',hd=['Kategorie','Wert'];
- const xl=(it.xl||'').replace(/</g,'&lt;')||'',yl=(it.yl||'').replace(/</g,'&lt;')||'';
- return `<table style="border-collapse:collapse;margin:.5em 0"><tr><td style="${th}background:#eaf2f8;font-weight:700">${xl||hd[0]}</td>${rows.map(r=>`<td style="${th}">${r.c}</td>`).join('')}</tr><tr><td style="${th}background:#eaf2f8;font-weight:700">${yl||hd[1]}</td>${rows.map(r=>`<td style="${th}height:1.8em">${hide?(sh?`<span class="sv">${sdFv(r.v)}</span>`:''):sdFv(r.v)}</td>`).join('')}</tr></table>`;}
-function sdBlock(it){const rows=it.d&&it.d.length?it.d:sdParse(it.txt),sh=tlS(it),md=it.md||'voll',pie=it.kd==='kreis';
- if(!rows.length)return `<div class="tlx" style="${kst(it)}">Gib im Feld „Daten“ pro Zeile eine Kategorie und einen Wert ein, z. B. Montag; 35</div>`;
+/* --- Balken, Säulen, Linien, Punkte (mehrere Reihen) --- */
+function sdSvg(it,rows,leer){const sz=SDS[+it.sz||2],W=sz[0],H=sz[1],kd=it.kd,hor=kd==='balken',ser=sdSer(it,rows),k=ser.length,N=rows.length,sk=true,vl=!!it.vl,
+ num=!!it.num&&(kd==='linie'||kd==='punkt')&&rows.every(r=>!isNaN(parseFloat(String(r.c).replace(',','.')))),leg=k>1,pal=SDPAL[it.pal]||SDPAL.bunt,bunt=!!it.bt&&k===1&&(kd==='saeule'||kd==='balken');
+ const mx=Math.max(1,...ser.flatMap(s=>s.vals));let sc=ssScale(mx);const ym=parseFloat(String(it.ymx).replace(',','.')),ys=parseFloat(String(it.yst).replace(',','.'));
+ if(ym>0&&ys>0&&ym/ys<=40)sc={mx:ym,st:ys};else if(mx===sc.mx)sc={mx:sc.mx+sc.st,st:sc.st};
+ const vmax=sc.mx,nt=Math.round(vmax/sc.st),maxl=Math.max(...rows.map(r=>r.c.length),1),ml=hor?Math.min(170,16+maxl*6.6):56,mb=hor?44:42,mt=(it.tt?36:26)+(leg?22:0),mr=34,pw=W-ml-mr,ph=H-mt-mb,x0=ml,y0=mt+ph;
+ const vp=v=>hor?x0+pw*v/vmax:y0-ph*v/vmax,cp=i=>hor?mt+ph*(i+.5)/N:x0+pw*(i+.5)/N;let xs=null,xm=0,xst=1;
+ if(num){xs=rows.map(r=>parseFloat(String(r.c).replace(',','.')));const s2=ssScale(Math.max(...xs,1));xm=s2.mx;xst=s2.st;}
+ const xp=x=>x0+pw*x/xm;let g='';
+ for(let i=0;i<=nt;i++){const v=i*sc.st,p=vp(v);if(hor)g+=`<line x1="${p}" y1="${mt}" x2="${p}" y2="${y0}" stroke="#cfcfcf"/><text x="${p}" y="${y0+17}" text-anchor="middle" font-size="12">${sdFv(v)}</text><line x1="${p}" y1="${y0}" x2="${p}" y2="${y0+4}" stroke="#000"/>`;else g+=`<line x1="${x0}" y1="${p}" x2="${x0+pw}" y2="${p}" stroke="#cfcfcf"/><text x="${x0-8}" y="${p+4}" text-anchor="end" font-size="12">${sdFv(v)}</text><line x1="${x0-4}" y1="${p}" x2="${x0}" y2="${p}" stroke="#000"/>`;}
+ if(num){for(let i=0;i<=Math.round(xm/xst);i++){const v=i*xst,p=xp(v);g+=`<line x1="${p}" y1="${mt}" x2="${p}" y2="${y0}" stroke="#cfcfcf"/><text x="${p}" y="${y0+17}" text-anchor="middle" font-size="12">${sdFv(v)}</text><line x1="${p}" y1="${y0}" x2="${p}" y2="${y0+4}" stroke="#000"/>`;}}
+ else rows.forEach((r,i)=>{const c=cp(i);g+=hor?`<text x="${x0-8}" y="${c+4}" text-anchor="end" font-size="12.5">${r.c}</text>`:`<text x="${c}" y="${y0+17}" text-anchor="middle" font-size="12.5">${r.c}</text>`;});
+ g+=`<path d="M${x0} ${y0}V${mt-6}M${x0} ${y0}H${W-mr+10}" stroke="#000" stroke-width="1.7" fill="none"/><path d="M${x0-4} ${mt-3}L${x0} ${mt-11}L${x0+4} ${mt-3}Z" fill="#000"/><path d="M${W-mr+4} ${y0-4}L${W-mr+12} ${y0}L${W-mr+4} ${y0+4}Z" fill="#000"/>`;
+ const xl=sdEsc(it.xl),yl=sdEsc(it.yl);
+ g+=hor?`<text x="${x0-6}" y="${mt-14}" text-anchor="end" font-size="12.5" font-weight="700">${xl}</text><text x="${W-6}" y="${y0+34}" text-anchor="end" font-size="12.5" font-weight="700">${yl}</text>`:`<text x="${x0}" y="${mt-14}" text-anchor="middle" font-size="12.5" font-weight="700">${yl}</text><text x="${W-6}" y="${y0+34}" text-anchor="end" font-size="12.5" font-weight="700">${xl}</text>`;
+ if(it.tt)g+=`<text x="${W/2}" y="19" text-anchor="middle" font-size="16" font-weight="700">${sdEsc(it.tt)}</text>`;
+ if(leg){let lx=x0+(hor?0:86);const ly=it.tt?36:14;ser.forEach((s,j)=>{const mk=kd==='linie'?`<path d="M${lx} ${ly}h16" stroke="${s.col}" stroke-width="2.4"/><circle cx="${lx+8}" cy="${ly}" r="3.2" fill="${s.col}"/>`:kd==='punkt'?sdMark(j,lx+8,ly,s.col):`<rect x="${lx}" y="${ly-6}" width="13" height="13" fill="${s.col}"/>`;g+=mk+`<text x="${lx+22}" y="${ly+4}" font-size="12.5">${s.name}</text>`;lx+=34+s.name.length*7;});}
+ if(!leer){const grp=(hor?ph:pw)/Math.max(N,1)*(k>1?.74:.5),bw=grp/k;
+  if(kd==='saeule'||kd==='balken'){ser.forEach((s,j)=>{s.vals.forEach((v,i)=>{if(!(v>0))return;const col=bunt?pal[i%pal.length]:s.col,off=-grp/2+bw*j;
+    if(hor)g+=`<rect x="${x0}" y="${cp(i)+off}" width="${pw*v/vmax}" height="${bw}" fill="${col}"/>`+(vl?`<text x="${x0+pw*v/vmax+5}" y="${cp(i)+off+bw/2+4}" font-size="12">${sdFv(v)}</text>`:'');
+    else g+=`<rect x="${cp(i)+off}" y="${vp(v)}" width="${bw}" height="${y0-vp(v)}" fill="${col}"/>`+(vl?`<text x="${cp(i)+off+bw/2}" y="${vp(v)-5}" text-anchor="middle" font-size="12">${sdFv(v)}</text>`:'');});});}
+  else ser.forEach((s,j)=>{const P=s.vals.map((v,i)=>num?[xp(xs[i]),vp(v)]:[cp(i),vp(v)]);
+   if(kd==='linie')g+=`<path d="M${P.map(p=>p[0].toFixed(1)+' '+p[1].toFixed(1)).join('L')}" fill="none" stroke="${s.col}" stroke-width="2.4" stroke-linejoin="round"/>`+P.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.4" fill="${s.col}"/>`).join('');
+   else g+=P.map(p=>sdMark(j,p[0],p[1],s.col)).join('');
+   if(vl)g+=P.map((p,i)=>`<text x="${p[0]}" y="${p[1]-9}" text-anchor="middle" font-size="12">${sdFv(s.vals[i])}</text>`).join('');});}
+ return `<svg viewBox="0 0 ${W} ${H}" style="width:${W}px;height:${H}px;max-width:100%;display:block;overflow:visible" font-family="inherit">${g}</svg>`;}
+function sdMark(j,x,y,c){x=+x;y=+y;return j===0?`<path d="M${x-5} ${y-5}L${x+5} ${y+5}M${x-5} ${y+5}L${x+5} ${y-5}" stroke="${c}" stroke-width="2" fill="none"/>`:j===1?`<circle cx="${x}" cy="${y}" r="4.5" fill="none" stroke="${c}" stroke-width="2"/>`:j===2?`<rect x="${x-4.5}" y="${y-4.5}" width="9" height="9" fill="none" stroke="${c}" stroke-width="2"/>`:`<path d="M${x} ${y-5.5}L${x+5.5} ${y+4.5}L${x-5.5} ${y+4.5}Z" fill="none" stroke="${c}" stroke-width="2"/>`;}
+function sdTable(it,rows,hide,sh){const th='border:1.5px solid #000;padding:.25em .7em;text-align:center;min-width:3em;',ser=sdSer(it,rows),xl=sdEsc(it.xl)||'Kategorie';
+ return `<table style="border-collapse:collapse;margin:.5em 0"><tr><td style="${th}background:#eaf2f8;font-weight:700">${xl}</td>${rows.map(r=>`<td style="${th}">${r.c}</td>`).join('')}</tr>${ser.map(s=>`<tr><td style="${th}background:#eaf2f8;font-weight:700">${s.name}</td>${s.vals.map(v=>`<td style="${th}height:1.8em">${hide?(sh?`<span class="sv">${sdFv(v)}</span>`:''):sdFv(v)}</td>`).join('')}</tr>`).join('')}</table>`;}
+function sdBlock(it){const rows=it.d&&it.d.length?it.d:sdParse(it.txt),sh=tlS(it),md=it.md||'voll',pie=it.kd==='kreis',chart=l=>pie?sdPie(it,rows,l?'keine':(it.pw||'prozent'),l):sdSvg(it,rows,l);
+ if(!rows.length)return `<div class="tlx" style="${kst(it)}">Gib im Feld „Daten“ pro Zeile einen Namen und einen oder mehrere Werte ein, z. B. Montag; 35; 20</div>`;
  let h='';
- if(md==='voll'){h=(it.tb?sdTable(it,rows,false,sh):'')+(pie?sdPie(it,rows,it.pw||'prozent',false):sdChartHtml(it,rows,false));}
- else if(md==='zeichnen'){h=sdTable(it,rows,false,sh)+((sh)?(pie?sdPie(it,rows,it.pw||'prozent',false):sdChartHtml(it,rows,false)):(pie?sdPie(it,rows,'keine',true):sdChartHtml(it,rows,true)));}
- else{h=(pie?sdPie(it,rows,'keine',false):sdChartHtml(it,rows,false))+sdTable(it,rows,true,sh);}
+ if(md==='voll')h=(it.tb?sdTable(it,rows,false,sh):'')+chart(false);
+ else if(md==='zeichnen')h=sdTable(it,rows,false,sh)+(sh?chart(false):chart(true));
+ else h=(pie?sdPie(it,rows,'keine',false):sdSvg(it,rows,false))+sdTable(it,rows,true,sh);
  return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
 {const _g=poGen,_b=poBlock,_r=renderPo;
  poGen=function(it){return SDT.includes(it.type)?sdGen(it):_g(it);};
  poBlock=function(it){return SDT.includes(it.type)?sdBlock(it):_b(it);};
  renderPo=function(){const g=$('#g-po'),it=items.find(i=>i.id===sel&&SDT.includes(i.type));if(!g||!it)return _r();
-  const sl=(f,o,lab)=>`<label>${lab}<select data-sd="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-sd="${f}"${it[f]?' checked':''}> ${t}</label>`,tx=(f,lab)=>`<label>${lab}<input type="text" data-sd="${f}" value="${String(it[f]||'').replace(/"/g,'&quot;')}"></label>`;
-  const pie=it.kd==='kreis',lin=it.kd==='linie'||it.kd==='punkt';
+  const sl=(f,o,lab)=>`<label>${lab}<select data-sd="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-sd="${f}"${it[f]?' checked':''}> ${t}</label>`,tx=(f,lab,ph)=>`<label>${lab}<input type="text" data-sd="${f}" value="${String(it[f]||'').replace(/"/g,'&quot;')}"${ph?` placeholder="${ph}"`:''}></label>`;
+  const pie=it.kd==='kreis',lin=it.kd==='linie'||it.kd==='punkt',rows=it.d||sdParse(it.txt),k=pie?1:sdK(rows),bar=it.kd==='saeule'||it.kd==='balken';
   let H=`<div style="font-weight:700;margin-bottom:4px">Diagramm erstellen</div>`+sl('kd',[['saeule','Säulendiagramm'],['balken','Balkendiagramm'],['linie','Liniendiagramm'],['punkt','Punktdiagramm'],['kreis','Kreisdiagramm']],'Diagrammart')
    +sl('md',[['voll','Fertiges Diagramm'],['zeichnen','Tabelle gegeben, Diagramm zeichnen'],['ablesen','Diagramm gegeben, Tabelle ausfüllen']],'Aufgabe')
-   +`<label>Daten (pro Zeile: Name; Wert)<textarea data-sd="txt" rows="8" style="width:100%;font-family:inherit;font-size:13px">${String(it.txt||'').replace(/</g,'&lt;')}</textarea></label>`
-   +tx('tt','Titel (leer = ohne)')+(pie?'':tx('xl','Beschriftung waagrechte Achse')+tx('yl','Beschriftung senkrechte Achse'))
+   +`<label>Daten (pro Zeile: Name; Wert${pie?'':'; Wert 2 …'})<textarea data-sd="txt" rows="8" style="width:100%;font-family:inherit;font-size:13px">${String(it.txt||'').replace(/</g,'&lt;')}</textarea></label>`
+   +(pie?'':`<button type="button" data-sd-act="ex2" style="margin:2px 0 6px">Beispiel mit 2 Reihen einfügen</button>`)
+   +(k>1&&!pie?tx('sn','Namen der Reihen (mit Komma getrennt)','z. B. Lena, Ben'):'')
+   +tx('tt','Titel (leer = ohne)')+(pie?'':tx('xl','Beschriftung der Kategorien-Achse')+tx('yl','Beschriftung der Werte-Achse'))
    +sl('sz',[[1,'klein'],[2,'mittel'],[3,'groß'],[4,'ganze Breite']],'Größe');
-  if(pie)H+=sl('pw',[['prozent','Prozent'],['winkel','Winkel'],['wert','Werte'],['keine','keine Beschriftung']],'Beschriftung der Kreisteile');
-  else{H+=`<label>Farbe <input type="color" data-sd="col" value="${it.col||'#2f6f8f'}" style="width:44px;height:26px;padding:0"></label>`+ck('vl','Werte an den Säulen / Punkten anzeigen')+`<label>Senkrechte Achse bis (leer = automatisch)<input type="text" data-sd="ymx" value="${it.ymx||''}" style="width:70px"></label><label>Schrittweite (leer = automatisch)<input type="text" data-sd="yst" value="${it.yst||''}" style="width:70px"></label>`;
+  if(pie)H+=sl('pw',[['prozent','Prozent'],['winkel','Winkel'],['wert','Werte'],['keine','keine Beschriftung']],'Beschriftung der Kreisteile')+sl('pal',[['bunt','bunt'],['blau','Blautöne'],['pastell','Pastell'],['warm','Rot und Gelb'],['grau','Grau']],'Farben der Kreisteile');
+  else{H+=(k===1?`<label>${bar?'Farbe der '+(it.kd==='balken'?'Balken':'Säulen'):'Farbe'} <input type="color" data-sd="col" value="${it.col||'#2f6f8f'}" style="width:44px;height:26px;padding:0"></label>`+(bar?ck('bt','Jede '+(it.kd==='balken'?'Balken':'Säule')+' eine andere Farbe')+(it.bt?sl('pal',[['bunt','bunt'],['blau','Blautöne'],['pastell','Pastell'],['warm','Rot und Gelb'],['grau','Grau']],'Farbpalette'):''):''):Array.from({length:k},(_,j)=>`<label>Farbe Reihe ${j+1} <input type="color" data-sd="${SDCL[j]}" value="${it[SDCL[j]]||SDPAL.bunt[j]}" style="width:44px;height:26px;padding:0"></label>`).join(''))
+   +ck('vl','Werte an den '+(bar?(it.kd==='balken'?'Balken':'Säulen'):'Punkten')+' anzeigen')+`<label>Werte-Achse bis (leer = automatisch)<input type="text" data-sd="ymx" value="${it.ymx||''}" style="width:70px"></label><label>Schrittweite (leer = automatisch)<input type="text" data-sd="yst" value="${it.yst||''}" style="width:70px"></label>`;
    if(lin)H+=ck('num','Waagrechte Achse als Zahlenachse (Namen müssen Zahlen sein)');}
   if(it.md==='voll'||!it.md)H+=ck('tb','Wertetabelle über dem Diagramm');
   H+=ck('show','Lösung zeigen');g.innerHTML=H;};}
 $('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.sd;if(!k)return;const it=items.find(i=>i.id===sel&&SDT.includes(i.type));if(!it)return;
  rec('sd'+k);let v=t.type==='checkbox'?t.checked:t.value;if(k==='sz')v=+v;it[k]=v;if(k==='txt')sdGen(it);if(k==='sz')it.w=Math.min(714,SDS[v][0]+30);
- render();if(k==='kd'||k==='md')renderProps();});
+ render();if(k==='kd'||k==='md'||k==='bt')renderProps();if(k==='txt'){const n0=it._k||1,n1=sdK(it.d||[]);if(n0!==n1){it._k=n1;renderProps();}}});
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-sd-act]');if(!b)return;const it=items.find(i=>i.id===sel&&SDT.includes(i.type));if(!it)return;rec();
+ if(b.dataset.sdAct==='ex2'){it.txt='Montag; 35; 20\nDienstag; 50; 40\nMittwoch; 30; 45\nDonnerstag; 25; 30\nFreitag; 15; 25';it.sn='Lena, Ben';sdGen(it);it._k=2;}
+ render();renderProps();});
 (function(){const P=$('#sspal');if(!P)return;const bars=[[12,22],[28,12],[44,18],[60,6],[76,16]].map(([x,y])=>`<rect x="${x}" y="${y+4}" width="9" height="${34-y-4}" fill="#2f6f8f"/>`).join('');
- P.insertAdjacentHTML('afterbegin',`<div class="pal" draggable="true" data-t="sdg" style="margin-bottom:6px"><svg viewBox="0 0 100 40"><path d="M8 4V34H94" stroke="#000" fill="none"/>${bars}<circle cx="78" cy="14" r="0" fill="#000"/></svg><span>📊 Diagramm erstellen (eigene Daten)</span></div><div style="font-size:12px;color:#6b7686;margin:0 2px 8px">Säulen, Balken, Linie, Punkte und Kreisdiagramm</div>`);
+ P.insertAdjacentHTML('afterbegin',`<div class="pal" draggable="true" data-t="sdg" style="margin-bottom:6px"><svg viewBox="0 0 100 40"><path d="M8 4V34H94" stroke="#000" fill="none"/>${bars}</svg><span>📊 Diagramm erstellen (eigene Daten)</span></div><div style="font-size:12px;color:#6b7686;margin:0 2px 8px">Säulen, Balken, Linie, Punkte und Kreisdiagramm</div>`);
  const a=AST.find(g=>g[1]&&g[1].some&&g[1].some(e=>e[0]==='ssg'));if(a)a[1].push(['sdg','Diagramm erstellen','Lies die Werte aus dem Diagramm ab!']);})();
+
 /* ===== 4.0 Statistik ===== */
 (function(){const R=kri,P=tpick,A=(t,a)=>({t:t.replace(/^([^:]+):/,'<b>$1:</b>'),q:'Antwort',a,sp:4}),N=()=>P(['Max','Mia','Tim','Lena','Ben','Sara','Paul','Jonas']),F=x=>ssF(x);
  zrTH.ss=[
