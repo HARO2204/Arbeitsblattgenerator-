@@ -4060,7 +4060,7 @@ function pnsBlock(it){const sh=tlS(it),L=['a','n'].includes(it.lab)?it.lab:'none
   return x+'</div>';}).join('')+'</div>';}
 
 Object.assign(TLN,{pns:'Sachaufgaben: Strecke, Strahl, Gerade, Parallele, Normale',pnk:'Parallele / Normale zeichnen',pnb:'Normalabstand',pnz:'Parallele und Normale: Symbole'});
-Object.assign(TLD,{pns:{n:3,th:'mix',lab:'n',tt:true,al:true,zf:'rahmen'},pnk:{n:4,md:'mix',co:2,kn:1,lab:'a',mk:false},pnb:{n:4,md:'pz',un:'mix',co:2,lab:'a',bx:true,bxm:'rahmen',mk:false},pnz:{n:5,md:'sym',lab:'a',mk:false}});
+Object.assign(TLD,{pns:{n:3,th:'mix',lab:'n',tt:true,al:true,zf:'rahmen'},pnk:{n:4,md:'mix',co:2,kn:1,lab:'a',mk:false},pnb:{n:4,md:'pz',un:'mix',co:2,lab:'a',bx:true,bxm:'frei',mk:false},pnz:{n:5,md:'sym',lab:'a',mk:false}});
 const PNRED='#c0392b';
 const pnPt=(p,dx,dy)=>[p[0]+dx,p[1]+dy];
 function pnTxt(x,y,t,col,an,fs){return `<text x="${x.toFixed(2)}" y="${y.toFixed(2)}" font-size="${fs||4.8}" text-anchor="${an||'middle'}" fill="${col||'#000'}" font-family="inherit">${t}</text>`;}
