@@ -9948,7 +9948,7 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
    return html2canvas(sheet,{scale:2,backgroundColor:'#ffffff',useCORS:true,windowWidth:1100,x:0,y:k*PH,width:794,height:PH,scrollX:0,scrollY:0,onclone:d=>{d.body.classList.add('pv');d.documentElement.style.height='auto';d.body.style.height='auto';d.querySelector('.bar').style.display='none';d.querySelector('aside').style.display='none';d.querySelector('.wrap').style.cssText='display:block;overflow:visible;flex:none';d.querySelector('main').style.cssText='display:block;overflow:visible;padding:0;flex:none';const s=d.querySelector('#sheet');s.style.boxShadow='none';s.style.margin='0';}});};
   const composite=async np=>{const cs=[];for(let k=0;k<np;k++)cs.push(await shot(k));const S=cs[0].width/794,c=document.createElement('canvas');c.width=cs[0].width;c.height=cs[0].height*np;const x=c.getContext('2d');cs.forEach((p,k)=>x.drawImage(p,0,k*p.height));return{c,S};};
   try{
-   const np=PGN,B=structure(),A=await composite(np),out=[];
+   const np=PGN,B=structure(),A=await composite(np),out=[],pre={};B.forEach(bl=>{if(bl.k==='free')pre[bl.x.it.id]=bl.x.e.innerHTML;});
    const lineP=(lines,o,pp)=>({xml:paraT(lines,o,pp)});
    let first=true;
    for(const bl of B){
@@ -9967,9 +9967,9 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
     first=false;}
    if($('#solpdf').checked&&hasSol()){
     SOL=true;if(mk)mk.style.display='block';render();await new Promise(r=>setTimeout(r,60));
-    const Sx=await composite(PGN),B2=structure().filter(x=>x.k==='task');
+    const Sx=await composite(PGN),B2=structure().filter(x=>x.k==='task'||(x.k==='free'&&pre[x.x.it.id]!==x.x.e.innerHTML));
     out.push({xml:'<w:p><w:pPr><w:pageBreakBefore/><w:jc w:val="center"/><w:spacing w:before="0" w:after="200"/></w:pPr>'+run('Lösungen',{fb:true,fs:26})+'</w:p>'});
-    for(const bl of B2){const a0=bl.ang[0],o=Object.assign({},a0?a0.it:{fs:18,fb:true}),label=bl.num?lbl(bl.num.e):'';
+    for(const bl of B2){if(bl.k==='free'){const x=bl.x,im=await crop(Sx.c,Sx.S,x.l,x.t,x.r,x.b);if(im)out.push(Object.assign(im,{after:120}));continue;}const a0=bl.ang[0],o=Object.assign({},a0?a0.it:{fs:18,fb:true}),label=bl.num?lbl(bl.num.e):'';
      out.push({xml:'<w:p><w:pPr><w:keepNext/><w:tabs><w:tab w:val="left" w:pos="567"/></w:tabs><w:spacing w:before="160" w:after="60"/><w:ind w:left="567" w:hanging="567"/></w:pPr>'+run(label,Object.assign({},o,{fb:true,fs:16}))+'<w:r><w:tab/></w:r>'+run(a0?txtOf(a0.it).split('\n')[0]:'',Object.assign({},o,{fs:14,fb:false}))+'</w:p>'});
      if(bl.rest.length){const t=Math.min(...bl.rest.map(x=>x.t)),l=Math.min(...bl.rest.map(x=>x.l)),r=Math.max(...bl.rest.map(x=>x.r)),bb=Math.max(...bl.rest.map(x=>x.b));const im=await crop(Sx.c,Sx.S,l-6,t-4,r+6,bb+6);if(im)out.push(Object.assign(im,{ind:567,after:120}));}}}
    const name=pdfName().replace(/\.pdf$/i,''),blob=docx2(out,name);
