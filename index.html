@@ -4634,6 +4634,85 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-sd-act]');
  P.insertAdjacentHTML('afterbegin',`<div class="pal" draggable="true" data-t="sdg" style="margin-bottom:6px"><svg viewBox="0 0 100 40"><path d="M8 4V34H94" stroke="#000" fill="none"/>${bars}</svg><span>📊 Diagramm erstellen (eigene Daten)</span></div><div style="font-size:12px;color:#6b7686;margin:0 2px 8px">Säulen, Balken, Linie, Punkte und Kreisdiagramm</div>`);
  const a=AST.find(g=>g[1]&&g[1].some&&g[1].some(e=>e[0]==='ssg'));if(a)a[1].push(['sdg','Diagramm erstellen','Lies die Werte aus dem Diagramm ab!']);})();
 
+/* ===== Statistik 2: Umfrage mit Strichliste, Kreisdiagramm mit Winkeln, Teile eines Diagramms, Merkkasten ===== */
+const S2T=['sse','ssk','ssa','ssn'];POT.push(...S2T);TLT.push(...S2T);
+Object.assign(TLN,{sse:'Umfrage und Strichliste',ssk:'Kreisdiagramm und Winkel',ssa:'Teile eines Diagramms',ssn:'Statistik: Merkkasten'});
+Object.assign(TLD,{sse:{md:'tl',n:5,nb:20,sm:true,fr:'',ex:true},ssk:{md:'ber',n:20,k:4,zl:true,kr:true},ssa:{wb:true,bm:false},ssn:{md:'dia'}});
+const S2U=[{t:'Womit kommst du in die Schule?',c:['zu Fuß','Bus','Fahrrad','Auto','Roller','Zug']},{t:'Was ist dein Lieblingsfach?',c:['Mathematik','Deutsch','Englisch','Turnen','Musik','Zeichnen']},{t:'Welches Haustier hättest du gern?',c:['Hund','Katze','Hase','Pferd','Fisch','Vogel']},{t:'Was isst du am liebsten?',c:['Pizza','Nudeln','Pommes','Burger','Salat','Schnitzel']},{t:'Welche Freizeitbeschäftigung magst du am liebsten?',c:['Fußball','Lesen','Zeichnen','Computer','Schwimmen','Musik']},{t:'Welche Farbe magst du am liebsten?',c:['Rot','Blau','Grün','Gelb','Rosa','Schwarz']}];
+const S2K=[['Fußball','Schwimmen','Tennis','Turnen','Radfahren'],['Pizza','Nudeln','Pommes','Burger','Salat'],['Hund','Katze','Hase','Fisch','Pferd'],['Bus','zu Fuß','Fahrrad','Auto','Roller']];
+function s2Comp(n,k){const v=Array(k).fill(1);let r=n-k;while(r>0){v[kri(0,k-1)]++;r--;}return v;}
+function s2Gen(it){
+ if(it.type==='sse'){const nb=Math.max(8,Math.min(40,+it.nb||20)),n=Math.max(3,Math.min(6,+it.n||5)),u=it.u&&S2U[it.u.i]&&it.u.k===it.fr?it.u:null;
+  const q=S2U.find(x=>x.t===it.fr)||tpick(S2U),cats=q.c.slice(0,n);it.d={t:q.t,c:cats,v:s2Comp(nb,cats.length)};it.fr=q.t;}
+ else if(it.type==='ssk'){const N=[10,12,15,18,20,24,30,36],n=N.includes(+it.n)?+it.n:20,k=Math.max(3,Math.min(5,+it.k||4)),cats=tshuf(tpick(S2K)).slice(0,k);let v;for(let g=0;g<300;g++){v=s2Comp(n,k);if(Math.max(...v)<=n*.55)break;}it.d={n,c:cats,v,u:360/n};}
+ else if(it.type==='ssa'){const c=tpick(SSK),vals=c.cats.map(()=>Math.max(c.st,c.lo+kri(0,Math.round((c.hi-c.lo)/c.st))*c.st));it.d={c,vals};}}
+const s2Ln=(w,t)=>`<span class="tlln" style="display:inline-block;min-width:${w}em;text-align:center">${t||'&nbsp;'}</span>`;
+const s2Th='border:1.5px solid #000;padding:.25em .6em;',s2H='background:#eaf2f8;font-weight:700;';
+function s2Tally(n){return ssTally(n,'#c0392b');}
+function s2Sse(it){const d=it.d,sh=tlS(it),ab=it.md==='ab',N=d.v.reduce((a,b)=>a+b,0);
+ let h=wnH1(it.md==='tl'?'Führt in der Klasse eine Umfrage durch. Macht für jede Antwort einen Strich in der Strichliste (jeder fünfte Strich durchstreicht die vier davor) und zählt zum Schluss zusammen.':'Die Antworten wurden in einer Strichliste festgehalten. Zähle die Striche und trage die Anzahl ein.')+`<div style="margin:.3em 0 .5em"><b>Frage:</b> „${d.t}“</div>`;
+ h+=`<table style="border-collapse:collapse;margin:.3em 0"><tr><td style="${s2Th}${s2H}min-width:9em">Antwort</td><td style="${s2Th}${s2H}min-width:14em">Strichliste</td><td style="${s2Th}${s2H}text-align:center;min-width:5em">Anzahl</td></tr>`
+  +d.c.map((c,i)=>`<tr><td style="${s2Th}height:2.1em">${it.md==='tl'&&!sh&&false?'':c}</td><td style="${s2Th}padding-top:.35em">${ab||sh?(ab||sh?s2Tally(d.v[i]):''):''}</td><td style="${s2Th}text-align:center">${tlSv(it,d.v[i])}</td></tr>`).join('')
+  +(it.sm?`<tr><td style="${s2Th}${s2H}height:2.1em">Befragte insgesamt</td><td style="${s2Th}"></td><td style="${s2Th}text-align:center">${tlSv(it,N)}</td></tr>`:'')+'</table>';
+ if(it.ex)h+=`<div class="tlrw" style="display:flex;gap:.6em;align-items:flex-end;margin-top:.6em"><span style="white-space:nowrap">Am häufigsten wurde genannt:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,d.c[d.v.indexOf(Math.max(...d.v))])}</span></div>`;
+ return h;}
+function s2Ssk(it){const d=it.d,sh=tlS(it),n=d.n,bg=it.md==='les',pit={tt:'',sz:2,pal:'bunt'},rows=d.c.map((c,i)=>({c,v:d.v[i]}));
+ let h;
+ if(!bg){h=wnH1(`In einer Klasse mit ${n} Kindern wurde eine Umfrage durchgeführt. Stelle das Ergebnis in einem Kreisdiagramm dar: Berechne zuerst die Winkel und zeichne dann die Kreisteile in den Kreis.`)
+  +(it.zl?`<div class="tlrw" style="display:flex;gap:.6em;align-items:flex-end;margin:.3em 0 .5em"><span style="white-space:nowrap">Winkel für 1 Kind: 360° : ${n} =</span><span class="tlln" style="min-width:5em">${tlSv(it,d.u+'°')}</span></div>`:'')
+  +`<table style="border-collapse:collapse;margin:.3em 0"><tr><td style="${s2Th}${s2H}min-width:8em">Antwort</td><td style="${s2Th}${s2H}text-align:center;min-width:5em">Kinder</td><td style="${s2Th}${s2H}text-align:center;min-width:10em">Winkel</td></tr>`+d.c.map((c,i)=>`<tr><td style="${s2Th}height:2.1em">${c}</td><td style="${s2Th}text-align:center">${d.v[i]}</td><td style="${s2Th}text-align:center">${tlSv(it,d.v[i]+' · '+d.u+'° = '+d.v[i]*d.u+'°')}</td></tr>`).join('')+'</table>'
+  +(it.kr?`<div style="margin-top:.4em">${sdPie(pit,rows,'keine',!sh)}</div>`:'');}
+ else{h=wnH1(`Das Kreisdiagramm zeigt das Ergebnis einer Umfrage unter ${n} Kindern. Berechne, wie viele Kinder sich für die einzelnen Antworten entschieden haben.`)
+  +`<div style="display:flex;gap:1.5em;flex-wrap:wrap;align-items:flex-start">${sdPie(Object.assign({},pit,{pal:'bunt'}),rows,'winkel',false)}</div>`
+  +(it.zl?`<div class="tlrw" style="display:flex;gap:.6em;align-items:flex-end;margin:.5em 0"><span style="white-space:nowrap">Winkel für 1 Kind: 360° : ${n} =</span><span class="tlln" style="min-width:5em">${tlSv(it,d.u+'°')}</span></div>`:'')
+  +`<table style="border-collapse:collapse;margin:.3em 0"><tr><td style="${s2Th}${s2H}min-width:8em">Antwort</td><td style="${s2Th}${s2H}text-align:center;min-width:5em">Winkel</td><td style="${s2Th}${s2H}text-align:center;min-width:8em">Kinder</td></tr>`+d.c.map((c,i)=>`<tr><td style="${s2Th}height:2.1em">${c}</td><td style="${s2Th}text-align:center">${d.v[i]*d.u}°</td><td style="${s2Th}text-align:center">${tlSv(it,d.v[i]*d.u+'° : '+d.u+'° = '+d.v[i])}</td></tr>`).join('')+'</table>';}
+ return h;}
+function s2Ssa(it){const d=it.d,c=d.c,sh=tlS(it),W=460,H=280,x0=56,mt=36,mb=42,mr=34,pw=W-x0-mr,ph=H-mt-mb,y0=mt+ph,N=c.cats.length,sc=ssScale(Math.max(...d.vals)),vm=Math.max(sc.mx,Math.max(...d.vals)===sc.mx?sc.mx+sc.st:sc.mx),cp=i=>x0+pw*(i+.5)/N,vp=v=>y0-ph*v/vm,bi=d.vals.indexOf(Math.max(...d.vals)),
+  pins=[[1,W/2+4.5*String(c.ttl).length+14,14],[2,x0+3.9*String(c.yl).length+14,18],[3,14,vp(vm/2)],[4,cp(1),y0+36],[5,cp(bi),vp(d.vals[bi])-13],[6,W-6-7.6*String(c.xl).length-14,y0+30]],
+  ov=pins.map(([n,x,y])=>`<circle cx="${x}" cy="${y}" r="9" fill="#fff" stroke="#c0392b" stroke-width="1.6"/><text x="${x}" y="${y+4.5}" text-anchor="middle" font-size="12.5" font-weight="700" fill="#c0392b">${n}</text>`).join(''),
+  chart=sdSvg({kd:'saeule',sz:2,tt:c.ttl,xl:c.xl,yl:c.yl,col:'#2f6f8f',vl:false,ymx:'',yst:'',d:null},c.cats.map((x,i)=>({c:x,vs:[d.vals[i]],v:d.vals[i]})),false),
+  W6=['Titel','Beschriftung der senkrechten Achse','Skala','Beschriftung der Säulen','Säule','Beschriftung der waagrechten Achse'];
+ const wbk=it.wb?`<div style="margin:.4em 0;padding:.35em .7em;border:1.3px dashed #666;border-radius:6px;font-size:.95em"><b>Wörter:</b> ${tshuf(W6.slice()).join(' · ')}</div>`:'';
+ return wnH1('Ordne den nummerierten Teilen des Diagramms die richtigen Begriffe zu.')+`<div style="position:relative;width:${W}px;max-width:100%">${chart}<svg viewBox="0 0 ${W} ${H}" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible" aria-hidden="true">${ov}</svg></div>${wbk}`
+  +`<table style="border-collapse:collapse;margin:.3em 0;width:100%">${W6.map((w,i)=>`<tr><td style="${s2Th}${s2H}text-align:center;width:2.6em">${i+1}</td><td style="${s2Th}height:2.1em">${tlSv(it,w)}</td></tr>`).join('')}</table>`;}
+function s2Ssn(it){const T={dia:['Diagramme',[['Diagrammarten','Säulendiagramm (senkrechte Säulen), Balkendiagramm (waagrechte Balken), Liniendiagramm (Punkte verbunden), Punktdiagramm, Kreisdiagramm.'],['Teile eines Diagramms','Titel; Achsen mit Beschriftung; Skala mit gleichen Abständen; Säulen oder Balken mit gleicher Breite.'],['Zeichnen','Zuerst die Achsen mit dem Lineal zeichnen, dann die Skala einteilen, dann die Werte eintragen, zuletzt Titel und Beschriftung.']]],
+  kre:['Kreisdiagramm',[['Kreisdiagramm','Ein Kreis wird in Kreisausschnitte geteilt. Jeder Teil zeigt, wie groß ein Anteil an allen Daten ist.'],['Winkel berechnen','Der volle Kreis hat 360°. Winkel für 1 Wert = 360° : Gesamtzahl. Winkel eines Teils = Anzahl · Winkel für 1 Wert.'],['Zeichnen','Zuerst einen Kreis und einen Radius zeichnen, dann die Winkel der Reihe nach mit dem Geodreieck antragen und beschriften.']]],
+  urs:['Daten erheben',[['Umfrage','Man stellt eine Frage und hält die Antworten in einer Strichliste fest.'],['Strichliste','Jeder Strich steht für eine Antwort. Der fünfte Strich wird quer durchgestrichen, so kann man schnell in Fünfern zählen.'],['Häufigkeit','Die Anzahl der Striche heißt Häufigkeit. Der Wert mit der größten Häufigkeit heißt Modus (häufigster Wert).']]]},t=T[it.md]||T.dia;return MKB(t[0],t[1]);}
+const s2Block=it=>`<div class="tlx" style="${kst(it)}">${it.type==='sse'?s2Sse(it):it.type==='ssk'?s2Ssk(it):it.type==='ssa'?s2Ssa(it):s2Ssn(it)}</div>`;
+{const _g=poGen,_b=poBlock,_r=renderPo;
+ poGen=function(it){return S2T.includes(it.type)?s2Gen(it):_g(it);};
+ poBlock=function(it){return S2T.includes(it.type)?s2Block(it):_b(it);};
+ renderPo=function(){const g=$('#g-po'),it=items.find(i=>i.id===sel&&S2T.includes(i.type));if(!g||!it)return _r();
+  const k=it.type,sl=(f,o,lab)=>`<label>${lab}<select data-s2="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-s2="${f}"${it[f]?' checked':''}> ${t}</label>`;
+  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+  if(k==='sse')H+=sl('md',[['tl','Leere Strichliste (selbst durchführen)'],['ab','Strichliste gegeben, Anzahl eintragen']],'Aufgabe')+sl('fr',S2U.map(x=>[x.t,x.t]),'Frage')+sl('n',[3,4,5,6].map(x=>[x,x+' Antworten']),'Anzahl der Antworten')+sl('nb',[10,15,20,25,30].map(x=>[x,x+' Befragte']),'Beispiel in der Lösung')+ck('sm','Zeile „Befragte insgesamt“')+ck('ex','Zeile „Am häufigsten wurde genannt“');
+  else if(k==='ssk')H+=sl('md',[['ber','Winkel berechnen und zeichnen'],['les','Kreisdiagramm ablesen (Kinder berechnen)']],'Aufgabe')+sl('n',[10,12,15,18,20,24,30,36].map(x=>[x,x+' Kinder']),'Anzahl der Kinder')+sl('k',[3,4,5].map(x=>[x,x+' Antworten']),'Anzahl der Antworten')+ck('zl','Zeile „Winkel für 1 Kind“')+(it.md==='ber'?ck('kr','Leerer Kreis zum Zeichnen'):'');
+  else if(k==='ssa')H+=ck('wb','Wörterkasten');
+  else H+=sl('md',[['dia','Diagramme'],['kre','Kreisdiagramm'],['urs','Daten erheben, Strichliste']],'Inhalt');
+  H+=(k==='ssn'?'':ck('show','Lösung zeigen')+'<button data-s2-act="mix">Neu mischen</button>');g.innerHTML=H;};}
+$('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.s2;if(!k)return;const it=items.find(i=>i.id===sel&&S2T.includes(i.type));if(!it)return;
+ rec('s2'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','nb','k'].includes(k))v=+v;it[k]=v;
+ if(['n','nb','k','fr'].includes(k)||(k==='md'&&it.type!=='ssn'))s2Gen(it);render();if(k==='md')renderProps();});
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-s2-act]');if(!b)return;const it=items.find(i=>i.id===sel&&S2T.includes(i.type));if(!it)return;rec();if(it.type==='sse')it.fr='';s2Gen(it);render();renderProps();});
+(function(){const P=$('#sspal');if(P){const T=(x,y,t,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||9}" fill="#000">${t}</text>`,L=[['sse','<path d="M10 8H90M10 20H90M10 32H90M40 4V36" stroke="#000" fill="none"/><path d="M46 12l0 6M50 12l0 6M54 12l0 6M58 12l0 6M44 18L62 12" stroke="#c0392b" stroke-width="1.4"/>'],['ssk','<circle cx="50" cy="20" r="16" fill="#e0913b" stroke="#000"/><path d="M50 20V4A16 16 0 0 1 66 20Z" fill="#2f6f8f" stroke="#000"/><path d="M50 20L36 28A16 16 0 0 1 36 12Z" fill="#5aa469" stroke="#000"/>'],['ssa','<path d="M14 4V34H94" stroke="#000" fill="none"/><rect x="26" y="16" width="10" height="18" fill="#2f6f8f"/><rect x="46" y="8" width="10" height="26" fill="#2f6f8f"/><circle cx="31" cy="10" r="5" fill="#fff" stroke="#c0392b"/>'+T(31,13,'1')],['ssn','<rect x="14" y="4" width="72" height="32" rx="5" fill="#f3f6ff" stroke="#1f3a8a" stroke-width="2"/><path d="M22 14H60M22 21H70M22 28H54" stroke="#1f3a8a"/>']];
+  P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));}
+ const a=AST.find(g=>g[1]&&g[1].some&&g[1].some(e=>e[0]==='ssg'));if(a)a[1].push(['sse','Umfrage und Strichliste','Führe die Umfrage durch und zähle die Striche!'],['ssk','Kreisdiagramm und Winkel','Berechne die Winkel für das Kreisdiagramm!'],['ssa','Teile eines Diagramms','Ordne die Begriffe den Teilen des Diagramms zu!']);})();
+/* Fertige Themenblätter Statistik */
+{const PO=(t,lbl,ins,set)=>({t,lbl,ins,set:Object.assign({nh:true},set)});
+ Object.assign(AST_FAM,{
+  sf0:[PO('ssn','Merkkasten Diagramme','Schreibe den Merktext genau so in dein Heft!',{md:'dia'}),PO('ssa','Teile eines Diagramms','Ordne den nummerierten Teilen des Diagramms die richtigen Begriffe zu!',{wb:true})],
+  sf1:[PO('ssn','Merkkasten Daten erheben','Schreibe den Merktext genau so in dein Heft!',{md:'urs'}),PO('sse','Umfrage durchführen','Führt in der Klasse eine Umfrage durch und macht für jede Antwort einen Strich!',{md:'tl',n:5})],
+  sf5:[PO('sse','Strichliste auswerten','Zähle die Striche und trage die Anzahl ein!',{md:'ab',n:4,nb:15}),PO('sse','Strichliste auswerten','Zähle die Striche und trage die Anzahl ein!',{md:'ab',n:5,nb:25})],
+  sf2:[PO('ssn','Merkkasten Kreisdiagramm','Schreibe den Merktext genau so in dein Heft!',{md:'kre'}),PO('ssk','Kreisdiagramm zeichnen','Berechne die Winkel und zeichne das Kreisdiagramm!',{md:'ber',n:20,k:4})],
+  sf3:[PO('ssk','Kreisdiagramm ablesen','Berechne, wie viele Kinder sich für die einzelnen Antworten entschieden haben!',{md:'les',n:24,k:4}),PO('sdg','Säulendiagramm ablesen','Lies die Werte aus dem Diagramm ab und trage sie in die Tabelle ein!',{kd:'saeule',md:'ablesen',sz:1,w:714})],
+  sf4:[PO('sdg','Säulendiagramm zeichnen','Zeichne das Diagramm in dein Heft!',{kd:'saeule',md:'zeichnen',sz:2,w:714}),PO('sdg','Liniendiagramm zeichnen','Zeichne das Diagramm in dein Heft!',{kd:'linie',md:'zeichnen',sz:2,w:714,tt:'Temperatur',xl:'Tag',yl:'°C',txt:'Montag; 12\nDienstag; 15\nMittwoch; 18\nDonnerstag; 14\nFreitag; 10'})]});
+ Object.assign(AST_FM,{sf0:'sf0',sf1:'sf1',sf2:'sf2',sf3:'sf3',sf4:'sf4',sf5:'sf5'});
+ Object.assign(AST_FN,{sf0:'Statistik: Diagramme (Merkblatt)',sf1:'Statistik: Umfrage und Strichliste',sf2:'Statistik: Kreisdiagramm zeichnen',sf3:'Statistik: Diagramme ablesen',sf4:'Statistik: Diagramme zeichnen',sf5:'Statistik: Strichliste auswerten'});
+ const SF=['sf0','sf1','sf5','sf2','sf3','sf4'],_ae3=astEntries;astEntries=function(s,f){return f?_ae3(s,f):_ae3(s.filter(k=>!SF.includes(k)),f);};
+ const ach=document.querySelector('#ast-ab .ach');
+ if(ach){ach.insertAdjacentHTML('beforeend',SF.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join(''));
+  SF.forEach(k=>{const l=ach.querySelector(`input[value="${k}"]`).parentNode;l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0));});}}
+
 /* ===== 4.0 Statistik ===== */
 (function(){const R=kri,P=tpick,A=(t,a)=>({t:t.replace(/^([^:]+):/,'<b>$1:</b>'),q:'Antwort',a,sp:4}),N=()=>P(['Max','Mia','Tim','Lena','Ben','Sara','Paul','Jonas']),F=x=>ssF(x);
  zrTH.ss=[
@@ -5992,6 +6071,22 @@ rows:[
 ['★12','Zusatz: Löse das Winkelrätsel: Rechnet man mich vier Mal, ergibt das einen vollen Winkel. Welche Winkelart bin ich und wie viel Grad habe ich?','Heft']]};
 MERK.wi=()=>MKB('Winkel',[['Winkel','Zwei Strahlen (Schenkel) mit gemeinsamem Anfangspunkt (Scheitel). Benennung mit griechischen Kleinbuchstaben: α, β, γ, δ, ε. Markierung mit einem kleinen Bogen.'],['Winkelarten','spitz: 0° < α < 90°; recht: α = 90°; stumpf: 90° < α < 180°; gestreckt: α = 180°; erhaben: 180° < α < 360°; voll: α = 360°.'],['Messen','Null des Geodreiecks an den Scheitel, eine Kante an einen Schenkel. Kleiner als 90°: kleine Zahl, sonst große Zahl.'],['Winkel über 180°','Nicht direkt messbar: Miss β und rechne α = 360° − β.'],['Konstruieren','Schenkel zeichnen, Null an den Scheitel, bei der Gradzahl markieren, Scheitel und Markierung verbinden, beschriften.'],['Winkelstern, Geraden','Alle Winkel um einen Punkt ergeben 360°. Nebenwinkel ergeben 180°, gegenüberliegende Winkel sind gleich groß.']]);
 {const sel=document.getElementById('pl-th');if(sel&&!sel.querySelector('option[value="wi"]')){const o=document.createElement('option');o.value='wi';o.textContent='Winkel';sel.appendChild(o);}}
+PLAN.st={t:'Planarbeit: Statistik und Diagramme',v:'',intro:'Arbeite die Aufträge der Reihe nach ab. Hake ab (☑), was du fertig hast. Kontrolle: Partner/in oder Lehrerin.',
+rows:[
+['1','Schreibe die Überschrift „Diagramme“ ins Heft und unterstreiche sie mit dem Lineal.','Heft'],
+['2','Schreibe den Merktext aus dem Merkkasten ab. Schreibe genau so wie dort: Überschrift, eigene Zeilen, Zeichen.','Heft'],
+['3','Sieh dir das Video zum Thema an (iPad + Kopfhörer, QR-Code unten). Notiere 2 Dinge, die du gelernt hast.','iPad / Heft'],
+['4','Führe in deiner Gruppe eine Umfrage durch („Was ist dein Lieblingsfach?“). Halte die Antworten in einer Strichliste im Heft fest.','Heft'],
+['5','Löse das Aufgabenblatt „Umfrage und Strichliste“: Zähle die Striche und trage die Anzahl ein.','Blatt'],
+['6','Zeichne zu deiner Umfrage ein Säulendiagramm ins Heft: Achsen mit Lineal, Skala, Säulen, Titel und Beschriftung.','Heft'],
+['7','Löse das Aufgabenblatt „Teile eines Diagramms“. Kontrolliere mit dem Merkkasten.','Blatt'],
+['8','Zeichne ein Balkendiagramm: Montag 35 min, Dienstag 50 min, Mittwoch 30 min, Donnerstag 25 min, Freitag 15 min (Hausaufgabenzeit).','Heft'],
+['9','Berechne den Mittelwert und den häufigsten Wert (Modus) der Zahlen 4, 7, 5, 8, 6, 5, 7, 5.','Heft'],
+['10','Kreisdiagramm: In einer Klasse mit 30 Kindern mögen 6 Kinder Lena, 3 Ben, 9 Mia, 12 Tim als Lieblingsfigur. Berechne die Winkel (360° : 30 = 12°).','Heft'],
+['★11','Zusatz: Zeichne das Kreisdiagramm aus Auftrag 10 mit dem Geodreieck und beschrifte jeden Kreisteil.','Heft'],
+['★12','Zusatz: Erfinde eine eigene Umfrage mit 5 Antworten. Befrage mindestens 15 Kinder und stelle das Ergebnis in einem Diagramm deiner Wahl dar.','Heft']]};
+MERK.st=()=>MKB('Statistik und Diagramme',[['Daten erheben','Umfrage mit Strichliste: Jeder Strich ist eine Antwort, der fünfte Strich wird quer durchgestrichen. Die Anzahl heißt Häufigkeit.'],['Kennzahlen','Arithmetisches Mittel = Summe aller Werte : Anzahl der Werte. Modus = häufigster Wert. Spannweite = größter Wert − kleinster Wert.'],['Diagramme','Säulen (senkrecht), Balken (waagrecht), Linie, Punkte, Kreis. Jedes Diagramm braucht einen Titel, beschriftete Achsen und eine gleichmäßige Skala.'],['Kreisdiagramm','Voller Kreis = 360°. Winkel für 1 Wert = 360° : Gesamtzahl. Winkel eines Teils = Anzahl · Winkel für 1 Wert.']]);
+{const sel=document.getElementById('pl-th');if(sel&&!sel.querySelector('option[value="st"]')){const o=document.createElement('option');o.value='st';o.textContent='Statistik und Diagramme';sel.appendChild(o);}}
 function planBuild(key,o){
  const last=()=>items[items.length-1],P=PLAN[key]||PLAN.sg,R0=rec;R0();rec=()=>{};RF=false;let res={};
  try{
