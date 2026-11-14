@@ -2322,7 +2322,7 @@ function wkBl(it){const sv=tlS(it),co=Math.min(2,Math.max(1,+it.co||2)),lab=it.l
   let g=(it.sk&&!sv)?'':`<path d="M${vx} ${vy}H${ex}" stroke="#000" stroke-width="1.6"/><circle cx="${vx}" cy="${vy}" r="2.4" fill="#000"/><text x="${vx-dir*13}" y="${vy+15}" text-anchor="middle" font-size="12" font-family="inherit">S</text>`;
   if(sv)g+=`<path d="M${vx} ${vy}L${x2} ${y2}" stroke="${red}" stroke-width="1.8"/><path d="M${vx+dir*ar} ${vy}A${ar} ${ar} 0 ${t.a>180?1:0} ${dir>0?0:1} ${ax} ${ay}" stroke="${red}" stroke-width="1.6" fill="none"/><text x="${vx+dir*(ar+12)*Math.cos(rad/2)}" y="${vy-(ar+12)*Math.sin(rad/2)+4}" text-anchor="middle" font-size="13" fill="${red}" font-family="inherit">${t.g}</text>${it.lb?`<text x="${x2+dir*8}" y="${y2-5}" text-anchor="middle" font-size="13" fill="${red}" font-family="inherit">k</text>`:''}`;
   if(it.lb&&!it.sk)g+=`<text x="${vx+dir*112}" y="${vy+15}" text-anchor="middle" font-size="13" font-family="inherit">r</text>`;
-  return `<div style="break-inside:avoid"><div style="font-weight:700;white-space:nowrap"><span style="margin-right:.5em">${L}</span>${t.g} = ${t.a}°</div><svg viewBox="0 0 230 120" style="display:block;width:100%;height:auto;border:1px solid #bbb;border-radius:4px;margin-top:.3em" aria-hidden="true">${g}</svg>${it.sk?`<div style="margin-top:.35em">Nachgemessen: <span style="display:inline-block;border-bottom:1.2px solid #000;min-width:4em;color:${red};font-weight:700;text-align:center">${sv?t.a+'°':'&nbsp;'}</span></div>`:''}</div>`;}).join('');
+  return `<div style="break-inside:avoid"><div style="font-weight:700;white-space:nowrap"><span style="margin-right:.5em">${L}</span>${t.g} = ${t.a}°</div><div style="border:1px solid #bbb;border-radius:4px;margin-top:.3em"><svg viewBox="0 0 230 120" style="display:block;width:100%;height:auto" aria-hidden="true">${g}</svg></div>${it.sk?`<div style="margin-top:.35em">Nachgemessen: <span style="display:inline-block;border-bottom:1.2px solid #000;min-width:4em;color:${red};font-weight:700;text-align:center">${sv?t.a+'°':'&nbsp;'}</span></div>`:''}</div>`;}).join('');
  const mkb=it.mk?`<div style="border:1.4px solid #000;border-radius:4px;padding:.5em .8em;margin:0 0 1em;break-inside:avoid"><b>Merke: So konstruierst du einen Winkel</b><ol style="margin:.3em 0 .3em 1.2em;padding:0"><li>Zeichne zuerst einen Schenkel und markiere die Null deines Geodreiecks am Scheitel.</li><li>Mache eine Markierung bei der gewünschten Gradzahl.</li><li>Verbinde den Scheitel mit der Markierung.</li><li>Beschrifte den Winkel mit einem Bogen und dem griechischen Buchstaben.</li></ol><b>Winkel über 180°:</b> Du kannst α nicht direkt zeichnen. Konstruiere den Winkel 360° − α auf der anderen Seite. Dann ergänzt er α auf 360°.</div>`:'';
  return `<div class="tlx" style="${kst(it)}">${mkb}${it.sk?'<div style="font-weight:700;margin-bottom:.4em">Skizziere den gegebenen Winkel freihändig. Miss dann genau nach.</div>':''}<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:1em 1.2em">${cells}</div></div>`;}
 function renderWkk(){const g=$('#g-wkk');if(!g)return;const it=items.find(i=>i.id===sel&&i.type==='wkk');if(!it){g.innerHTML='';return;}
@@ -2959,7 +2959,7 @@ function wnDisc(o){const R=100,pt=(a,r)=>[wnF(r*Math.cos(wnRad(a))),wnF(-r*Math.
  (o.rays||[]).forEach(([a,col])=>{const p=pt(a,R);s+=`<line x1="0" y1="0" x2="${p[0]}" y2="${p[1]}" stroke="${col||'#000'}" stroke-width="1.5"/>`;});
  (o.arcs||[]).forEach(([a1,sp,r,lab,col,lr])=>{const p=pt(a1,r),q=pt(a1+sp,r),m=pt(a1+sp/2,lr||r+11);s+=`<path d="M${p[0]} ${p[1]}A${r} ${r} 0 ${sp>180?1:0} 0 ${q[0]} ${q[1]}" fill="none" stroke="${col||'#000'}" stroke-width="1.3"/>`+(lab?`<text x="${m[0]}" y="${m[1]}" text-anchor="middle" dominant-baseline="central" font-size="14" fill="${col||'#000'}" font-family="inherit">${lab}</text>`:'');});
  if(o.dot)s+='<circle r="2" fill="#000"/>';
- return `<svg viewBox="-132 -114 264 232" style="width:100%;max-width:250px;height:auto;display:block;margin:0 auto" aria-hidden="true">${s}</svg>`;}
+ return `<div class="svw" style="max-width:250px;margin:0 auto"><svg viewBox="-132 -114 264 232" style="width:100%;height:auto;display:block" aria-hidden="true">${s}</svg></div>`;}
 function wnGenS(it){const n=+it.n||3,md=it.md||'be',sp=it.ar==='sp',ty=[];
  const dv=t=>t==='s'?5*kri(2,17):t==='t'?5*kri(19,35):5*kri(37,70);
  while(ty.length<n)tshuf(sp?['s','t','s','t']:['s','t','e']).forEach(x=>ty.length<n&&ty.push(x));
@@ -3024,20 +3024,20 @@ const W2WA=[['Schneiden einander zwei Geraden, liegen zwischen ihnen vier Winkel
 function w2GenGk(it){const n=+it.n||1;it.d=[];for(let i=0;i<n;i++){let th;do{th=5*kri(5,32);}while(th===90);const nt=kri(2,3),idx=tshuf([0,1,2,3,4,5]).slice(0,4),tr=tshuf([true,true,nt>2,false].slice(0,4).map((x,j)=>j<nt)),
    st=idx.map((q,j)=>({t:W2WA[q][tr[j]?0:1],ok:tr[j]}));const nm=tpick([['a','g'],['g','h'],['m','n'],['p','q']]);it.d.push({th,ph:kri(-12,12),st,nm});}}
 function w2FigGk(t){const r=[t.ph,t.ph+t.th,t.ph+180,t.ph+t.th+180],L=a=>Math.min(106,70/Math.max(.2,Math.abs(Math.sin(wnRad(a))))),ln=[r[0],r[1]].map(a=>[w2P(a,L(a)),w2P(a+180,L(a))]);
- let s='<svg viewBox="-125 -85 250 170" style="width:100%;max-width:300px;height:auto;display:block;margin:0 auto" aria-hidden="true">'+ln.map(l=>w2Ln(l[0][0],l[0][1],l[1][0],l[1][1])+' stroke="#000" stroke-width="1.5"/>').join('')+'<circle r="36" fill="#fff" stroke="#000" stroke-width="1.2"/>';
+ let s='<div class="svw" style="max-width:300px;margin:0 auto"><svg viewBox="-125 -85 250 170" style="width:100%;height:auto;display:block" aria-hidden="true">'+ln.map(l=>w2Ln(l[0][0],l[0][1],l[1][0],l[1][1])+' stroke="#000" stroke-width="1.5"/>').join('')+'<circle r="36" fill="#fff" stroke="#000" stroke-width="1.2"/>';
  const sp=[t.th,180-t.th,t.th,180-t.th];let c=r[0];sp.forEach((v,i)=>{s+=w2T(w2P(c+v/2,v<45?27:24),'αβγδ'[i],12);c+=v;});
- s+=w2T(w2P(r[0],L(r[0])+8),t.nm[0],13)+w2T(w2P(r[1],L(r[1])+8),t.nm[1],13);return s+'</svg>';}
+ s+=w2T(w2P(r[0],L(r[0])+8),t.nm[0],13)+w2T(w2P(r[1],L(r[1])+8),t.nm[1],13);return s+'</svg></div>';}
 /* --- Winkelsumme mit x --- */
 function w2GenSx(it){const n=+it.n||3,md=it.md||'mix';it.d=[];for(let i=0;i<n;i++){const T=md==='rw'?90:md==='gs'?180:md==='vo'?360:[90,180,360][i%3];let r=null;
   for(let t=0;t<4000&&!r;t++){const m=kri(1,T===90?2:3),cnt=kri(1,3),x=5*kri(2,Math.max(2,Math.floor(T/(5*m))-2)),g=[];let s=m*x;for(let j=0;j<cnt-1;j++){const q=5*kri(2,Math.max(2,Math.floor(T/5/3)));g.push(q);s+=q;}const l=T-s;const mx=T===360?170:T===180?110:90;if(l<15||l>mx||x<15||x>mx||g.some(q=>q<15||q>mx)||l%5||m+cnt>5||m+cnt<3)continue;g.push(l);
    const parts=tshuf([...g.map(v=>({v})),...Array.from({length:m},()=>({x:1}))]);r={T,m,x,g,parts};}
   it.d.push(r||{T:90,m:2,x:10,g:[35,35],parts:[{v:35},{x:1},{x:1},{v:35}]});}}
 function w2FigSx(t){const T=t.T,V=T===90?[14,118]:T===180?[80,100]:[80,80],R=T===90?78:T===180?72:66,vb=T===90?'0 0 150 128':T==='180'||T===180?'0 0 160 108':'0 0 160 160',Lr=T===90?108:T===180?76:70;
- let c=0,s=`<svg viewBox="${vb}" style="width:100%;max-width:210px;height:auto;display:block;margin:0 auto" aria-hidden="true">`,fills='',rays='',lab='';
+ let c=0,s=`<div class="svw" style="max-width:210px;margin:0 auto"><svg viewBox="${vb}" style="width:100%;height:auto;display:block" aria-hidden="true">`,fills='',rays='',lab='';
  const pt=(a,r)=>w2P(a,r,V[0],V[1]);rays+=w2Ln(V[0],V[1],pt(0,Lr)[0],pt(0,Lr)[1])+' stroke="#000" stroke-width="1.4"/>';
  t.parts.forEach((p,i)=>{const v=p.x?t.x:p.v,a=pt(c,R),b=pt(c+v,R),e=pt(c+v,Lr);fills+=`<path d="M${V[0]} ${V[1]}L${wnF(a[0])} ${wnF(a[1])}A${R} ${R} 0 0 0 ${wnF(b[0])} ${wnF(b[1])}Z" fill="${p.x?'#fde9c8':'#cfe0f1'}" stroke="none"/>`;if(c+v<360)rays+=w2Ln(V[0],V[1],e[0],e[1])+' stroke="#000" stroke-width="1.4"/>';
   lab+=w2T(pt(c+v/2,i%2?R*.8:R*.5),p.x?'x°':v+'°',v<20?9:11);c+=v;});
- return s+fills+rays+lab+'</svg>';}
+ return s+fills+rays+lab+'</svg></div>';}
 /* --- Lückentext --- */
 const W2LT={g:{h:'Winkel: Grundbegriffe',t:'Ein Winkel wird von zwei [Strahlen] gebildet, die denselben [Anfangspunkt] haben. Die Strahlen heißen [Schenkel], der gemeinsame Punkt heißt [Scheitel]. Winkel werden mit [griechischen] Kleinbuchstaben benannt und durch einen kleinen [Bogen] markiert. Die Größe eines Winkels wird in [Grad] gemessen.',ex:['Kreis','Mittelpunkt','Seiten']},
  a:{h:'Winkel: Winkelarten',t:'Es gibt [sechs] Winkelarten. Ein [spitzer] Winkel ist kleiner als 90°. Ein [rechter] Winkel hat genau [90]°. Ein [stumpfer] Winkel ist größer als 90° und kleiner als 180°. Ein [gestreckter] Winkel hat [180]°. Ein [erhabener] Winkel liegt zwischen 180° und 360°. Ein voller Winkel hat [360]°.',ex:['vier','45','runder']},
@@ -4574,16 +4574,16 @@ function sdSvg(it,rows,leer){const sz=SDS[+it.sz||2],W=sz[0],H=sz[1],kd=it.kd,ho
  num=!!it.num&&(kd==='linie'||kd==='punkt')&&rows.every(r=>!isNaN(parseFloat(String(r.c).replace(',','.')))),leg=k>1,pal=SDPAL[it.pal]||SDPAL.bunt,bunt=!!it.bt&&k===1&&(kd==='saeule'||kd==='balken');
  const mx=Math.max(1,...ser.flatMap(s=>s.vals));let sc=ssScale(mx);const ym=parseFloat(String(it.ymx).replace(',','.')),ys=parseFloat(String(it.yst).replace(',','.'));
  if(ym>0&&ys>0&&ym/ys<=40)sc={mx:ym,st:ys};else if(mx===sc.mx)sc={mx:sc.mx+sc.st,st:sc.st};
- const vmax=sc.mx,nt=Math.round(vmax/sc.st),maxl=Math.max(...rows.map(r=>r.c.length),1),ml=hor?Math.min(170,16+maxl*6.6):56,mb=hor?44:42,mt=(it.tt?36:26)+(leg?22:0),mr=34,pw=W-ml-mr,ph=H-mt-mb,x0=ml,y0=mt+ph;
+ const vmax=sc.mx,nt=Math.round(vmax/sc.st),maxl=Math.max(...rows.map(r=>r.c.length),1),ml=hor?Math.min(170,16+maxl*6.6):56,rot=!hor&&!num&&maxl*6.7>(W-90)/Math.max(N,1)-4,mb=hor?44:rot?40+Math.min(48,maxl*3.6):42,mt=(it.tt?36:26)+(leg?22:0),mr=34,pw=W-ml-mr,ph=H-mt-mb,x0=ml,y0=mt+ph;
  const vp=v=>hor?x0+pw*v/vmax:y0-ph*v/vmax,cp=i=>hor?mt+ph*(i+.5)/N:x0+pw*(i+.5)/N;let xs=null,xm=0,xst=1;
  if(num){xs=rows.map(r=>parseFloat(String(r.c).replace(',','.')));const s2=ssScale(Math.max(...xs,1));xm=s2.mx;xst=s2.st;}
  const xp=x=>x0+pw*x/xm;let g='';
  for(let i=0;i<=nt;i++){const v=i*sc.st,p=vp(v);if(hor)g+=`<line x1="${p}" y1="${mt}" x2="${p}" y2="${y0}" stroke="#cfcfcf"/><text x="${p}" y="${y0+17}" text-anchor="middle" font-size="12">${sdFv(v)}</text><line x1="${p}" y1="${y0}" x2="${p}" y2="${y0+4}" stroke="#000"/>`;else g+=`<line x1="${x0}" y1="${p}" x2="${x0+pw}" y2="${p}" stroke="#cfcfcf"/><text x="${x0-8}" y="${p+4}" text-anchor="end" font-size="12">${sdFv(v)}</text><line x1="${x0-4}" y1="${p}" x2="${x0}" y2="${p}" stroke="#000"/>`;}
  if(num){for(let i=0;i<=Math.round(xm/xst);i++){const v=i*xst,p=xp(v);g+=`<line x1="${p}" y1="${mt}" x2="${p}" y2="${y0}" stroke="#cfcfcf"/><text x="${p}" y="${y0+17}" text-anchor="middle" font-size="12">${sdFv(v)}</text><line x1="${p}" y1="${y0}" x2="${p}" y2="${y0+4}" stroke="#000"/>`;}}
- else rows.forEach((r,i)=>{const c=cp(i);g+=hor?`<text x="${x0-8}" y="${c+4}" text-anchor="end" font-size="12.5">${r.c}</text>`:`<text x="${c}" y="${y0+17}" text-anchor="middle" font-size="12.5">${r.c}</text>`;});
+ else rows.forEach((r,i)=>{const c=cp(i);g+=hor?`<text x="${x0-8}" y="${c+4}" text-anchor="end" font-size="12.5">${r.c}</text>`:rot?`<text x="${c+4}" y="${y0+14}" text-anchor="end" font-size="12" transform="rotate(-32 ${c+4} ${y0+14})">${r.c}</text>`:`<text x="${c}" y="${y0+17}" text-anchor="middle" font-size="12.5">${r.c}</text>`;});
  g+=`<path d="M${x0} ${y0}V${mt-6}M${x0} ${y0}H${W-mr+10}" stroke="#000" stroke-width="1.7" fill="none"/><path d="M${x0-4} ${mt-3}L${x0} ${mt-11}L${x0+4} ${mt-3}Z" fill="#000"/><path d="M${W-mr+4} ${y0-4}L${W-mr+12} ${y0}L${W-mr+4} ${y0+4}Z" fill="#000"/>`;
  const xl=sdEsc(it.xl),yl=sdEsc(it.yl);
- g+=hor?`<text x="${x0-6}" y="${mt-14}" text-anchor="end" font-size="12.5" font-weight="700">${xl}</text><text x="${W-6}" y="${y0+34}" text-anchor="end" font-size="12.5" font-weight="700">${yl}</text>`:`<text x="${x0}" y="${mt-14}" text-anchor="middle" font-size="12.5" font-weight="700">${yl}</text><text x="${W-6}" y="${y0+34}" text-anchor="end" font-size="12.5" font-weight="700">${xl}</text>`;
+ g+=hor?`<text x="${x0-6}" y="${mt-14}" text-anchor="end" font-size="12.5" font-weight="700">${xl}</text><text x="${W-6}" y="${y0+34}" text-anchor="end" font-size="12.5" font-weight="700">${yl}</text>`:`<text x="${x0}" y="${mt-14}" text-anchor="middle" font-size="12.5" font-weight="700">${yl}</text><text x="${W-6}" y="${y0+(rot?mb-5:34)}" text-anchor="end" font-size="12.5" font-weight="700">${xl}</text>`;
  if(it.tt)g+=`<text x="${W/2}" y="19" text-anchor="middle" font-size="16" font-weight="700">${sdEsc(it.tt)}</text>`;
  if(leg){let lx=x0+(hor?0:86);const ly=it.tt?36:14;ser.forEach((s,j)=>{const mk=kd==='linie'?`<path d="M${lx} ${ly}h16" stroke="${s.col}" stroke-width="2.4"/><circle cx="${lx+8}" cy="${ly}" r="3.2" fill="${s.col}"/>`:kd==='punkt'?sdMark(j,lx+8,ly,s.col):`<rect x="${lx}" y="${ly-6}" width="13" height="13" fill="${s.col}"/>`;g+=mk+`<text x="${lx+22}" y="${ly+4}" font-size="12.5">${s.name}</text>`;lx+=34+s.name.length*7;});}
  if(!leer){const grp=(hor?ph:pw)/Math.max(N,1)*(k>1?.74:.5),bw=grp/k;
@@ -4598,13 +4598,13 @@ function sdSvg(it,rows,leer){const sz=SDS[+it.sz||2],W=sz[0],H=sz[1],kd=it.kd,ho
 function sdMark(j,x,y,c){x=+x;y=+y;return j===0?`<path d="M${x-5} ${y-5}L${x+5} ${y+5}M${x-5} ${y+5}L${x+5} ${y-5}" stroke="${c}" stroke-width="2" fill="none"/>`:j===1?`<circle cx="${x}" cy="${y}" r="4.5" fill="none" stroke="${c}" stroke-width="2"/>`:j===2?`<rect x="${x-4.5}" y="${y-4.5}" width="9" height="9" fill="none" stroke="${c}" stroke-width="2"/>`:`<path d="M${x} ${y-5.5}L${x+5.5} ${y+4.5}L${x-5.5} ${y+4.5}Z" fill="none" stroke="${c}" stroke-width="2"/>`;}
 function sdTable(it,rows,hide,sh){const th='border:1.5px solid #000;padding:.25em .7em;text-align:center;min-width:3em;',ser=sdSer(it,rows),xl=sdEsc(it.xl)||'Kategorie';
  return `<table style="border-collapse:collapse;margin:.5em 0"><tr><td style="${th}background:#eaf2f8;font-weight:700">${xl}</td>${rows.map(r=>`<td style="${th}">${r.c}</td>`).join('')}</tr>${ser.map(s=>`<tr><td style="${th}background:#eaf2f8;font-weight:700">${s.name}</td>${s.vals.map(v=>`<td style="${th}height:1.8em">${hide?(sh?`<span class="sv">${sdFv(v)}</span>`:''):sdFv(v)}</td>`).join('')}</tr>`).join('')}</table>`;}
-function sdBlock(it){const rows=it.d&&it.d.length?it.d:sdParse(it.txt),sh=tlS(it),md=it.md||'voll',pie=it.kd==='kreis',chart=l=>pie?sdPie(it,rows,l?'keine':(it.pw||'prozent'),l):sdSvg(it,rows,l);
- if(!rows.length)return `<div class="tlx" style="${kst(it)}">Gib im Feld „Daten“ pro Zeile einen Namen und einen oder mehrere Werte ein, z. B. Montag; 35; 20</div>`;
+function sdBlock(it){const rows=it.d&&it.d.length?it.d:sdParse(it.txt),sh=tlS(it),md=it.md||'voll',ks=x=>kst(Object.assign({},x,{col:''})),pie=it.kd==='kreis',chart=l=>pie?sdPie(it,rows,l?'keine':(it.pw||'prozent'),l):sdSvg(it,rows,l);
+ if(!rows.length)return `<div class="tlx" style="${ks(it)}">Gib im Feld „Daten“ pro Zeile einen Namen und einen oder mehrere Werte ein, z. B. Montag; 35; 20</div>`;
  let h='';
  if(md==='voll')h=(it.tb?sdTable(it,rows,false,sh):'')+chart(false);
  else if(md==='zeichnen')h=sdTable(it,rows,false,sh)+(sh?chart(false):chart(true));
  else h=(pie?sdPie(it,rows,'keine',false):sdSvg(it,rows,false))+sdTable(it,rows,true,sh);
- return `<div class="tlx" style="${kst(it)}">${h}</div>`;}
+ return `<div class="tlx" style="${ks(it)}">${h}</div>`;}
 {const _g=poGen,_b=poBlock,_r=renderPo;
  poGen=function(it){return SDT.includes(it.type)?sdGen(it):_g(it);};
  poBlock=function(it){return SDT.includes(it.type)?sdBlock(it):_b(it);};
@@ -4645,7 +4645,7 @@ function s2Gen(it){
  if(it.type==='sse'){const nb=Math.max(8,Math.min(40,+it.nb||20)),n=Math.max(3,Math.min(6,+it.n||5)),u=it.u&&S2U[it.u.i]&&it.u.k===it.fr?it.u:null;
   const q=S2U.find(x=>x.t===it.fr)||tpick(S2U),cats=q.c.slice(0,n);it.d={t:q.t,c:cats,v:s2Comp(nb,cats.length)};it.fr=q.t;}
  else if(it.type==='ssk'){const N=[10,12,15,18,20,24,30,36],n=N.includes(+it.n)?+it.n:20,k=Math.max(3,Math.min(5,+it.k||4)),cats=tshuf(tpick(S2K)).slice(0,k);let v;for(let g=0;g<300;g++){v=s2Comp(n,k);if(Math.max(...v)<=n*.55)break;}it.d={n,c:cats,v,u:360/n};}
- else if(it.type==='ssa'){const c=tpick(SSK),vals=c.cats.map(()=>Math.max(c.st,c.lo+kri(0,Math.round((c.hi-c.lo)/c.st))*c.st));it.d={c,vals};}}
+ else if(it.type==='ssa'){const c=tpick(SSK),vals=c.cats.map(()=>Math.max(c.st,c.lo+kri(0,Math.round((c.hi-c.lo)/c.st))*c.st));it.d={c,vals,wo:tshuf([0,1,2,3,4,5])};}}
 const s2Ln=(w,t)=>`<span class="tlln" style="display:inline-block;min-width:${w}em;text-align:center">${t||'&nbsp;'}</span>`;
 const s2Th='border:1.5px solid #000;padding:.25em .6em;',s2H='background:#eaf2f8;font-weight:700;';
 function s2Tally(n){return ssTally(n,'#c0392b');}
@@ -4668,17 +4668,17 @@ function s2Ssk(it){const d=it.d,sh=tlS(it),n=d.n,bg=it.md==='les',pit={tt:'',sz:
   +`<table style="border-collapse:collapse;margin:.3em 0"><tr><td style="${s2Th}${s2H}min-width:8em">Antwort</td><td style="${s2Th}${s2H}text-align:center;min-width:5em">Winkel</td><td style="${s2Th}${s2H}text-align:center;min-width:8em">Kinder</td></tr>`+d.c.map((c,i)=>`<tr><td style="${s2Th}height:2.1em">${c}</td><td style="${s2Th}text-align:center">${d.v[i]*d.u}°</td><td style="${s2Th}text-align:center">${tlSv(it,d.v[i]*d.u+'° : '+d.u+'° = '+d.v[i])}</td></tr>`).join('')+'</table>';}
  return h;}
 function s2Ssa(it){const d=it.d,c=d.c,sh=tlS(it),W=460,H=280,x0=56,mt=36,mb=42,mr=34,pw=W-x0-mr,ph=H-mt-mb,y0=mt+ph,N=c.cats.length,sc=ssScale(Math.max(...d.vals)),vm=Math.max(sc.mx,Math.max(...d.vals)===sc.mx?sc.mx+sc.st:sc.mx),cp=i=>x0+pw*(i+.5)/N,vp=v=>y0-ph*v/vm,bi=d.vals.indexOf(Math.max(...d.vals)),
-  pins=[[1,W/2+4.5*String(c.ttl).length+14,14],[2,x0+3.9*String(c.yl).length+14,18],[3,14,vp(vm/2)],[4,cp(1),y0+36],[5,cp(bi),vp(d.vals[bi])-13],[6,W-6-7.6*String(c.xl).length-14,y0+30]],
+  pins=[[1,W/2+4.5*String(c.ttl).length+14,14],[2,x0+3.9*String(c.yl).length+14,18],[3,14,vp(vm/2)],[4,cp(1),y0+31],[5,cp(bi),vp(d.vals[bi])-13],[6,W-6-7.6*String(c.xl).length-14,y0+30]],
   ov=pins.map(([n,x,y])=>`<circle cx="${x}" cy="${y}" r="9" fill="#fff" stroke="#c0392b" stroke-width="1.6"/><text x="${x}" y="${y+4.5}" text-anchor="middle" font-size="12.5" font-weight="700" fill="#c0392b">${n}</text>`).join(''),
   chart=sdSvg({kd:'saeule',sz:2,tt:c.ttl,xl:c.xl,yl:c.yl,col:'#2f6f8f',vl:false,ymx:'',yst:'',d:null},c.cats.map((x,i)=>({c:x,vs:[d.vals[i]],v:d.vals[i]})),false),
   W6=['Titel','Beschriftung der senkrechten Achse','Skala','Beschriftung der Säulen','Säule','Beschriftung der waagrechten Achse'];
- const wbk=it.wb?`<div style="margin:.4em 0;padding:.35em .7em;border:1.3px dashed #666;border-radius:6px;font-size:.95em"><b>Wörter:</b> ${tshuf(W6.slice()).join(' · ')}</div>`:'';
+ const wbk=it.wb?`<div style="margin:.4em 0;padding:.35em .7em;border:1.3px dashed #666;border-radius:6px;font-size:.95em"><b>Wörter:</b> ${(d.wo||[0,1,2,3,4,5]).map(i=>W6[i]).join(' · ')}</div>`:'';
  return wnH1('Ordne den nummerierten Teilen des Diagramms die richtigen Begriffe zu.')+`<div style="position:relative;width:${W}px;max-width:100%">${chart}<svg viewBox="0 0 ${W} ${H}" style="position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible" aria-hidden="true">${ov}</svg></div>${wbk}`
   +`<table style="border-collapse:collapse;margin:.3em 0;width:100%">${W6.map((w,i)=>`<tr><td style="${s2Th}${s2H}text-align:center;width:2.6em">${i+1}</td><td style="${s2Th}height:2.1em">${tlSv(it,w)}</td></tr>`).join('')}</table>`;}
 function s2Ssn(it){const T={dia:['Diagramme',[['Diagrammarten','Säulendiagramm (senkrechte Säulen), Balkendiagramm (waagrechte Balken), Liniendiagramm (Punkte verbunden), Punktdiagramm, Kreisdiagramm.'],['Teile eines Diagramms','Titel; Achsen mit Beschriftung; Skala mit gleichen Abständen; Säulen oder Balken mit gleicher Breite.'],['Zeichnen','Zuerst die Achsen mit dem Lineal zeichnen, dann die Skala einteilen, dann die Werte eintragen, zuletzt Titel und Beschriftung.']]],
   kre:['Kreisdiagramm',[['Kreisdiagramm','Ein Kreis wird in Kreisausschnitte geteilt. Jeder Teil zeigt, wie groß ein Anteil an allen Daten ist.'],['Winkel berechnen','Der volle Kreis hat 360°. Winkel für 1 Wert = 360° : Gesamtzahl. Winkel eines Teils = Anzahl · Winkel für 1 Wert.'],['Zeichnen','Zuerst einen Kreis und einen Radius zeichnen, dann die Winkel der Reihe nach mit dem Geodreieck antragen und beschriften.']]],
   urs:['Daten erheben',[['Umfrage','Man stellt eine Frage und hält die Antworten in einer Strichliste fest.'],['Strichliste','Jeder Strich steht für eine Antwort. Der fünfte Strich wird quer durchgestrichen, so kann man schnell in Fünfern zählen.'],['Häufigkeit','Die Anzahl der Striche heißt Häufigkeit. Der Wert mit der größten Häufigkeit heißt Modus (häufigster Wert).']]]},t=T[it.md]||T.dia;return MKB(t[0],t[1]);}
-const s2Block=it=>`<div class="tlx" style="${kst(it)}">${it.type==='sse'?s2Sse(it):it.type==='ssk'?s2Ssk(it):it.type==='ssa'?s2Ssa(it):s2Ssn(it)}</div>`;
+const s2Block=it=>{const h=it.type==='sse'?s2Sse(it):it.type==='ssk'?s2Ssk(it):it.type==='ssa'?s2Ssa(it):s2Ssn(it);return `<div class="tlx" style="${kst(it)}">${it.nh?h.replace(/<div class="wnh"[^>]*>[^<]*<\/div>/g,''):h}</div>`;};
 {const _g=poGen,_b=poBlock,_r=renderPo;
  poGen=function(it){return S2T.includes(it.type)?s2Gen(it):_g(it);};
  poBlock=function(it){return S2T.includes(it.type)?s2Block(it):_b(it);};
@@ -6082,7 +6082,7 @@ rows:[
 ['7','Löse das Aufgabenblatt „Teile eines Diagramms“. Kontrolliere mit dem Merkkasten.','Blatt'],
 ['8','Zeichne ein Balkendiagramm: Montag 35 min, Dienstag 50 min, Mittwoch 30 min, Donnerstag 25 min, Freitag 15 min (Hausaufgabenzeit).','Heft'],
 ['9','Berechne den Mittelwert und den häufigsten Wert (Modus) der Zahlen 4, 7, 5, 8, 6, 5, 7, 5.','Heft'],
-['10','Kreisdiagramm: In einer Klasse mit 30 Kindern mögen 6 Kinder Lena, 3 Ben, 9 Mia, 12 Tim als Lieblingsfigur. Berechne die Winkel (360° : 30 = 12°).','Heft'],
+['10','Kreisdiagramm: 30 Kinder wurden nach ihrem Lieblingssport gefragt: Fußball 12, Schwimmen 9, Turnen 6, Tennis 3. Berechne die Winkel (360° : 30 = 12°).','Heft'],
 ['★11','Zusatz: Zeichne das Kreisdiagramm aus Auftrag 10 mit dem Geodreieck und beschrifte jeden Kreisteil.','Heft'],
 ['★12','Zusatz: Erfinde eine eigene Umfrage mit 5 Antworten. Befrage mindestens 15 Kinder und stelle das Ergebnis in einem Diagramm deiner Wahl dar.','Heft']]};
 MERK.st=()=>MKB('Statistik und Diagramme',[['Daten erheben','Umfrage mit Strichliste: Jeder Strich ist eine Antwort, der fünfte Strich wird quer durchgestrichen. Die Anzahl heißt Häufigkeit.'],['Kennzahlen','Arithmetisches Mittel = Summe aller Werte : Anzahl der Werte. Modus = häufigster Wert. Spannweite = größter Wert − kleinster Wert.'],['Diagramme','Säulen (senkrecht), Balken (waagrecht), Linie, Punkte, Kreis. Jedes Diagramm braucht einen Titel, beschriftete Achsen und eine gleichmäßige Skala.'],['Kreisdiagramm','Voller Kreis = 360°. Winkel für 1 Wert = 360° : Gesamtzahl. Winkel eines Teils = Anzahl · Winkel für 1 Wert.']]);
