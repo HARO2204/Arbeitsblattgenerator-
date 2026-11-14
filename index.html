@@ -4677,6 +4677,7 @@ function s2Ssa(it){const d=it.d,c=d.c,sh=tlS(it),W=460,H=280,x0=56,mt=36,mb=42,m
   +`<table style="border-collapse:collapse;margin:.3em 0;width:100%">${W6.map((w,i)=>`<tr><td style="${s2Th}${s2H}text-align:center;width:2.6em">${i+1}</td><td style="${s2Th}height:2.1em">${tlSv(it,w)}</td></tr>`).join('')}</table>`;}
 function s2Ssn(it){const T={dia:['Diagramme',[['Diagrammarten','Säulendiagramm (senkrechte Säulen), Balkendiagramm (waagrechte Balken), Liniendiagramm (Punkte verbunden), Punktdiagramm, Kreisdiagramm.'],['Teile eines Diagramms','Titel; Achsen mit Beschriftung; Skala mit gleichen Abständen; Säulen oder Balken mit gleicher Breite.'],['Zeichnen','Zuerst die Achsen mit dem Lineal zeichnen, dann die Skala einteilen, dann die Werte eintragen, zuletzt Titel und Beschriftung.']]],
   kre:['Kreisdiagramm',[['Kreisdiagramm','Ein Kreis wird in Kreisausschnitte geteilt. Jeder Teil zeigt, wie groß ein Anteil an allen Daten ist.'],['Winkel berechnen','Der volle Kreis hat 360°. Winkel für 1 Wert = 360° : Gesamtzahl. Winkel eines Teils = Anzahl · Winkel für 1 Wert.'],['Zeichnen','Zuerst einen Kreis und einen Radius zeichnen, dann die Winkel der Reihe nach mit dem Geodreieck antragen und beschriften.']]],
+  bau:['Baumdiagramm',[['Baumdiagramm','Mit einem Baumdiagramm findet man alle Möglichkeiten. Die Striche heißen Äste. Jeder Weg von oben nach unten ist eine Möglichkeit.'],['Anzahl der Möglichkeiten','Gibt es für die erste Auswahl a, für die zweite b und für die dritte c Möglichkeiten, dann gibt es insgesamt a · b · c Möglichkeiten.'],['Beispiel','2 Hüte, 2 Mäntel und 2 Paar Schuhe: 2 · 2 · 2 = 8 Möglichkeiten.']]],
   urs:['Daten erheben',[['Umfrage','Man stellt eine Frage und hält die Antworten in einer Strichliste fest.'],['Strichliste','Jeder Strich steht für eine Antwort. Der fünfte Strich wird quer durchgestrichen, so kann man schnell in Fünfern zählen.'],['Häufigkeit','Die Anzahl der Striche heißt Häufigkeit. Der Wert mit der größten Häufigkeit heißt Modus (häufigster Wert).']]]},t=T[it.md]||T.dia;return MKB(t[0],t[1]);}
 const s2Block=it=>{const h=it.type==='sse'?s2Sse(it):it.type==='ssk'?s2Ssk(it):it.type==='ssa'?s2Ssa(it):s2Ssn(it);return `<div class="tlx" style="${kst(it)}">${it.nh?h.replace(/<div class="wnh"[^>]*>[^<]*<\/div>/g,''):h}</div>`;};
 {const _g=poGen,_b=poBlock,_r=renderPo;
@@ -4688,7 +4689,7 @@ const s2Block=it=>{const h=it.type==='sse'?s2Sse(it):it.type==='ssk'?s2Ssk(it):i
   if(k==='sse')H+=sl('md',[['tl','Leere Strichliste (selbst durchführen)'],['ab','Strichliste gegeben, Anzahl eintragen']],'Aufgabe')+sl('fr',S2U.map(x=>[x.t,x.t]),'Frage')+sl('n',[3,4,5,6].map(x=>[x,x+' Antworten']),'Anzahl der Antworten')+sl('nb',[10,15,20,25,30].map(x=>[x,x+' Befragte']),'Beispiel in der Lösung')+ck('sm','Zeile „Befragte insgesamt“')+ck('ex','Zeile „Am häufigsten wurde genannt“');
   else if(k==='ssk')H+=sl('md',[['ber','Winkel berechnen und zeichnen'],['les','Kreisdiagramm ablesen (Kinder berechnen)']],'Aufgabe')+sl('n',[10,12,15,18,20,24,30,36].map(x=>[x,x+' Kinder']),'Anzahl der Kinder')+sl('k',[3,4,5].map(x=>[x,x+' Antworten']),'Anzahl der Antworten')+ck('zl','Zeile „Winkel für 1 Kind“')+(it.md==='ber'?ck('kr','Leerer Kreis zum Zeichnen'):'');
   else if(k==='ssa')H+=ck('wb','Wörterkasten');
-  else H+=sl('md',[['dia','Diagramme'],['kre','Kreisdiagramm'],['urs','Daten erheben, Strichliste']],'Inhalt');
+  else H+=sl('md',[['dia','Diagramme'],['kre','Kreisdiagramm'],['urs','Daten erheben, Strichliste'],['bau','Baumdiagramm']],'Inhalt');
   H+=(k==='ssn'?'':ck('show','Lösung zeigen')+'<button data-s2-act="mix">Neu mischen</button>');g.innerHTML=H;};}
 $('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.s2;if(!k)return;const it=items.find(i=>i.id===sel&&S2T.includes(i.type));if(!it)return;
  rec('s2'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','nb','k'].includes(k))v=+v;it[k]=v;
@@ -4780,6 +4781,78 @@ $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-s3-act]');
  const ach=document.querySelector('#ast-ab .ach');
  if(ach){ach.insertAdjacentHTML('beforeend',SP.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join(''));
   SP.forEach(k=>{const l=ach.querySelector(`input[value="${k}"]`).parentNode;l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0));});}}
+
+/* ===== Statistik 4: Baumdiagramme und Anzahl der Möglichkeiten (Aufg. 933–946) ===== */
+const S4T=['sbd','sbm'];POT.push(...S4T);TLT.push(...S4T);
+Object.assign(TLN,{sbd:'Baumdiagramm',sbm:'Anzahl der Möglichkeiten'});
+Object.assign(TLD,{sbd:{md:'vo',lv:2,pf:'erste',rz:true,fd:true},sbm:{md:'re',n:6,co:2,rz:true,al:true}});
+const S4C=[{t:'Der Zauberer Hokuspokus überlegt, was er anziehen möchte.',lv:[['Hut',['rot','blau','grün','gelb']],['Schuhe',['grün','gelb','blau','rot']],['Mantel',['blau','rot','lila']]]},
+ {t:'Bei einem Fußballverein stehen für das nächste Spiel verschiedenfärbige Kleidungsstücke zur Verfügung.',lv:[['Hose',['blau','grün','schwarz','weiß']],['T-Shirt',['blau','weiß','gelb','rot']],['Stutzen',['weiß','rot','blau']]]},
+ {t:'Max geht gerne ins Eisgeschäft. Er wählt eine Eissorte und eine Sauce.',lv:[['Eissorte',['Schoko','Erdbeer','Kiwi','Vanille']],['Sauce',['Schoko','Erdbeer','Karamell']],['Streusel',['bunt','Nuss']]]},
+ {t:'In der Schule gibt es zum Frühstück verschiedene Getränke und Gebäck.',lv:[['Getränk',['Tee','Kakao','Saft','Milch']],['Gebäck',['Semmel','Kipferl','Brot']],['Obst',['Apfel','Birne']]]},
+ {t:'Lena stellt sich ihr Fahrrad zusammen.',lv:[['Farbe',['rot','blau','grün','gelb']],['Sattel',['schwarz','braun','weiß']],['Klingel',['laut','leise']]]},
+ {t:'In einer Schule kann man sich das Mittagessen zusammenstellen.',lv:[['Vorspeise',['Suppe','Salat','Toast']],['Hauptspeise',['Fisch','Nudeln','Reis','Pizza']],['Nachspeise',['Eis','Obst','Kuchen']]]}];
+const S4W={2:'zwei',3:'drei',4:'vier',5:'fünf',6:'sechs',7:'sieben',8:'acht'},S4R=[['Vorspeisen','Hauptspeisen','Nachspeisen'],['Hosen','T-Shirts','Kappen'],['Eissorten','Saucen','Streusel-Arten'],['Hüte','Mäntel','Paar Schuhe'],['Getränke','Gebäcksorten','Obstsorten'],['Rahmenfarben','Sättel','Klingeln']];
+function s4Gen(it){
+ if(it.type==='sbd'){const nl=+it.lv===3?3:2,c=tpick(S4C);let cn;for(let g=0;g<200;g++){cn=nl===3?[kri(2,3),2,kri(2,3)]:[kri(2,4),kri(2,3)];const p=cn.reduce((a,b)=>a*b,1);if(p<=12&&p>=(nl===3?8:6))break;}
+  if(nl===3&&cn.reduce((a,b)=>a*b,1)>12)cn=[2,2,2];
+  const lv=c.lv.slice(0,nl).map((l,i)=>[l[0],l[1].slice(0,Math.min(cn[i],l[1].length))]),tot=lv.reduce((a,l)=>a*l[1].length,1),nm=tpick(['Hannah','Tim','Mia','Jonas','Lena','Paul']);
+  it.d={t:c.t,lv,tot,miss:kri(0,tot-1),nm};}
+ else{const md=it.md||'re',n=Math.max(1,Math.min(8,+it.n||6));
+  if(md==='zi'){const out=[];let g=0;while(out.length<Math.min(n,4)&&g++<300){const k=kri(2,4),len=kri(2,3),rep=Math.random()<.5;if(!rep&&len>k)continue;const cnt=rep?Math.pow(k,len):[...Array(len)].reduce((a,_,i)=>a*(k-i),1);if(cnt>27||cnt<4)continue;const ds=tshuf([1,2,3,4,5,6,7,8,9]).slice(0,k).sort();if(out.some(o=>o.k===k&&o.len===len&&o.rep===rep))continue;
+    const all=[];(function rec(p){if(p.length===len){all.push(p.join(''));return;}ds.forEach(x=>{if(rep||!p.includes(x))rec(p.concat(x));});})([]);out.push({k,len,rep,ds,cnt,all});}it.d=out;}
+  else{const N=md==='zu'?4:n,pool=tshuf(S4R),out=[];for(let i=0;i<N;i++){const r=pool[i%pool.length],f=Math.random()<.5?3:2;let v,g=0;do{v=Array.from({length:f},()=>kri(2,f===3?5:7));}while(out.some(o=>o.p===v.reduce((a,b)=>a*b,1))&&g++<100);out.push({r:r.slice(0,f),v,p:v.reduce((a,b)=>a*b,1)});}
+   if(md==='zu'){const nums=out.map(o=>o.p);let g=0;while(nums.length<6&&g++<200){const o=tpick(out),x=tpick([o.v.reduce((a,b)=>a+b,0),o.p+tpick([-2,2,4,-4,6]),o.p*2]);if(x>1&&!nums.includes(x))nums.push(x);}const L=tshuf(nums);it.d={rows:out,L};}else it.d=out;}}}
+function s4Tree(d,o){o=o||{};const lv=d.lv,nl=lv.length,GX=74,W=690,TW=W-GX,LH=60,H=44+nl*LH,red='#c0392b';let g='',N=1;const pos=[[{x:GX+TW/2,y:12,path:[]}]];
+ g+=`<circle cx="${GX+TW/2}" cy="12" r="3" fill="#000"/>`;
+ for(let i=0;i<nl;i++){const k=lv[i][1].length,prev=pos[i],cur=[];N*=k;const sp=TW/N,y=44+i*LH,fs=sp<50?10.5:sp<70?11.5:13;
+  g+=`<text x="2" y="${y+16}" font-size="12.5" font-weight="700">${lv[i][0]}</text>`;
+  prev.forEach((p,pi)=>{for(let j=0;j<k;j++){const idx=pi*k+j,x=GX+(idx+.5)*sp,path=p.path.concat(j),lab=lv[i][1][j],bw=Math.min(sp-5,Math.max(36,lab.length*fs*.62+12));
+    let leaf=0;if(i===nl-1){leaf=idx;}
+    const missing=o.miss!=null&&i===nl-1&&leaf===o.miss;if(missing&&!o.sol){cur.push({x,y:y+22,path});continue;}
+    const pre=o.pf==='alle'||(o.pf==='erste'&&i===0)||(o.pf==='weg'&&path.every(q=>q===0)),show=pre||o.sol,col=missing||(!pre&&o.sol)?red:'#000';
+    g+=`<path d="M${p.x.toFixed(1)} ${p.y}L${x.toFixed(1)} ${y}" stroke="${missing?red:'#000'}" stroke-width="1.2" fill="none"/><rect x="${(x-bw/2).toFixed(1)}" y="${y}" width="${bw.toFixed(1)}" height="22" rx="5" fill="#fff" stroke="${missing?red:'#000'}" stroke-width="1.2"/>`+(show?`<text x="${x.toFixed(1)}" y="${y+15.5}" text-anchor="middle" font-size="${fs}" fill="${col}"${col===red?' font-weight="700"':''}>${o.ini?o.ini[i][j]:lab}</text>`:'');
+    cur.push({x,y:y+22,path});}});pos.push(cur);}
+ return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" font-family="inherit" aria-hidden="true">${g}</svg>`;}
+const s4Ini=lv=>lv.map(l=>l[1].map(w=>{for(let n=1;n<=w.length;n++){const p=w.slice(0,n);if(l[1].filter(x=>x.slice(0,n)===p).length===1)return p;}return w;}));
+const s4L=(it,lab,t,w)=>`<div class="tlrw" style="display:flex;gap:.6em;align-items:flex-end;margin:.45em 0"><span style="white-space:nowrap">${lab}</span><span class="tlln" style="${w?'min-width:'+w+'em':'flex:1;min-width:6em'}">${tlSv(it,t)}</span></div>`;
+function s4Sbd(it){const d=it.d,md=it.md||'vo',sh=tlS(it),lv=d.lv,cn=lv.map(l=>l[1].length),calc=cn.join(' · ')+' = '+d.tot,opt=`<div style="margin:.3em 0 .5em">${lv.map(l=>`<b>${l[0]}:</b> ${l[1].join(', ')}`).join(' &nbsp;&nbsp; ')}</div>`;
+ if(md==='vo')return wnH1('Vervollständige das Baumdiagramm und bestimme die Anzahl der Möglichkeiten.')+`<div>${d.t}</div>${opt}${s4Tree(d,{pf:it.pf||'erste',sol:sh})}`+s4L(it,'Anzahl der Möglichkeiten:',d.tot,5)+(it.rz?s4L(it,'Rechnung:',calc,10):'');
+ if(md==='fe'){const li=d.miss,k=cn[cn.length-1],par=Math.floor(li/k),pp=[];let q=par;for(let i=cn.length-2;i>=0;i--){pp.unshift(lv[i][1][q%cn[i]]);q=Math.floor(q/cn[i]);}
+  return wnH1('Finde den Fehler im Baumdiagramm.')+`<div>${d.t} ${d.nm} hat versucht, alle Kombinationen in einem Baumdiagramm darzustellen und kommt auf <b>${d.tot-1} Möglichkeiten</b>. Erkläre, welcher Fehler passiert ist, und stelle das Baumdiagramm richtig.</div>${opt}${s4Tree(d,{pf:'alle',miss:li,sol:sh})}`+s4L(it,'Fehler:','Bei '+pp.join(' / ')+' fehlt '+lv[lv.length-1][0]+' '+lv[lv.length-1][1][li%k]+'.')+s4L(it,'Richtig sind',d.tot+' Möglichkeiten ('+calc+')',14);}
+ return wnH1('Erstelle ein Baumdiagramm, mit dem du alle Möglichkeiten darstellen kannst.')+`<div>${d.t}</div>${opt}`+(sh?s4Tree(d,{pf:'keine',sol:true,ini:s4Ini(lv)}):(it.fd?`<div style="height:${lv.length===3?230:170}px;border:1px dashed #999;border-radius:6px;margin:.3em 0"></div>`:''))+s4L(it,'Anzahl der Möglichkeiten:',d.tot,5)+(it.rz?s4L(it,'Rechnung:',calc,10):'');}
+function s4Sbm(it){const d=it.d,md=it.md||'re',co=+it.co||2,sh=tlS(it),txt=o=>o.r.map((w,i)=>(S4W[o.v[i]]||o.v[i])+' '+w).join(', ');
+ if(md==='zu'){const th='border:1.5px solid #000;padding:.3em .6em;',A='ABCDEF';return wnH1('Ordne jedem Angebot die passende Anzahl an Möglichkeiten zu.')+`<div style="display:flex;gap:2em;align-items:flex-start;flex-wrap:wrap"><table style="border-collapse:collapse;flex:1;min-width:22em">${d.rows.map((o,i)=>`<tr><td style="${th}background:#eaf2f8;font-weight:700;text-align:center;width:2em">${i+1}</td><td style="${th}">${txt(o)}</td><td style="${th}width:2.6em;text-align:center;height:2.2em">${tlSv(it,A[d.L.indexOf(o.p)])}</td></tr>`).join('')}</table><table style="border-collapse:collapse">${d.L.map((x,i)=>`<tr><td style="${th}background:#eaf2f8;font-weight:700;text-align:center;width:2em">${A[i]}</td><td style="${th}text-align:center;min-width:3em">${x}</td></tr>`).join('')}</table></div>`;}
+ if(md==='zi')return wnH1('Bestimme die Anzahl der Möglichkeiten.')+d.map((o,i)=>`<div style="break-inside:avoid;margin:.2em 0 .9em"><div><b>${poL(i)}</b> Wie viele ${S4W[o.len]}stellige Zahlen kann man aus den Ziffern ${o.ds.slice(0,-1).join(', ')} und ${o.ds[o.ds.length-1]} bilden, wenn jede Ziffer ${o.rep?'beliebig oft':'nur einmal'} vorkommen darf?</div>`+(it.al?`<div style="margin-left:1.4em">${s4L(it,'Alle Zahlen:',o.all.join(', '))}${o.cnt>14&&!sh?'<div class="tlln" style="display:block;height:1.7em;margin:.2em 0"></div>':''}</div>`:'')+`<div style="margin-left:1.4em">${s4L(it,'Anzahl:',o.cnt+(it.rz?' &nbsp;('+(o.rep?Array(o.len).fill(o.k).join(' · '):[...Array(o.len)].map((_,j)=>o.k-j).join(' · '))+')':''),it.rz?12:5)}</div></div>`).join('');
+ return wnH1('Berechne die Anzahl der Möglichkeiten.')+tlGrid(co,d.map((o,i)=>`<div style="break-inside:avoid;margin:.2em 0 .6em"><div><b>${poL(i)}</b> ${txt(o)}</div><div style="margin-left:1.4em">${it.rz?s4L(it,'Rechnung:',o.v.join(' · ')+' = '+o.p):s4L(it,'Anzahl:',o.p,5)}</div></div>`).join(''));}
+const s4Block=it=>{const h=it.type==='sbd'?s4Sbd(it):s4Sbm(it);return `<div class="tlx" style="${kst(it)}">${it.nh?h.replace(/<div class="wnh"[^>]*>[^<]*<\/div>/g,''):h}</div>`;};
+{const _g=poGen,_b=poBlock,_r=renderPo;
+ poGen=function(it){return S4T.includes(it.type)?s4Gen(it):_g(it);};
+ poBlock=function(it){return S4T.includes(it.type)?s4Block(it):_b(it);};
+ renderPo=function(){const g=$('#g-po'),it=items.find(i=>i.id===sel&&S4T.includes(i.type));if(!g||!it)return _r();
+  const k=it.type,tN=a=>a.map(x=>[x,x]),sl=(f,o,lab)=>`<label>${lab}<select data-s4="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`,ck=(f,t)=>`<label class="ck"><input type="checkbox" data-s4="${f}"${it[f]?' checked':''}> ${t}</label>`;
+  let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
+  if(k==='sbd')H+=sl('md',[['vo','Baumdiagramm vervollständigen'],['ze','Baumdiagramm selbst zeichnen'],['fe','Fehler im Baumdiagramm finden']],'Aufgabe')+sl('lv',[[2,'2 Stufen'],[3,'3 Stufen']],'Stufen')+(it.md==='vo'||!it.md?sl('pf',[['erste','erste Stufe beschriftet'],['weg','ein Weg als Beispiel beschriftet'],['keine','alles leer']],'Vorgabe'):'')+(it.md==='ze'?ck('fd','Leeres Feld zum Zeichnen'):'')+(it.md!=='fe'?ck('rz','Zeile „Rechnung“'):'');
+  else H+=sl('md',[['re','Anzahl berechnen (a · b · c)'],['zu','Angebot und Anzahl zuordnen'],['zi','Zahlen aus Ziffern bilden']],'Aufgabe')+(it.md==='zu'?'':sl('n',it.md==='zi'?tN([1,2,3,4]):tN([2,4,6,8]),'Anzahl der Aufgaben'))+(it.md==='re'||!it.md?sl('co',tN([1,2]),'Spalten'):'')+(it.md!=='zu'?ck('rz',it.md==='zi'?'Rechnung in der Lösung':'Zeile „Rechnung“ (sonst nur Anzahl)'):'')+(it.md==='zi'?ck('al','Zeile „Alle Zahlen“'):'');
+  H+=ck('show','Lösung zeigen')+'<button data-s4-act="mix">Neu mischen</button>';g.innerHTML=H;};}
+$('#rp').addEventListener('input',e=>{const t=e.target,k=t.dataset.s4;if(!k)return;const it=items.find(i=>i.id===sel&&S4T.includes(i.type));if(!it)return;
+ rec('s4'+k);let v=t.type==='checkbox'?t.checked:t.value;if(['n','co','lv'].includes(k))v=+v;it[k]=v;if(k==='md'&&it.type==='sbm'&&v==='zi'&&it.n>4)it.n=2;
+ if(['n','lv'].includes(k)||(k==='md'&&it.type==='sbm'))s4Gen(it);render();if(k==='md')renderProps();});
+$('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-s4-act]');if(!b)return;const it=items.find(i=>i.id===sel&&S4T.includes(i.type));if(!it)return;rec();s4Gen(it);render();});
+(function(){const P=$('#sspal');if(P){const L=[['sbd','<path d="M50 5L25 16M50 5L75 16M25 22L14 32M25 22L36 32M75 22L64 32M75 22L86 32" stroke="#000" stroke-width="1.2" fill="none"/><rect x="17" y="15" width="16" height="7" rx="2" fill="#fff" stroke="#000"/><rect x="67" y="15" width="16" height="7" rx="2" fill="#fff" stroke="#000"/><circle cx="50" cy="5" r="2"/>'+[14,36,64,86].map(x=>`<rect x="${x-6}" y="31" width="12" height="6" rx="2" fill="#fff" stroke="#000"/>`).join('')],['sbm','<text x="50" y="26" font-size="17" text-anchor="middle" font-weight="700">3 · 2 · 2 = ?</text>']];
+  P.insertAdjacentHTML('beforeend',L.map(([t,s])=>`<div class="pal" draggable="true" data-t="${t}" style="margin-top:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`).join(''));}
+ const a=AST.find(g=>g[1]&&g[1].some&&g[1].some(e=>e[0]==='ssg'));if(a)a[1].push(['sbd','Baumdiagramm','Vervollständige das Baumdiagramm!'],['sbm','Anzahl der Möglichkeiten','Berechne die Anzahl der Möglichkeiten!']);})();
+{const PO=(t,lbl,ins,set)=>({t,lbl,ins,set:Object.assign({nh:true},set)});
+ Object.assign(AST_FAM,{
+  sb0:[PO('ssn','Merkkasten Baumdiagramm','Schreibe den Merktext genau so in dein Heft!',{md:'bau'}),PO('sbd','Baumdiagramm vervollständigen','Vervollständige das Baumdiagramm und bestimme die Anzahl der Möglichkeiten!',{md:'vo',lv:2,pf:'erste',w:714}),PO('sbm','Anzahl berechnen','Berechne die Anzahl der Möglichkeiten!',{md:'re',n:4,co:2})],
+  sb1:[PO('sbd','Baumdiagramm mit drei Stufen','Vervollständige das Baumdiagramm und bestimme die Anzahl der Möglichkeiten!',{md:'vo',lv:3,pf:'weg',w:714}),PO('sbd','Baumdiagramm zeichnen','Erstelle ein Baumdiagramm, mit dem du alle Möglichkeiten darstellen kannst!',{md:'ze',lv:2,w:714})],
+  sb2:[PO('sbd','Fehler finden','Erkläre, welcher Fehler passiert ist, und stelle das Baumdiagramm richtig!',{md:'fe',lv:2,w:714}),PO('sbm','Zuordnen','Ordne jedem Angebot die passende Anzahl an Möglichkeiten zu!',{md:'zu',w:714}),PO('sbm','Zahlen aus Ziffern','Bestimme die Anzahl der Möglichkeiten!',{md:'zi',n:2,w:714})]});
+ Object.assign(AST_FM,{sb0:'sb0',sb1:'sb1',sb2:'sb2'});
+ Object.assign(AST_FN,{sb0:'Baumdiagramme: Merkblatt und erste Aufgaben',sb1:'Baumdiagramme: drei Stufen und selbst zeichnen',sb2:'Baumdiagramme: Fehler, Zuordnen, Ziffern'});
+ const SB=['sb0','sb1','sb2'],_ae5=astEntries;astEntries=function(s,f){return f?_ae5(s,f):_ae5(s.filter(k=>!SB.includes(k)),f);};
+ const ach=document.querySelector('#ast-ab .ach');
+ if(ach){ach.insertAdjacentHTML('beforeend',SB.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join(''));
+  SB.forEach(k=>{const l=ach.querySelector(`input[value="${k}"]`).parentNode;l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0));});}}
 
 /* ===== 4.0 Statistik ===== */
 (function(){const R=kri,P=tpick,A=(t,a)=>({t:t.replace(/^([^:]+):/,'<b>$1:</b>'),q:'Antwort',a,sp:4}),N=()=>P(['Max','Mia','Tim','Lena','Ben','Sara','Paul','Jonas']),F=x=>ssF(x);
