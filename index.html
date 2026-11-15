@@ -6468,7 +6468,7 @@ rows:[
 ['★11','Zusatz: Eine Zielscheibe hat einen Durchmesser von 12 cm und sechs Ringe mit gleicher Breite. Konstruiere die Zielscheibe und bemale sie.','Heft'],
 ['★12','Zusatz: Zeichne einen Punkt A. Zeichne alle Punkte ein, die von A genau 2 cm entfernt sind. Was entsteht?','Heft']]};
 MERK.kk=()=>MKB('Kreis und Kreisteile',[['Kreis','Kreislinie k: alle Punkte, die vom Mittelpunkt M denselben Abstand r (Radius) haben. Durchmesser: d = 2 · r, Radius: r = d : 2.'],['Kreis und Geraden','Passante: kein gemeinsamer Punkt. Sekante: zwei Schnittpunkte. Tangente: ein Berührpunkt, sie steht normal auf den Radius.'],['Kreissehne','Strecke zwischen zwei Punkten der Kreislinie. Sie teilt die Kreislinie in zwei Kreisbögen.'],['Kreisteile','Kreisring: zwei Kreise mit demselben Mittelpunkt, Breite b = r außen − r innen. Kreissektor: zwei Radien und ein Bogen (Zentriwinkel α). Kreissegment: eine Sehne und ein Bogen.']]);
-PLAN.sg.v='https://youtu.be/rrcE9nR7TQI';PLAN.sg.v1t='Erklärung';PLAN.sg.v2=['https://youtu.be/ZHfDiMwE51c','Übungsbeispiel'];
+PLAN.sg.v='https://youtu.be/rrcE9nR7TQI';PLAN.sg.v1t='Erklärung';PLAN.sg.v2=['https://youtu.be/ZHfDiMwE51c','Übungsbeispiel'];PLAN.pn.v='https://youtu.be/X9Fo07a8iGM';PLAN.pn.v1t='Normale und Parallele';PLAN.pn.v2=[['https://youtu.be/hwN8a0rEdjo','Normale zeichnen'],['https://youtu.be/Fqwi_wFHXMs','Parallele zeichnen']];
 {const sel=document.getElementById('pl-th');if(sel&&!sel.querySelector('option[value="kk"]')){const o=document.createElement('option');o.value='kk';o.textContent='Kreis und Kreisteile';sel.appendChild(o);}}
 function planBuild(key,o){
  const last=()=>items[items.length-1],P=PLAN[key]||PLAN.sg,R0=rec;R0();rec=()=>{};RF=false;let res={};
@@ -6489,11 +6489,12 @@ function planBuild(key,o){
    const tbE=document.querySelector('.tbl');const sh=document.getElementById('sheet').getBoundingClientRect();
    const yb=tbE?Math.round(tbE.getBoundingClientRect().bottom-sh.top)+24:760;
    cap.x=170;cap.w=584;cap.y=yb+28;items[items.length-1].x=40;items[items.length-1].y=yb;items[items.length-1].w=110;
-   const V2=P.v2&&url===String(P.v||'').trim()?P.v2:null;
-   if(V2){const q1=items[items.length-1];cap.text='Video 1 ('+(P.v1t||'Erklärung')+'):\n'+url;cap.x=155;cap.w=225;cap.y=yb+14;
-    add('text',40,0);const cap2=last();cap2.text='Video 2 ('+V2[1]+'):\n'+V2[0];cap2.fs=14;cap2.x=515;cap2.w=239;cap2.y=yb+14;
-    const dk2=dkNew('qr|'+V2[0]);dk2.w=110;addX(dk2,40,0);const q2=items[items.length-1];q2.x=400;q2.y=yb;q2.w=110;
-    t.cells.forEach(c=>{c[1]=c[1].replace('Sieh dir das Video zum Thema an','Sieh dir die beiden Videos zum Thema an').replace('QR-Code unten','QR-Codes unten');});}
+   const VX=P.v2&&url===String(P.v||'').trim()?(Array.isArray(P.v2[0])?P.v2:[P.v2]):null;
+   if(VX){const q1=items[items.length-1],three=VX.length>1,qw=three?84:110,L=three?[40,278,516]:[40,400];
+    const put=(cp,q,k,lab,u)=>{q.x=L[k];q.y=yb;q.w=qw;cp.text='Video '+(k+1)+' ('+lab+'):\n'+u;cp.fs=three?11:14;if(three){cp.x=L[k]+qw+6;cp.w=238-qw-6;cp.y=yb+6;}else{cp.x=L[k]+115;cp.w=k?239:225;cp.y=yb+14;}};
+    put(cap,q1,0,P.v1t||'Erklärung',three?url.replace('https://',''):url);
+    VX.slice(0,2).forEach((v,j)=>{add('text',40,0);const c2=last();const dk2=dkNew('qr|'+v[0]);dk2.w=qw;addX(dk2,40,0);put(c2,items[items.length-1],j+1,v[1],three?v[0].replace('https://',''):v[0]);});
+    t.cells.forEach(c=>{c[1]=c[1].replace('Sieh dir das Video zum Thema an',three?'Sieh dir die drei Videos zum Thema an':'Sieh dir die beiden Videos zum Thema an').replace('QR-Code unten','QR-Codes unten');});}
    render();}
   if(o.merk&&o.merk!=='no'&&MERK[key]){const shR=document.getElementById('sheet').getBoundingClientRect();let yb2=0;sheet.querySelectorAll('.item').forEach(e=>{yb2=Math.max(yb2,e.getBoundingClientRect().bottom-shR.top);});
    add('text',40,0);const mb=last();mb.html=MERK[key]();mb.text='Merktext';mb.w=714;mb.fs=15;mb.nh=1;mb.y=yb2+14;render();
@@ -6506,7 +6507,7 @@ function planBuild(key,o){
  return res;}
 /* ===== Erklaervideo-QR ===== */
 (function(){
- const KEY='vqVideos',DEF=[{t:'Strecke, Strahl, Gerade',u:'https://youtu.be/rrcE9nR7TQI'},{t:'Strecke, Strahl, Gerade: Übungsbeispiel',u:'https://youtu.be/ZHfDiMwE51c'},{t:'Parallele, Normale, Normalabstand',u:'https://www.youtube.com/watch?v=WPlv2Nuj7HM'}];
+ const KEY='vqVideos',DEF=[{t:'Strecke, Strahl, Gerade',u:'https://youtu.be/rrcE9nR7TQI'},{t:'Strecke, Strahl, Gerade: Übungsbeispiel',u:'https://youtu.be/ZHfDiMwE51c'},{t:'Normale und Parallele',u:'https://youtu.be/X9Fo07a8iGM'},{t:'Normale zeichnen',u:'https://youtu.be/hwN8a0rEdjo'},{t:'Parallele zeichnen',u:'https://youtu.be/Fqwi_wFHXMs'}];
  const ld=()=>{try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(Array.isArray(v))return v;}catch(e){}return DEF.slice();};
  const sv=a=>{try{localStorage.setItem(KEY,JSON.stringify(a));}catch(e){}};
  const m=document.createElement('div');m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:none;align-items:center;justify-content:center';
