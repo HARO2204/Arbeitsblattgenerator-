@@ -6437,22 +6437,37 @@ rows:[
 ['★12','Zusatz: Löse das Winkelrätsel: Rechnet man mich vier Mal, ergibt das einen vollen Winkel. Welche Winkelart bin ich und wie viel Grad habe ich?','Heft']]};
 MERK.wi=()=>MKB('Winkel',[['Winkel','Zwei Strahlen (Schenkel) mit gemeinsamem Anfangspunkt (Scheitel). Benennung mit griechischen Kleinbuchstaben: α, β, γ, δ, ε. Markierung mit einem kleinen Bogen.'],['Winkelarten','spitz: 0° < α < 90°; recht: α = 90°; stumpf: 90° < α < 180°; gestreckt: α = 180°; erhaben: 180° < α < 360°; voll: α = 360°.'],['Messen','Null des Geodreiecks an den Scheitel, eine Kante an einen Schenkel. Kleiner als 90°: kleine Zahl, sonst große Zahl.'],['Winkel über 180°','Nicht direkt messbar: Miss β und rechne α = 360° − β.'],['Konstruieren','Schenkel zeichnen, Null an den Scheitel, bei der Gradzahl markieren, Scheitel und Markierung verbinden, beschriften.'],['Winkelstern, Geraden','Alle Winkel um einen Punkt ergeben 360°. Nebenwinkel ergeben 180°, gegenüberliegende Winkel sind gleich groß.']]);
 {const sel=document.getElementById('pl-th');if(sel&&!sel.querySelector('option[value="wi"]')){const o=document.createElement('option');o.value='wi';o.textContent='Winkel';sel.appendChild(o);}}
-PLAN.st={t:'Planarbeit: Statistik und Diagramme',v:'',intro:'Arbeite die Aufträge der Reihe nach ab. Hake ab (☑), was du fertig hast. Kontrolle: Partner/in oder Lehrerin.',
+PLAN.st={t:'Planarbeit: Daten erfassen und darstellen',v:'',intro:'Arbeite die Aufträge der Reihe nach ab. Hake ab (☑), was du fertig hast. Kontrolle: Partner/in oder Lehrerin.',
 rows:[
-['1','Schreibe die Überschrift „Diagramme“ ins Heft und unterstreiche sie mit dem Lineal.','Heft'],
+['1','Schreibe die Überschrift „Daten erfassen und darstellen“ ins Heft und unterstreiche sie mit dem Lineal.','Heft'],
 ['2','Schreibe den Merktext aus dem Merkkasten ab. Schreibe genau so wie dort: Überschrift, eigene Zeilen, Zeichen.','Heft'],
 ['3','Sieh dir das Video zum Thema an (iPad + Kopfhörer, QR-Code unten). Notiere 2 Dinge, die du gelernt hast.','iPad / Heft'],
-['4','Führe in deiner Gruppe eine Umfrage durch („Was ist dein Lieblingsfach?“). Halte die Antworten in einer Strichliste im Heft fest.','Heft'],
-['5','Löse das Aufgabenblatt „Umfrage und Strichliste“: Zähle die Striche und trage die Anzahl ein.','Blatt'],
-['6','Zeichne zu deiner Umfrage ein Säulendiagramm ins Heft: Achsen mit Lineal, Skala, Säulen, Titel und Beschriftung.','Heft'],
-['7','Löse das Aufgabenblatt „Teile eines Diagramms“. Kontrolliere mit dem Merkkasten.','Blatt'],
-['8','Zeichne ein Balkendiagramm: Montag 35 min, Dienstag 50 min, Mittwoch 30 min, Donnerstag 25 min, Freitag 15 min (Hausaufgabenzeit).','Heft'],
-['9','Berechne den Mittelwert und den häufigsten Wert (Modus) der Zahlen 4, 7, 5, 8, 6, 5, 7, 5.','Heft'],
-['10','Kreisdiagramm: 30 Kinder wurden nach ihrem Lieblingssport gefragt: Fußball 12, Schwimmen 9, Turnen 6, Tennis 3. Berechne die Winkel (360° : 30 = 12°).','Heft'],
-['★11','Zusatz: Zeichne das Kreisdiagramm aus Auftrag 10 mit dem Geodreieck und beschrifte jeden Kreisteil.','Heft'],
+['4','Führe in deiner Gruppe eine Umfrage durch („Was ist dein Lieblingsfach?“). Halte die Antworten in einer Strichliste mit absoluter Häufigkeit fest.','Heft'],
+['5','Löse das Aufgabenblatt „Strichlisten üben“: Strichliste und Zahl, Fehler finden, Punkte zählen.','Blatt'],
+['6','Zeichne ein Piktogramm: zu Fuß 40 Kinder, Fahrrad 25 Kinder, Bus 50 Kinder, Auto 10 Kinder. Ein Symbol steht für 5 Kinder.','Heft'],
+['7','Löse das Aufgabenblatt „Piktogramme lesen“.','Blatt'],
+['8','Zeichne ein Säulendiagramm und ein Balkendiagramm: Montag 5 €, Dienstag 8 €, Mittwoch 4 €, Donnerstag 7 €, Freitag 11 €. Beschrifte Achsen und Titel.','Heft'],
+['9','Zeichne ein Punktdiagramm zu einer Wanderung: 5 min 0,4 km; 10 min 1 km; 15 min 1,2 km; 20 min 1,6 km.','Heft'],
+['10','Löse das Aufgabenblatt „Diagramme prüfen: Fehler finden und zuordnen“.','Blatt'],
+['★11','Zusatz: Kreisdiagramm: 30 Kinder nennen ihren Lieblingssport: Fußball 12, Schwimmen 9, Turnen 6, Tennis 3. Berechne die Winkel (360° : 30 = 12°) und zeichne.','Heft'],
 ['★12','Zusatz: Erfinde eine eigene Umfrage mit 5 Antworten. Befrage mindestens 15 Kinder und stelle das Ergebnis in einem Diagramm deiner Wahl dar.','Heft']]};
-MERK.st=()=>MKB('Statistik und Diagramme',[['Daten erheben','Umfrage mit Strichliste: Jeder Strich ist eine Antwort, der fünfte Strich wird quer durchgestrichen. Die Anzahl heißt Häufigkeit.'],['Kennzahlen','Arithmetisches Mittel = Summe aller Werte : Anzahl der Werte. Modus = häufigster Wert. Spannweite = größter Wert − kleinster Wert.'],['Diagramme','Säulen (senkrecht), Balken (waagrecht), Linie, Punkte, Kreis. Jedes Diagramm braucht einen Titel, beschriftete Achsen und eine gleichmäßige Skala.'],['Kreisdiagramm','Voller Kreis = 360°. Winkel für 1 Wert = 360° : Gesamtzahl. Winkel eines Teils = Anzahl · Winkel für 1 Wert.']]);
-{const sel=document.getElementById('pl-th');if(sel&&!sel.querySelector('option[value="st"]')){const o=document.createElement('option');o.value='st';o.textContent='Statistik und Diagramme';sel.appendChild(o);}}
+MERK.st=()=>MKB('Daten erfassen und darstellen',[['Strichliste','Jeder Strich ist eine Antwort, der fünfte Strich wird quer durchgestrichen (5er-Gruppen). Die Anzahl der Striche heißt absolute Häufigkeit.'],['Piktogramm','Statt der Striche werden Symbole verwendet. Die Wertigkeit bestimmt, welchen Wert ein Symbol hat.'],['Diagramme','Säulendiagramm, Balkendiagramm, Liniendiagramm, Punktdiagramm. Jedes Diagramm braucht zwei beschriftete Achsen und eine gleichmäßige Achseneinteilung.'],['Achtung','Nicht jedes Diagramm passt zu jedem Sachverhalt. Eine Linie ist nur sinnvoll, wenn es auch zwischen den Punkten Werte gibt.']]);
+PLAN.sb={t:'Planarbeit: Kennzahlen und Baumdiagramme',v:'',intro:'Arbeite die Aufträge der Reihe nach ab. Hake ab (☑), was du fertig hast. Kontrolle: Partner/in oder Lehrerin.',
+rows:[
+['1','Schreibe die Überschrift „Statistische Kennzahlen“ ins Heft und unterstreiche sie mit dem Lineal.','Heft'],
+['2','Schreibe den Merktext aus dem Merkkasten ab. Schreibe genau so wie dort: Überschrift, eigene Zeilen, Zeichen.','Heft'],
+['3','Sieh dir das Video zum Thema an (iPad + Kopfhörer, QR-Code unten). Notiere 2 Dinge, die du gelernt hast.','iPad / Heft'],
+['4','Erstelle eine Rangliste und bestimme Minimum, Maximum und Spannweite: 9; 3; 3; 1; 12; 5; 7; 5; 3.','Heft'],
+['5','Bestimme Modalwert und Median: a) 1; 2; 3; 5; 7; 2; 7; 2   b) 7; 2; 4; 5; 1   c) 3; 5; 7; 6; 3; 2; 7.','Heft'],
+['6','Berechne das arithmetische Mittel: a) 25; 36; 12; 45; 33   b) 15 °C; 18 °C; 21 °C; 16 °C; 14 °C.','Heft'],
+['7','Löse das Aufgabenblatt „Kennzahlen: Urliste erfinden und fehlende Werte“.','Blatt'],
+['8','Löse das Aufgabenblatt „Kennzahlen: Begriffe und Aussagen prüfen“.','Blatt'],
+['9','Zeichne ein Baumdiagramm: Hut rot, blau, grün und Schuhe grün, gelb, blau. Wie viele Möglichkeiten gibt es? Schreibe auch die Rechnung auf.','Heft'],
+['10','Löse das Aufgabenblatt „Baumdiagramme: Merkblatt und erste Aufgaben“.','Blatt'],
+['★11','Zusatz: Welche dreistelligen Zahlen kannst du aus den Ziffern 1, 2 und 3 bilden, wenn jede Ziffer nur einmal vorkommen darf? Schreibe alle auf.','Heft'],
+['★12','Zusatz: Erfinde eine Urliste mit 7 Werten, bei der gilt: Minimum 2, Maximum 10 und Median 6.','Heft']]};
+MERK.sb=()=>MKB('Kennzahlen und Baumdiagramme',[['Urliste und Rangliste','Urliste: die erhobenen Daten. Rangliste: die der Größe nach geordnete Urliste.'],['Minimum, Maximum, Spannweite','Kleinster Wert, größter Wert und ihre Differenz: r = Maximum − Minimum.'],['Modalwert und Median','Modalwert: der Wert, der am häufigsten vorkommt. Median: der Wert in der Mitte der Rangliste (bei gerader Anzahl das Mittel der beiden mittleren Werte).'],['Arithmetisches Mittel','Summe aller Werte geteilt durch die Anzahl der Werte.'],['Baumdiagramm','Jeder Weg von oben nach unten ist eine Möglichkeit. Anzahl der Möglichkeiten: a · b · c.']]);
+{const sel=document.getElementById('pl-th');if(sel){let o=sel.querySelector('option[value="st"]');if(!o){o=document.createElement('option');o.value='st';sel.appendChild(o);}o.textContent='Statistik 1: Daten erfassen und darstellen';if(!sel.querySelector('option[value="sb"]')){const p=document.createElement('option');p.value='sb';p.textContent='Statistik 2: Kennzahlen und Baumdiagramme';sel.appendChild(p);}}}
 PLAN.kk={t:'Planarbeit: Kreis und Kreisteile',v:'',intro:'Arbeite die Aufträge der Reihe nach ab. Hake ab (☑), was du fertig hast. Kontrolle: Partner/in oder Lehrerin.',
 rows:[
 ['1','Schreibe die Überschrift „Kreis“ ins Heft und unterstreiche sie mit dem Lineal.','Heft'],
