@@ -12141,32 +12141,45 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
    if(sol){const tk=Array.isArray(t.res)?t.res:[{s:t.res}];const [s2]=tokSvg(tk,x+4,y,fs,RD);g+=s2;}});
   const H=rows*rowH+6;return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
  /* ---------- Zahlengerade ---------- */
- function genGzl(it){const out=[],Rg=+it.rg||10,mn=it.mn===undefined?-Rg:+it.mn,mx=it.mx===undefined?Rg:+it.mx;
+ function glCfg(it){const za=it.za||'gz',Rg0=+it.rg||10;let mn=it.mn===undefined?-Rg0:+it.mn,mx=it.mx===undefined?Rg0:+it.mx;if(isNaN(mn))mn=-10;if(isNaN(mx))mx=10;if(mx<=mn)mx=mn+1;
+  let D=1,st=1;if(za==='br'){D=+it.nd||4;st=1;}else if(za==='dz'){D=100;st=Math.round((+it.ds||0.1)*100);}else{st=+it.sw||1;}
+  let A=Math.floor(mn*D/st)*st,B=Math.ceil(mx*D/st)*st,cut=false;if((B-A)/st>40){B=A+40*st;cut=true;}if((B-A)/st<2)B=A+2*st;
+  return {za,D,st,A,B,M:(B-A)/st,cut};}
+ function glTok(n,c){if(c.za==='br'){const g=gcd(n,c.D)||1,a=n/g,d=c.D/g;if(d===1)return[{s:sg(a)}];return[{s:a<0?MI:''},{f:[Math.abs(a),d]}];}
+  if(c.za==='dz'){const v=Math.abs(n)/100;let s=String(Math.round(v*100)/100).replace('.',',');return[{s:(n<0?MI:'')+s}];}return[{s:sg(n)}];}
+ const glTxt=t=>t.map(x=>x.f?x.f[0]+'/'+x.f[1]:x.s).join('');
+ function genGzl(it){const out=[],c=glCfg(it),t0=c.A/c.st,t1=c.B/c.st;
   for(let i=0;i<it.n;i++){
-   if(it.md==='bew'){let s,k,r,t=0;do{s=R(mn+1,mx-1);k=nz(mn-mx+1,mx-mn-1);r=s+k;t++;}while((r<=mn||r>=mx||Math.abs(k)<2)&&t<300);out.push({s,k,r});}
-   else{const v=[];let gg=0;while(v.length<Math.min(4,mx-mn-1)&&gg++<500){const x=R(mn+1,mx-1);if(!v.includes(x))v.push(x);}out.push({v});}}
+   if(it.md==='bew'){let s,k,r,t=0;do{s=R(t0+1,t1-1);k=nz(-(c.M-2),c.M-2);r=s+k;t++;}while((r<=t0||r>=t1||Math.abs(k)<2)&&t<400);out.push({s,k,r});}
+   else{const v=[],isLab=x=>c.za==='gz'?false:((x*c.st)%c.D===0);let gg=0;while(v.length<Math.min(4,c.M-1)&&gg++<800){const x=R(t0+1,t1-1);if(v.includes(x))continue;if(isLab(x)&&gg<500)continue;v.push(x);}out.push({v});}}
   return out;}
- function gzlSvg(it){const W=it.w||714,Rg0=+it.rg||10,mn=it.mn===undefined?-Rg0:+it.mn,mx=it.mx===undefined?Rg0:+it.mx,Rg=(mx-mn)/2,sol=isSol(),X0=34,X1=W-34,u=(X1-X0)/(mx-mn),X=v=>X0+(v-mn)*u;let g='',H=4;
+ function gzlSvg(it){const W=it.w||714,c=glCfg(it),sol=isSol(),X0=34,X1=W-34,u=(X1-X0)/c.M,t0=c.A/c.st,X=t=>X0+(t-t0)*u,LC=NCOL[it.nc]||BL;let g='',H=4;
+  const val=t=>t*c.st,isInt=t=>val(t)%c.D===0;let step=1;if(c.za==='gz'){for(const k of [1,2,4,5,10]){if(c.M/k<=22){step=k;break;}step=k;}}
+  const labT=t=>c.za==='gz'?((t-t0)%step===0||val(t)===0):isInt(t),fsL=c.M>24?11:12.5;
   const axis=(y)=>{let q=`<line x1="${X0-14}" y1="${y}" x2="${X1+14}" y2="${y}" stroke="#000" stroke-width="1.6"/><path d="M${X1+14} ${y}l-8 -4v8z" fill="#000"/><path d="M${X0-14} ${y}l8 -4v8z" fill="#000"/>`;
-   for(let v=mn;v<=mx;v++){q+=`<line x1="${f2(X(v))}" y1="${y-(v===0?9:6)}" x2="${f2(X(v))}" y2="${y+(v===0?9:6)}" stroke="#000" stroke-width="${v===0?2:1.2}"/><text x="${f2(X(v))}" y="${y+24}" text-anchor="middle" font-size="${Rg>10?11:12.5}" font-family="Arial,sans-serif" fill="#333">${v<0?MI+Math.abs(v):v}</text>`;}return q;};
-  it.tasks.forEach((t,i)=>{
-   if(it.md==='bew'){const y=H+74,lab=String.fromCharCode(97+i)+')';
-    g+=`<text x="10" y="${H+26}" font-size="19" font-family="Arial,sans-serif"><tspan font-weight="700" fill="${BL}" font-size="15">${lab}</tspan>  ${sg(t.s)} ${t.k<0?MI:'+'} ${Math.abs(t.k)} = </text><line x1="${178}" y1="${H+29}" x2="${240}" y2="${H+29}" stroke="#000"/>`;
-    if(sol)g+=`<text x="209" y="${H+25}" text-anchor="middle" font-size="19" font-weight="700" font-family="Arial,sans-serif" fill="${RD}">${sg(t.r)}</text>`;
+   for(let t=t0;t<=t0+c.M;t++){const z=val(t)===0,big=c.za!=='gz'&&isInt(t);q+=`<line x1="${f2(X(t))}" y1="${y-(z?9:big?8:6)}" x2="${f2(X(t))}" y2="${y+(z?9:big?8:6)}" stroke="#000" stroke-width="${z?2:big?1.6:1.2}"/>`;if(labT(t)){const tk=glTok(val(t),c),w=tokW(tk,fsL);const [s]=tokSvg(tk,X(t)-w/2,y+24,fsL,'#333');q+=s;}}return q;};
+  const cross=(t,y,col,lab)=>`<path d="M${f2(X(t))-6} ${y-6}l12 12M${f2(X(t))-6} ${y+6}l12 -12" stroke="${col}" stroke-width="2.4" stroke-linecap="round"/>`+(lab?`<text x="${f2(X(t))}" y="${y-14}" text-anchor="middle" font-size="16" font-weight="700" font-family="Arial,sans-serif" fill="${col}">${lab}</text>`:'');
+  const br=c.za==='br'?10:0;
+  it.tasks.forEach((t,i)=>{const lab=String.fromCharCode(97+i)+')';
+   if(it.md==='bew'){const y=H+74+br;g+=`<text x="10" y="${H+26+br}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="${LC}">${lab}</text>`;
+    const st=glTok(val(t.s),c),mv=glTok(Math.abs(t.k)*c.st,c),tk=st.concat([{s:' '+(t.k<0?MI:'+')+' '}],mv,[{s:' = '}]);const [s1,w1]=tokSvg(tk,34,H+26+br,19);g+=s1;const xl=34+w1;
+    g+=`<line x1="${f2(xl)}" y1="${H+29+br}" x2="${f2(xl+70)}" y2="${H+29+br}" stroke="#000"/>`;if(sol){const [s2]=tokSvg(glTok(val(t.r),c),xl+8,H+25+br,19,RD);g+=s2;}
     g+=axis(y);
-    if(sol){const xs=X(t.s),xr=X(t.r),mid=(xs+xr)/2,up=Math.min(30,10+Math.abs(xr-xs)*0.18),cy=y-5-up*2,ex=xr,ey=y-6;let dx=ex-mid,dy=ey-cy;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;const bx=ex-dx*11,by=ey-dy*11,px=-dy*4.5,py=dx*4.5;g+=`<path d="M${f2(xs)-6} ${y-6}l12 12M${f2(xs)-6} ${y+6}l12 -12" stroke="${RD}" stroke-width="2.4" stroke-linecap="round"/><path d="M${f2(xs)} ${y-5}Q${f2(mid)} ${f2(cy)} ${f2(bx)} ${f2(by)}" fill="none" stroke="${RD}" stroke-width="2.2"/><path d="M${f2(ex)} ${f2(ey)}L${f2(bx+px)} ${f2(by+py)}L${f2(bx-px)} ${f2(by-py)}z" fill="${RD}"/><path d="M${f2(xr)-6} ${y-6}l12 12M${f2(xr)-6} ${y+6}l12 -12" stroke="${RD}" stroke-width="2.4" stroke-linecap="round"/>`;}
-    H+=106;}
+    if(sol){const xs=X(t.s),xr=X(t.r),mid=(xs+xr)/2,up=Math.min(30,10+Math.abs(xr-xs)*0.18),cy=y-5-up*2,ex=xr,ey=y-6;let dx=ex-mid,dy=ey-cy;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;const bx=ex-dx*11,by=ey-dy*11,px=-dy*4.5,py=dx*4.5;g+=cross(t.s,y,RD)+`<path d="M${f2(xs)} ${y-5}Q${f2(mid)} ${f2(cy)} ${f2(bx)} ${f2(by)}" fill="none" stroke="${RD}" stroke-width="2.2"/><path d="M${f2(ex)} ${f2(ey)}L${f2(bx+px)} ${f2(by+py)}L${f2(bx-px)} ${f2(by-py)}z" fill="${RD}"/>`+cross(t.r,y,RD);}
+    H+=106+br;}
    else if(it.md==='lesen'){const y=H+58,L='ABCD';
-    g+=`<text x="10" y="${H+20}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="${BL}">${String.fromCharCode(97+i)})  Lies die markierten Zahlen ab.</text>`;
-    g+=axis(y);t.v.forEach((v,k)=>{g+=`<path d="M${f2(X(v))-6} ${y-6}l12 12M${f2(X(v))-6} ${y+6}l12 -12" stroke="${BL}" stroke-width="2.4" stroke-linecap="round"/><text x="${f2(X(v))}" y="${y-14}" text-anchor="middle" font-size="16" font-weight="700" font-family="Arial,sans-serif" fill="${BL}">${L[k]}</text>`;});
-    t.v.forEach((v,k)=>{const x=10+k*170;g+=`<text x="${x}" y="${H+112}" font-size="17" font-family="Arial,sans-serif">${L[k]} = </text><line x1="${x+34}" y1="${H+114}" x2="${x+104}" y2="${H+114}" stroke="#000"/>`;if(sol)g+=`<text x="${x+69}" y="${H+110}" text-anchor="middle" font-size="17" font-weight="700" font-family="Arial,sans-serif" fill="${RD}">${sg(v)}</text>`;});
-    H+=128;}
-   else{const y=H+62,L='ABCD';
-    g+=`<text x="10" y="${H+20}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="${BL}">${String.fromCharCode(97+i)})  Markiere auf der Zahlengeraden:  ${t.v.map((v,k)=>L[k]+' = '+sg(v)).join(',   ')}</text>`;
-    g+=axis(y);if(sol)t.v.forEach((v,k)=>{g+=`<path d="M${f2(X(v))-6} ${y-6}l12 12M${f2(X(v))-6} ${y+6}l12 -12" stroke="${RD}" stroke-width="2.4" stroke-linecap="round"/><text x="${f2(X(v))}" y="${y-14}" text-anchor="middle" font-size="16" font-weight="700" font-family="Arial,sans-serif" fill="${RD}">${L[k]}</text>`;});
-    H+=96;}});
+    g+=`<text x="10" y="${H+20}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="${LC}">${lab}  Lies die markierten Zahlen ab.</text>`;
+    g+=axis(y);t.v.forEach((v,k)=>{g+=cross(v,y,BL,L[k]);});
+    t.v.forEach((v,k)=>{const x=10+k*170,yy=H+112+br;g+=`<text x="${x}" y="${yy}" font-size="17" font-family="Arial,sans-serif">${L[k]} = </text><line x1="${x+34}" y1="${yy+2}" x2="${x+114}" y2="${yy+2}" stroke="#000"/>`;if(sol){const tk=glTok(val(v),c),w=tokW(tk,17);const [s]=tokSvg(tk,x+74-w/2,yy-2,17,RD);g+=s;}});
+    H+=128+br*2;}
+   else{const y=H+62+br,L='ABCD';
+    g+=`<text x="10" y="${H+20+br}" font-size="15" font-weight="700" font-family="Arial,sans-serif" fill="${LC}">${lab}</text>`;
+    const tk=[{s:'Markiere auf der Zahlengeraden:  '}];t.v.forEach((v,k)=>{if(k)tk.push({s:';   '});tk.push({s:L[k]+' = '});tk.push(...glTok(val(v),c));});const [s]=tokSvg(tk,34,H+20+br,15,LC);g+=s;
+    g+=axis(y);if(sol)t.v.forEach((v,k)=>{g+=cross(v,y,RD,L[k]);});
+    H+=96+br;}});
   return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H+4}" viewBox="0 0 ${W} ${H+4}">${g}</svg>`};}
- /* ---------- Sachaufgaben ---------- */
+ 
+/* ---------- Sachaufgaben ---------- */
  const TPL=[
   ()=>{const a=R(-9,6),b=R(3,12),up=R(0,1);const r=up?a+b:a-b;return{t:`Um 6 Uhr hat es ${sg(a)} °C. Bis Mittag ${up?'steigt':'sinkt'} die Temperatur um ${b} °C. Wie warm ist es am Mittag?`,c:`${sg(a)} ${up?'+':MI} ${b} = ${sg(r)}`,a:`${sg(r)} °C`};},
   ()=>{const a=R(-12,-1),b=R(-8,15);const r=b-a;return{t:`Morgens zeigt das Thermometer ${sg(a)} °C, mittags ${sg(b)} °C. Um wie viel Grad ist die Temperatur gestiegen (oder gesunken)?`,c:`${sg(b)} ${MI} (${sg(a)}) = ${sg(r)}`,a:`${r>0?'gestiegen':'gesunken'} um ${Math.abs(r)} °C`};},
@@ -12216,10 +12229,10 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
   const T={gzs:'Ganze Zahlen rechnen',gzr:'Rationale Zahlen rechnen',gzl:'Zahlengerade',gzt:'Sachaufgaben'}[it.type];let h=`<div style="font-weight:700;margin:2px 0">${T}</div>`;
   if(it.type==='gzs')h+=S('op',[['as','Addieren und Subtrahieren'],['md','Multiplizieren und Dividieren'],['mix','gemischt']],it.op,'Rechenart')+RG(it,-1000,1000,-(+it.mx||10),+it.mx||10)+(it.op!=='md'?S('k',[[2,'2 Zahlen'],[3,'3 Zahlen']],it.k,'Länge der Rechnung'):'')+S('sty',[['mix','Klammern gemischt'],['klammer','immer mit Klammern (−7) + (+3)'],['kurz','kurz −7 + 3']],it.sty,'Schreibweise')+S('n',[3,6,9,12,15],it.n,'Anzahl der Aufgaben')+S('cols',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten']],it.cols,'Spalten')+FZ(it);
   if(it.type==='gzr')h+=S('kind',[['dez','Dezimalzahlen'],['bru','Brüche'],['mix','gemischt']],it.kind,'Zahlen')+RG(it,-1000,1000,-10,10)+(it.kind!=='bru'?NI('dz',it.dz||1,'Nachkommastellen bis',1,3):'')+(it.kind!=='dez'?NI('nd',it.nd||10,'Nenner bis',2,100)+`<label class="ck"><input type="checkbox" data-gz="gm"${it.gm?' checked':''}> unechte Brüche als gemischte Zahl</label>`:'')+S('op',[['as','Addieren und Subtrahieren'],['md','Multiplizieren und Dividieren'],['mix','gemischt']],it.op,'Rechenart')+S('n',[2,4,6,8,10],it.n,'Anzahl der Aufgaben')+S('cols',[[1,'1 Spalte'],[2,'2 Spalten']],Math.min(it.cols,2),'Spalten')+FZ(it);
-  if(it.type==='gzl')h+=S('md',[['lesen','Zahlen ablesen'],['setzen','Zahlen markieren'],['bew','Addieren/Subtrahieren als Bewegung']],it.md,'Aufgabe')+RG(it,-100,100,-(+it.rg||10),+it.rg||10)+'<div style="font-size:12px;color:var(--mut,#666)">Höchstens 40 Einheiten, damit die Striche lesbar bleiben.</div>'+S('n',[1,2,3,4],it.n,'Anzahl der Aufgaben');
+  if(it.type==='gzl'){const za=it.za||'gz',cf=glCfg(it);h+=S('md',[['lesen','Zahlen ablesen'],['setzen','Zahlen markieren'],['bew','Addieren/Subtrahieren als Bewegung']],it.md,'Aufgabe')+S('za',[['gz','ganze Zahlen'],['br','Brüche'],['dz','Dezimalzahlen']],za,'Zahlenart')+(za==='gz'?S('sw',[[1,'1'],[2,'2'],[5,'5'],[10,'10 (Zehnerschritte)'],[20,'20'],[25,'25'],[50,'50'],[100,'100'],[1000,'1 000']],it.sw||1,'Schrittweite'):za==='br'?S('nd',[[2,'½ (Halbe)'],[3,'⅓ (Drittel)'],[4,'¼ (Viertel)'],[5,'⅕ (Fünftel)'],[6,'⅙ (Sechstel)'],[8,'⅛ (Achtel)'],[10,'1/10 (Zehntel)'],[12,'1/12 (Zwölftel)']],it.nd||4,'Schrittweite'):S('ds',[['0.1','0,1'],['0.2','0,2'],['0.25','0,25'],['0.5','0,5']],it.ds||'0.1','Schrittweite'))+RG(it,-100000,100000,-(+it.rg||10),+it.rg||10)+`<div style="font-size:12px;color:var(--mut,#666)">Höchstens 40 Striche, damit alles lesbar bleibt${cf.cut?'. <b>Der Bereich wurde gekürzt.</b>':''}.</div>`+S('n',[1,2,3,4],it.n,'Anzahl der Aufgaben')+S('nc',[['blau','blau'],['schwarz','schwarz'],['rot','rot'],['gruen','grün']],it.nc||'blau','Farbe der Nummerierung');}
   if(it.type==='gzt')h+=S('n',[2,3,4,5,6],it.n,'Anzahl der Aufgaben');
   h+='<button type="button" data-gz-act="roll">🎲 Neu würfeln</button>';g.innerHTML=h;}
- g.addEventListener('change',e=>{const t=e.target,k=t.dataset.gz;if(!k)return;const it=cur();if(!it)return;rec('gz'+k);it[k]=t.type==='checkbox'?t.checked:['n','mx','mn','nd','dz','k','cols','rg','gfs'].includes(k)?+t.value:t.value;if(k==='gfs'||k==='nc'){render();panel();return;}if(k==='mn'||k==='mx'){if(it.mn===undefined)it.mn=-(+it.mx||10);if(it.mx===undefined)it.mx=10;if(isNaN(it.mn))it.mn=-10;if(isNaN(it.mx))it.mx=10;if(it.mx<=it.mn){if(k==='mn')it.mx=it.mn+1;else it.mn=it.mx-1;}if(it.type==='gzl'){if(it.mx-it.mn>40){if(k==='mn')it.mx=it.mn+40;else it.mn=it.mx-40;}if(it.mx-it.mn<2){it.mx=it.mn+2;}}if(it.type==='gzs'&&it.mn===0&&it.mx===0)it.mx=1;}if(k==='nd')it.nd=Math.max(2,Math.min(100,it.nd||10));if(k==='dz')it.dz=Math.max(1,Math.min(3,it.dz||1));if(it.type==='gzr'&&k==='cols')it.cols=+t.value;it.tasks=GEN[it.type](it);render();panel();});
+ g.addEventListener('change',e=>{const t=e.target,k=t.dataset.gz;if(!k)return;const it=cur();if(!it)return;rec('gz'+k);it[k]=t.type==='checkbox'?t.checked:['n','mx','mn','nd','dz','k','cols','rg','gfs'].includes(k)?+t.value:t.value;if(k==='gfs'||k==='nc'){render();panel();return;}if(it.type==='gzl'&&['za','sw','nd','ds'].includes(k)){const za=it.za||'gz';let h;if(za==='gz'){const sw=+it.sw||1;it.mn=-10*sw;it.mx=10*sw;}else if(za==='br'){h=Math.max(1,Math.floor(16/(+it.nd||4)));it.mn=-h;it.mx=h;}else{h=Math.max(1,Math.floor(16*(+it.ds||0.1)));it.mn=-h;it.mx=h;}}if(k==='mn'||k==='mx'){if(it.mn===undefined)it.mn=-(+it.mx||10);if(it.mx===undefined)it.mx=10;if(isNaN(it.mn))it.mn=-10;if(isNaN(it.mx))it.mx=10;if(it.mx<=it.mn){if(k==='mn')it.mx=it.mn+1;else it.mn=it.mx-1;}if(it.type==='gzs'&&it.mn===0&&it.mx===0)it.mx=1;}if(k==='nd')it.nd=Math.max(2,Math.min(100,it.nd||10));if(k==='dz')it.dz=Math.max(1,Math.min(3,it.dz||1));if(it.type==='gzr'&&k==='cols')it.cols=+t.value;it.tasks=GEN[it.type](it);render();panel();});
  g.addEventListener('click',e=>{const b=e.target.closest('[data-gz-act]');if(!b)return;const it=cur();if(!it)return;rec();it.tasks=GEN[it.type](it);render();});
  const _rp=renderProps;renderProps=function(){_rp.apply(this,arguments);panel();};
 })();
