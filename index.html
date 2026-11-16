@@ -6241,6 +6241,317 @@ Object.assign(RQP,{zgk:[['md','sel',[['gz','Ganze Zahlen, Vorzeichen, Zahlengera
  zgf:[['md','sel',[['rf','Aussagen über ganze Zahlen'],['gs','Rechengesetze überprüfen'],['fe','Fehler in der Kurzform finden']],'Aufgabe'],['n','sel',[1,2,3,4,5,6,8,10].map(x=>[x,x]),'Anzahl'],['RG']],
  zgx:[['md','sel',[['mix','gemischt'],['te','Temperatur'],['ko','Geld und Konto'],['ho','Aufzug, Meer, Jahreszahlen']],'Thema'],['n','sel',[1,2,3,4,5,6].map(x=>[x,x+' Aufgaben']),'Anzahl']]});
 
+/* ===== Gleichungen (Lösungswege 3, Kap. 18–19) ===== */
+const GQT=['gqk','gqe','gqw','gqu','gql','gqs','gqf','gqt'];POT.push(...GQT);TLT.push(...GQT);RQT.push(...GQT);
+Object.assign(TLN,{gqk:'Gleichungen: Merkkasten',gqe:'Gleichung und Lösungsmenge (erkennen, probieren, zuordnen)',gqw:'Waage: Gleichung ablesen und lösen',gqu:'Äquivalenzumformungen (Lücken, Umformung erkennen)',gql:'Gleichungen lösen mit Probe (auch Klammern)',gqs:'Lösungsfälle: eine, keine oder unendlich viele Lösungen',gqf:'Fehler beim Lösen finden',gqt:'Textgleichungen (Zahlen-, Alters-, Teilungsrätsel)'});
+Object.entries({gqk:{md:'gl'},gqe:{md:'ek',n:10,co:2,mn:1,mx:9},gqw:{n:4,co:2,wv:'1',zl:true},gqu:{md:'lu',n:6,co:3,mn:-10,mx:20,lk:'mix'},gql:{md:'zw',n:6,co:2,mn:-10,mx:10,lv:1,za:'ga',nz:true,pr:true,rz:'auto',op:false,sf:false,va:'x'},gqs:{n:9,lv:1,lo:true},gqf:{md:'fe',n:3},gqt:{md:'zr',n:3,lv:1,vl:true,gl:true,rz:'3',al:true,nz:false}}).forEach(([k,v])=>TLD[k]=Object.assign({w:714},v));
+/* ---- Rechnen ---- */
+const gQ=(n,d,f)=>qR(n,d||1,f||'b'),gZ=q=>q.n===0,gNm=q=>(q.f==='d'&&!qFin(q))?{n:q.n,d:q.d,f:'b'}:q,gFf=(a,b)=>(a.f==='d'||b.f==='d')?'d':'b';
+const gAd=(a,b)=>gNm(qA(a,b,gFf(a,b))),gSu=(a,b)=>gNm(qS(a,b,gFf(a,b))),gMu=(a,b)=>gNm(qMu(a,b,gFf(a,b))),gDi=(a,b)=>gNm(qDi(a,b,gFf(a,b)));
+const gAb=q=>({n:Math.abs(q.n),d:q.d,f:q.f}),gEq=(a,b)=>a.n*b.d===b.n*a.d,gI=q=>q.d===1,gC=c=>typeof c==='object'?c:gQ(c);
+const gDec=q=>qFin(q)&&q.d!==1?{n:q.n,d:q.d,f:'d'}:q;
+const gP0=()=>[gQ(0),gQ(0),gQ(0)],gPA=(p,q)=>p.map((c,i)=>gAd(c,q[i]));
+const gPM=(p,q)=>{const r=[gQ(0),gQ(0),gQ(0),gQ(0),gQ(0)];for(let i=0;i<3;i++)for(let j=0;j<3;j++)if(!gZ(p[i])&&!gZ(q[j]))r[i+j]=gAd(r[i+j],gMu(p[i],q[j]));if(!gZ(r[3])||!gZ(r[4]))throw 'deg';return r.slice(0,3);};
+/* ---- Terme: {c, fs:['x' | {b:[Terme], sq}], dv, fr} ---- */
+const gX=(c,o)=>Object.assign({c:gC(c),fs:['x']},o||{}),gK=c=>({c:gC(c),fs:[]}),gB=(c,b,o)=>({c:gC(c),fs:[Object.assign({b},o||{})]}),gXB=(c,b)=>({c:gC(c),fs:['x',{b}]}),gBB=(c,b1,b2)=>({c:gC(c),fs:[{b:b1},{b:b2}]}),gX2=c=>({c:gC(c),fs:['x','x']});
+const gXd=a=>gX(gQ(1,a),{dv:gQ(a)}),gXf=(n,d)=>gX(gQ(n,d),{fr:1});
+function gFP(f){if(f==='x')return [gQ(0),gQ(1),gQ(0)];const p=gSP(f.b);return f.sq?gPM(p,p):p;}
+function gTP(t){let p=[t.c,gQ(0),gQ(0)];t.fs.forEach(f=>{p=gPM(p,gFP(f));});return p;}
+function gSP(s){return s.reduce((a,t)=>gPA(a,gTP(t)),gP0());}
+const gEv=(p,x)=>gAd(gAd(p[0],gMu(p[1],x)),gMu(p[2],gMu(x,x)));
+const GV='§';
+function gTB(t,P,first){const a=gAb(t.c),one=a.n===1&&a.d===1,V=P?(first&&window.__gqPR&&t.c.n>0?window.__gqPR:P):GV;
+ if(t.fr){const z=a.n===1?(P&&window.__gqPR?window.__gqPR:V):a.n+(P?' · ':'')+V;return frc(z,a.d);}
+ if(t.dv)return V+' : '+qH(t.dv);
+ if(!t.fs.length)return qH(a);
+ const fs=[];for(let i=0;i<t.fs.length;i++){const f=t.fs[i];if(f==='x'){if(t.fs[i+1]==='x'){fs.push(V+'²');i++;}else fs.push(V);}else fs.push('('+gSD(f.b,P)+')'+(f.sq?'²':''));}
+ if(P)return (one?'':qH(a)+' · ')+fs.join(' · ');
+ return (one?'':qH(a))+fs.join('');}
+const one1=t=>t.fs.length===1&&t.fs[0]==='x'&&t.c.n===1&&t.c.d===1&&!t.dv;
+function gSD(s,P){const h=s.map((t,i)=>{const ng=t.c.n<0,b=gTB(t,P,i===0&&one1(t));return i===0?(ng?'−':'')+b:(ng?' − ':' + ')+b;}).join('');return h||'0';}
+const gMT=m=>Object.assign({c:m.c,fs:m.e===2?['x','x']:m.e===1?['x']:[]},m.fr?{fr:1}:{},m.dv?{dv:m.dv}:{});
+const gMD=ms=>gSD(ms.filter(m=>!gZ(m.c)).map(gMT));
+function gExp(t){const bf=t.fs.filter(f=>f!=='x'),ex=t.fs.length-bf.length;
+ if(!bf.length)return [{c:t.c,e:ex,fr:t.fr,dv:t.dv}];
+ if(bf.length===1&&!bf[0].sq)return [].concat(...bf[0].b.map(u=>gExp(u).map(m=>({c:gMu(t.c,m.c),e:m.e+ex,fr:m.fr}))));
+ const p=gTP(t);return [2,1,0].filter(e=>!gZ(p[e])).map(e=>({c:p[e],e}));}
+function gCmb(ms){const o=[];ms.forEach(m=>{if(!o.includes(m.e))o.push(m.e);});const p=gP0(),cnt=[0,0,0];ms.forEach(m=>{p[m.e]=gAd(p[m.e],m.c);cnt[m.e]++;});
+ return o.filter(e=>!gZ(p[e])).map(e=>{const one=cnt[e]===1?ms.find(m=>m.e===e):null;return one&&(one.fr||one.dv)?one:{c:p[e],e};});}
+const gCX=(a,e)=>(a.n===1&&a.d===1?'':qH(a))+GV+(e===2?'²':'');
+const gHasDec=s=>s.some(t=>t.c.f==='d'||(t.dv&&t.dv.f==='d')||t.fs.some(f=>f!=='x'&&gHasDec(f.b)));
+/* ---- Lösen mit Äquivalenzumformungen ---- */
+function gSolve(L,R,dec){const rows=[],push=(l,r)=>{const z=rows[rows.length-1];if(z&&z.L===l&&z.R===r)return;rows.push({L:l,R:r,op:''});},setOp=o=>{rows[rows.length-1].op=o;},F=q=>dec?gDec(q):q;
+ push(gSD(L),gSD(R));
+ let mL=[].concat(...L.map(gExp)),mR=[].concat(...R.map(gExp));
+ const br=L.concat(R).some(t=>t.fs.some(f=>f!=='x'));if(br)push(gMD(mL),gMD(mR));
+ const cL=gCmb(mL),cR=gCmb(mR);if(br||cL.length!==mL.length||cR.length!==mR.length)push(gMD(cL),gMD(cR));mL=cL;mR=cR;
+ const g=(ms,e)=>{const m=ms.find(m=>m.e===e);return m?m.c:gQ(0);},ord=ms=>{const i0=ms.findIndex(m=>m.e===0),i1=ms.findIndex(m=>m.e===1);return i0>=0&&i1>=0&&i0<i1;};
+ const q1=g(mL,2),q2=g(mR,2);
+ if(!gZ(q1)||!gZ(q2)){if(!gEq(q1,q2))return null;setOp((q2.n>0?'−':'+')+gCX(gAb(q2),2));mL=mL.filter(m=>m.e!==2);mR=mR.filter(m=>m.e!==2);push(gMD(mL),gMD(mR));}
+ let a1=g(mL,1),b1=g(mL,0),a2=g(mR,1),b2=g(mR,0);const oL=ord(mL),oR=ord(mR);
+ const side=(a,b,o,keep)=>{if(keep&&gEq(a,keep.c))return gMD(o?[{c:b,e:0},keep]:[keep,{c:b,e:0}]);const ms=[{c:a,e:1},{c:b,e:0}];if(o)ms.reverse();return gMD(ms);};
+ const kL=mL.find(m=>m.e===1&&(m.fr||m.dv)),kR=mR.find(m=>m.e===1&&(m.fr||m.dv));
+ if(!gZ(a1)&&!gZ(a2)){setOp((a2.n>0?'−':'+')+gCX(gAb(a2),1));a1=gSu(a1,a2);a2=gQ(0);push(side(a1,b1,oL),qH(F(b2)));}
+ const vs=!gZ(a1)?'L':!gZ(a2)?'R':null;
+ if(!vs){const l=qH(F(b1)),r=qH(F(b2)),ty=gEq(b1,b2)?'all':'none';push(l,r);rows[rows.length-1].nt=ty==='all'?'wahre Aussage':'falsche Aussage';return {rows,res:{typ:ty}};}
+ let A=vs==='L'?a1:a2,B=vs==='L'?b1:b2,C=vs==='L'?b2:b1;const o=vs==='L'?oL:oR,kp=vs==='L'?kL:kR;
+ const put=(v,c)=>vs==='L'?push(v,c):push(c,v);
+ if(!gZ(B)){setOp((B.n>0?'−':'+')+qH(F(gAb(B))));C=gSu(C,B);put(side(A,gQ(0),o,kp),qH(F(C)));}
+ if(!(A.n===1&&A.d===1)){
+  if(A.n===-1&&A.d===1)setOp('·(−1)');
+  else if(A.d===1||A.f==='d')setOp(':'+(A.n<0?'('+qH(A)+')':qH(A)));
+  else if(Math.abs(A.n)===1)setOp('·'+(A.n<0?'(−'+A.d+')':A.d));
+  else if(kp&&kp.dv)setOp('·'+qH(kp.dv));
+  else setOp(':'+qH(A,{par:A.n<0}));
+  C=gDi(C,A);put(GV,qH(F(C)));}
+ return {rows,res:{typ:'one',x:F(C)}};}
+const gPar=x=>qH(x,{par:x.n<0||(x.d!==1&&x.f!=='d')});
+function gProbe(L,R,x){const P=gPar(x),F=q=>x.f==='d'?gDec(q):q;window.__gqPR=qH(x);try{return `${gSD(L,P)} = ${gSD(R,P)} ⇒ ${qH(F(gEv(gSP(L),x)))} = ${qH(F(gEv(gSP(R),x)))}`;}finally{window.__gqPR=null;}}
+const gLs=res=>res.typ==='one'?'{'+qH(res.x)+'}':res.typ==='none'?'{ }':'ℚ',gLsT=res=>res.typ==='one'?'{'+qT(res.x)+'}':res.typ==='none'?'{ }':'ℚ';
+function gNegShown(s){return s.some((t,i)=>(i===0&&t.c.n<0)||t.fs.some(f=>f!=='x'&&gNegShown(f.b)));}
+/* ---- Gleichungsformen ---- */
+const GVA=['x','x','x','y','z','a','b','c','n','t'];
+function gqRnd(it){const lv=+it.lv||1,nz=!!it.nz,dz=it.za==='dz',cm=[5,9,15][lv-1]||5,km=[20,60,200][lv-1]||20,sm=[6,9,12][lv-1]||6,sg=()=>nz&&Math.random()<.4?-1:1;
+ return {cm,km,sm,nz,
+  c:one=>{const v=one&&Math.random()<.15?1:kri(2,cm);return v*sg();},
+  k:()=>dz&&Math.random()<.5?gQ(sg()*kri(1,km*10),10,'d'):gQ(sg()*kri(1,km)),
+  kp:()=>dz&&Math.random()<.5?gQ(kri(1,km*10),10,'d'):gQ(kri(1,km)),
+  s:()=>sg()*kri(1,sm),sp:()=>kri(1,sm),b:()=>kri(2,6)*sg()};}
+const GF={
+ e1:[r=>({L:[gX(1),gK(r.k())],R:[gK(0)],f:['R',0]}),r=>({L:[gK(r.kp()),gX(1)],R:[gK(0)],f:['R',0]}),r=>({L:[gK(0)],R:[gX(1),gK(r.k())],f:['L',0]}),
+  r=>({L:[gX(r.c(1)*(Math.random()<.15?-1:1))],R:[gK(0)],f:['R',0]}),r=>({L:[gK(0)],R:[gX(r.c())],f:['L',0]}),r=>({L:[gXd(kri(2,r.cm))],R:[gK(0)],f:['R',0]}),r=>({L:[gXf(1,kri(2,Math.max(4,r.cm)))],R:[gK(0)],f:['R',0]}),
+  r=>(r.nz&&Math.random()<.5?{L:[gX(-1)],R:[gK(0)],f:['R',0]}:{L:[gX(1),gK(r.k())],R:[gK(0)],f:['R',0]})],
+ zw:[r=>({L:[gX(r.c()),gK(r.k())],R:[gK(0)],f:['R',0]}),r=>({L:[gK(r.kp()),gX(r.c())],R:[gK(0)],f:['R',0]}),r=>({L:[gK(0)],R:[gX(r.c()),gK(r.k())],f:['L',0]}),r=>({L:[gX(r.c()),gK(r.k())],R:[gK(0)],f:['R',0]})],
+ bs:[r=>({L:[gX(r.c(1)),gK(r.k())],R:[gX(r.c(1)),gK(0)],f:['R',1]}),r=>({L:[gK(r.kp()),gX(r.c(1))],R:[gK(0),gX(r.c(1))],f:['R',0]}),r=>({L:[gX(r.c(1)),gK(r.k())],R:[gK(0),gX(r.c(1))],f:['R',0]})],
+ kl:[r=>({L:[gB(r.b(),[gX(1),gK(r.s())]),gK(r.s())],R:[gX(r.c(1)),gK(0)],f:['R',1]}),
+  r=>({L:[gB(r.b(),[gX(r.c(1)),gK(r.s())])],R:[gB(r.b(),[gX(r.c(1)),gK(r.s())])],f:null}),
+  r=>({L:[gK(r.sp()),gB(-kri(2,6),[gX(r.c(1)),gK(r.s())])],R:[gB(r.b(),[gX(r.nz?-1:1),gK(r.sp())])],f:null}),
+  r=>({L:[gB(r.b(),[gX(r.c(1)),gK(r.s())]),gX(r.c(1))],R:[gB(r.b(),[gK(r.sp()),gX(1)])],f:null}),
+  r=>({L:[gK(r.sp()),gB(kri(2,6),[gX(1),gK(r.s())])],R:[gB(r.b(),[gX(1),gK(r.s())]),gK(0)],f:['R',1]}),
+  r=>({L:[gB(r.b(),[gX(1),gK(r.s())]),gX(r.c(1))],R:[gB(r.b(),[gX(1),gK(r.s())])],f:null}),
+  r=>({L:[gK(r.sp()),gB(-kri(2,5),[gX(r.c(1)),gK(r.s())])],R:[gB(r.b(),[gX(r.c(1)),gK(r.s())]),gK(0)],f:['R',1]})],
+ qu:[r=>({L:[gB(1,[gX(1),gK(r.s())],{sq:1})],R:[gBB(1,[gX(1),gK(r.s())],[gX(1),gK(r.s())])],f:null}),
+  r=>({L:[gX(r.c(1)),gXB(-1,[gK(r.sp()),gX(-1)])],R:[gB(1,[gX(1),gK(-r.sp())],{sq:1})],f:null}),
+  r=>{const a=kri(2,3);return {L:[gB(1,[gX(a),gK(r.s())],{sq:1}),gX2(-a*a)],R:[gB(r.b(),[gK(r.sp()),gX(-1)])],f:null};},
+  r=>{const a=kri(2,4),p=kri(1,6);return {L:[gBB(1,[gX(a),gK(-p)],[gX(a),gK(p)])],R:[gXB(a,[gX(a),gK(-kri(1,6))])],f:null};},
+  r=>{const a=kri(2,3);return {L:[gB(1,[gX(a),gK(r.s())],{sq:1}),gXB(-1,[gX(a*a),gK(r.s())])],R:[gK(0)],f:['R',0]};},
+  r=>{const p=kri(1,5);return {L:[gBB(1,[gX(1),gK(-p)],[gX(1),gK(p)]),gB(-1,[gX(1),gK(r.s())],{sq:1})],R:[gX(r.c(1)),gK(0)],f:['R',1]};}]};
+function gqXv(it){const [mn,mx]=qRg(it),za=it.za||'ga',lo=Math.ceil(mn),hi=Math.floor(mx);
+ if(za==='dz'&&Math.random()<.55){const q=tpick([2,4,5,10]),v=ngI(Math.ceil(mn*q),Math.floor(mx*q));return gDec(gQ(v,q));}
+ if(za==='br'&&Math.random()<.55){const q=tpick([2,3,4,5,6]);return gQ(ngI(Math.ceil(mn*q),Math.floor(mx*q)),q);}
+ return gQ(ngI(lo,Math.max(lo,hi)));}
+const gOkX=(x,za)=>za==='br'?x.d<=12:za==='dz'?(x.d===1||(qFin(x)&&100%x.d===0)):x.d===1;
+/* Gleichung mit gewünschter Form erzeugen: o.mds = Formen, o.fix = feste Lösung */
+function gqMk(it,o){o=o||{};const r=gqRnd(it),[mn,mx]=qRg(it),za=it.za||'ga',mds=o.mds||['zw'],lim=Math.max(30,r.km*3);
+ for(let g=0;g<2500;g++){const md=tpick(mds),x=o.fix?gC(o.fix):gqXv(it);let e;try{e=tpick(GF[md])(r);}catch(_){continue;}
+  if(e.f){const [s,i]=e.f,S=s==='L'?e.L:e.R;let vl,vr;try{vl=gEv(gSP(e.L),x);vr=gEv(gSP(e.R),x);}catch(_){continue;}const c=s==='L'?gSu(vr,vl):gSu(vl,vr);
+   if(!(c.d===1||(za==='dz'&&qFin(c)&&10%c.d===0)))continue;if(Math.abs(qV(c))>lim)continue;if(gZ(c)&&S.length>1)continue;if(!r.nz&&c.n<0&&i===0)continue;S[i]=gK(c.d===1?gQ(c.n):gDec(c));}
+  if(!r.nz&&(gNegShown(e.L)||gNegShown(e.R)))continue;
+  const dec=za==='dz'||gHasDec(e.L)||gHasDec(e.R);let S;try{S=gSolve(e.L,e.R,dec);}catch(_){continue;}if(!S||S.res.typ!=='one')continue;
+  const X=S.res.x;if(qV(X)<mn-1e-9||qV(X)>mx+1e-9||!gOkX(X,za))continue;if(o.fix&&!gEq(X,gC(o.fix)))continue;if(X.n===0&&!o.fix&&Math.random()<.85)continue;if(S.rows.length>(md==='qu'?9:7))continue;
+  const v=it.va==='mix'?tpick(GVA):(it.va||'x');return {L:e.L,R:e.R,S,v,md,pr:gProbe(e.L,e.R,X)};}
+ return null;}
+/* Sonderfälle: x fällt weg */
+function gqSF(it,typ){const r=gqRnd(it);for(let g=0;g<800;g++){let e;try{e=tpick(GF.kl)(r);}catch(_){continue;}
+  const L=e.L.filter(t=>!gZ(t.c));let p;try{p=gSP(L);}catch(_){continue;}if(!gZ(p[2])||gZ(p[1])||!gI(p[1])||!gI(p[0]))continue;const A=p[1].n,B=p[0].n,B2=typ==='all'?B:B+tpick([-1,1])*kri(1,r.sm);
+  const v=kri(0,3);let R;const ks=[2,3,4,5,-2,-3].filter(k=>A%k===0&&B2%k===0&&Math.abs(A/k)>0);
+  if(v>=2&&ks.length){const k=tpick(ks);R=[gB(k,[gX(A/k)].concat(B2?[gK(B2/k)]:[]))];if(v===3&&Math.abs(B2)>2){const m=kri(1,4)*(Math.random()<.5?-1:1);R=[gB(k,[gX(A/k)].concat(B2/k-m?[gK(B2/k-m)]:[])),gK(k*m)];if(gEv(gSP(R),gQ(0)).n!==B2)continue;}}
+  else R=v===1&&B2?[gK(B2),gX(A)]:[gX(A)].concat(B2?[gK(B2)]:[]);
+  if(!r.nz&&(gNegShown(L)||gNegShown(R)))continue;let S;try{S=gSolve(L,R);}catch(_){continue;}if(!S||S.res.typ!==typ)continue;
+  return {L,R,S,v:it.va==='mix'?tpick(GVA):(it.va||'x'),md:'sf',pr:''};}
+ return null;}
+const gqV=(h,v)=>String(h).replace(/§/g,v||'x');
+const gqE=o=>gqV(gSD(o.L)+' = '+gSD(o.R),o.v);
+/* ---- Darstellung: Lösungsweg mit Umformungsstrich ---- */
+const GQTD='border-bottom:1.2px solid #9aa3ad;height:1.9em;padding:0 .25em;vertical-align:bottom;white-space:nowrap';
+function gqTab(it,rows,v,o){o=o||{};const sh=o.sh!==undefined?o.sh:tlS(it),n=o.n!=null?o.n:rows.length-1,V=s=>gqV(s,v),S=h=>o.blue?`<span style="color:#1f4e8c">${h}</span>`:`<span class="sv">${h}</span>`,first=rows[0];
+ const B=h=>o.blue?S(h):h;let h=`<table style="border-collapse:collapse;width:100%"><tr><td style="text-align:right;padding:.1em .25em;white-space:nowrap;width:${o.lw||44}%">${B(V(first.L))}</td><td style="width:1.2em;text-align:center">${B('=')}</td><td style="padding:.1em .25em;white-space:nowrap">${B(V(first.R))}</td><td style="white-space:nowrap;width:${o.ow||22}%">${(sh||o.blue)&&first.op?(o.blue?S('| '+V(first.op)):'| '+S(V(first.op))):(o.op?'| '+qLn(it,'',2.6):'')}</td></tr>`;
+ const m=(sh||o.blue)?Math.max(n,rows.length-1):n;
+ for(let j=1;j<=m;j++){const r=rows[j];if((sh||o.blue)&&r)h+=`<tr><td style="${GQTD};text-align:right">${S(V(r.L))}</td><td style="${GQTD};text-align:center">${S('=')}</td><td style="${GQTD}">${S(V(r.R))}</td><td style="${GQTD}">${r.op?S('| '+V(r.op)):r.nt?S(r.nt):''}</td></tr>`;
+  else h+=`<tr><td style="${GQTD}"></td><td style="${GQTD}"></td><td style="${GQTD}"></td><td style="${GQTD}"></td></tr>`;}
+ return h+'</table>';}
+const gqLine=(it,lab,sol,mw)=>`<div style="display:flex;gap:.4em;align-items:flex-end;margin-top:.35em"><span style="white-space:nowrap">${lab}</span><span class="tlln" style="flex:1;min-width:${mw||4}em">${tlSv(it,sol)||'&nbsp;'}</span></div>`;
+const gqCell=(i,h)=>`<div style="break-inside:avoid;display:flex;gap:.45em;align-items:flex-start"><b style="padding-top:.1em">${poL(i)}</b><div style="flex:1;min-width:0">${h}</div></div>`;
+const gqBox=(sh,on)=>`<span style="display:inline-flex;width:1.05em;height:1.05em;border:1.5px solid #000;align-items:center;justify-content:center;vertical-align:-.15em;font-size:.9em">${sh&&on?'<span class="sv">✗</span>':''}</span>`;
+/* ---- Waage ---- */
+function gqWaage(o,v){const cx=170,by=112,pw=132,cl=cx-92,cr=cx+92;let g=`<path d="M${cx-46} 168H${cx+46}" stroke="#6b7280" stroke-width="7" stroke-linecap="round"/><path d="M${cx} ${by-4}L${cx-26} 165H${cx+26}Z" fill="#8a8f98"/><circle cx="${cx}" cy="${by-6}" r="7" fill="#4b5563"/><rect x="${cx-128}" y="${by-3}" width="256" height="7" rx="3.5" fill="#6b7280"/>`;
+ const pan=(x0,nb,nu)=>{let s=`<path d="M${x0} ${by-2}V${by-14}" stroke="#6b7280" stroke-width="4"/><rect x="${x0-pw/2}" y="${by-19}" width="${pw}" height="6" rx="3" fill="#9ca3af"/>`;const its=Array(nb).fill('b').concat(Array(nu).fill('u')),per=6,cw=21;
+  its.forEach((t,i)=>{const row=Math.floor(i/per),col=i%per,inRow=Math.min(per,its.length-row*per),x=x0-(inRow*cw)/2+col*cw+cw/2,y=by-19-11-row*21;
+   s+=t==='b'?`<rect x="${x-9}" y="${y-9}" width="18" height="18" rx="2" fill="#dbe8f7" stroke="#1f5fa8" stroke-width="1.5"/><text x="${x}" y="${y+4.5}" text-anchor="middle" font-size="13" font-weight="700" fill="#1f3a8a">${v}</text>`:`<circle cx="${x}" cy="${y}" r="8.6" fill="#fde9b8" stroke="#b9770e" stroke-width="1.4"/><text x="${x}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="700" fill="#7a4a06">1</text>`;});return s;};
+ g+=pan(cl,o.nl,o.al)+pan(cr,o.nr,o.ar);return b1Svg(340,176,g);}
+/* ---- Textgleichungen ---- */
+const GQW={2:'Doppelte',3:'Dreifache',4:'Vierfache',5:'Fünffache',6:'Sechsfache',7:'Siebenfache',8:'Achtfache',9:'Neunfache',10:'Zehnfache'};
+const GQG=['Lina','Clara','Susanne','Emmi','Elke','Elisabeth','Sonja','Carmen','Erika','Timea','Bea','Mara','Desi','Tina','Lisa','Gerda','Biljana','Conny','Diana','Julia','Lena','Mia','Sara','Anna'],GQB=['Tobias','Michael','Franz','Hans','Herbert','Matteo','Niklas','Tom','Felix','Can','Linus','Albin','Bohdan','Helge','Andrej','Christoph','Alexis','Bernd','Timo','Adam','Jonas','Ben','Luca','Noah'],GQS=['Müller','Mayer','Huber','Gruber','Berger','Wagner','Pichler','Steiner','Moser','Hofer','Bauer','Leitner','Riedl','Reich','Thomson'];
+const gqNames=k=>tshuf(GQG.concat(GQB)).slice(0,k);
+function gqTx(md,lv,nz){const L=lv||1;
+ const Z=[
+  ()=>{const x=kri(5,30*L),a=kri(2,20*L);return {t:`Verkleinert man eine Zahl um ${a}, erhält man ${x-a}.`,L:[gX(1),gK(-a)],R:[gK(x-a)],x};},
+  ()=>{const x=kri(2,40*L),a=kri(2,30*L);return {t:`Wird eine Zahl um ${a} vermehrt, so ist das Ergebnis ${x+a}.`,L:[gX(1),gK(a)],R:[gK(x+a)],x};},
+  ()=>{const k=kri(2,9),x=kri(2,12*L),a=kri(2,20*L),b=k*x-a;if(b<2)return null;return {t:`Das ${GQW[k]} einer Zahl ist um ${a} größer als ${b}. Wie lautet die Zahl?`,L:[gX(k)],R:[gK(b),gK(a)],x};},
+  ()=>{const k=kri(2,9),x=kri(2,12*L),a=kri(2,15*L),b=k*x+a;return {t:`Das ${GQW[k]} einer Zahl ist um ${a} kleiner als ${b}. Wie lautet die Zahl?`,L:[gX(k)],R:[gK(b),gK(-a)],x};},
+  ()=>{const d=tpick([2,3,4,5]),m=kri(2,10*L),x=d*m,a=x-m,w={2:'die Hälfte',3:'ein Drittel',4:'ein Viertel',5:'ein Fünftel'}[d];return {t:`Eine Zahl ist um ${a} größer als ${w} dieser Zahl. Wie lautet die Zahl?`,L:[gX(1)],R:[gXf(1,d),gK(a)],x};},
+  ()=>{const k=kri(2,6),a=kri(1,9*L),x=a+kri(1,10*L);return {t:`Das ${GQW[k]} einer um ${a} verminderten Zahl ist ${k*(x-a)}. Um welche Zahl handelt es sich?`,L:[gB(k,[gX(1),gK(-a)])],R:[gK(k*(x-a))],x};},
+  ()=>{const a=kri(1,9*L),x=kri(1,15*L),c=kri(2,2*(x+a)-1),b=2*(x+a)-c;return {t:`Das Doppelte einer um ${a} vergrößerten Zahl ist um ${b} größer als ${c}. Wie lautet die Zahl?`,L:[gB(2,[gX(1),gK(a)])],R:[gK(c),gK(b)],x};},
+  ()=>{const k=kri(3,9),m=kri(2,k-1),x=kri(2,10*L),a=kri(1,30*L),b=k*x+a-m*x;if(b<1||b===a)return null;return {t:`Wird zum ${GQW[k]}n einer Zahl die Zahl ${a} addiert, erhält man genauso viel, wie wenn man zum ${GQW[m]}n der Zahl die Zahl ${b} addiert. Berechne die Zahl.`,L:[gX(k),gK(a)],R:[gX(m),gK(b)],x};},
+  ()=>{const a=kri(1,9*L),x=2*kri(2,10*L),b=x/2-a;if(b<1)return null;return {t:`Die Hälfte einer Zahl, vermindert um ${a}, ergibt ${b}.`,L:[gXf(1,2),gK(-a)],R:[gK(b)],x};}];
+ if(nz)Z.push(()=>{const m=kri(2,9),a=3*m-1;return {t:`Das Doppelte einer Zahl ist um ${a} kleiner als die um eins verkleinerte Gegenzahl. Bestimme die Zahl.`,L:[gX(2)],R:[gB(1,[gX(-1),gK(-1)]),gK(-a)],x:-m};},()=>{const x=kri(3,30),b=kri(2,99),a=4*x-b;if(a<1)return null;return {t:`Das Dreifache einer Zahl ist um ${a} größer als die um ${b} vergrößerte Gegenzahl. Bestimme die Zahl.`,L:[gX(3)],R:[gB(1,[gX(-1),gK(b)]),gK(a)],x};});
+ const zA=x=>`Die gesuchte Zahl heißt ${x<0?'−'+(-x):x}.`;
+ const AF=[
+  ()=>{const x=kri(3,60*L),S=3*x+3;return {t:`Die Summe von drei aufeinanderfolgenden natürlichen Zahlen ist ${S}. Berechne die drei Zahlen.`,vd:'kleinste Zahl',L:[gX(1),gB(1,[gX(1),gK(1)]),gB(1,[gX(1),gK(2)])],R:[gK(S)],x,a:x=>`Die Zahlen heißen ${x}, ${x+1} und ${x+2}.`};},
+  ()=>{const x=kri(3,50*L),S=3*x+6;return {t:`Die Summe von drei natürlichen Zahlen, von denen sich zwei aufeinanderfolgende jeweils um zwei unterscheiden, ist ${S}. Berechne die drei Zahlen.`,vd:'kleinste Zahl',L:[gX(1),gB(1,[gX(1),gK(2)]),gB(1,[gX(1),gK(4)])],R:[gK(S)],x,a:x=>`Die Zahlen heißen ${x}, ${x+2} und ${x+4}.`};},
+  ()=>{const x=kri(3,50*L),S=4*x+6;return {t:`Die Summe von vier aufeinanderfolgenden natürlichen Zahlen ist ${S}. Berechne die vier Zahlen.`,vd:'kleinste Zahl',L:[gX(1),gB(1,[gX(1),gK(1)]),gB(1,[gX(1),gK(2)]),gB(1,[gX(1),gK(3)])],R:[gK(S)],x,a:x=>`Die Zahlen heißen ${x}, ${x+1}, ${x+2} und ${x+3}.`};},
+  ()=>{const x=2*kri(2,30*L),S=3*x+6;return {t:`Die Summe von drei aufeinanderfolgenden geraden Zahlen ist ${S}. Berechne die drei Zahlen.`,vd:'kleinste der drei Zahlen',L:[gX(1),gB(1,[gX(1),gK(2)]),gB(1,[gX(1),gK(4)])],R:[gK(S)],x,a:x=>`Die Zahlen heißen ${x}, ${x+2} und ${x+4}.`};},
+  ()=>{const x=2*kri(2,40*L)+1,S=2*x+2;return {t:`Die Summe von zwei aufeinanderfolgenden ungeraden Zahlen ist ${S}. Berechne die beiden Zahlen.`,vd:'kleinere Zahl',L:[gX(1),gB(1,[gX(1),gK(2)])],R:[gK(S)],x,a:x=>`Die Zahlen heißen ${x} und ${x+2}.`};}];
+ const kid=()=>kri(4,15),ad=()=>kri(26,58);
+ const AL=[
+  ()=>{const [A,B]=gqNames(2),d=kri(2,8),x=kid(),S=2*x+d;return {t:`${A} ist um ${d} Jahre älter als ${B}. Zusammen sind die beiden ${S} Jahre alt. Bestimme das Alter der beiden.`,vd:`Alter von ${B}`,L:[gX(1),gB(1,[gX(1),gK(d)])],R:[gK(S)],x,a:x=>`${B} ist ${x} Jahre alt, ${A} ist ${x+d} Jahre alt.`};},
+  ()=>{const [A,B]=gqNames(2),d=kri(2,7),x=kid()+d,S=2*x-d;return {t:`${A} ist um ${d} Jahre jünger als ${B}. Zusammen sind die beiden ${S} Jahre alt. Bestimme das Alter der beiden.`,vd:`Alter von ${B}`,L:[gX(1),gB(1,[gX(1),gK(-d)])],R:[gK(S)],x,a:x=>`${B} ist ${x} Jahre alt, ${A} ist ${x-d} Jahre alt.`};},
+  ()=>{const [F,M]=tshuf(GQS),d=kri(3,15),x=ad(),S=2*x-d;return {t:`Frau ${F} ist um ${d} Jahre jünger als ihr Arbeitskollege Herr ${M}. Zusammen sind die beiden ${S} Jahre alt. Wie alt ist Frau ${F}? Welches Alter hat Herr ${M}?`,vd:`Alter von Herrn ${M}`,L:[gX(1),gB(1,[gX(1),gK(-d)])],R:[gK(S)],x,a:x=>`Herr ${M} ist ${x} Jahre alt, Frau ${F} ist ${x-d} Jahre alt.`};},
+  ()=>{const [A,B,C]=gqNames(3),a=kri(1,4),b=a+kri(1,4),x=kri(3,12),S=3*x+a+b;return {t:`${A}, ${B} und ${C} sind drei Geschwister. ${B} ist um ${a} Jahre älter als ${A}, ${C} ist um ${b} Jahre älter als ${A}. Zusammen sind die drei Geschwister ${S} Jahre alt. Bestimme das Alter der drei Geschwister.`,vd:`Alter von ${A}`,L:[gX(1),gB(1,[gX(1),gK(a)]),gB(1,[gX(1),gK(b)])],R:[gK(S)],x,a:x=>`${A} ist ${x}, ${B} ist ${x+a} und ${C} ist ${x+b} Jahre alt.`};},
+  ()=>{const [A,B,C]=gqNames(3),a=kri(1,4),b=kri(1,5),x=kri(4,12)+a+b,S=3*x-2*a-b;return {t:`${A} ist um ${a} Jahre jünger als ${B}. ${C} ist um ${b} Jahre jünger als ${A}. Zusammen sind ${A}, ${B} und ${C} ${S} Jahre alt. Berechne das jeweilige Alter.`,vd:`Alter von ${B}`,L:[gX(1),gB(1,[gX(1),gK(-a)]),gB(1,[gX(1),gK(-a),gK(-b)])],R:[gK(S)],x,a:x=>`${B} ist ${x}, ${A} ist ${x-a} und ${C} ist ${x-a-b} Jahre alt.`};},
+  ()=>{const [A,B,C]=gqNames(3),d=kri(2,8),x=kri(3,9),S=5*x+d;return {t:`${A} ist doppelt so alt wie ${B}. ${C} ist um ${d} Jahre älter als ${A}. Zusammen sind die drei ${S} Jahre alt. Berechne das Alter der drei.`,vd:`Alter von ${B}`,L:[gX(1),gX(2),gB(1,[gX(2),gK(d)])],R:[gK(S)],x,a:x=>`${B} ist ${x}, ${A} ist ${2*x} und ${C} ist ${2*x+d} Jahre alt.`};},
+  ()=>{const [A,B,C]=gqNames(3),x=kri(3,9),d=kri(2,Math.min(12,3*x-2)),S=7*x-d;return {t:`${A} ist dreimal so alt wie ${B}. ${C} ist um ${d} Jahre jünger als ${A}. Zusammen sind die drei ${S} Jahre alt. Berechne das Alter der drei.`,vd:`Alter von ${B}`,L:[gX(1),gX(3),gB(1,[gX(3),gK(-d)])],R:[gK(S)],x,a:x=>`${B} ist ${x}, ${A} ist ${3*x} und ${C} ist ${3*x-d} Jahre alt.`};},
+  ()=>{const [A,B,C]=gqNames(3),x=2*kri(4,9),d=kri(2,10),S=2*x+d+x/2;return {t:`${A} ist um ${d} Jahre älter als ${B}. ${C} ist halb so alt wie ${B}. Zusammen sind die drei ${S} Jahre alt. Berechne das Alter der drei.`,vd:`Alter von ${B}`,L:[gX(1),gB(1,[gX(1),gK(d)]),gXf(1,2)],R:[gK(S)],x,a:x=>`${B} ist ${x}, ${A} ist ${x+d} und ${C} ist ${x/2} Jahre alt.`};},
+  ()=>{const [F,M]=tshuf(GQS),x=2*kri(15,35),S=x+x/2;return {t:`Frau ${F} ist halb so alt wie Herr ${M}. Zusammen sind Frau ${F} und Herr ${M} ${S} Jahre alt. Berechne das Alter der beiden Personen.`,vd:`Alter von Herrn ${M}`,L:[gX(1),gXf(1,2)],R:[gK(S)],x,a:x=>`Herr ${M} ist ${x} Jahre alt, Frau ${F} ist ${x/2} Jahre alt.`};}];
+ const st=L===1?10:L===2?50:500,mo=()=>st*kri(3,L===1?40:L===2?60:90),eu=v=>qTs(v)+' €';
+ const TE=[
+  ()=>{const [A,B,C]=gqNames(3),d=st*kri(1,8),x=mo(),S=3*x+3*d;return {t:`Ein Betrag von ${eu(S)} soll unter ${A}, ${B} und ${C} so aufgeteilt werden, dass ${B} um ${eu(d)} mehr bekommt als ${A} und ${C} um ${eu(d)} mehr als ${B}. Berechne, welchen Betrag jede der drei Personen erhält.`,vd:`Anteil von ${A} in €`,L:[gX(1),gB(1,[gX(1),gK(d)]),gB(1,[gX(1),gK(2*d)])],R:[gK(S)],x,a:x=>`${A} erhält ${eu(x)}, ${B} ${eu(x+d)} und ${C} ${eu(x+2*d)}.`};},
+  ()=>{const [A,B,C]=gqNames(3),d1=st*kri(1,9),d2=st*kri(1,9),x=mo(),S=3*x+2*d2+d1;return {t:`Eine Erbschaft von ${eu(S)} wird unter ${A}, ${B} und ${C} so aufgeteilt, dass ${A} ${eu(d1)} mehr als ${B} erhält und ${B} ${eu(d2)} mehr als ${C}. Berechne, wie viel jede der drei Personen bekommt.`,vd:`Anteil von ${C} in €`,L:[gB(1,[gX(1),gK(d2),gK(d1)]),gB(1,[gX(1),gK(d2)]),gX(1)],R:[gK(S)],x,a:x=>`${A} erhält ${eu(x+d1+d2)}, ${B} ${eu(x+d2)} und ${C} ${eu(x)}.`};},
+  ()=>{const [A,B,C]=gqNames(3),d1=st*kri(1,9),x=mo()+st*10,d2=st*kri(1,9),S=3*x+d1-d2;return {t:`Ein Lottogewinn von ${eu(S)} wird unter ${A}, ${B} und ${C} so aufgeteilt, dass ${A} um ${eu(d1)} mehr als ${B} bekommt und ${C} um ${eu(d2)} weniger als ${B}. Berechne, welchen Betrag jede der drei Personen erhält.`,vd:`Anteil von ${B} in €`,L:[gB(1,[gX(1),gK(d1)]),gX(1),gB(1,[gX(1),gK(-d2)])],R:[gK(S)],x,a:x=>`${A} erhält ${eu(x+d1)}, ${B} ${eu(x)} und ${C} ${eu(x-d2)}.`};},
+  ()=>{const [N1,N2]=tshuf(GQS),N3=tpick(GQS.filter(s=>s!==N1&&s!==N2)),x=mo(),S=7*x;return {t:`Der Gewinn einer Firma beträgt ${eu(S)} und wird auf drei Personen aufgeteilt. Herr ${N1} erhält doppelt so viel wie Herr ${N2}. Frau ${N3} bekommt doppelt so viel wie Herr ${N1}. Wie viel erhält jede der drei Personen?`,vd:`Anteil von Herrn ${N2} in €`,L:[gX(1),gX(2),gX(4)],R:[gK(S)],x,a:x=>`Herr ${N2} erhält ${eu(x)}, Herr ${N1} ${eu(2*x)} und Frau ${N3} ${eu(4*x)}.`};},
+  ()=>{const [A,B]=gqNames(2),q=tpick([3,4,5]),p=kri(1,q-1),x=q*st*kri(2,L===1?20:40),S=x+p*x/q;return {t:`Teile den Betrag von ${eu(S)} so auf ${A} und ${B} auf, dass ${A} ${p===1?'ein':{2:'zwei',3:'drei',4:'vier'}[p]} ${{3:'Drittel',4:'Viertel',5:'Fünftel'}[q]} des Betrags von ${B} erhält. Wie viel bekommen ${A} und ${B}?`,vd:`Betrag von ${B} in €`,L:[gX(1),gX(gQ(p,q))],R:[gK(S)],x,a:x=>`${B} bekommt ${eu(x)}, ${A} bekommt ${eu(p*x/q)}.`};},
+  ()=>{const [A,B,C]=gqNames(3),x=12*kri(L===1?2:5,L===1?15:L===2?60:400)*(L===3?10:1),S=x+x/3+x/4;return {t:`Ein Betrag von ${eu(S)} wird so aufgeteilt, dass ${A} ein Drittel und ${B} ein Viertel des Betrags von ${C} erhält. Berechne, welche Beträge ${A}, ${B} und ${C} erhalten.`,vd:`Betrag von ${C} in €`,L:[gX(1),gXf(1,3),gXf(1,4)],R:[gK(S)],x,a:x=>`${C} erhält ${eu(x)}, ${A} ${eu(x/3)} und ${B} ${eu(x/4)}.`};},
+  ()=>{const [A,B,C]=[tpick(GQB),tpick(GQG),tpick(GQB.slice(10))],x=mo(),S=10*x,O=tpick(['Ernst','Karl','Franz','Josef']);if(A===C)return null;return {t:`Opa ${O} hat seinen drei Kindern eine Erbschaft von ${eu(S)} hinterlassen. ${A} erhält doppelt so viel wie seine Schwester ${B} und ${B} dreimal so viel wie ihr Bruder ${C}. Berechne, wie viel Geld jedes Kind erhält.`,vd:`Anteil von ${C} in €`,L:[gX(1),gX(3),gX(6)],R:[gK(S)],x,a:x=>`${C} erhält ${eu(x)}, ${B} ${eu(3*x)} und ${A} ${eu(6*x)}.`};},
+  ()=>{const [A,B,C]=gqNames(3),x=12*kri(L===1?2:5,L===1?12:50),S=x+x/3+x/12;return {t:`Der Betrag von ${eu(S)} wird unter ${A}, ${B} und ${C} so aufgeteilt, dass ${B} ein Drittel des Betrags von ${A} und ${C} ein Viertel des Betrags von ${B} erhält. Berechne, wie viel die drei Personen jeweils erhalten.`,vd:`Betrag von ${A} in €`,L:[gX(1),gXf(1,3),gXf(1,12)],R:[gK(S)],x,a:x=>`${A} erhält ${eu(x)}, ${B} ${eu(x/3)} und ${C} ${eu(x/12)}.`};}];
+ const pool=md==='zr'?Z.map(f=>[f,'z']):md==='af'?AF.map(f=>[f,'f']):md==='al'?AL.map(f=>[f,'l']):md==='te'?TE.map(f=>[f,'t']):Z.map(f=>[f,'z']).concat(AF.slice(0,2).map(f=>[f,'f']),AL.map(f=>[f,'l']),TE.map(f=>[f,'t']));
+ for(let g=0;g<200;g++){const [f,ty]=tpick(pool),o=f();if(!o)continue;if(ty==='z'){o.vd='gesuchte Zahl';o.a=zA;}
+  let S;try{S=gSolve(o.L,o.R);}catch(_){continue;}if(!S||S.res.typ!=='one'||qV(S.res.x)!==o.x)continue;return {t:o.t,vd:o.vd,eq:gSD(o.L)+' = '+gSD(o.R),rows:S.rows,ans:o.a(o.x),x:o.x};}
+ return null;}
+/* Aussage ↔ Term (508) */
+function gqZo(n){const a=()=>kri(2,12),k=()=>kri(2,9);const T=[
+ ()=>{const v=a();return [`Die Hälfte einer Zahl wird um ${v} vermindert.`,`${frc('x',2)} − ${v}`];},()=>{const v=a();return [`Eine Zahl wird um ${v} vermehrt.`,`x + ${v}`];},
+ ()=>[`Eine Zahl und das Doppelte der Zahl`,`x + 2x`],()=>{const v=a();return [`Von ${v} wird eine Zahl subtrahiert.`,`${v} − x`];},()=>[`Eine Zahl wird verdreifacht.`,`3x`],
+ ()=>[`Ein Drittel einer Zahl wird halbiert.`,`${frc('x',3)} · ${frc(1,2)}`],()=>{const v=a();return [`Das Doppelte einer Zahl wird um ${v} vermehrt.`,`2x + ${v}`];},
+ ()=>{const v=k(),w=a();return [`Eine Zahl wird mit ${v} multipliziert und das Ergebnis um ${w} vermindert.`,`${v}x − ${w}`];},()=>{const v=k(),w=a();return [`Das ${GQW[v]} einer um ${w} vergrößerten Zahl`,`${v}(x + ${w})`];},
+ ()=>{const v=a();return [`Die Summe aus einer Zahl und ${v} wird halbiert.`,`${frc('x + '+v,2)}`];},()=>{const v=k();return [`Eine Zahl wird durch ${v} dividiert.`,`x : ${v}`];},
+ ()=>{const v=a();return [`Die Gegenzahl einer Zahl wird um ${v} vermindert.`,`−x − ${v}`];},()=>{const v=a();return [`Das Quadrat einer Zahl wird um ${v} vermehrt.`,`x² + ${v}`];},
+ ()=>[`Ein Zehntel einer Zahl wird verdoppelt.`,`0,1x · 2`],()=>{const v=k();return [`Eine Zahl wird um das ${GQW[v]} der Zahl vermehrt.`,`x + ${v}x`];}];
+ const ix=tshuf(T.map((_,i)=>i)),P=ix.slice(0,n).map(i=>T[i]()),D=ix.slice(n,n+2).map(i=>T[i]()[1]);const E=tshuf(P.map((p,i)=>({h:p[1],i})).concat(D.map(h=>({h,i:-1}))));return {P:P.map(p=>p[0]),E};}
+/* Fehler beim Lösen (492, 498) */
+function gqFe(){const T=[
+ ()=>{const a=kri(3,20),x=kri(2,30);return {w:[{L:`${a} + §`,R:`${a+x}`,op:''},{L:'§',R:`${2*a+x}`,op:''}],why:`Es wurde ${a} addiert statt subtrahiert. Die Umkehrung von „+ ${a}“ ist „− ${a}“.`,L:[gK(a),gX(1)],R:[gK(a+x)]};},
+ ()=>{const a=kri(3,20),b=kri(a+1,40);return {w:[{L:`§ − ${a}`,R:`${b}`,op:''},{L:'§',R:`${b-a}`,op:''}],why:`Es wurde ${a} subtrahiert statt addiert. Die Umkehrung von „− ${a}“ ist „+ ${a}“.`,L:[gX(1),gK(-a)],R:[gK(b)]};},
+ ()=>{const a=kri(2,9),b=kri(2,40);return {w:[{L:`${a}§`,R:`${b}`,op:''},{L:'§',R:`${a*b}`,op:''}],why:`Es wurde mit ${a} multipliziert statt durch ${a} dividiert.`,L:[gX(a)],R:[gK(b)]};},
+ ()=>{const a=kri(2,9),q=kri(2,9),b=a*q;return {w:[{L:`§ : ${a}`,R:`${b}`,op:''},{L:'§',R:`${q}`,op:''}],why:`Es wurde durch ${a} dividiert statt mit ${a} multipliziert.`,L:[gXd(a)],R:[gK(b)]};},
+ ()=>{const a=kri(2,9),b=a+kri(2,8),x=kri(2,12),c=b*x-a;return {w:[{L:`−${a} + ${b}§`,R:`${c}`,op:''},{L:`${b-a}§`,R:`${c}`,op:`−${b-a}`},{L:'§',R:`${c-b+a}`,op:''}],why:`−${a} und ${b}${'§'} dürfen nicht zusammengefasst werden (eine Zahl und ein Vielfaches der Variable). Außerdem ist „− ${b-a}“ nicht die Umkehrung von „· ${b-a}“.`,L:[gK(-a),gX(b)],R:[gK(c)]};},
+ ()=>{const a=2*kri(1,4),b=kri(3,15),c=kri(b+1,40);if((c-b)%a===0)return null;return {w:[{L:`${a}§ − ${b}`,R:`${c}`,op:`−${b}`},{L:`${a}§`,R:`${c-b}`,op:`:${a}`},{L:'§',R:qH(gDec(gQ(c-b,a))),op:''}],why:`Die Umkehrung von „− ${b}“ ist „+ ${b}“. Richtig ist | +${b}.`,L:[gX(a),gK(-b)],R:[gK(c)],dec:1};},
+ ()=>{const a=2,q=kri(2,9),c=a*q,b=kri(2,9)*a;if(b===c)return null;return {w:[{L:`${b} − ${a}§`,R:`${c}`,op:`:${a}`},{L:`${b} − §`,R:`${q}`,op:`−${b}`},{L:'−§',R:`${q-b}`,op:''},{L:'§',R:`${b-q}`.replace('-','−'),op:''}],why:`Beim Dividieren durch ${a} müssen alle Glieder dividiert werden: ${b} : ${a} = ${b/a}. Richtig wäre ${b/a} − § = ${q}.`,L:[gK(b),gX(-a)],R:[gK(c)]};},
+ ()=>{const a=kri(2,9),x=kri(2,12),c=a*x;return {w:[{L:`−${a}§`,R:`${c}`,op:`:(−${a})`},{L:'§',R:`${x}`,op:''}],why:`Beim Dividieren durch eine negative Zahl ändert sich das Vorzeichen: ${c} : (−${a}) = −${x}.`,L:[gX(-a)],R:[gK(c)]};}];
+ for(let g=0;g<50;g++){const o=tpick(T)();if(!o)continue;const S=gSolve(o.L,o.R,1);if(!S)continue;o.S=S.rows;o.res=gLs(S.res);delete o.L;delete o.R;return o;}return null;}
+/* ---- Generator ---- */
+const gqForms=md=>md==='mix'?['e1','zw','zw','bs','kl']:[md];
+function gqGen(it){const k=it.type,md=it.md,n=Math.max(1,Math.min(24,+it.n||6)),tmp=o=>Object.assign({},it,o);
+ if(k==='gqk')return;
+ if(k==='gql'){it.d=b1U(n,()=>{if(it.sf&&Math.random()<.3)return gqSF(it,tpick(['none','all']));return gqMk(it,{mds:gqForms(md)});});return;}
+ if(k==='gqs'){const ty=tshuf(Array.from({length:n},(_,i)=>['one','none','all'][i%3]));it.d=ty.map(t=>t==='one'?gqMk(tmp({nz:true,za:'ga',mn:-9,mx:9}),{mds:['kl','kl','bs']}):gqSF(tmp({nz:true}),t)).filter(Boolean);return;}
+ if(k==='gqu'){
+  if(md==='lu'){it.d=b1U(n,()=>{const r=gqRnd(tmp({nz:it.mn<0}));for(let g=0;g<400;g++){const f=kri(0,4),x=gQ(kri(Math.ceil(it.mn),Math.floor(it.mx)));let L,R=[gK(0)];
+    if(f===0)L=[gX(1),gK(r.k())];else if(f===1)L=[gK(r.kp()),gX(1)];else if(f===2)L=[gX(r.c())];else L=[gXd(kri(2,r.cm))];
+    const c=gSu(gEv(gSP(L),x),gEv(gSP(R),x));if(!gI(c)||(it.mn>=0&&c.n<0))continue;R=[gK(c)];const S=gSolve(L,R);if(!S||S.rows.length!==2||!gEq(S.res.x,x))continue;
+    return {L,R,rows:S.rows,v:'x'};}return null;});return;}
+  if(md==='lm'){it.d=b1U(n,()=>{const o=gqMk(tmp({nz:true,za:'ga',lv:1}),{mds:['zw','zw','bs']});if(!o)return null;o.p=it.lk==='mix'?tpick(['op','zl']):it.lk;return o;});return;}
+  it.d=b1U(n,()=>{for(let g=0;g<400;g++){const r=gqRnd(tmp({nz:true,lv:1}));let a1=r.c(1),b1=r.s()*kri(1,3),a2=Math.random()<.4?r.c(1):0,b2=r.s()*kri(1,4);if(a1===a2)continue;const oL=Math.random()<.3,oR=Math.random()<.3;
+    const T=[];T.push(['k',b1>0?-b1:-b1]);T.push(['k',kri(1,9)*tpick([1,-1])]);T.push(['m',kri(2,5)]);const dv=[2,3,4,5].filter(d=>[a1,b1,a2,b2].every(v=>v%d===0));if(dv.length)T.push(['d',tpick(dv)]);T.push(['n']);if(a2)T.push(['x',-a2]);
+    const [t,v]=tpick(T);let A1=a1,B1=b1,A2=a2,B2=b2,op;
+    if(t==='k'){B1+=v;B2+=v;op=(v<0?'−':'+')+Math.abs(v);}else if(t==='m'){A1*=v;B1*=v;A2*=v;B2*=v;op='·'+v;}else if(t==='d'){A1/=v;B1/=v;A2/=v;B2/=v;op=':'+v;}else if(t==='n'){A1=-A1;B1=-B1;A2=-A2;B2=-B2;op='·(−1)';}else{A1+=v;A2+=v;op=(v<0?'−':'+')+gCX(gQ(Math.abs(v)),1);}
+    const sd=(a,b,o)=>{const ms=[{c:gQ(a),e:1},{c:gQ(b),e:0}];if(o)ms.reverse();return gMD(ms);};
+    const r1={L:sd(a1,b1,oL),R:sd(a2,b2,oR),op},r2={L:sd(A1,B1,oL),R:sd(A2,B2,oR),op:''};if(r1.L===r2.L&&r1.R===r2.R)continue;return {rows:[r1,r2],v:'x'};}return null;});return;}
+ if(k==='gqe'){const [mn,mx]=qRg(it);
+  if(md==='ek'){const mkE=()=>{const t=kri(0,5),v=tpick(['x','x','y','a','b','z']);
+    if(t<=2){const o=gqMk(tmp({nz:Math.random()<.3,za:'ga',lv:1,mn:-5,mx:12,va:v}),{mds:[tpick(['e1','zw','bs'])]});return o?{h:gqE(o),ok:1}:null;}
+    if(t===3){const a=kri(2,9),b=kri(1,9),c=kri(1,9);return {h:tpick([`${a}${v} + ${b}${v} + ${c}`,`${a}${v} − ${v} + ${c}`,`${v} + ${c}`,`${c} − ${a}${v}`]),ok:0};}
+    if(t===4){const a=kri(5,30),b=kri(2,20);return {h:tpick([`${a} − ${b}`,`${a} + ${b} =`,`2 · ${b} − 8`,`${a} : 5 + ${b}`]),ok:0};}
+    const a=kri(2,9),b=kri(1,9);return {h:tpick([`${a}${v} + ${b} =`,`${a}${v} − ${b}${v}`,`${a}(${v} + ${b})`]),ok:0};};
+   it.d=b1U(n,()=>mkE());return;}
+  if(md==='pb'){it.d=b1U(n,()=>gqMk(tmp({nz:false,za:'ga',lv:1,mn:Math.max(0,Math.ceil(mn)),mx:Math.max(Math.ceil(mn)+2,Math.floor(mx)),va:'mix'}),{mds:[tpick(['e1','e1','zw'])]}));return;}
+  if(md==='ls'){it.d=b1U(Math.min(n,6),()=>{const s=kri(Math.ceil(mn),Math.max(Math.ceil(mn),Math.floor(mx)));const k5=kri(2,3),E=[];for(let j=0;j<5;j++){const ok=j<k5,f=ok?s:s+tpick([-3,-2,-1,1,2,3]),o=gqMk(tmp({nz:true,za:'ga',lv:1,mn:f,mx:f,va:'x'}),{mds:[tpick(['zw','bs','kl'])],fix:f});if(!o)return null;E.push({h:gqE(o),ok:ok?1:0});}return {s,E:tshuf(E)};});return;}
+  if(md==='zo'){it.d=b1U(Math.min(n,4),()=>{const S=tshuf([-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8]).slice(0,5),k0=kri(0,2),E=[0,1,2].map(j=>{const o=gqMk(tmp({nz:true,za:'ga',lv:1,mn:S[j],mx:S[j],va:'x'}),{mds:[tpick(['e1','zw','bs'])],fix:S[j]});return o?gqE(o):null;});if(E.includes(null))return null;const Ls=tshuf([S[k0],S[3],S[4]]);return {E,s:S,k0,Ls};});return;}
+  it.d=b1U(Math.min(n,6),()=>{const s=kri(Math.ceil(mn),Math.max(Math.ceil(mn),Math.floor(mx))),A=gqMk(tmp({nz:true,za:'ga',lv:1,mn:s,mx:s}),{mds:['e1'],fix:s}),B=gqMk(tmp({nz:true,za:'ga',lv:1,mn:s,mx:s}),{mds:['zw','bs'],fix:s});return A&&B?{s,a:gqE(A),b:gqE(B)}:null;});return;}
+ if(k==='gqw'){it.d=b1U(n,()=>{for(let g=0;g<300;g++){const wv=it.wv==='mix'?tpick(['1','2']):it.wv,x=kri(1,5),nl=kri(wv==='2'?2:1,4),nr=wv==='2'?kri(1,nl-1):0,al=kri(0,6),ar=nl*x+al-nr*x;if(ar<0||ar>14||nl+al>18||nr+ar>18||(al===0&&nr===0&&Math.random()<.5))continue;
+   const sw=Math.random()<.3;const L=[gX(nl)].concat(al?[gK(al)]:[]),R=(nr?[gX(nr)]:[]).concat(ar?[gK(ar)]:[]);const S=gSolve(sw?R:L,sw?L:R);if(!S)continue;return sw?{nl:nr,al:ar,nr:nl,ar:al,rows:S.rows,x,eq:gSD(R)+' = '+gSD(L),v:'x'}:{nl,al,nr,ar,rows:S.rows,x,eq:gSD(L)+' = '+gSD(R),v:'x'};}return null;});return;}
+ if(k==='gqf'){if(md==='bw'){it.d=[{}];return;}it.d=b1U(Math.min(n,6),()=>gqFe());return;}
+ if(k==='gqt'){const lv=+it.lv||1;
+  if(md==='zo'){it.d=[gqZo(Math.max(3,Math.min(8,n)))];return;}
+  if(md==='gt'){it.d=b1U(Math.min(n,8),()=>{const t=kri(0,4);let x=kri(2,15),L,R,tx;if(t===0){const k=kri(2,9);L=[gX(k)];R=[gK(k*x)];tx=`Das ${GQW[k]} einer Zahl ist ${k*x}.`;}else if(t===1){const d=kri(2,6),m=x;x=d*m;L=[gXf(1,d)];R=[gK(m)];tx=d===2?`Die Hälfte einer Zahl ist ${m}.`:`Ein ${{3:'Drittel',4:'Viertel',5:'Fünftel',6:'Sechstel'}[d]} einer Zahl ist ${m}.`;}else if(t===2){const a=kri(2,20);L=[gX(1),gK(a)];R=[gK(x+a)];tx=`Wird eine Zahl um ${a} vermehrt, erhält man ${x+a}.`;}else if(t===3){const k=kri(2,6),a=kri(1,9);L=[gX(k),gK(-a)];R=[gK(k*x-a)];tx=`Verkleinert man das ${GQW[k]} einer Zahl um ${a}, erhält man ${k*x-a}.`;}else{const a=kri(2,20);if(x-a<1)return null;L=[gX(1),gK(-a)];R=[gK(x-a)];tx=`Vermindert man eine Zahl um ${a}, erhält man ${x-a}.`;}
+    const S=gSolve(L,R);return S?{eq:gSD(L)+' = '+gSD(R),rows:S.rows,x,tx}:null;});return;}
+  if(md==='wf'){it.d=b1U(Math.min(n,4),()=>{const k=kri(2,9),x=kri(2,12),a=kri(2,15),b=k*x+a,P=gqNames(3),E=tshuf([[`${k}x + ${a} = ${b}`,1],[`${k}x − ${a} = ${b}`,0],[`${k}x = ${b} − ${a}`,1]]);return {t:`„Das ${GQW[k]} einer Zahl ist um ${a} kleiner als ${b}.“`,P,E,k,a,b,x};});return;}
+  const D=[],seen=new Set();for(let g=0;g<300&&D.length<Math.min(n,8);g++){const o=gqTx(md,lv,!!it.nz);if(!o||seen.has(o.eq))continue;seen.add(o.eq);D.push(o);}it.d=D;}}
+/* ---- Darstellung ---- */
+function gqBlk(it){NUMIT=it;const k=it.type,d=(it.d||[]).filter(Boolean),md=it.md,sh=tlS(it),co=+it.co||2;
+ if(k==='gqk')return gqMerk(it);
+ if(k==='gql'){const T1={e1:'Löse die Gleichung mit einer Äquivalenzumformung',kl:'Löse zuerst die Klammern auf, vereinfache und löse dann die Gleichung',qu:'Löse die Gleichung (die quadrierten Variablen fallen weg)'}[md]||'Löse die Gleichung mittels Äquivalenzumformungen';
+  return wnH1(T1+(it.pr?' und mache die Probe!':'!'))+tlGrid(Math.min(co,3),d.map((o,i)=>{const nb=it.rz==='auto'||it.rz==null?o.S.rows.length-1:+it.rz;
+   return gqCell(i,gqTab(it,o.S.rows,o.v,{n:nb,op:it.op})+`<div style="display:flex;gap:.4em;align-items:flex-end;margin-top:.4em"><span>L =</span>${it.sf?qLn(it,gLs(o.S.res),4):`<span>{</span>${qLn(it,o.S.res.typ==='one'?qH(o.S.res.x):'',3)}<span>}</span>`}</div>`+(it.pr&&o.pr?`<div style="margin-top:.35em">Probe:</div><div style="border-bottom:1.2px solid #000;min-height:1.6em;line-height:1.5;padding:0 .2em">${tlSv(it,gqV(o.pr,o.v))}</div>`:''));}).join(''));}
+ if(k==='gqs'){const TH='border:1.5px solid #000;padding:.35em .5em;text-align:center',HD='background:#eaf2f8;font-weight:700;font-size:.85em';
+  return wnH1('Welcher Lösungsfall liegt vor? Kreuze an'+(it.lo?' und gib die Lösungsmenge an!':'!'))+`<table style="border-collapse:collapse;width:100%"><tr><td style="${TH};${HD};text-align:left">Gleichung</td><td style="${TH};${HD};width:5.2em">genau eine Lösung</td><td style="${TH};${HD};width:5.2em">keine Lösung</td><td style="${TH};${HD};width:5.6em">unendlich viele Lösungen</td>${it.lo?`<td style="${TH};${HD};width:6em">L =</td>`:''}</tr>`+d.map((o,i)=>`<tr><td style="${TH};text-align:left;white-space:nowrap"><b>${poL(i)}</b> ${gqE(o)}</td>${['one','none','all'].map(t=>`<td style="${TH}">${sh&&o.S.res.typ===t?'<span class="sv">✗</span>':''}</td>`).join('')}${it.lo?`<td style="${TH}">${sh?`<span class="sv">${gLs(o.S.res)}</span>`:''}</td>`:''}</tr>`).join('')+'</table>';}
+ if(k==='gqu'){
+  if(md==='lu')return wnH1('Ergänze die Lücken und gib die Lösung der Gleichung an!')+tlGrid(Math.min(co,3),d.map((o,i)=>{const r=o.rows,op=r[0].op,V=s=>gqV(s,o.v),td='padding:.15em .2em;white-space:nowrap';
+    return gqCell(i,`<table style="border-collapse:collapse"><tr><td style="${td};text-align:right">${V(r[0].L)}</td><td>=</td><td style="${td}">${V(r[0].R)}</td><td style="${td}">| ${qLn(it,V(op),2.1)}</td></tr><tr><td style="${td};text-align:right">${V(r[0].L)} ${qLn(it,V(op),2.1)}</td><td>=</td><td style="${td}">${V(r[0].R)} ${qLn(it,V(op),2.1)}</td><td></td></tr><tr><td style="${td};text-align:right">${V(r[1].L)}</td><td>=</td><td style="${td}">${qLn(it,V(r[1].R),2.1)}</td><td></td></tr></table>`);}).join(''));
+  if(md==='lm')return wnH1('Ergänze die fehlenden Lücken!')+tlGrid(Math.min(co,3),d.map((o,i)=>{const R=o.S.rows,V=s=>gqV(s,o.v),td='padding:.18em .2em;white-space:nowrap',vs=/§/.test(R[R.length-1].L)?'L':'R';
+    return gqCell(i,`<table style="border-collapse:collapse">${R.map((r,j)=>{const last=j===R.length-1,bl=j>0&&(o.p==='zl'||last),cL=vs==='R'&&bl?qLn(it,V(r.L),2.8):V(r.L),cR=vs==='L'&&bl?qLn(it,V(r.R),2.8):V(r.R),opc=r.op?(j===0&&o.p==='op'?'| '+V(r.op):'| '+qLn(it,V(r.op),2.6)):'';
+     return `<tr><td style="${td};text-align:right">${cL}</td><td>=</td><td style="${td}">${cR}</td><td style="${td}">${opc}</td></tr>`;}).join('')}</table>`);}).join(''));
+  return wnH1('Gib die Äquivalenzumformung an, die durchgeführt wurde!')+tlGrid(Math.min(co,3),d.map((o,i)=>{const r=o.rows,td='padding:.18em .2em;white-space:nowrap';return gqCell(i,`<table style="border-collapse:collapse"><tr><td style="${td};text-align:right">${r[0].L}</td><td>=</td><td style="${td}">${r[0].R}</td><td style="${td}">| ${qLn(it,gqV(r[0].op,'x'),3)}</td></tr><tr><td style="${td};text-align:right">${r[1].L}</td><td>=</td><td style="${td}">${r[1].R}</td><td></td></tr></table>`.replace(/§/g,'x'));}).join(''));}
+ if(k==='gqw')return wnH1('Schreibe die dargestellte Gleichung an und bestimme die Lösung! Jede Kugel wiegt 1 kg, jede Schachtel x kg.')+tlGrid(Math.min(co,3),d.map((o,i)=>gqCell(i,gqWaage(o,o.v)+gqLine(it,'Gleichung:',gqV(o.eq,o.v),6)+(it.zl?(sh?`<div style="margin-top:.3em">${gqTab(it,o.rows,o.v,{sh:true})}</div>`:'<div style="border-bottom:1.2px solid #999;height:1.9em"></div>'.repeat(Math.max(1,o.rows.length-1))):'')+gqLine(it,'Lösung: L =',`{${o.x}}`,3))).join(''));
+ if(k==='gqe'){
+  if(md==='ek'){const per=5,rows=[];for(let j=0;j<d.length;j+=per)rows.push(d.slice(j,j+per));const TH='border:1.5px solid #000;padding:.35em .45em;text-align:center;white-space:nowrap';
+   return wnH1('Kreuze die Gleichungen an!')+`<div style="display:flex;flex-direction:column;gap:.7em">${rows.map(R=>`<table style="border-collapse:collapse;width:100%;table-layout:fixed"><tr>${R.map(o=>`<td style="${TH};background:#f4f8fc">${o.h}</td>`).join('')}${'<td></td>'.repeat(per-R.length)}</tr><tr>${R.map(o=>`<td style="${TH}">${gqBox(sh,o.ok)}</td>`).join('')}${'<td></td>'.repeat(per-R.length)}</tr></table>`).join('')}</div>`;}
+  if(md==='pb')return wnH1('Finde die Lösungsmenge der Gleichung durch Probieren!')+tlGrid(Math.min(+it.co||3,4),d.map((o,i)=>gqCell(i,`<div style="white-space:nowrap">${gqE(o)}</div><div style="margin-top:.35em;white-space:nowrap">L = {${qLn(it,qH(o.S.res.x),2.4)}}</div>`)).join(''));
+  if(md==='ls')return d.map((o,i)=>`<div style="break-inside:avoid;margin:.2em 0 .8em">${wnH1(`${d.length>1?poL(i)+' ':''}Kreuze die Gleichungen an, die die Lösungsmenge L = {${o.s<0?'−'+(-o.s):o.s}} besitzen!`).replace('class="wnh"','class="wnh0"')}<div style="display:flex;flex-wrap:wrap;gap:.6em 1.8em">${o.E.map((e,j)=>`<span style="white-space:nowrap">${gqBox(sh,e.ok)} <b>${['i','ii','iii','iv','v'][j]})</b> ${e.h}</span>`).join('')}</div></div>`).join('');
+  if(md==='zo'){const TH='border:1.5px solid #000;padding:.3em .5em;white-space:nowrap',HD='background:#eaf2f8;font-weight:700;text-align:center';
+   return wnH1('Kreuze die Lücken so an, dass eine richtige Aussage entsteht! Die Gleichung ① hat die Lösungsmenge ②.')+tlGrid(Math.min(2,d.length),d.map((o,i)=>gqCell(i,`<div style="display:flex;gap:1em;align-items:flex-start"><table style="border-collapse:collapse"><tr><td colspan="2" style="${TH};${HD}">①</td></tr>${o.E.map((e,j)=>`<tr><td style="${TH}">${e}</td><td style="${TH};width:1.6em;text-align:center">${gqBox(sh,j===o.k0)}</td></tr>`).join('')}</table><table style="border-collapse:collapse"><tr><td colspan="2" style="${TH};${HD}">②</td></tr>${o.Ls.map(s=>`<tr><td style="${TH}">L = {${s<0?'−'+(-s):s}}</td><td style="${TH};width:1.6em;text-align:center">${gqBox(sh,s===o.s[o.k0])}</td></tr>`).join('')}</table></div>`)).join(''));}
+  return wnH1('Finde mindestens zwei Gleichungen, die die angegebene Lösungsmenge besitzen!')+tlGrid(Math.min(co,2),d.map((o,i)=>gqCell(i,`<div>L = {${o.s<0?'−'+(-o.s):o.s}}</div>`+gqLine(it,'1. Gleichung:',o.a,6)+gqLine(it,'2. Gleichung:',o.b,6))).join(''));}
+ if(k==='gqf'){
+  if(md==='bw')return wnH1('Susi „beweist“ Pia und Zlatko, dass 5 = 2 ist. Finde den Fehler und erkläre ihn!')+`<div style="display:table;background:#f6f9fd;border:1px solid #cfdbea;border-radius:4px;padding:.4em .9em;color:#1f4e8c;line-height:1.75"><table style="border-collapse:collapse;color:#1f4e8c">${[['5 = 2 + 3','| ·(5 − 2)'],['5 · (5 − 2) = (2 + 3) · (5 − 2)','| ausmultiplizieren'],['25 − 10 = 10 + 15 − 4 − 6','| − 15'],['25 − 10 − 15 = 10 − 4 − 6','| faktorisieren'],['5 · (5 − 2 − 3) = 2 · (5 − 2 − 3)','| :(5 − 2 − 3)'],['5 = 2','']].map(r=>`<tr><td style="padding:0 1.2em 0 0">${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table></div>`+(sh?`<div class="sv" style="margin-top:.5em">Im vorletzten Schritt wird durch (5 − 2 − 3) dividiert. Dieser Term hat den Wert 0 – durch 0 darf man nicht dividieren. Die Umformung „: 0“ ist keine Äquivalenzumformung.</div>`:'<div style="border-bottom:1.2px solid #999;height:1.9em"></div><div style="border-bottom:1.2px solid #999;height:1.9em"></div><div style="border-bottom:1.2px solid #999;height:1.9em"></div>');
+  return wnH1('Beim Lösen der Gleichung wurde ein Fehler gemacht. Finde den Fehler, erkläre ihn, stelle richtig und mache die Probe!')+tlGrid(Math.min(co,2),d.map((o,i)=>gqCell(i,`<div style="display:inline-block;background:#f6f9fd;border:1px solid #cfdbea;border-radius:4px;padding:.25em .7em;min-width:60%">${gqTab(it,o.w,'x',{blue:1,lw:50,ow:28})}</div>`+(sh?`<div class="sv" style="margin-top:.35em;font-size:.9em">${gqV(o.why,'x')}</div><div style="margin-top:.2em">${gqTab(it,o.S,'x',{sh:true})}</div><div class="sv">L = ${o.res}</div>`:'<div style="border-bottom:1.2px solid #999;height:1.9em"></div>'.repeat(4)))).join(''));}
+ if(k==='gqt'){
+  if(md==='zo'){const o=d[0];if(!o)return '';const LT='ABCDEFGHIJ',TH='border:1.5px solid #000;padding:.35em .55em';
+   return wnH1('Welcher Rechenausdruck passt zu welcher Aussage? Schreibe den passenden Buchstaben in das Kästchen! (Zwei Rechenausdrücke bleiben übrig.)')+`<div style="display:flex;gap:1.5em;align-items:flex-start;flex-wrap:wrap"><table style="border-collapse:collapse;flex:1">${o.P.map((p,j)=>`<tr><td style="${TH}"><b>${j+1}</b> ${p}</td><td style="${TH};width:2.2em;text-align:center">${sh?`<span class="sv">${LT[o.E.findIndex(e=>e.i===j)]}</span>`:''}</td></tr>`).join('')}</table><table style="border-collapse:collapse">${o.E.map((e,j)=>`<tr><td style="${TH};background:#eaf2f8;font-weight:700">${LT[j]}</td><td style="${TH};white-space:nowrap">${e.h}</td></tr>`).join('')}</table></div>`;}
+  if(md==='gt')return wnH1('Erfinde zur gegebenen Gleichung einen passenden Text und löse die Gleichung!')+tlGrid(Math.min(co,2),d.map((o,i)=>gqCell(i,`<div style="white-space:nowrap">${gqV(o.eq,'x')}</div>`+gqLine(it,'Text:',o.tx,6)+(sh?'':'<div style="border-bottom:1.2px solid #999;height:1.9em"></div>')+gqLine(it,'Lösung: L =',`{${o.x}}`,3))).join(''));
+  if(md==='wf')return wnH1('Erkläre, warum eine der Gleichungen falsch ist, die anderen aber den Sachverhalt richtig darstellen! Löse die Gleichung.')+d.map((o,i)=>{const w=o.E.findIndex(e=>!e[1]);return gqCell(i,`<div>${o.t} ${o.P.map((p,j)=>`<span style="white-space:nowrap;margin-right:1.4em">${p}: ${o.E[j][0]}</span>`).join(' ')}</div>`+(sh?`<div class="sv" style="margin-top:.3em">${o.P[w]}s Gleichung ist falsch: „um ${o.a} kleiner als ${o.b}“ bedeutet, dass man zum ${GQW[o.k]}n noch ${o.a} addieren muss, um ${o.b} zu erhalten (oder ${o.b} − ${o.a} rechnet). Die Zahl heißt ${o.x}.</div>`:'<div style="border-bottom:1.2px solid #999;height:1.9em"></div>'.repeat(2)));}).join('');
+  const nr=+it.rz||0;
+  return wnH1('Stelle eine Gleichung auf und löse sie! Überprüfe die Lösung anhand des Textes und schreibe einen Antwortsatz.')+d.map((o,i)=>'<div style="margin-bottom:.9em">'+gqCell(i,`<div>${o.t}</div>`+(it.vl?gqLine(it,'x …',o.vd,8):'')+(it.gl?gqLine(it,'Gleichung:',gqV(o.eq,'x'),10):'')+(nr?`<div style="margin-top:.2em;min-height:${nr*1.9}em;border-bottom:1.2px solid #999;line-height:1.9;${sh?'':'background:repeating-linear-gradient(to bottom,transparent 0,transparent calc(1.9em - 1.2px),#999 calc(1.9em - 1.2px),#999 1.9em)'}">${sh?`<span class="sv">${gqV((o.rows[0].op?o.rows:o.rows.slice(1)).map((r,j)=>`${r.L} = ${r.R}`+(r.op?` &nbsp;| ${r.op}`:'')).join(' &nbsp;⇒&nbsp; '),'x')}</span>`:''}</div>`:'')+(it.al?gqLine(it,'Antwort:',o.ans,10):''))+'</div>').join('');}
+ return '';}
+function gqMerk(it){const tab=(R,w)=>`<table style="border-collapse:collapse;margin:.2em 0">${R.map(r=>`<tr><td style="text-align:right;padding:0 .3em;white-space:nowrap">${r[0]}</td><td>=</td><td style="padding:0 .3em;white-space:nowrap">${r[1]}</td><td style="color:#c0392b;white-space:nowrap;padding-left:.4em">${r[2]?'| '+r[2]:''}</td>${w?`<td style="padding-left:1.2em;font-size:.9em;color:#33415c">${r[3]||''}</td>`:''}</tr>`).join('')}</table>`;
+ const M={
+ gl:['Gleichung und Lösung einer Gleichung',[['Gleichung','Zwei Terme, zwischen denen „=“ (Gleichheitszeichen) steht, bilden eine <b>Gleichung</b>. Beispiel: 3x + 5 = 11'],['Lösung','Setzt man für die Variable eine Zahl ein und entsteht eine richtige (wahre) Aussage, ist diese Zahl eine <b>Lösung der Gleichung</b>.<br>x = 2: &nbsp;3 · 2 + 5 = 11 &nbsp;⇒&nbsp; 11 = 11 ✓'],['Lösungsmenge','Die Lösungsmenge L ist die Menge aller Lösungen einer Gleichung: &nbsp;L = {2}'],['Keine Gleichungen','3x + 5 (Term, kein „=“) &nbsp; · &nbsp; 23 + 12 = (unvollständig)']]],
+ au:['Äquivalenzumformungen',[['Waage','Eine Gleichung kann man sich als <b>Waage im Gleichgewicht</b> vorstellen. Was man auf einer Seite verändert, muss man auch auf der anderen Seite verändern.'],['Erlaubte Umformungen','— auf beiden Seiten denselben Term <b>addieren</b> bzw. <b>subtrahieren</b><br>— beide Seiten mit derselben Zahl (≠ 0) <b>multiplizieren</b> bzw. durch dieselbe Zahl (≠ 0) <b>dividieren</b>'],['Schreibweise','Die Umformung steht hinter einem senkrechten Strich:'+tab([['x + 2','6','−2'],['x','4','']])],['Ziel','Die Variable steht allein auf einer Seite. Die Lösungsmenge bleibt bei jeder Umformung gleich (äquivalent = gleichwertig).']]],
+ mu:['Muster: Lösen einer Gleichung mit Probe',[['Löse 2x + 13 = 24',tab([['2x + 13','24','−13','1. Die Addition umkehren'],['2x','11',':2','2. Die Multiplikation umkehren'],['x','5,5','','L = {5,5}']],1)],['3. Probe','Die Lösung statt der Variablen einsetzen: &nbsp;2 · 5,5 + 13 = 24 &nbsp;⇒&nbsp; 11 + 13 = 24 &nbsp;⇒&nbsp; 24 = 24 ✓'],['Variable auf beiden Seiten',tab([['5x − 12','8x + 30','−8x','Variablen auf eine Seite'],['−3x − 12','30','+12','Zahlen auf die andere Seite'],['−3x','42',':(−3)',''],['x','−14','','L = {−14}']],1)],['Tipp','−x = −5 &nbsp;| ·(−1) &nbsp;⇒&nbsp; x = 5']]],
+ kl:['Gleichungen mit Klammern',[['Reihenfolge','1. Klammern auflösen &nbsp; 2. Terme vereinfachen &nbsp; 3. mit Äquivalenzumformungen lösen &nbsp; 4. Probe'],['Beispiel',tab([['3(x + 5) − 2x','−3(x − 1)','','Klammern auflösen'],['3x + 15 − 2x','−3x + 3','','vereinfachen'],['x + 15','−3x + 3','+3x',''],['4x + 15','3','−15',''],['4x','−12',':4',''],['x','−3','','L = {−3}']],1)],['Probe','3 · (−3 + 5) − 2 · (−3) = −3 · (−3 − 1) &nbsp;⇒&nbsp; 12 = 12 ✓'],['Quadrierte Variablen','Fallen x² auf beiden Seiten weg: (x + 1)² = (x − 3)(x + 3) &nbsp;⇒&nbsp; x² + 2x + 1 = x² − 9 &nbsp;| −x²']]],
+ sf:['Sonderfälle beim Lösen von Gleichungen',[['Genau eine Lösung','Am Ende steht x = Zahl, z. B. L = {4}.'],['1. Sonderfall: keine Lösung','Die Variable fällt weg und es entsteht eine <b>falsche Aussage</b>:<br>4(2x − 1) + 3 = 2(1 + 4x) &nbsp;⇒&nbsp; 8x − 1 = 2 + 8x &nbsp;| −8x &nbsp;⇒&nbsp; −1 = 2 &nbsp;falsch<br>Die Lösungsmenge ist die leere Menge: <b>L = { }</b>'],['2. Sonderfall: unendlich viele Lösungen','Die Variable fällt weg und es entsteht eine <b>richtige Aussage</b>:<br>2x + 3(1 − x) = −x + 3 &nbsp;⇒&nbsp; −x + 3 = −x + 3 &nbsp;| +x &nbsp;⇒&nbsp; 3 = 3 &nbsp;wahr<br>Jede rationale Zahl ist eine Lösung: <b>L = ℚ</b>']]],
+ tx:['Lösen von Textaufgaben',[['1. Lesen','Lies den Text aufmerksam durch und wähle für die gesuchte Größe eine Variable, z. B. x … Alter von Lina.'],['2. Gleichung','Übertrage die Informationen aus dem Text in eine Gleichung.'],['3. Lösen','Löse die Gleichung.'],['4. Kontrolle','Überprüfe anhand des Textes, ob die Lösung passt und sinnvoll ist.'],['5. Antwort','Schreibe einen Antwortsatz.'],['Wörter → Rechenzeichen','vermehrt um, Summe → + &nbsp;· vermindert um, Differenz → − &nbsp;· das Doppelte, Dreifache … → 2x, 3x &nbsp;· die Hälfte, ein Drittel → x/2, x/3 &nbsp;· „um 13 größer als 23“ → = 23 + 13 &nbsp;· Gegenzahl → −x']]]};
+ const t=M[it.md]||M.gl;return MKB(t[0],t[1]);}
+function gqSol(it){const d=(it.d||[]).filter(Boolean),k=it.type,md=it.md;try{
+ if(k==='gql')return d.map(o=>'L = '+gLsT(o.S.res));if(k==='gqs')return d.map(o=>'L = '+gLsT(o.S.res));
+ if(k==='gqu'&&md==='lu')return d.map(o=>o.rows[1].R);if(k==='gqu'&&md==='lm')return d.map(o=>qT(o.S.res.x));
+ if(k==='gqw')return d.map(o=>'x = '+o.x);if(k==='gqe'&&md==='pb')return d.map(o=>'L = '+gLsT(o.S.res));
+ if(k==='gqt'&&!['zo','gt','wf'].includes(md))return d.map(o=>'x = '+(o.x<0?'−'+(-o.x):o.x));if(k==='gqt'&&md==='gt')return d.map(o=>'x = '+o.x);
+ }catch(e){}return [];}
+{const _g=rqGen,_b=rqBlk,_s=rqSol;const DISP=['show','co','fs','nc','pr','op','rz','vl','gl','al','lo','zl'];
+ rqGen=function(it){if(!GQT.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;window.__NG=+it.ng||0;try{return gqGen(it);}finally{window.__NG=0;}};
+ rqBlk=function(it){return GQT.includes(it.type)?gqBlk(it):_b(it);};
+ rqSol=function(it){return GQT.includes(it.type)?gqSol(it):_s(it);};
+ $('#rp').addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.rq;if(k)window.__GQK=k;},true);
+ $('#rp').addEventListener('click',e=>{if(e.target.closest('[data-rq-act]'))window.__GQF=1;},true);}
+const GQN=[['n','sel',[2,3,4,5,6,8,9,10,12].map(x=>[x,x+' Aufgaben']),'Anzahl']];
+Object.assign(RQP,{gqk:[['md','sel',[['gl','Gleichung und Lösung'],['au','Äquivalenzumformungen (Waage)'],['mu','Muster: Lösen mit Probe'],['kl','Gleichungen mit Klammern'],['sf','Sonderfälle: L = { } und L = ℚ'],['tx','Lösen von Textaufgaben']],'Inhalt']],
+ gqe:[['md','sel',[['ek','Gleichungen erkennen (ankreuzen)'],['pb','Lösungsmenge durch Probieren'],['ls','Welche Gleichungen haben L = {…}?'],['zo','Gleichung und Lösungsmenge ankreuzen'],['fi','Gleichungen zu L = {…} finden']],'Aufgabe'],['n','sel',[1,2,3,4,5,6,8,10,12,15].map(x=>[x,x]),'Anzahl'],['co','sel',[[1,1],[2,2],[3,3],[4,4]],'Spalten',it=>['pb','fi'].includes(it.md)],['RG']],
+ gqw:[['n','sel',[1,2,3,4,5,6].map(x=>[x,x+' Waagen']),'Anzahl'],['co','sel',[[1,1],[2,2]],'Spalten'],['wv','sel',[['1','x nur auf einer Seite'],['2','x auf beiden Seiten'],['mix','gemischt']],'Waagen'],['zl','ck','Zeilen für die Umformungen']],
+ gqu:[['md','sel',[['lu','Lücken: eine Umformung (x + 8 = 12 | −8)'],['lm','Lücken: mehrere Umformungen'],['ag','Welche Umformung wurde durchgeführt?']],'Aufgabe'],['n','sel',[2,3,4,6,8,9,12].map(x=>[x,x+' Aufgaben']),'Anzahl'],['co','sel',[[1,1],[2,2],[3,3]],'Spalten'],['lk','sel',[['mix','gemischt'],['op','nur Umformungen'],['zl','Umformungen und Zahlen']],'Lücken',it=>it.md==='lm'],['RG']],
+ gql:[['md','sel',[['e1','mit einer Umformung (x + 8 = 12, 5x = 35, x : 7 = 10)'],['zw','zweistufig (5x + 13 = 21)'],['bs','Variable auf beiden Seiten'],['kl','mit Klammern'],['qu','quadrierte Variablen fallen weg'],['mix','gemischt']],'Gleichungsart'],['n','sel',[2,3,4,5,6,8,9,10,12].map(x=>[x,x+' Aufgaben']),'Anzahl'],['co','sel',[[1,1],[2,2],[3,3]],'Spalten'],['RG'],['lv','sel',[[1,'klein'],[2,'mittel'],[3,'groß']],'Zahlengröße'],['za','sel',[['ga','ganze Zahlen'],['dz','auch Dezimalzahlen (x = 5,5)'],['br','auch Brüche (x = 2/3)']],'Lösung'],['va','sel',[['x','x'],['mix','verschiedene Variablen (a, b, y, z …)']],'Variable'],['rz','sel',[['auto','so viele wie nötig'],['0','keine'],['2','2'],['3','3'],['4','4'],['5','5'],['6','6']],'Rechenzeilen'],['nz','ck','negative Zahlen in der Angabe'],['sf','ck','auch Sonderfälle (L = { }, L = ℚ)'],['op','ck','Umformungsstrich in der 1. Zeile'],['pr','ck','Probe-Zeile']],
+ gqs:[['n','sel',[3,4,5,6,8,9,10,12].map(x=>[x,x+' Gleichungen']),'Anzahl'],['lo','ck','Lösungsmenge angeben']],
+ gqf:[['md','sel',[['fe','Fehler beim Lösen finden'],['bw','Knobelei: „Beweis“, dass 5 = 2']],'Aufgabe'],['n','sel',[1,2,3,4,5,6].map(x=>[x,x]),'Anzahl',it=>it.md==='fe'],['co','sel',[[1,1],[2,2]],'Spalten',it=>it.md==='fe']],
+ gqt:[['md','sel',[['zr','Zahlenrätsel'],['af','aufeinanderfolgende Zahlen'],['al','Altersrätsel'],['te','Teilungsaufgaben (Geld aufteilen)'],['mix','gemischt'],['zo','Aussage und Rechenausdruck zuordnen'],['gt','Text zur Gleichung erfinden'],['wf','Welche Gleichung ist falsch?']],'Aufgabe'],['n','sel',[1,2,3,4,5,6,8].map(x=>[x,x]),'Anzahl'],['lv','sel',[[1,'klein'],[2,'mittel'],[3,'groß']],'Zahlengröße',it=>!['zo','gt','wf'].includes(it.md)],['co','sel',[[1,1],[2,2]],'Spalten',it=>it.md==='gt'],['vl','ck','Zeile „x … “ (Variable festlegen)',it=>!['zo','gt','wf'].includes(it.md)],['gl','ck','Zeile „Gleichung“',it=>!['zo','gt','wf'].includes(it.md)],['rz','sel',[['0','keine'],['2','2'],['3','3'],['4','4'],['5','5']],'Rechenzeilen',it=>!['zo','gt','wf'].includes(it.md)],['al','ck','Zeile „Antwort“',it=>!['zo','gt','wf'].includes(it.md)],['nz','ck','auch negative Zahlen (Gegenzahl)',it=>it.md==='zr'||it.md==='mix']]});
+
 {const a=AST.find(g=>g[1]&&g[1].some&&g[1].some(e=>e[0]==='bd'));if(a)a[1].push(['b2w','Bruch und Worte','Gib an, welcher Anteil färbig ist. Schreibe als Bruch und in Worten!'],['b2f','Bruchteil markieren','Markiere den angegebenen Anteil der Fläche!'],['b1g','Gleich große Teile?','Ist der gefärbte Teil der angegebene Bruchteil? Kreuze an!'],['b1z','Brüche am Zahlenstrahl','Gib die Schrittweite an und lies die Zahlen ab!'],['b1u','Bruchart und gemischte Zahlen','Schreibe als gemischte Zahl und als unechten Bruch!'],['b2e','Kürzen und Erweitern','Kürze bzw. erweitere!'],['b2v','Brüche vergleichen','Vergleiche!'],['b2r','Rechnen mit Brüchen','Berechne!'],['b1m','Bruchteile von Mengen','Welcher Bruchteil der Kreise ist gefärbt?'],['b1s','Bruchteile von Größen','Berechne!'],['b1d','Bruch als Division','Wie viel bekommt jedes Kind?']);}
 {const PO=(t,lbl,ins,set)=>({t,lbl,ins,set:Object.assign({nh:true,w:714},set)}),MK='Schreibe den Merktext genau so in dein Heft!';
  Object.assign(AST_FAM,{
@@ -13110,6 +13421,46 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
  const ach=document.querySelector('#ast-ab .ach');
  if(ach){ach.insertAdjacentHTML('beforeend',ZF.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join(''));
   ZF.forEach(k=>{const l=ach.querySelector(`input[value="${k}"]`).parentNode;l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0));});}
+}catch(e){console.error(e);}})();
+
+/* ===== Gleichungen 3. Klasse: Palette, Themenblätter ===== */
+(function(){try{const P=document.querySelector('#gepal');if(!P)return;
+ const T=(x,y,t,s,b,c)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${s||11}" fill="${c||'#000'}"${b?' font-weight="700"':''}>${t}</text>`,hd=t=>`<div style="font-weight:700;font-size:12.5px;margin:10px 0 6px;padding:4px 6px;background:#eef2f8;border-radius:5px;color:#33415c">${t}</div>`;
+ const IC={gqk:'<rect x="14" y="4" width="72" height="32" rx="5" fill="#f3f6ff" stroke="#1f3a8a" stroke-width="2"/>'+T(50,25,'L = {2}',13,1,'#1f3a8a'),
+  gqe:'<path d="M8 6H92V34H8ZM8 20H92M36 6V34M64 6V34" fill="none" stroke="#777"/>'+T(22,16,'2x+6=10',6.5)+T(50,16,'3x + 1',7)+T(78,16,'9 = 5x',7)+T(22,30,'✗',9,1,'#c0392b'),
+  gqw:'<path d="M50 22L42 36H58Z" fill="#8a8f98"/><rect x="14" y="20" width="72" height="3" fill="#6b7280"/><rect x="18" y="9" width="10" height="10" fill="#dbe8f7" stroke="#1f5fa8"/>'+T(23,17,'x',8,1,'#1f3a8a')+'<circle cx="35" cy="14" r="4.5" fill="#fde9b8" stroke="#b9770e"/><circle cx="66" cy="14" r="4.5" fill="#fde9b8" stroke="#b9770e"/><circle cx="76" cy="14" r="4.5" fill="#fde9b8" stroke="#b9770e"/>',
+  gqu:T(40,17,'x + 8 = 12',10)+T(80,17,'| −8',10,1,'#c0392b')+T(40,32,'x = 4',10),
+  gql:T(42,15,'2x + 13 = 24',9.5)+T(82,15,'| −13',8,1,'#c0392b')+T(42,30,'2x = 11',9.5)+T(82,30,'| :2',8,1,'#c0392b'),
+  gqs:T(50,17,'−1 = 2  falsch',10)+T(50,32,'L = { }   L = ℚ',10,1),
+  gqf:'<rect x="10" y="5" width="80" height="30" rx="3" fill="#f6f9fd" stroke="#cfdbea"/>'+T(50,18,'14 + x = 21',9,0,'#1f4e8c')+T(50,30,'x = 35 ?',9,1,'#c0392b'),
+  gqt:T(50,15,'Lina ist 6 Jahre älter …',8)+T(50,31,'x + (x + 6) = 22',10)};
+ const tile=t=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${IC[t]}</svg><span>${TLN[t]}</span></div>`;
+ P.insertAdjacentHTML('afterbegin',hd('1./2. Klasse: einfache Gleichungen'));
+ P.insertAdjacentHTML('beforeend',hd('3. Klasse: Kap. 18 Lösen von Gleichungen')+['gqk','gqe','gqw','gqu','gql','gqs','gqf'].map(tile).join('')+hd('3. Klasse: Kap. 19 Textgleichungen')+tile('gqt'));
+ const _co=catOf;catOf=function(it){return it&&GQT.includes(it.type)?'ge':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&GQT.includes(it.type)&&cat==='ge')$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='gqk');try{return _h.apply(this,arguments);}finally{items=keep;}};
+ const N={gql:'Gleichungen lösen',gqu:'Äquivalenzumformungen',gqw:'Waage',gqt:'Textgleichungen',gqs:'Lösungsfälle',gqe:'Lösungsmenge'};Object.keys(N).forEach(t=>{if(!LBT.includes(t))LBT.push(t);LBN[t]=N[t];});
+ const PO=(t,lbl,ins,set)=>({t,lbl,ins,set:Object.assign({nh:true,w:714},set)}),MK='Schreibe den Merktext genau so in dein Heft!';
+ Object.assign(AST_FAM,{
+  gq0:[PO('gqk','Merkkasten',MK,{md:'gl'}),PO('gqe','Erkennen','Kreuze die Gleichungen an!',{md:'ek',n:10}),PO('gqe','Probieren','Finde die Lösungsmenge durch Probieren!',{md:'pb',n:8,co:4,mn:0,mx:12}),PO('gqe','Ankreuzen','Kreuze so an, dass eine richtige Aussage entsteht!',{md:'zo',n:2})],
+  gq1:[PO('gqk','Merkkasten',MK,{md:'au'}),PO('gqw','Waage','Schreibe die Gleichung an und bestimme die Lösung!',{n:4,co:2,wv:'mix',zl:false}),PO('gqu','Lücken','Ergänze die Lücken!',{md:'lu',n:6,co:2,mn:1,mx:20})],
+  gq2:[PO('gql','Eine Umformung','Löse mit einer Äquivalenzumformung!',{md:'e1',n:9,co:3,mn:-12,mx:20,za:'ga',pr:false,rz:'auto',nz:true}),PO('gqu','Umformung','Gib die Äquivalenzumformung an!',{md:'ag',n:6,co:3}),PO('gqe','Gleichungen finden','Finde zwei Gleichungen!',{md:'fi',n:2,co:2,mn:-5,mx:9})],
+  gq3:[PO('gqk','Muster',MK,{md:'mu'}),PO('gqu','Lücken','Ergänze die fehlenden Lücken!',{md:'lm',n:3,co:3,lk:'mix'}),PO('gql','Zweistufig','Löse und mache die Probe!',{md:'zw',n:4,co:2,mn:-10,mx:10,za:'dz',pr:true,nz:true})],
+  gq4:[PO('gql','Beide Seiten','Löse und mache die Probe!',{md:'bs',n:4,co:2,mn:-15,mx:15,pr:true,nz:true}),PO('gqf','Fehler','Finde den Fehler!',{md:'fe',n:4,co:2})],
+  gq5:[PO('gqk','Merkkasten',MK,{md:'kl'}),PO('gql','Klammern','Löse und mache die Probe!',{md:'kl',n:4,co:2,mn:-10,mx:10,pr:true,nz:true})],
+  gq6:[PO('gqk','Merkkasten',MK,{md:'sf'}),PO('gqs','Lösungsfälle','Welcher Lösungsfall liegt vor?',{n:6,lo:true}),PO('gql','Lösungsmenge','Bestimme die Lösungsmenge!',{md:'kl',n:2,co:2,mn:-10,mx:10,sf:true,pr:false,nz:true})],
+  gq7:[PO('gql','Quadrate','Löse die Gleichung!',{md:'qu',n:4,co:2,mn:-10,mx:10,pr:false,nz:true}),PO('gqf','Knobelei','Finde den Fehler!',{md:'bw'})],
+  gq8:[PO('gqk','Merkkasten',MK,{md:'tx'}),PO('gqt','Zuordnen','Ordne zu!',{md:'zo',n:6}),PO('gqt','Zahlenrätsel','Stelle eine Gleichung auf und löse sie!',{md:'zr',n:3,rz:'2'})],
+  gq9:[PO('gqt','Altersrätsel','Stelle eine Gleichung auf und löse sie!',{md:'al',n:3,rz:'3'}),PO('gqt','Aufeinanderfolgend','Stelle eine Gleichung auf und löse sie!',{md:'af',n:2,rz:'2'})],
+  gq10:[PO('gqt','Teilungsaufgaben','Stelle eine Gleichung auf und löse sie!',{md:'te',n:4,rz:'3'})],
+  gq11:[PO('gqe','Erkennen','Kreuze die Gleichungen an!',{md:'ek',n:5}),PO('gqe','Lösungsmenge','Welche Gleichungen haben diese Lösungsmenge?',{md:'ls',n:1,mn:2,mx:6}),PO('gqu','Umformung','Ergänze die Umformung!',{md:'ag',n:3,co:3}),PO('gql','Lösen','Bestimme die Lösungsmenge!',{md:'kl',n:2,co:2,pr:false,nz:true,sf:true}),PO('gqt','Text','Löse die Textaufgaben!',{md:'mix',n:2,rz:'2'})]});
+ const GF2=['gq0','gq1','gq2','gq3','gq4','gq5','gq6','gq7','gq8','gq9','gq10','gq11'];GF2.forEach(k=>AST_FM[k]=k);
+ Object.assign(AST_FN,{gq0:'Gleichung und Lösungsmenge (Kap. 18)',gq1:'Waage und Äquivalenzumformungen (Kap. 18)',gq2:'Gleichungen mit einer Umformung lösen (Kap. 18)',gq3:'Zweistufige Gleichungen mit Probe (Kap. 18)',gq4:'Variable auf beiden Seiten, Fehler finden (Kap. 18)',gq5:'Gleichungen mit Klammern (Kap. 18)',gq6:'Sonderfälle: L = { } und L = ℚ (Kap. 18)',gq7:'Quadrierte Variablen fallen weg (Kap. 18)',gq8:'Textgleichungen: Zahlenrätsel (Kap. 19)',gq9:'Textgleichungen: Altersrätsel (Kap. 19)',gq10:'Textgleichungen: Teilungsaufgaben (Kap. 19)',gq11:'Gleichungen: Selbstkontrolle (Gecheckt?)'});
+ const _ae=astEntries;astEntries=function(s,f){return f?_ae(s,f):_ae(s.filter(k=>!GF2.includes(k)),f);};
+ const ach=document.querySelector('#ast-ab .ach');
+ if(ach){ach.insertAdjacentHTML('beforeend',GF2.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join(''));
+  GF2.forEach(k=>{const l=ach.querySelector(`input[value="${k}"]`).parentNode;l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0));});}
 }catch(e){console.error(e);}})();
 
 /* ===== 4.0 Ganze und rationale Zahlen ===== */
