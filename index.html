@@ -14016,6 +14016,36 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
  b1.onclick=()=>numberAll();b2.onclick=()=>unnumberAll();
 }catch(e){console.error(e);}})();
 
+/* ===== Halbe Seiten: Schnittlinie, nach unten kopieren, Nummerierung je Hälfte ===== */
+(function(){try{
+ POT.push('cutl');TLT.push('cutl');RQT.push('cutl');TLN.cutl='✂ Schnittlinie (halbe Seite)';TLD.cutl={x:10,w:774};RQP.cutl=[];
+ const cutHtml=()=>`<div style="position:relative;height:16px"><div style="position:absolute;left:0;right:0;top:8px;border-top:1.6px dashed #888"></div><span style="position:absolute;left:4px;top:-2px;background:#fff;padding:0 3px;font-size:15px;line-height:18px;color:#555">✂</span></div>`;
+ {const _g=rqGen,_b=rqBlk,_s=rqSol;rqGen=function(it){if(it.type==='cutl'){it.d=[];return;}return _g(it);};rqBlk=function(it){return it.type==='cutl'?cutHtml():_b(it);};rqSol=function(it){return it.type==='cutl'?[]:_s(it);};}
+ const _co=catOf;catOf=function(it){return it&&it.type==='cutl'?'tx':_co.apply(this,arguments);};
+ const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='cutl');try{return _h.apply(this,arguments);}finally{items=keep;}};
+ const P=document.querySelector('.catp[data-c="tx"]');if(P)P.insertAdjacentHTML('beforeend',`<div class="pal" draggable="true" data-t="cutl" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><path d="M6 20H94" stroke="#888" stroke-width="1.6" stroke-dasharray="5 4"/><text x="12" y="25" font-size="15" text-anchor="middle" fill="#555">✂</text></svg><span>${TLN.cutl}</span></div>`);
+ /* Nummern beginnen unter jeder Schnittlinie wieder bei 1 */
+ const AB='abcdefghijklmnopqrstuvwxyz';
+ const _mk=mk;mk=function(it){const ret=_mk.apply(this,arguments);try{if(it.type==='num'){const e=ret&&ret.nodeType?ret:sheet.querySelector('.item[data-id="'+it.id+'"]');const cuts=items.filter(i=>i.type==='cutl').map(i=>i.y);if(cuts.length){const sec=y=>cuts.filter(c=>c<y+4).length;const same=items.filter(i=>i.type==='num'&&i.kind===it.kind&&sec(i.y)===sec(it.y)).sort((a,b)=>a.y-b.y||a.x-b.x),k=same.indexOf(it),dv=e&&e.querySelector('div');if(e&&dv&&k>=0)dv.textContent=it.kind==='n'?(k+1)+'.':AB[k%26]+')';}}}catch(_){}return ret;};
+ const H=i=>{const e=elOf(i.id);return e?e.offsetHeight:0;};
+ const curPage=()=>{const s=items.find(i=>i.id===sel);if(s)return Math.floor(s.y/PH);const c=items.filter(i=>i.type==='cutl');return c.length?Math.floor(c[c.length-1].y/PH):0;};
+ window.halfCut=function(){const p=curPage(),y=Math.round(p*PH+PH/2-8);if(items.some(i=>i.type==='cutl'&&Math.abs(i.y-y)<30)){toast('Auf dieser Seite gibt es schon eine Schnittlinie.');return;}
+  const over=items.filter(i=>i.type!=='frm'&&i.type!=='ckf'&&i.y<y&&i.y+H(i)>y+2&&i.y>=p*PH);
+  add('cutl',10,y);const c=items[items.length-1];c.x=10;c.w=774;c.y=y;render();
+  toast(over.length?`Schnittlinie eingefügt. Achtung: ${over.length} Element${over.length>1?'e ragen':' ragt'} über die Mitte – bitte verkleinern oder verschieben.`:'Schnittlinie in der Seitenmitte eingefügt. Die Nummerierung beginnt darunter wieder bei 1.');};
+ window.halfCopy=function(regen){const p=curPage(),cut=items.filter(i=>i.type==='cutl'&&Math.floor(i.y/PH)===p)[0];if(!cut){toast('Bitte zuerst eine Schnittlinie einfügen (✂️ Halbe Seite → Schnittlinie in die Mitte).');return;}
+  const top=p*PH,sh=cut.y-top,src=items.filter(i=>i!==cut&&i.type!=='frm'&&i.type!=='ckf'&&i.type!=='cutl'&&i.y>=top&&i.y<cut.y);if(!src.length){toast('Über der Schnittlinie ist noch nichts.');return;}
+  const over=src.filter(i=>i.y+H(i)>cut.y+2).length;rec();const R0=rec;rec=()=>{};
+  try{const old=items.filter(i=>i!==cut&&i.type!=='frm'&&i.type!=='ckf'&&i.y>=cut.y&&i.y<top+PH).length;items=items.filter(i=>!(i!==cut&&i.type!=='frm'&&i.type!=='ckf'&&i.y>=cut.y&&i.y<top+PH));
+   const gm={};src.forEach(i=>{const c=JSON.parse(JSON.stringify(i));c.id=uid++;c.y=Math.round(i.y+sh);if(i.gid){gm[i.gid]=gm[i.gid]||uid++;c.gid=gm[i.gid];}items.push(c);if(regen&&POT.includes(c.type)&&c.d){try{poGen(c);}catch(_){}}});
+   render();toast((regen?'Obere Hälfte mit neuen Zahlen nach unten kopiert.':'Obere Hälfte nach unten kopiert.')+(old?' Der alte Inhalt unten wurde ersetzt (Rückgängig möglich).':'')+(over?' Achtung: Die obere Hälfte ist zu lang – die Kopie ragt über den Seitenrand.':''));}finally{rec=R0;}};
+ window.halfDel=function(){const n=items.filter(i=>i.type==='cutl').length;if(!n){toast('Es gibt keine Schnittlinie.');return;}rec();items=items.filter(i=>i.type!=='cutl');render();toast('Schnittlinien entfernt.');};
+ const anchor=document.getElementById('numdel')||(document.getElementById('autot')||{}).closest&&document.getElementById('autot').closest('label');if(!anchor)return;
+ const s=document.createElement('select');s.id='halfm';s.title='Halbe Seiten: zwei Themen oder zweimal dasselbe auf ein A4-Blatt';s.style.cssText='margin-left:6px;padding:3px 6px;border:1px solid #9aa3ad;border-radius:5px;background:#fff;font:inherit;cursor:pointer';
+ s.innerHTML='<option value="">✂️ Halbe Seite …</option><option value="cut">Schnittlinie in die Mitte</option><option value="copy">Obere Hälfte nach unten kopieren</option><option value="regen">Obere Hälfte nach unten kopieren – mit neuen Zahlen</option><option value="del">Schnittlinien entfernen</option>';
+ s.onchange=()=>{const v=s.value;s.value='';if(v==='cut')halfCut();else if(v==='copy')halfCopy(false);else if(v==='regen')halfCopy(true);else if(v==='del')halfDel();};anchor.after(s);
+}catch(e){console.error(e);}})();
+
 /* ===== 4.0 Ganze und rationale Zahlen ===== */
 (function(){try{const R=kri,P=tpick,A=(t,a)=>({t:t.replace(/^([^:]+):/,'<b>$1:</b>'),q:'Antwort',a,sp:4}),N=zN,S=zS,F=(n,d)=>(n<0?'−':'')+frc(Math.abs(n),d),nm=()=>P(['Lena','Jonas','Mia','Paul','Sara','Tim','Emma','Noah']);
  Z40TH.gz='gz';zrNm.gz='Ganze und rationale Zahlen';
