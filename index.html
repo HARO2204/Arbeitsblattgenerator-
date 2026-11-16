@@ -14046,6 +14046,26 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
  s.onchange=()=>{const v=s.value;s.value='';if(v==='cut')halfCut();else if(v==='copy')halfCopy(false);else if(v==='regen')halfCopy(true);else if(v==='del')halfDel();};anchor.after(s);
 }catch(e){console.error(e);}})();
 
+/* ===== Merkkasten KLAPUSTRIX ===== */
+(function(){try{
+ POT.push('kpk');TLT.push('kpk');RQT.push('kpk');TLN.kpk='Merkkasten: KLAPUSTRIX (Reihenfolge der Rechenarten)';TLD.kpk={w:714,bs:'nat',kf:true};
+ const C={k:'#c0392b',p:'#1f5fa8',s:'#2e7d32'},W=(t,c,on)=>on?`<b style="color:${c}">${t}</b>`:`<b>${t}</b>`;
+ function kpBlk(it){const f=it.kf!==false,BS={nat:['3 + 2 · (8 + 3)','(8 + 3) = 11','3 + 2 · 11','2 · 11 = 22','3 + 22','3 + 22 = 25','25'],dez:['1,5 + 2 · (0,8 + 1,2)','(0,8 + 1,2) = 2','1,5 + 2 · 2','2 · 2 = 4','1,5 + 4','1,5 + 4 = 5,5','5,5']}[it.bs];
+  const R=[['Merkwort',`${W('KLA',C.k,f)}${W('PU',C.p,f)}${W('STRIX',C.s,f)} – so merkst du dir die Reihenfolge der Rechenarten.`],
+   [`${W('KLA',C.k,f)} – Klammerrechnung zuerst`,'Rechnungen in Klammern werden immer als Erstes berechnet. Bei mehreren Klammern rechnet man von innen nach außen.'],
+   [`${W('PU',C.p,f)} – Punktrechnung vor Strichrechnung`,'Multiplikation (·) und Division (:) kommen vor Addition (+) und Subtraktion (−).'],
+   [`${W('STRIX',C.s,f)} – Strichrechnung`,'Zum Schluss wird addiert und subtrahiert. Man rechnet von links nach rechts.']];
+  if(BS){const td='padding:.1em .5em;white-space:nowrap';R.push([`Beispiel: ${BS[0]}`,`<table style="border-collapse:collapse;margin:.1em 0"><tr><td style="${td}">1. ${W('KLA',C.k,f)}:</td><td style="${td}">${BS[1]}</td><td style="${td}">→ ${BS[2]}</td></tr><tr><td style="${td}">2. ${W('PU',C.p,f)}:</td><td style="${td}">${BS[3]}</td><td style="${td}">→ ${BS[4]}</td></tr><tr><td style="${td}">3. ${W('STRIX',C.s,f)}:</td><td style="${td}">${BS[5]}</td><td style="${td}"></td></tr></table>`]);}
+  return MKB('KLAPUSTRIX',R);}
+ {const _g=rqGen,_b=rqBlk,_s=rqSol;rqGen=function(it){if(it.type==='kpk'){it.d=[];return;}return _g(it);};rqBlk=function(it){return it.type==='kpk'?kpBlk(it):_b(it);};rqSol=function(it){return it.type==='kpk'?[]:_s(it);};}
+ RQP.kpk=[['bs','sel',[['nat','mit Beispiel: 3 + 2 · (8 + 3)'],['dez','mit Beispiel mit Dezimalzahlen'],['','ohne Beispiel']],'Beispiel'],['kf','ck','KLA, PU, STRIX farbig']];
+ const _co=catOf;catOf=function(it){return it&&it.type==='kpk'?'md':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&it.type==='kpk')$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='kpk');try{return _h.apply(this,arguments);}finally{items=keep;}};
+ const tile=`<div class="pal" draggable="true" data-t="kpk" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><rect x="6" y="5" width="88" height="30" rx="5" fill="#f3f6ff" stroke="#1f3a8a" stroke-width="2"/><text x="50" y="25" text-anchor="middle" font-size="12.5" font-weight="700"><tspan fill="#c0392b">KLA</tspan><tspan fill="#1f5fa8">PU</tspan><tspan fill="#2e7d32">STRIX</tspan></text></svg><span>${TLN.kpk}</span></div>`;
+ ['md','kr','te','dq','as'].forEach(c=>{const P=document.querySelector(`.catp[data-c="${c}"]`);if(P)P.insertAdjacentHTML(c==='dq'?'beforeend':'afterbegin',tile);});
+}catch(e){console.error(e);}})();
+
 /* ===== 4.0 Ganze und rationale Zahlen ===== */
 (function(){try{const R=kri,P=tpick,A=(t,a)=>({t:t.replace(/^([^:]+):/,'<b>$1:</b>'),q:'Antwort',a,sp:4}),N=zN,S=zS,F=(n,d)=>(n<0?'−':'')+frc(Math.abs(n),d),nm=()=>P(['Lena','Jonas','Mia','Paul','Sara','Tim','Emma','Noah']);
  Z40TH.gz='gz';zrNm.gz='Ganze und rationale Zahlen';
