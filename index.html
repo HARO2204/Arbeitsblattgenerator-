@@ -5934,11 +5934,12 @@ function qT(x,o){o=o||{};if(x.n===0)return '0';const neg=x.n<0,N=Math.abs(x.n),f
  if(f==='d')return s+qDecH(x,1);if(x.d===1)return s+N;if((f==='g'||o.mx)&&N>x.d)return s+Math.floor(N/x.d)+' '+(N%x.d)+'/'+x.d;return s+N+'/'+x.d;}
 const qLn=(it,h,w)=>`<span class="tlln" style="display:inline-block;min-width:${w||3.2}em;text-align:center">${tlSv(it,h)||'&nbsp;'}</span>`;
 const qBx=(it,h)=>`<span style="display:inline-flex;min-width:1.6em;height:1.5em;border:1.5px solid #000;align-items:center;justify-content:center;padding:0 .2em">${tlSv(it,h)||''}</span>`;
+const ngI=(lo,hi)=>{const p=+window.__NG||0;if(p>0&&lo<0&&hi>0)return Math.random()<p?kri(lo,-1):kri(0,hi);return kri(lo,hi);};
 const qRg=it=>{let mn=+it.mn,mx=+it.mx;if(isNaN(mn))mn=-5;if(isNaN(mx))mx=5;if(mx<=mn)mx=mn+1;return [mn,mx];};
 function qRnd(it,o){o=o||{};const [mn,mx]=o.rg||qRg(it),za=o.za||it.za||'br',nd=Math.max(2,+it.nd||10),dz=Math.max(1,Math.min(3,+it.dz||1));
  for(let g=0;g<300;g++){const t=za==='mix'?tpick(['b','d']):za==='dz'?'d':'b';let x;
-  if(t==='d'){const p=10**(o.dz||kri(1,dz)),n=kri(Math.ceil(mn*p),Math.floor(mx*p));x=qR(n,p,'d');if(x.d===1&&!o.int&&g<200)continue;}
-  else{const d=o.d||kri(o.dmin||2,Math.max(o.dmin||2,nd)),n=kri(Math.ceil(mn*d),Math.floor(mx*d));if(o.keepD){x={n,d,f:'b'};if(qG(n,d)>1&&g<150)continue;}else x=qR(n,d,'b');if(x.d===1&&!o.int&&g<200)continue;if(it.gm&&Math.abs(x.n)>x.d)x.f='g';}
+  if(t==='d'){const p=10**(o.dz||kri(1,dz)),n=ngI(Math.ceil(mn*p),Math.floor(mx*p));x=qR(n,p,'d');if(x.d===1&&!o.int&&g<200)continue;}
+  else{const d=o.d||kri(o.dmin||2,Math.max(o.dmin||2,nd)),n=ngI(Math.ceil(mn*d),Math.floor(mx*d));if(o.keepD){x={n,d,f:'b'};if(qG(n,d)>1&&g<150)continue;}else x=qR(n,d,'b');if(x.d===1&&!o.int&&g<200)continue;if(it.gm&&Math.abs(x.n)>x.d)x.f='g';}
   if(x.n===0&&!o.zero)continue;if(o.ex&&o.ex.some(y=>y.n*x.d===x.n*y.d))continue;return x;}
  return qR(1,2);}
 const qKz=(op,y)=>{const neg=(op==='−')!==(y.n<0);return {s:neg?'−':'+',x:{n:Math.abs(y.n),d:y.d,f:y.f}};};
@@ -6058,9 +6059,9 @@ const RQP={rqk:[['md','sel',[['rz','Rationale Zahlen, Dezimalzahlen'],['mg','Men
  poBlock=function(it){return RQT.includes(it.type)?rqBlock(it):_b(it);};
  renderPo=function(){const g=$('#g-po'),it=items.find(i=>i.id===sel&&RQT.includes(i.type));if(!g||!it)return _r();
   let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[it.type]}</div>`;
-  const NI=(f,lab,mi,ma,v)=>`<label style="display:inline-flex;align-items:center;gap:4px;margin-right:8px">${lab}<input type="number" data-rq="${f}" value="${v}" min="${mi}" max="${ma}" style="width:4.6em"></label>`;
+  const NI=(f,lab,mi,ma,v)=>`<label style="display:inline-flex;align-items:center;gap:4px;margin-right:8px">${lab}<input type="number" data-rq="${f}" value="${v}" min="${mi}" max="${ma}" style="width:6.5em"></label>`;
   (RQP[it.type]||[]).forEach(P=>{const [f,ty,o,lab,cond]=P;
-   if(f==='RG'){H+=`<div style="margin:4px 0"><div style="font-size:13px">Zahlenbereich</div>${NI('mn','von',-10000,10000,it.mn)}${NI('mx','bis',-10000,10000,it.mx)}</div>`;return;}
+   if(f==='RG'){H+=`<div style="margin:4px 0"><div style="font-size:13px">Zahlenbereich</div>${NI('mn','von',-10000,10000,it.mn)}${NI('mx','bis',-10000,10000,it.mx)}</div>`+(+it.mn<0&&+it.mx>0?`<label>Anteil negativer Zahlen<select data-rq="ng">${[['','gleichmäßig aus dem Bereich'],['0.25','etwa ein Viertel'],['0.5','etwa die Hälfte'],['0.75','etwa drei Viertel']].map(([v,t])=>`<option value="${v}"${String(it.ng||'')===v?' selected':''}>${t}</option>`).join('')}</select></label>`:'');return;}
    const c=ty==='ck'?lab:ty==='num'?P[5]:cond;if(typeof c==='function'&&!c(it))return;
    if(ty==='sel')H+=`<label>${lab}<select data-rq="${f}">${o.map(([v,t])=>`<option value="${v}"${String(it[f])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`;
    else if(ty==='ck')H+=`<label class="ck"><input type="checkbox" data-rq="${f}"${it[f]?' checked':''}> ${o}</label>`;
@@ -6088,7 +6089,7 @@ const ZGT=['zgk','zgv','zgb','zgz','zgt','zgr','zgs','zgf','zgx'];POT.push(...ZG
 Object.assign(TLN,{zgk:'Ganze Zahlen: Merkkasten',zgv:'Vorzeichen (Thermometer, Texte, Vor- oder Rechenzeichen)',zgb:'Betrag, Gegenzahl, Vorgänger, Nachfolger',zgz:'Ganze Zahlen auf der Zahlengeraden',zgt:'Tabellen (Temperatur, Rechentabelle, Zuordnen)',zgr:'Rechnen mit ganzen Zahlen (Kurzform, Ketten, Vorrang)',zgs:'Rechenschlange und Rechenturm (ganze Zahlen)',zgf:'Richtig oder falsch, Rechengesetze, Fehler finden',zgx:'Sachaufgaben mit ganzen Zahlen'});
 Object.entries({zgk:{md:'gz'},zgv:{md:'th',n:4,co:4,mn:-20,mx:20},zgb:{md:'tb',n:8,co:2,mn:-50,mx:50},zgz:{md:'ab',n:3,mn:-60,mx:60,sw:'mix'},zgt:{md:'te',n:3,mn:-5,mx:5,op:'+'},zgr:{md:'kf',n:8,co:2,mn:-20,mx:20,op:'mix',lv:1},zgs:{md:'sl',n:2,mn:-20,mx:20,op:'as'},zgf:{md:'rf',n:8},zgx:{md:'mix',n:3}}).forEach(([k,v])=>TLD[k]=Object.assign({w:714},v));
 const zN=v=>(v<0?'−':'')+qTs(Math.abs(v)),zS=v=>v>0?'+'+qTs(v):zN(v),zP=v=>v===0?'0':'('+zS(v)+')',zA=v=>'|'+zS(v)+'|';
-const zR=(lo,hi,z)=>{lo=Math.ceil(lo);hi=Math.floor(hi);if(hi<lo)hi=lo;let v,g=0;do{v=kri(lo,hi);g++;}while(!z&&v===0&&g<60&&!(lo===0&&hi===0));return v;};
+const zR=(lo,hi,z)=>{lo=Math.ceil(lo);hi=Math.floor(hi);if(hi<lo)hi=lo;let v,g=0;do{v=ngI(lo,hi);g++;}while(!z&&v===0&&g<60&&!(lo===0&&hi===0));return v;};
 const zRg=it=>{const r=qRg(it);return [Math.round(r[0]),Math.max(Math.round(r[1]),Math.round(r[0])+1)];};
 const zM=it=>{const [mn,mx]=zRg(it);return Math.max(3,Math.abs(mn),Math.abs(mx));};
 const zSm=(it,c)=>{const [mn,mx]=zRg(it);return [Math.max(mn,-(c||12)),Math.min(mx,c||12)];};
@@ -6225,7 +6226,7 @@ function zgSol(it){const d=it.d||[],k=it.type,md=it.md;try{
  if(k==='zgx')return d.map(o=>ZX[o.t](o.z).a);
  }catch(e){}return [];}
 {const _g=rqGen,_b=rqBlk,_s=rqSol,_m=rqMerk;
- rqGen=function(it){return ZGT.includes(it.type)?zgGen(it):_g(it);};
+ rqGen=function(it){window.__NG=+it.ng||0;try{return ZGT.includes(it.type)?zgGen(it):_g(it);}finally{window.__NG=0;}};
  rqBlk=function(it){return ZGT.includes(it.type)?zgBlk(it):_b(it);};
  rqSol=function(it){return ZGT.includes(it.type)?zgSol(it):_s(it);};}
 Object.assign(RQP,{zgk:[['md','sel',[['gz','Ganze Zahlen, Vorzeichen, Zahlengerade'],['bg','Betrag, Gegenzahl'],['as','Addieren und Subtrahieren (Kurzform)'],['md','Multiplizieren und Dividieren'],['vr','Vorrangregeln und Rechengesetze']],'Inhalt']],
@@ -12074,7 +12075,7 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
 
 /* ===== Ganze und rationale Zahlen ===== */
 (function(){
- const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+ const R=(a,b)=>{const p=+window.__NG||0;if(p>0&&a<0&&b>0)return Math.random()<p?a+Math.floor(Math.random()*(-a)):Math.floor(Math.random()*(b+1));return a+Math.floor(Math.random()*(b-a+1));},pick=a=>a[Math.floor(Math.random()*a.length)];
  const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a),f2=v=>Math.round(v*100)/100,isSol=()=>typeof SOL!=='undefined'&&SOL;
  const MI='−',RD='#d00',BL='#2b5fb4',TY=['gzs','gzr','gzl','gzt'];
  const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
@@ -12178,7 +12179,7 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
    H=y+36;});
   return{W,svg:`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${g}</svg>`};}
  /* ---------- Einbindung ---------- */
- const GEN={gzs:genGzs,gzr:genGzr,gzl:genGzl,gzt:genGzt};
+ const NGW=f=>it=>{window.__NG=+it.ng||0;try{return f(it);}finally{window.__NG=0;}};const GEN={gzs:NGW(genGzs),gzr:NGW(genGzr),gzl:NGW(genGzl),gzt:genGzt};
  const DRAW={gzs:it=>gzSvg(it,it.tasks,22),gzr:it=>gzSvg(it,it.tasks,22),gzl:gzlSvg,gzt:gztSvg};
  const DEF={gzs:{n:9,mx:10,op:'as',k:2,sty:'mix',cols:3,w:714},gzr:{n:6,kind:'dez',op:'as',cols:2,w:714},gzl:{n:2,md:'lesen',rg:10,w:714},gzt:{n:3,w:714}};
  const _sv=svgNew;svgNew=function(it){return TY.includes(it.type)?DRAW[it.type](it):_sv.apply(this,arguments);};
@@ -12201,7 +12202,7 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
  mk('gzt','<text x="50" y="18" text-anchor="middle" font-size="9">−4 °C … +9 °C</text><text x="50" y="32" text-anchor="middle" font-size="9">Wie warm?</text>','Sachaufgaben (Temperatur, Konto, Tauchen)');
  let g=document.getElementById('g-gz');if(!g){g=document.createElement('div');g.className='grp';g.id='g-gz';g.dataset.cats='gz';document.getElementById('rp').appendChild(g);}
  const cur=()=>items.find(i=>i.id===sel&&TY.includes(i.type));
- const NI=(k,v,lab,mi,ma,st)=>`<label style="display:inline-flex;align-items:center;gap:4px;margin-right:8px">${lab}<input type="number" data-gz="${k}" value="${v}" min="${mi}" max="${ma}" step="${st||1}" style="width:4.6em"></label>`,RG=(it,mi,ma,dn,dx)=>`<div style="margin:4px 0"><div style="font-size:13px">Zahlenbereich</div>${NI('mn',it.mn===undefined?dn:it.mn,'von',mi,ma)}${NI('mx',it.mx===undefined?dx:it.mx,'bis',mi,ma)}</div>`;
+ const NI=(k,v,lab,mi,ma,st)=>`<label style="display:inline-flex;align-items:center;gap:4px;margin-right:8px">${lab}<input type="number" data-gz="${k}" value="${v}" min="${mi}" max="${ma}" step="${st||1}" style="width:4.6em"></label>`,RG=(it,mi,ma,dn,dx)=>{const a=it.mn===undefined?dn:+it.mn,b=it.mx===undefined?dx:+it.mx;return `<div style="margin:4px 0"><div style="font-size:13px">Zahlenbereich</div>${NI('mn',a,'von',mi,ma)}${NI('mx',b,'bis',mi,ma)}</div>`+(a<0&&b>0?S('ng',[['','gleichmäßig aus dem Bereich'],['0.25','etwa ein Viertel'],['0.5','etwa die Hälfte'],['0.75','etwa drei Viertel']],it.ng||'','Anteil negativer Zahlen'):'');};
  const S=(k,vals,v,lab)=>`<label>${lab}<select data-gz="${k}">${vals.map(a=>{const[val,txt]=Array.isArray(a)?a:[a,a];return`<option value="${val}"${String(val)===String(v)?' selected':''}>${txt}</option>`;}).join('')}</select></label>`;
  function panel(){const it=cur();if(!it){g.innerHTML='<div style="font-size:13px;color:var(--mut,#666)">Wähle links eine Aufgabe, dann kannst du sie hier einstellen.</div>';return;}
   const T={gzs:'Ganze Zahlen rechnen',gzr:'Rationale Zahlen rechnen',gzl:'Zahlengerade',gzt:'Sachaufgaben'}[it.type];let h=`<div style="font-weight:700;margin:2px 0">${T}</div>`;
