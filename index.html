@@ -14078,6 +14078,56 @@ RQP.ffm=[['md','sel',[['mix','gemischt: Multiplikation und Division'],['mul','nu
  if(Pa){const v=Pa.querySelector('.pal[data-t="ffa"]');}
 }catch(e){console.error(e);}})();
 
+/* ===== Erfinde selbst eine Aufgabe (Addition/Subtraktion, Multiplikation/Division) ===== */
+const EFT=['efa','efm'];POT.push(...EFT);TLT.push(...EFT);RQT.push(...EFT);
+Object.assign(TLN,{efa:'Erfinde selbst: Plus- und Minusaufgaben',efm:'Erfinde selbst: Mal- und Divisionsaufgaben'});
+TLD.efa={w:714,md:'mix',n:4,co:2,lv:1,pl:'karo',pt:false};TLD.efm={w:714,md:'mix',n:4,co:2,lv:1,pl:'karo',pt:false};
+const ef_T=n=>qTs(n);
+/* Jede Vorlage liefert: Auftrag (t) und Beispiel-Lösung (s) */
+const EF_A={
+ summe:lv=>{const S=lv>1?kri(20,99)*100+kri(0,9)*10:kri(30,99)*10;const a=kri(Math.round(S*.2),Math.round(S*.7));return {t:`Erfinde eine Additionsaufgabe mit zwei Zahlen, deren Summe genau ${ef_T(S)} ist.`,s:`z. B. ${ef_T(a)} + ${ef_T(S-a)} = ${ef_T(S)}`};},
+ bereich:lv=>{const lo=lv>1?kri(3,8)*1000:kri(3,8)*100,hi=lo+(lv>1?1000:100),st=lv>1?'vierstelligen':'dreistelligen';const a=kri(Math.round(lo*.3),Math.round(lo*.6)),b=kri(lo-a+1,hi-a-1);return {t:`Erfinde eine Additionsaufgabe mit zwei ${lv>1?'mindestens dreistelligen':'zweistelligen oder dreistelligen'} Zahlen, deren Ergebnis zwischen ${ef_T(lo)} und ${ef_T(hi)} liegt.`,s:`z. B. ${ef_T(a)} + ${ef_T(b)} = ${ef_T(a+b)}`};},
+ uebertrag:lv=>{const k=lv>1?kri(2,3):kri(1,2);return {t:`Erfinde eine Additionsaufgabe mit ${lv>1?'vierstelligen':'dreistelligen'} Zahlen, bei der du genau ${k===1?'einen Übertrag':k+' Überträge'} hast.`,s:k===1?(lv>1?'z. B. 2 345 + 1 238 = 3 583':'z. B. 245 + 138 = 383'):k===2?(lv>1?'z. B. 2 365 + 1 278 = 3 643':'z. B. 265 + 178 = 443'):'z. B. 2 765 + 1 378 = 4 143'};},
+ drei:lv=>{const S=lv>1?kri(20,90)*100:kri(20,90)*10,a=kri(Math.round(S*.15),Math.round(S*.4)),b=kri(Math.round(S*.15),Math.round(S*.4));return {t:`Erfinde eine Additionsaufgabe mit drei Summanden, deren Summe ${ef_T(S)} ist.`,s:`z. B. ${ef_T(a)} + ${ef_T(b)} + ${ef_T(S-a-b)} = ${ef_T(S)}`};},
+ diff:lv=>{const D=lv>1?kri(100,999)*10+kri(0,9):kri(100,499),b=kri(D,D*2);return {t:`Erfinde eine Subtraktion, deren Ergebnis (Differenz) genau ${ef_T(D)} ist.`,s:`z. B. ${ef_T(b+D)} − ${ef_T(b)} = ${ef_T(D)}`};},
+ subue:lv=>({t:`Erfinde eine Subtraktion mit ${lv>1?'vierstelligen':'dreistelligen'} Zahlen, bei der du ${lv>1?'zweimal':'einmal'} einen Übertrag brauchst.`,s:lv>1?'z. B. 5 243 − 1 718 = 3 525':'z. B. 742 − 318 = 424'}),
+ kleiner:lv=>{const m=lv>1?kri(2,9)*1000:kri(2,9)*100,a=kri(m*3,m*4),b=a-kri(Math.round(m*.3),m-1);return {t:`Erfinde eine Subtraktion, deren Ergebnis kleiner als ${ef_T(m)} ist. Beide Zahlen sollen größer als ${ef_T(2*m)} sein.`,s:`z. B. ${ef_T(a)} − ${ef_T(b)} = ${ef_T(a-b)}`};},
+ umkehr:lv=>{const a=lv>1?kri(1000,9999):kri(100,999),b=lv>1?kri(1000,9999):kri(100,999);return {t:`Erfinde eine Additionsaufgabe und schreibe dazu die passende Umkehraufgabe (Probe mit Minus).`,s:`z. B. ${ef_T(a)} + ${ef_T(b)} = ${ef_T(a+b)} → ${ef_T(a+b)} − ${ef_T(b)} = ${ef_T(a)}`};}};
+const EF_M={
+ rest:lv=>{const d=lv>1?kri(11,25):kri(4,9),R=kri(1,d-1),q=lv>1?kri(12,80):kri(12,99);return {t:`Erfinde eine Divisionsaufgabe${lv>1?' mit einem zweistelligen Divisor':''}, bei der der Rest ${R} ist.`,s:`z. B. ${ef_T(q*d+R)} : ${d} = ${ef_T(q)} Rest ${R}`};},
+ ohne:lv=>{const d=lv>1?kri(12,25):kri(3,9),q=lv>1?kri(21,99):kri(21,199);return {t:`Erfinde eine Divisionsaufgabe ohne Rest mit dem Divisor ${d}.`,s:`z. B. ${ef_T(q*d)} : ${d} = ${ef_T(q)}`};},
+ qber:lv=>{const lo=lv>1?kri(2,8)*100:kri(2,8)*10,hi=lo+(lv>1?100:10),d=lv>1?kri(12,25):kri(3,9),q=kri(lo+1,hi-1);return {t:`Erfinde eine Divisionsaufgabe, deren Ergebnis zwischen ${ef_T(lo)} und ${ef_T(hi)} liegt.`,s:`z. B. ${ef_T(q*d)} : ${d} = ${ef_T(q)}`};},
+ null:lv=>{const d=lv>1?kri(11,19):kri(3,9),q=+(kri(1,9)+'0'+kri(1,9)+(lv>1?kri(1,9):''));return {t:`Erfinde eine Divisionsaufgabe, bei der im Ergebnis eine Null vorkommt (z. B. 3 · 0 · ).`.replace(' (z. B. 3 · 0 · )',''),s:`z. B. ${ef_T(q*d)} : ${d} = ${ef_T(q)}`};},
+ prod:lv=>{const P=tpick(lv>1?[1200,1440,1800,2400,3600,4800,7200]:[120,144,180,240,360,480,720]);const D=[];for(let i=2;i*i<=P;i++)if(P%i===0)D.push(i);const x=tshuf(D).slice(0,2);return {t:`Erfinde zwei verschiedene Multiplikationen mit dem Ergebnis ${ef_T(P)}.`,s:`z. B. ${x[0]} · ${ef_T(P/x[0])} = ${ef_T(P)} und ${x[1]} · ${ef_T(P/x[1])} = ${ef_T(P)}`};},
+ groesser:lv=>{let a,b,X;if(lv>1){a=kri(150,999);b=kri(21,98);X=Math.max(1000,Math.floor(a*b*.8/1000)*1000);}else{X=kri(2,9)*1000;b=kri(12,49);a=Math.ceil(X/b)+kri(1,30);}return {t:`Erfinde eine Multiplikation mit einem ${lv>1?'zweistelligen und einem dreistelligen':'zweistelligen'} Faktor, deren Ergebnis größer als ${ef_T(X)} ist.`,s:`z. B. ${ef_T(a)} · ${b} = ${ef_T(a*b)}`};},
+ probe:lv=>{const d=lv>1?kri(12,25):kri(3,9),q=lv>1?kri(31,299):kri(31,299),R=kri(0,d-1);return {t:`Erfinde eine Divisionsaufgabe${R?' mit Rest':''} und mache die Probe mit einer Multiplikation.`,s:`z. B. ${ef_T(q*d+R)} : ${d} = ${ef_T(q)}${R?' Rest '+R:''} → Probe: ${ef_T(q)} · ${d}${R?' + '+R:''} = ${ef_T(q*d+R)}`};},
+ mal10:lv=>{const a=kri(12,99),z=lv>1?1000:100;return {t:`Erfinde eine Multiplikation mit ${z===100?'100':'1 000'}, deren Ergebnis ${lv>1?'fünfstellig':'vierstellig'} ist.`,s:`z. B. ${a} · ${ef_T(z)} = ${ef_T(a*z)}`};}};
+function efGen(it){const n=Math.max(1,Math.min(8,+it.n||4)),lv=+it.lv||1,P=it.type==='efa'?EF_A:EF_M,md=it.md||'mix';
+ let keys=md==='mix'?tshuf(Object.keys(P)):md==='p'?['summe','bereich','uebertrag','drei','umkehr']:md==='m'?['diff','subue','kleiner']:md==='mu'?['prod','groesser','mal10']:md==='di'?['rest','ohne','qber','null','probe']:Object.keys(P);
+ keys=tshuf(keys);const d=[];for(let i=0;i<n;i++)d.push(Object.assign({k:keys[i%keys.length]},P[keys[i%keys.length]](lv)));it.d=d;}
+let efPid=0;
+function efBlk(it){NUMIT=it;const d=(it.d||[]).filter(Boolean),co=Math.max(1,Math.min(2,+it.co||2)),pl=it.pl||'karo';
+ const field=()=>{if(pl==='none')return '';if(pl==='lin')return `<div style="margin-top:.3em">${'<div style="border-bottom:1px solid #888;height:1.9em"></div>'.repeat(3)}</div>`;const id='efk'+(++efPid),h=Math.round(18.9*6);
+  return `<svg width="100%" height="${h}" style="display:block;width:100%;height:${h}px;max-width:none;margin-top:.35em"><defs><pattern id="${id}" width="18.9" height="18.9" patternUnits="userSpaceOnUse"><path d="M18.9 0V18.9H0" fill="none" stroke="#b9c2cc" stroke-width=".7"/></pattern></defs><rect x=".5" y=".5" width="99.5%" height="${h-1}" fill="url(#${id})" stroke="#9aa3ad"/></svg>`;};
+ const bx=d.map((o,i)=>`<div style="break-inside:avoid;border:1px solid #c5ccd4;border-radius:8px;padding:.45em .7em"><div style="display:flex;gap:.4em"><b>${poL(i)}</b><div>${o.t}${tlSv(it,`<div style="color:#c0392b;margin-top:.2em">${o.s}</div>`)}</div></div>${field()}</div>`);
+ return wnH1('Erfinde selbst passende Aufgaben! Rechne sie dann aus'+(it.pt?' und tausche mit deiner Banknachbarin oder deinem Banknachbarn: Rechnet gegenseitig und kontrolliert.':'.'))+tlGrid(co,bx.join(''));}
+{const _g=rqGen,_b=rqBlk,_s=rqSol;const DISP=['show','co','fs','nc','pl','pt'];
+ rqGen=function(it){if(!EFT.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;return efGen(it);};
+ rqBlk=function(it){return EFT.includes(it.type)?efBlk(it):_b(it);};rqSol=function(it){return EFT.includes(it.type)?[]:_s(it);};}
+const EFP=(o)=>[['md','sel',o,'Art der Aufgaben'],['lv','sel',[[1,'leichter'],[2,'schwieriger (größere Zahlen)']],'Schwierigkeit'],['n','num','Anzahl der Aufgaben',1,8],['co','sel',[[1,'1'],[2,'2']],'Spalten'],['pl','sel',[['karo','Karofeld zum Rechnen'],['lin','3 Linien'],['none','ohne (Rechnen im Heft)']],'Platz'],['pt','ck','Mit Partnerauftrag (tauschen und gegenseitig rechnen)']];
+RQP.efa=EFP([['mix','gemischt'],['p','nur Addition'],['m','nur Subtraktion']]);RQP.efm=EFP([['mix','gemischt'],['mu','nur Multiplikation'],['di','nur Division']]);
+(function(){try{
+ const _co=catOf;catOf=function(it){return it&&it.type==='efa'?'as':it&&it.type==='efm'?'md':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&EFT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>!EFT.includes(i.type));try{return _h.apply(this,arguments);}finally{items=keep;}};
+ const ic=t=>`<path d="M10 33L13 24L30 7L36 13L19 30Z" fill="#ffe08a" stroke="#555" stroke-width="1.4"/><path d="M10 33L13 24L19 30Z" fill="#555"/><text x="66" y="18" text-anchor="middle" font-size="11" font-family="Arial">${t}</text><text x="66" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#c0392b">Rest 3</text>`;
+ const tile=(t,s)=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`;
+ const Pa=document.querySelector('.catp[data-c="as"]'),Pm=document.querySelector('.catp[data-c="md"]');
+ const sa='<path d="M10 33L13 24L30 7L36 13L19 30Z" fill="#ffe08a" stroke="#555" stroke-width="1.4"/><path d="M10 33L13 24L19 30Z" fill="#555"/><text x="66" y="18" text-anchor="middle" font-size="11" font-family="Arial">? + ? =</text><text x="66" y="32" text-anchor="middle" font-size="11" font-weight="700" fill="#c0392b">500</text>';
+ if(Pa){const f=Pa.querySelector('.pal[data-t="ffa"]');(f?f:null)?f.insertAdjacentHTML('afterend',tile('efa',sa)):Pa.insertAdjacentHTML('beforeend',tile('efa',sa));}
+ if(Pm){const f=Pm.querySelector('.pal[data-t="ffm"]');(f?f:null)?f.insertAdjacentHTML('afterend',tile('efm',ic('? : ? ='))):Pm.insertAdjacentHTML('beforeend',tile('efm',ic('? : ? =')));}
+}catch(e){console.error(e);}})();
+
 /* ===== Ganzes Blatt nummerieren ===== */
 (function(){try{const cb=document.getElementById('autot');if(!cb)return;const lab=cb.closest('label');
  const b1=document.createElement('button'),b2=document.createElement('button');b1.type=b2.type='button';b1.id='numall';b2.id='numdel';b1.textContent='🔢 Nummerieren';b2.textContent='Nummern entfernen';
@@ -14187,6 +14237,48 @@ RQP.ffm=[['md','sel',[['mix','gemischt: Multiplikation und Division'],['mul','nu
  const P0=document.querySelector('#left .catp[data-c="gz"]');if(P0&&!P0.querySelector('[data-t="zr:gz"]')){const d=document.createElement('div');d.className='pal';d.draggable=true;d.dataset.t='zr:gz';d.style.marginTop='8px';d.style.borderColor='#c9a227';d.innerHTML='<svg viewBox="0 0 100 40"><text x="50" y="28" text-anchor="middle" font-size="22" font-weight="700" fill="#b8860b">4.0</text></svg><span>4.0-Aufgabe</span>';d.ondragstart=e=>e.dataTransfer.setData('text/plain',d.dataset.t);d.onclick=()=>{add(d.dataset.t,60,100);};P0.appendChild(d);}
 }catch(e){console.error(e);}})();
 
+/* ===== Selbstkontrolle mit Lösungswort (für Aufgaben mit Ergebnissen) ===== */
+(function(){try{
+ const WL={2:['JA','OK','UF'],3:['TOP','JUHU','ZOO','UHU','EIS','SPA','HUT','OHR'],4:['TOLL','KLAR','HURRA','MUT','EULE','OTTER','MATHE','FUCHS','PAUSE','SUPER'],5:['SUPER','PRIMA','BRAVO','MATHE','PAUSE','FUCHS','OTTER','JUBEL','ZAHLEN'],6:['KLASSE','SPITZE','GENIAL','ZAHLEN','FERIEN','SCHULE','PIRATE','RAKETE','KOMMA'],7:['RECHNEN','GEWONNEN','SPITZE','ERFOLG','TOLLDAS','SCHLAUE','KLASSIK'],8:['SUPERSTAR','GEWONNEN','RECHNERIN','TASCHEN','GESCHAFFT','MATHEASS','WUNDERBAR','MEISTERIN'],9:['GESCHAFFT','WUNDERBAR','MEISTERIN','RECHNERIN','SUPERSTAR','DRACHENEI'],10:['FANTASTISCH','HERVORRAGEND','ZAUBERHAFT','MATHEPROFI','SCHATZTRUHE','KOPFRECHNEN'],11:['FANTASTISCH','SCHATZTRUHE','KOPFRECHNEN','SCHNEEFLOCKE'],12:['HERVORRAGEND','SCHNEEFLOCKE','MATHEGENIES','MATHEPROFIS']};
+ const wordsOf=n=>Object.values(WL).flat().filter((w,i,a)=>a.indexOf(w)===i&&w.length===n);
+ const ans=it=>{try{return (rqSol(it)||[]).map(s=>String(s).replace(/<[^>]*>/g,'').replace(/&nbsp;/g,' ').trim());}catch(_){return [];}};
+ const okFor=it=>RQT.includes(it.type)&&!['cutl','ffa','ffm','efa','efm','kpk'].includes(it.type);
+ const num=s=>{const t=s.replace(/[\s  ]/g,'');if(!/^-?\d+(,\d+)?$/.test(t))return null;return {v:+t.replace(',','.'),dec:(t.split(',')[1]||'').length};};
+ const fmt=(v,dec)=>{const neg=v<0;v=Math.abs(v);let s=dec?v.toFixed(dec):String(Math.round(v));let [a,b]=s.split('.');a=qTs(a);return (neg?'−':'')+a+(b?','+b:'');};
+ const AL='ABDEFGHIKLMNOPRSTUW';
+ function lwData(it){const A=ans(it);if(A.length<2)return {err:'Diese Aufgabe hat keine Ergebnisse für ein Lösungswort.'};if(A.some(a=>a.length>22))return {err:'Die Ergebnisse sind zu lang für eine Lösungswort-Tabelle.'};
+  const sig=A.join('|');let w=(it.lwW||'').toUpperCase().replace(/[^A-ZÄÖÜ]/g,'');
+  const own=w&&w.length===A.length;if(it.lwD&&it.lwD.sig===sig&&(own?it.lwD.w===w:it.lwD.auto))return it.lwD;
+  const auto=!own;if(auto){const C=wordsOf(A.length);w=C.length?tpick(C):Array.from({length:A.length},(_,i)=>'LÖSUNGSWORT'[i%11]).join('');}
+  /* gleiche Ergebnisse brauchen gleiche Buchstaben */
+  const first={};let clash=false;A.forEach((a,i)=>{if(a in first){if(w[first[a]]!==w[i])clash=true;}else first[a]=i;});
+  const rows=[];const seen={};A.forEach((a,i)=>{if(!(a in seen)){seen[a]=1;rows.push({a,l:w[i]});}});
+  const nn=A.map(num).filter(Boolean),pool=[];
+  if(nn.length){for(let g=0;g<60&&pool.length<3;g++){const b=tpick(nn),d=b.dec?tpick([1,10,-1,-10,.1,-.1].map(x=>x/(b.dec>1?10:1))):tpick([1,-1,10,-10,100,2]);const v=Math.round((b.v+d)*10**b.dec)/10**b.dec;const s=fmt(v,b.dec);if(v>=0&&!A.includes(s)&&!pool.includes(s))pool.push(s);}}
+  pool.forEach(a=>rows.push({a,l:AL[kri(0,AL.length-1)],x:1}));
+  const d={sig,w,auto,clash,rows:tshuf(rows),n:A.length};it.lwD=d;return d;}
+ function lwHtml(it){const d=lwData(it);if(d.err)return '';const sh=tlS(it),A=ans(it),c='#2e7d32';
+  const td='border:1.5px solid #555;padding:.15em .45em;text-align:center;white-space:nowrap';
+  let H=`<div class="lwbox" style="margin-top:.7em;border:2px dashed ${c};border-radius:8px;padding:.45em .8em;break-inside:avoid"><div style="margin-bottom:.35em"><b style="color:${c}">🔤 Selbstkontrolle:</b> Suche dein Ergebnis in der Tabelle und schreibe den Buchstaben zur passenden Aufgabe. Ist alles richtig, entsteht ein Lösungswort.</div>`;
+  const per=Math.min(d.rows.length,it.lwC||9);for(let s=0;s<d.rows.length;s+=per){const R=d.rows.slice(s,s+per);
+   H+=`<table style="border-collapse:collapse;margin:0 0 .35em"><tr><td style="${td};background:#eef6ee;font-weight:700">Ergebnis</td>${R.map(r=>`<td style="${td}">${r.a}</td>`).join('')}</tr><tr><td style="${td};background:#eef6ee;font-weight:700">Buchstabe</td>${R.map(r=>`<td style="${td};font-weight:700">${r.l}</td>`).join('')}</tr></table>`;}
+  NUMIT=it;H+=`<div style="display:flex;flex-wrap:wrap;gap:.35em;align-items:flex-end"><b style="margin-right:.4em">Lösungswort:</b>${A.map((a,i)=>`<div style="text-align:center"><div style="width:1.7em;height:1.7em;border:1.5px solid #000;display:flex;align-items:center;justify-content:center;font-weight:700">${sh?`<span class="sv">${d.w[i]}</span>`:''}</div><div style="font-size:.75em">${poL(i)}</div></div>`).join('')}</div></div>`;
+  return H;}
+ const _mk=mk;mk=function(it){const r=_mk.apply(this,arguments);try{if(it.lw&&okFor(it)){const e=r&&r.nodeType?r:sheet.querySelector('.item[data-id="'+it.id+'"]');if(e){const h=lwHtml(it);if(h){const t=e.querySelector('.tlx')||e;t.insertAdjacentHTML('beforeend',h);}}}}catch(err){console.error(err);}return r;};
+ function lwPanel(){const old=document.getElementById('g-lw');if(old)old.remove();const it=items.find(i=>i.id===sel);if(!it||!okFor(it))return;const e=sheet.querySelector('.item[data-id="'+it.id+'"]');if(!e||e.dataset.mz)return;
+  const A=ans(it);if(A.length<2)return;const rp=$('#rp');if(!rp)return;
+  let H=`<label class="ck"><input type="checkbox" data-lw="lw"${it.lw?' checked':''}> <b>🔤 Selbstkontrolle mit Lösungswort</b></label>`;
+  if(it.lw){const d=lwData(it);H+=d.err?`<div style="font-size:12px;color:#b3261e">${d.err}</div>`:`<label>Eigenes Wort (${A.length} Buchstaben)<input type="text" data-lw="lwW" value="${escA(it.lwW||'')}" placeholder="leer = Wort automatisch (${d.w})"></label>`+
+   (it.lwW&&it.lwW.replace(/[^A-Za-zÄÖÜäöü]/g,'').length!==A.length?`<div style="font-size:12px;color:#b3261e">Dein Wort braucht genau ${A.length} Buchstaben – bis dahin wird ein Wort automatisch gewählt.</div>`:'')+
+   (d.clash?`<div style="font-size:12px;color:#b3261e">Zwei Aufgaben haben dasselbe Ergebnis, aber verschiedene Buchstaben. Bitte „Neu mischen“ oder ein anderes Wort wählen.</div>`:'')+
+   `<button type="button" data-lwb="new" style="margin-top:3px">Anderes Wort und neue Ablenker</button><div style="font-size:12px;color:var(--mut)">In der Tabelle stehen auch ein paar falsche Ergebnisse (Ablenker), damit nicht geraten werden kann.</div>`;}
+  const g=document.createElement('div');g.id='g-lw';g.className='grp';g.style.cssText='display:block;border:1.5px solid #8bc48b;background:#f3faf3;border-radius:8px;padding:8px;margin:0 0 8px';g.innerHTML=H;
+  const f=rp.querySelector('.grp');if(f)f.before(g);else rp.prepend(g);}
+ const _rp=renderProps;renderProps=function(){const r=_rp.apply(this,arguments);try{lwPanel();}catch(err){console.error(err);}return r;};
+ document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset||!t.dataset.lw)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();if(t.type==='checkbox')it[t.dataset.lw]=t.checked;else{it.lwW=t.value;delete it.lwD;}render();renderProps();});
+ document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-lwb]');if(!b)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();delete it.lwD;render();renderProps();});
+}catch(e){console.error(e);}})();
+
 /* ===== Merkkästen gestalten: Symbol, Rahmenfarbe, Stil, Text hervorheben ===== */
 (function(){try{
  const SV=(p,c)=>`<svg viewBox="0 0 24 24" width="1.1em" height="1.1em" style="width:1.1em;height:1.1em;max-width:none;vertical-align:-.18em;flex:none;display:inline" fill="none" stroke="${c||'currentColor'}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
@@ -14213,7 +14305,7 @@ RQP.ffm=[['md','sel',[['mix','gemischt: Multiplikation und Division'],['mul','nu
    let bx=h.parentElement;for(let k=0;k<3&&bx&&bx!==e;k++){const cs=getComputedStyle(bx);if(parseFloat(cs.borderTopWidth)>0||parseFloat(cs.borderLeftWidth)>0)return bx.offsetHeight>=.5*e.offsetHeight?{box:bx,hd:h}:null;bx=bx.parentElement;}}
   return null;}
  window.mzBox=mzBox;
- const clean=(m)=>{const c=m.box.cloneNode(true);c.querySelectorAll('.mzmw').forEach(w=>{const cc=w.querySelector('.mzmc');if(cc)while(cc.firstChild)w.parentNode.insertBefore(cc.firstChild,w);w.remove();});c.querySelectorAll('.mki,.mzt,.mzm,.mzmcl').forEach(x=>x.remove());c.removeAttribute('contenteditable');c.querySelectorAll('img').forEach((im,i)=>{if((im.getAttribute('src')||'').length>1500){im.setAttribute('data-mzimg',i);im.setAttribute('src','');}});
+ const clean=(m)=>{const c=m.box.cloneNode(true);c.querySelectorAll('.mzmw').forEach(w=>{const cc=w.querySelector('.mzmc');if(cc)while(cc.firstChild)w.parentNode.insertBefore(cc.firstChild,w);w.remove();});c.querySelectorAll('.mki,.mzt,.mzm,.mzmcl,.mzq').forEach(x=>x.remove());c.removeAttribute('contenteditable');c.querySelectorAll('img').forEach((im,i)=>{if((im.getAttribute('src')||'').length>1500){im.setAttribute('data-mzimg',i);im.setAttribute('src','');}});
   c.querySelectorAll('[data-os]').forEach(x=>{x.setAttribute('style',x.dataset.os);x.removeAttribute('data-os');});
   if(m.neu){const h=c.firstElementChild;if(h&&!/^📌/.test(h.textContent.trim()))h.insertAdjacentText('afterbegin','📌 ');}
   return c.innerHTML;};
@@ -14239,6 +14331,9 @@ RQP.ffm=[['md','sel',[['mix','gemischt: Multiplikation und Division'],['mul','nu
    if(L){const wr=document.createElement('div');wr.className='mzmw';wr.style.cssText='display:flex;gap:14px;align-items:flex-start';const c=document.createElement('div');c.className='mzmc';c.style.cssText='flex:1;min-width:0';
     [...box.childNodes].forEach(n=>{if(n===hdEl||(n.classList&&n.classList.contains('mzt')))return;c.appendChild(n);});wr.innerHTML=im;wr.appendChild(c);box.appendChild(wr);}
    else{if(hdEl)hdEl.insertAdjacentHTML('afterend',im);else box.insertAdjacentHTML('afterbegin',im);box.insertAdjacentHTML('beforeend','<div class="mzmcl" style="clear:both"></div>');}}
+  if(it.mzV&&(window.__qrSvg||window.__qr)){let q='';try{q=(window.__qrSvg||window.__qr)(it.mzV,it.mzVg==='g'?96:it.mzVg==='k'?56:76)||'';}catch(_){}
+   if(q){const row=`<div class="mzq" contenteditable="false" style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:6px"><span style="font-size:.85em;font-weight:700;color:${col};text-align:right">📺 ${it.mzVt||'Scanne mich: Erklärvideo'}</span><div style="background:#fff;padding:2px;border:1px solid #ccc;line-height:0">${q}</div></div>`;
+    const cl=box.querySelector('.mzmcl');if(cl)cl.insertAdjacentHTML('beforebegin',row);else box.insertAdjacentHTML('beforeend',row);}}
   if(editId===it.id)startEdit(it,e,m);}
  function startEdit(it,e,m){const b=m.box;b.contentEditable='true';b.style.outline='2.5px dashed #e67e22';b.style.outlineOffset='3px';b.style.cursor='text';
   ['pointerdown','mousedown','touchstart','click','dblclick'].forEach(t=>b.addEventListener(t,ev=>ev.stopPropagation()));
@@ -14294,6 +14389,7 @@ RQP.ffm=[['md','sel',[['mix','gemischt: Multiplikation und Division'],['mul','nu
    `<label>Rahmenfarbe${sl('mzC',[['','wie vorgegeben']].concat(Object.entries(COL).map(([k,v])=>[k,v[0]])),it.mzC)}</label>`+
    `<label>Stil${sl('mzS',Object.entries(STY),it.mzS)}</label>`+
    `<label>Maskottchen${sl('mzM',[['','keines']].concat(Object.entries(MN)),it.mzM)}</label>`+(it.mzM?`<label>Position${sl('mzP',[['r','rechts (zeigt auf den Text)'],['l','links (zeigt auf den Text)']],it.mzP||'r')}</label><label>Größe${sl('mzG',[['k','klein'],['m','mittel'],['g','groß']],it.mzG||'m')}</label>`:'')+
+   `<label>📺 Link zum Erklärvideo (QR-Code)<input type="text" data-mz="mzV" value="${escA(it.mzV||'')}" placeholder="https://youtu.be/…"></label>`+(it.mzV?`<label>Text neben dem QR-Code<input type="text" data-mz="mzVt" value="${escA(it.mzVt||'')}" placeholder="Scanne mich: Erklärvideo"></label><label>Größe des QR-Codes${sl('mzVg',[['k','klein'],['m','mittel'],['g','groß']],it.mzVg||'m')}</label>`:'')+
    `<button type="button" data-mzb="all" style="margin:3px 0">Symbol, Farbe, Stil und Maskottchen auf alle Merkkästen übertragen</button>`;
   if(!ed)H+=`<button type="button" data-mzb="ed" style="margin:6px 0 2px;font-weight:700">✏️ Text bearbeiten und hervorheben</button>`+(it.mzH?`<button type="button" data-mzb="reset" style="margin:2px 0">↺ Original wiederherstellen</button><div style="font-size:12px;color:var(--mut)">Dieser Merkkasten wurde von dir bearbeitet. Andere Einstellungen (z. B. Beispiel) wirken erst wieder nach „Original wiederherstellen“.</div>`:'');
   else H+=`<div style="margin:6px 0 3px;font-size:13px">Markiere im Kasten ein Wort und tippe dann auf einen Knopf. Du kannst auch direkt Text tippen oder löschen.</div>
