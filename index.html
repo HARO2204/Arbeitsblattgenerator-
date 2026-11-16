@@ -13997,6 +13997,87 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
  if(ach){ach.insertAdjacentHTML('beforeend',GF4.map(k=>`<label><input type="checkbox" value="${k}">${AST_FN[k]}</label>`).join(''));GF4.forEach(k=>{const l=ach.querySelector(`input[value="${k}"]`).parentNode;l.addEventListener('click',()=>setTimeout(()=>l.classList.toggle('on',l.querySelector('input').checked),0));});}
 }catch(e){console.error(e);}})();
 
+/* ===== Fehler finden: schriftliche Rechnungen (Addition, Subtraktion, Multiplikation, Division) ===== */
+const FFT=['ffa','ffm'];POT.push(...FFT);TLT.push(...FFT);RQT.push(...FFT);
+Object.assign(TLN,{ffa:'Fehler finden: schriftlich addieren und subtrahieren',ffm:'Fehler finden: schriftlich multiplizieren und dividieren'});
+TLD.ffa={w:714,md:'mix',n:4,co:2,lv:1,rk:true,pl:'karo',fl:true};TLD.ffm={w:714,md:'mix',n:4,co:2,lv:1,rk:true,pl:'karo',fl:true};
+const FF_NM=['Tim','Lea','Ben','Mia','Paul','Emma','Noah','Lena','Jonas','Sophie','David','Hannah','Elias','Anna','Luis','Marie'];
+const ff_dg=n=>String(n).split('').map(Number),ff_rn=d=>{const lo=10**(d-1);return kri(lo,10*lo-1);};
+/* Addition: Übertrag an Stelle k vergessen */
+function ff_add(lv){for(let g=0;g<300;g++){const la=lv>1?kri(4,6):kri(3,4),lb=lv>1?kri(3,la):kri(2,la),a=ff_rn(la),b=ff_rn(lb);
+  const A=ff_dg(a).reverse(),B=ff_dg(b).reverse(),C=[];let c=0;for(let i=0;i<Math.max(A.length,B.length);i++){const s=(A[i]||0)+(B[i]||0)+c;c=s>=10?1:0;if(c)C.push(i);}
+  if(!C.length)continue;const k=tpick(C);return {op:'+',a,b,r:a+b,w:a+b-10**(k+1),e:'Übertrag vergessen'};}return {op:'+',a:478,b:256,r:734,w:624,e:'Übertrag vergessen'};}
+/* Subtraktion: Übertrag vergessen oder kleinere von größerer Ziffer abgezogen */
+function ff_sub(lv){for(let g=0;g<300;g++){const la=lv>1?kri(4,6):kri(3,4),lb=lv>1?kri(3,la):kri(2,la),a=ff_rn(la),b=ff_rn(lb);if(b>=a)continue;
+  const A=ff_dg(a).reverse(),B=ff_dg(b).reverse(),K=[];{let c=0;A.forEach((x,i)=>{const y=(B[i]||0)+c;if(x<y){K.push(i);c=1;}else c=0;});}
+  if(!K.length)continue;const k=tpick(K),sw=Math.random()<.5&&(B[k]||0)>0;let c=0,D=[];
+  A.forEach((x,i)=>{const y=(B[i]||0)+c;if(x>=y){D.push(x-y);c=0;}else if(i===k){if(sw){D.push(y-x);c=0;}else{D.push(x+10-y);c=0;}}else{D.push(x+10-y);c=1;}});
+  const w=+D.reverse().join('');if(w===a-b||w<0)continue;return {op:'−',a,b,r:a-b,w,e:sw?'kleinere von größerer Ziffer abgezogen':'Übertrag vergessen'};}return {op:'−',a:723,b:458,r:265,w:375,e:'Übertrag vergessen'};}
+/* Multiplikation (österreichische Form: a · b, Teilprodukte nach rechts eingerückt) */
+function ff_mulP(a,d,k){const A=ff_dg(a).reverse(),D=[];let c=0;A.forEach((x,i)=>{const p=x*d+c;D.push(p%10);c=i===k?0:Math.floor(p/10);});if(c)D.push(c);return +D.reverse().join('');}
+function ff_mul(lv){for(let g=0;g<300;g++){const a=ff_rn(lv>1?kri(3,4):3),lb=lv>1?kri(2,3):2,b=ff_rn(lb),BD=ff_dg(b);if(BD.some(x=>x<2))continue;
+  const P=BD.map(d=>a*d),t=Math.random()<.5?'s':'c';let sh=BD.map((_,j)=>j),Pw=P.slice(),e;
+  if(t==='s'){sh=BD.map((_,j)=>j===1?0:j);e='2. Teilprodukt nicht eingerückt';}
+  else{const j=kri(0,BD.length-1),A=ff_dg(a).reverse(),K=[];let c=0;A.forEach((x,i)=>{const p=x*BD[j]+c;c=Math.floor(p/10);if(c&&i<A.length-1)K.push(i);});if(!K.length)continue;Pw[j]=ff_mulP(a,BD[j],tpick(K));if(Pw[j]===P[j])continue;e='Übertrag beim '+(j+1)+'. Teilprodukt vergessen';}
+  const L=BD.length,w=Pw.reduce((s,p,j)=>s+p*10**(L-1-sh[j]),0);if(w===a*b)continue;return {op:'·',a,b,r:a*b,w,P,Pw,sh,e};}
+ return {op:'·',a:234,b:56,r:13104,w:2574,P:[1170,1404],Pw:[1170,1404],sh:[0,0],e:'2. Teilprodukt nicht eingerückt'};}
+/* Division (österreichische Form): Null im Ergebnis vergessen oder Rest zu groß */
+function ff_divSteps(D,b,lastDown){const ds=ff_dg(D);let p=1;while(+ds.slice(0,p).join('')<b&&p<ds.length)p++;let cur=+ds.slice(0,p).join(''),Q=[],lines=[],rem;
+ let qd=Math.floor(cur/b);rem=cur-qd*b;Q.push(qd);for(let i=p;i<ds.length;i++){lines.push({t:String(rem)+ds[i],e:i});const num=rem*10+ds[i];qd=Math.floor(num/b);rem=num-qd*b;Q.push(qd);}
+ if(lastDown&&Q[Q.length-1]>0){Q[Q.length-1]--;rem+=b;}lines.push({t:String(rem),e:ds.length-1});return {Q:+Q.join(''),lines,rem,qs:Q.join('')};}
+function ff_div(lv){for(let g=0;g<300;g++){const b=lv>1?kri(11,29):kri(3,9),t=Math.random()<.5?'z':'r';
+  if(t==='z'){const ql=lv>1?kri(3,4):kri(3,4),q=ff_rn(ql),qs=String(q);const zi=kri(1,ql-1);const q2=+(qs.slice(0,zi)+'0'+qs.slice(zi+1));if(String(q2).length!==ql||q2%10===0)continue;const r=kri(0,b-1),D=q2*b+r;const S=ff_divSteps(D,b);if(S.Q!==q2)continue;
+   const wq=S.qs.replace(/^0+/,'').replace(/0(?=\d)/,'');const wqs=S.qs.replace(/^0+/,'');const k=wqs.slice(1).indexOf('0');if(k<0)continue;const w=+(wqs.slice(0,k+1)+wqs.slice(k+2));
+   return {op:':',a:D,b,r:q2,rr:r,w,wr:r,lines:S.lines,e:'Null im Ergebnis vergessen'};}
+  const q=ff_rn(lv>1?kri(2,3):kri(3,4));if(q%10===0)continue;const r=kri(0,b-1),D=q*b+r,S=ff_divSteps(D,b,true);return {op:':',a:D,b,r:q,rr:r,w:S.Q,wr:S.rem,lines:S.lines,e:'Rest größer als der Divisor'};}
+ return {op:':',a:824,b:4,r:206,rr:0,w:26,wr:0,lines:[{t:'02',e:1},{t:'24',e:2},{t:'0',e:2}],e:'Null im Ergebnis vergessen'};}
+function ff_ok(o){/* richtige Rechnung: falsche Werte durch richtige ersetzen */const c=Object.assign({},o,{w:o.r,ok:true});if(o.op==='·'){c.Pw=o.P;c.sh=o.P.map((_,j)=>j);}if(o.op===':'){c.wr=o.rr;c.lines=ff_divSteps(o.a,o.b).lines;}return c;}
+/* Darstellung einer schriftlichen Rechnung als Ziffernraster */
+function ff_tab(o,col){const cs='width:.72em;padding:0;text-align:center;height:1.32em;line-height:1.32em',st=col?`color:${col};`:'';
+ const row=(cells,C,top,bot)=>'<tr>'+Array.from({length:C},(_,i)=>`<td style="${cs};${top?'border-top:1.8px solid currentColor;':''}${bot?'border-bottom:1.8px solid currentColor;':''}">${cells[i]??''}</td>`).join('')+'</tr>';
+ const put=(arr,s,end)=>{s=String(s);for(let i=0;i<s.length;i++)arr[end-s.length+1+i]=s[i];return arr;};
+ let H='';
+ if(o.op==='+'||o.op==='−'){const C=Math.max(String(o.a).length,String(o.b).length,String(o.w).length)+2,E=C-1;
+  H=row(put([],o.a,E),C)+row(put([o.op],o.b,E),C)+row(put([],o.w,E),C,true);}
+ else if(o.op==='·'){const la=String(o.a).length,lb=String(o.b).length,O=1,C=O+la+1+lb+1;const r0=[];put(r0,o.a,O+la-1);r0[O+la]='·';put(r0,o.b,O+la+lb);
+  H=row(r0,C,false,true);o.Pw.forEach((p,j)=>{H+=row(put([],p,O+la+1+o.sh[j]),C);});H+=row(put([],o.w,O+la+lb),C,true);}
+ else{const D=String(o.a),L=D.length;const r0=D.split('');const tail=`&nbsp;: ${o.b} = ${o.w}${o.wr?` &nbsp;Rest ${o.wr}`:''}`;
+  H='<tr>'+r0.map(c=>`<td style="${cs}">${c}</td>`).join('')+`<td style="padding:0 0 0 .1em;white-space:nowrap;text-align:left">${tail}</td></tr>`;
+  o.lines.forEach(l=>{const a=put([],l.t,l.e);H+='<tr>'+Array.from({length:L},(_,i)=>`<td style="${cs}">${a[i]??''}</td>`).join('')+'<td></td></tr>';});}
+ return `<table style="border-collapse:collapse;font-variant-numeric:tabular-nums;${st}">${H}</table>`;}
+let ffPid=0;
+const ff_karo=(h,inner)=>{const id='ffk'+(++ffPid);return `<div style="position:relative;margin-top:.3em"><svg width="100%" height="${h}" style="display:block;width:100%;height:${h}px;max-width:none"><defs><pattern id="${id}" width="18.9" height="18.9" patternUnits="userSpaceOnUse"><path d="M18.9 0V18.9H0" fill="none" stroke="#b9c2cc" stroke-width=".7"/></pattern></defs><rect x=".5" y=".5" width="99.5%" height="${h-1}" fill="url(#${id})" stroke="#9aa3ad"/></svg>${inner?`<div style="position:absolute;left:8px;top:4px">${inner}</div>`:''}</div>`;};
+function ffGen(it){const n=Math.max(1,Math.min(8,+it.n||4)),lv=+it.lv||1,md=it.md||'mix',P=it.type==='ffa'?['add','sub']:['mul','div'],F={add:ff_add,sub:ff_sub,mul:ff_mul,div:ff_div};
+ const nm=tshuf(FF_NM);const ops=md==='mix'?Array.from({length:n},(_,i)=>P[i%2]):Array(n).fill(md);
+ const okI=it.rk?tshuf(Array.from({length:n},(_,i)=>i)).slice(0,n>=4?Math.max(1,Math.round(n/4)):n>=2?1:0):[];
+ it.d=ops.map((m,i)=>{const o=F[m](lv);o.nm=nm[i%nm.length];return okI.includes(i)?ff_ok(o):o;});}
+function ffBlk(it){NUMIT=it;const d=(it.d||[]).filter(Boolean),sh=tlS(it),co=Math.max(1,Math.min(2,+it.co||2));
+ const bx=d.map((o,i)=>{const rows=o.op===':'?o.lines.length+1:o.op==='·'?o.Pw.length+2:3;const kh=Math.round((rows+1.5)*18.9);
+  const cor=o.ok?null:ff_tab(Object.assign(ff_ok(o)),'#c0392b');
+  return `<div style="break-inside:avoid;border:1px solid #c5ccd4;border-radius:8px;padding:.45em .7em"><div style="margin-bottom:.3em"><b>${poL(i)}</b> ${o.nm} hat so gerechnet:</div>
+   <div style="display:flex;gap:1.2em;align-items:flex-start;flex-wrap:wrap"><div style="padding:.2em .5em;background:#fafafa;border-radius:4px">${ff_tab(o)}</div>
+   <div style="flex:1;min-width:9em;line-height:2"><span style="white-space:nowrap">${gqBox(sh,!!o.ok)} richtig</span> &nbsp; <span style="white-space:nowrap">${gqBox(sh,!o.ok)} falsch</span>${it.fl!==false?`<br>Fehler: ${qLn(it,o.ok?'–':o.e,co>1?9:20)}`:''}</div></div>
+   ${it.pl==='karo'?`<div style="margin-top:.4em;font-size:.9em">Rechne richtig:</div>`+ff_karo(kh,o.ok?(sh?'<span class="sv" style="color:#c0392b">Die Rechnung ist richtig.</span>':''):tlSv(it,cor)):''}</div>`;});
+ return wnH1('Überprüfe die Rechnungen! Kreuze an: richtig oder falsch? Finde den Fehler'+(it.pl==='karo'?' und rechne richtig.':'.'))+tlGrid(co,bx.join(''));}
+function ffSol(it){return (it.d||[]).filter(Boolean).map(o=>o.ok?'richtig':'falsch, richtig: '+(o.op===':'?o.r+(o.rr?' Rest '+o.rr:''):o.r));}
+{const _g=rqGen,_b=rqBlk,_s=rqSol;const DISP=['show','co','fs','nc','pl','fl'];
+ rqGen=function(it){if(!FFT.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;return ffGen(it);};
+ rqBlk=function(it){return FFT.includes(it.type)?ffBlk(it):_b(it);};rqSol=function(it){return FFT.includes(it.type)?ffSol(it):_s(it);};}
+RQP.ffa=[['md','sel',[['mix','gemischt: Addition und Subtraktion'],['add','nur Addition'],['sub','nur Subtraktion']],'Rechenart'],['lv','sel',[[1,'leichter (3- bis 4-stellig)'],[2,'schwieriger (bis 6-stellig)']],'Schwierigkeit'],['n','num','Anzahl der Rechnungen',1,8],['co','sel',[[1,'1'],[2,'2']],'Spalten'],['pl','sel',[['karo','Karofeld zum Richtig-Rechnen'],['none','ohne Rechenfeld (Rechnen im Heft)']],'Platz'],['rk','ck','Auch richtige Rechnungen dabei'],['fl','ck','Zeile „Fehler:“ zum Beschreiben']];
+RQP.ffm=[['md','sel',[['mix','gemischt: Multiplikation und Division'],['mul','nur Multiplikation'],['div','nur Division']],'Rechenart'],['lv','sel',[[1,'leichter (einstelliger Divisor, zweistelliger Faktor)'],[2,'schwieriger (zweistelliger Divisor, bis dreistelliger Faktor)']],'Schwierigkeit'],['n','num','Anzahl der Rechnungen',1,8],['co','sel',[[1,'1'],[2,'2']],'Spalten'],['pl','sel',[['karo','Karofeld zum Richtig-Rechnen'],['none','ohne Rechenfeld (Rechnen im Heft)']],'Platz'],['rk','ck','Auch richtige Rechnungen dabei'],['fl','ck','Zeile „Fehler:“ zum Beschreiben']];
+(function(){try{
+ const _co=catOf;catOf=function(it){return it&&it.type==='ffa'?'as':it&&it.type==='ffm'?'md':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&FFT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ FFT.forEach(t=>{if(typeof LBT!=='undefined'&&!LBT.includes(t)){LBT.push(t);LBN[t]='Fehler finden';}});
+ const T=(x,y,t,s,c)=>`<text x="${x}" y="${y}" text-anchor="end" font-size="${s||10}" fill="${c||'#000'}" font-family="Arial">${t}</text>`;
+ const ic={ffa:T(44,13,'478')+T(44,24,'+ 256')+'<path d="M18 27H46" stroke="#000"/>'+T(44,37,'624',10,'#c0392b')+'<circle cx="70" cy="20" r="12" fill="none" stroke="#c0392b" stroke-width="2.2"/><path d="M79 29L90 38" stroke="#c0392b" stroke-width="2.6"/><text x="70" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#c0392b">?</text>',
+  ffm:T(52,15,'824 : 4 = 26')+T(26,26,'02')+T(34,37,'24')+'<circle cx="74" cy="20" r="12" fill="none" stroke="#c0392b" stroke-width="2.2"/><path d="M83 29L94 38" stroke="#c0392b" stroke-width="2.6"/><text x="74" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#c0392b">?</text>'};
+ const tile=t=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${ic[t]}</svg><span>${TLN[t]}</span></div>`;
+ const Pa=document.querySelector('.catp[data-c="as"]'),Pm=document.querySelector('.catp[data-c="md"]');
+ if(Pa)Pa.insertAdjacentHTML('beforeend',tile('ffa'));if(Pm){const v=Pm.querySelector('.pal[data-t="mv"]');if(v)v.insertAdjacentHTML('afterend',tile('ffm'));else Pm.insertAdjacentHTML('beforeend',tile('ffm'));}
+ if(Pa){const v=Pa.querySelector('.pal[data-t="ffa"]');}
+}catch(e){console.error(e);}})();
+
 /* ===== Ganzes Blatt nummerieren ===== */
 (function(){try{const cb=document.getElementById('autot');if(!cb)return;const lab=cb.closest('label');
  const b1=document.createElement('button'),b2=document.createElement('button');b1.type=b2.type='button';b1.id='numall';b2.id='numdel';b1.textContent='🔢 Nummerieren';b2.textContent='Nummern entfernen';
@@ -14018,9 +14099,10 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
 
 /* ===== Halbe Seiten: Schnittlinie, nach unten kopieren, Nummerierung je Hälfte ===== */
 (function(){try{
- POT.push('cutl');TLT.push('cutl');RQT.push('cutl');TLN.cutl='✂ Schnittlinie (halbe Seite)';TLD.cutl={x:10,w:774};RQP.cutl=[];
- const cutHtml=()=>`<div style="position:relative;height:16px"><div style="position:absolute;left:0;right:0;top:8px;border-top:1.6px dashed #888"></div><span style="position:absolute;left:4px;top:-2px;background:#fff;padding:0 3px;font-size:15px;line-height:18px;color:#555">✂</span></div>`;
- {const _g=rqGen,_b=rqBlk,_s=rqSol;rqGen=function(it){if(it.type==='cutl'){it.d=[];return;}return _g(it);};rqBlk=function(it){return it.type==='cutl'?cutHtml():_b(it);};rqSol=function(it){return it.type==='cutl'?[]:_s(it);};}
+ POT.push('cutl');TLT.push('cutl');RQT.push('cutl');TLN.cutl='✂ Schnittlinie (halbe Seite)';TLD.cutl={x:10,w:774,hh:true};RQP.cutl=[['hh','ck','Name/Datum auch in der unteren Hälfte']];
+ const hdCopy=it=>{if(it.hh===false)return '';const h=document.getElementById('hd');if(!h||getComputedStyle(h).display==='none')return '';const c=h.cloneNode(true);c.querySelectorAll('[id]').forEach(x=>{if(x.id==='spg')x.remove();else x.removeAttribute('id');});c.removeAttribute('id');[...c.children].forEach(x=>{if(x.style.display==='none')x.remove();});if(!c.children.length)return '';return `<div class="hdh" style="display:flex;justify-content:space-between;font-size:17px;margin:10px 30px 0">${c.innerHTML}</div>`;};
+ const cutHtml=it=>`<div style="position:relative;height:16px"><div style="position:absolute;left:0;right:0;top:8px;border-top:1.6px dashed #888"></div><span style="position:absolute;left:4px;top:-2px;background:#fff;padding:0 3px;font-size:15px;line-height:18px;color:#555">✂</span></div>${hdCopy(it||{})}`;
+ {const _g=rqGen,_b=rqBlk,_s=rqSol;rqGen=function(it){if(it.type==='cutl'){it.d=[];return;}return _g(it);};rqBlk=function(it){return it.type==='cutl'?cutHtml(it):_b(it);};rqSol=function(it){return it.type==='cutl'?[]:_s(it);};}
  const _co=catOf;catOf=function(it){return it&&it.type==='cutl'?'tx':_co.apply(this,arguments);};
  const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='cutl');try{return _h.apply(this,arguments);}finally{items=keep;}};
  const P=document.querySelector('.catp[data-c="tx"]');if(P)P.insertAdjacentHTML('beforeend',`<div class="pal" draggable="true" data-t="cutl" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><path d="M6 20H94" stroke="#888" stroke-width="1.6" stroke-dasharray="5 4"/><text x="12" y="25" font-size="15" text-anchor="middle" fill="#555">✂</text></svg><span>${TLN.cutl}</span></div>`);
@@ -14040,6 +14122,7 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
    const gm={};src.forEach(i=>{const c=JSON.parse(JSON.stringify(i));c.id=uid++;c.y=Math.round(i.y+sh);if(i.gid){gm[i.gid]=gm[i.gid]||uid++;c.gid=gm[i.gid];}items.push(c);if(regen&&POT.includes(c.type)&&c.d){try{poGen(c);}catch(_){}}});
    render();toast((regen?'Obere Hälfte mit neuen Zahlen nach unten kopiert.':'Obere Hälfte nach unten kopiert.')+(old?' Der alte Inhalt unten wurde ersetzt (Rückgängig möglich).':'')+(over?' Achtung: Die obere Hälfte ist zu lang – die Kopie ragt über den Seitenrand.':''));}finally{rec=R0;}};
  window.halfDel=function(){const n=items.filter(i=>i.type==='cutl').length;if(!n){toast('Es gibt keine Schnittlinie.');return;}rec();items=items.filter(i=>i.type!=='cutl');render();toast('Schnittlinien entfernt.');};
+ ['hn','hdt','hnp'].forEach(id=>{const x=document.getElementById(id);if(x)x.addEventListener('change',()=>{if(items.some(i=>i.type==='cutl'))render();});});
  const anchor=document.getElementById('numdel')||(document.getElementById('autot')||{}).closest&&document.getElementById('autot').closest('label');if(!anchor)return;
  const s=document.createElement('select');s.id='halfm';s.title='Halbe Seiten: zwei Themen oder zweimal dasselbe auf ein A4-Blatt';s.style.cssText='margin-left:6px;padding:3px 6px;border:1px solid #9aa3ad;border-radius:5px;background:#fff;font:inherit;cursor:pointer';
  s.innerHTML='<option value="">✂️ Halbe Seite …</option><option value="cut">Schnittlinie in die Mitte</option><option value="copy">Obere Hälfte nach unten kopieren</option><option value="regen">Obere Hälfte nach unten kopieren – mit neuen Zahlen</option><option value="del">Schnittlinien entfernen</option>';
@@ -14166,12 +14249,24 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
  document.addEventListener('selectionchange',()=>{const m=edBox();if(!m)return;const s=getSelection();if(s.rangeCount&&m.box.contains(s.getRangeAt(0).commonAncestorContainer))lastR=s.getRangeAt(0).cloneRange();});
  const restore=()=>{const m=edBox();if(!m)return null;const s=getSelection();if(lastR&&m.box.contains(lastR.commonAncestorContainer)){s.removeAllRanges();s.addRange(lastR);}return m;};
  const save=()=>{const m=edBox(),it=items.find(i=>i.id===editId);if(m&&it)it.mzH=clean(m);};
- function wrap(css,cls){const m=restore();if(!m)return;const s=getSelection();if(!s.rangeCount||s.isCollapsed){toast('Bitte zuerst im Merkkasten ein Wort oder eine Stelle markieren.');return;}
-  const r=s.getRangeAt(0),sp=document.createElement('span');sp.style.cssText=css;if(cls)sp.className=cls;sp.appendChild(r.extractContents());r.insertNode(sp);s.removeAllRanges();const nr=document.createRange();nr.selectNodeContents(sp);s.addRange(nr);lastR=nr.cloneRange();save();}
- function cmd(c,v){const m=restore();if(!m)return;const s=getSelection();if(s.isCollapsed&&c!=='removeFormat'){toast('Bitte zuerst im Merkkasten ein Wort oder eine Stelle markieren.');return;}
-  try{document.execCommand('styleWithCSS',false,true);}catch(_){}document.execCommand(c,false,v);
-  if(c==='removeFormat'&&s.rangeCount){const r=s.getRangeAt(0);m.box.querySelectorAll('span.mzr,span.mzu,span.mzw').forEach(sp=>{if(r.intersectsNode(sp)){while(sp.firstChild)sp.parentNode.insertBefore(sp.firstChild,sp);sp.remove();}});}
-  save();}
+ /* Formatieren ohne execCommand (Safari/iPad-sicher): markierte Textstellen in Spans hüllen */
+ const NEED='Bitte zuerst im Merkkasten ein Wort oder eine Stelle markieren.';
+ function wrap(css){const m=restore();if(!m)return;const s=getSelection();if(!s.rangeCount||s.isCollapsed){toast(NEED);return;}
+  const r=s.getRangeAt(0);if(!m.box.contains(r.commonAncestorContainer)){toast(NEED);return;}
+  const frag=r.cloneContents(),blk=frag.querySelector&&frag.querySelector('div,li,ul,ol,table,tr,td,p,br,img,svg');const mkS=()=>{const sp=document.createElement('span');sp.className='mzf';sp.style.cssText=css;return sp;};
+  let first=null,last=null;
+  if(!blk){const sp=mkS();sp.appendChild(r.extractContents());r.insertNode(sp);first=last=sp;}
+  else{const root=r.commonAncestorContainer.nodeType===3?r.commonAncestorContainer.parentNode:r.commonAncestorContainer,tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),L=[];let n;
+   while((n=tw.nextNode()))if(r.intersectsNode(n)&&n.textContent.trim()&&!n.parentNode.closest('svg'))L.push(n);
+   const sc=r.startContainer,so=r.startOffset,ec=r.endContainer,eo=r.endOffset;
+   L.forEach(t=>{let st=t===sc?so:0,en=t===ec?eo:t.length;if(en<=st)return;if(en<t.length)t.splitText(en);if(st>0)t=t.splitText(st);const sp=mkS();t.parentNode.insertBefore(sp,t);sp.appendChild(t);first=first||sp;last=sp;});}
+  m.box.querySelectorAll('span.mzf').forEach(x=>{if(!x.textContent&&!x.querySelector('svg'))x.remove();});
+  if(first){const nr=document.createRange();nr.setStartBefore(first);nr.setEndAfter(last);s.removeAllRanges();s.addRange(nr);lastR=nr.cloneRange();}save();}
+ function unfmt(){const m=restore();if(!m)return;const s=getSelection();if(!s.rangeCount){toast(NEED);return;}const r=s.getRangeAt(0);
+  const L=[...m.box.querySelectorAll('span.mzf,span.mzr,span.mzu,span.mzw')].filter(sp=>r.intersectsNode(sp)||sp.contains(r.startContainer));
+  [...m.box.querySelectorAll('[style]')].forEach(x=>{if(x!==m.box&&r.intersectsNode(x)&&/background-color|^color|font-weight|text-decoration/.test(x.getAttribute('style')||'')&&x.tagName==='SPAN'&&!x.className)L.push(x);});
+  if(!L.length){toast('In der Markierung gibt es keine Hervorhebung zum Entfernen.');return;}
+  L.forEach(sp=>{if(!sp.parentNode)return;while(sp.firstChild)sp.parentNode.insertBefore(sp.firstChild,sp);sp.remove();});m.box.normalize();save();}
  function insIcon(k){const m=restore();if(!m)return;const s=getSelection();let r=(s.rangeCount&&m.box.contains(s.getRangeAt(0).commonAncestorContainer))?s.getRangeAt(0):null;
   const sp=document.createElement('span');sp.className='mzi';sp.style.cssText='display:inline-block;color:'+(window.__mzIC||'#c0392b');sp.innerHTML=SV(IC[k][1]);const t=document.createTextNode('\u00a0');
   if(r){r.collapse(false);r.insertNode(t);r.insertNode(sp);}else{const hd=m.box.firstElementChild;(hd||m.box).appendChild(sp);sp.after(t);}
@@ -14182,12 +14277,14 @@ ${ck('sn','Ziehen rastet auf 0,5 cm ein')}
   while(n&&n.parentNode!==m.box)n=n.parentNode;const tp=m.box.querySelector('.mzt');
   if(n&&n!==m.box.firstElementChild&&!(n.classList&&n.classList.contains('mzt')))n.after(d);else m.box.appendChild(d);
   const x=d.querySelector('.mzx'),r=document.createRange();r.selectNodeContents(x);s.removeAllRanges();s.addRange(r);lastR=r.cloneRange();m.box.focus();save();}
- window.mzAct=function(a,v){if(a==='b')cmd('bold');else if(a==='u')cmd('underline');else if(a==='uu')wrap('text-decoration:underline double;text-underline-offset:2px','mzu');
-  else if(a==='wave')wrap('text-decoration:underline wavy '+(v||'#c0392b')+';text-underline-offset:3px','mzw');
-  else if(a==='hl')cmd('hiliteColor',v);else if(a==='fc')cmd('foreColor',v);
-  else if(a==='box')wrap('border:2px solid '+(v||'#c0392b')+';border-radius:4px;padding:0 3px','mzr');
-  else if(a==='oval')wrap('border:2px solid '+(v||'#c0392b')+';border-radius:999px;padding:0 6px','mzr');
-  else if(a==='rm')cmd('removeFormat');else if(a==='ic')insIcon(v);else if(a==='note')insNote(v);};
+ window.mzAct=function(a,v){const c=v||'#c0392b';
+  if(a==='b')wrap('font-weight:700');else if(a==='u')wrap('text-decoration:underline;text-underline-offset:2px');
+  else if(a==='uu')wrap('text-decoration:underline double;text-underline-offset:2px');
+  else if(a==='wave')wrap('text-decoration:underline wavy '+c+';text-underline-offset:3px');
+  else if(a==='hl')wrap('background:'+v+';-webkit-print-color-adjust:exact;print-color-adjust:exact');else if(a==='fc')wrap('color:'+v);
+  else if(a==='box')wrap('border:2px solid '+c+';border-radius:4px;padding:0 3px');
+  else if(a==='oval')wrap('border:2px solid '+c+';border-radius:999px;padding:0 6px');
+  else if(a==='rm')unfmt();else if(a==='ic')insIcon(v);else if(a==='note')insNote(v);};
  function mzPanel(){const old=document.getElementById('g-mz');if(old)old.remove();const e=curEl(),it=curIt();
   if(!e||!it||!e.dataset.mz){if(editId!=null&&(!it||it.id!==editId)){editId=null;lastR=null;render();}return;}
   const rp=$('#rp');if(!rp)return;const sl=(k,o,v)=>`<select data-mz="${k}">${o.map(([a,t])=>`<option value="${a}"${String(v??'')===String(a)?' selected':''}>${t}</option>`).join('')}</select>`;
