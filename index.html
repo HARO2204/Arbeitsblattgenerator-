@@ -14496,9 +14496,9 @@ function lqAfter(){if(lqBusy)return;items.filter(i=>i.type==='lqr').forEach(it=>
   pool.forEach(a=>rows.push({a,l:AL[kri(0,AL.length-1)],x:1}));
   const d={sig,w,auto,clash,rows:tshuf(rows),n:A.length};it.lwD=d;return d;}
  function lwHtml(it){const d=lwData(it);if(d.err)return '';const sh=tlS(it),A=ans(it),c='#2e7d32';
-  const td='border:1.5px solid #555;padding:.15em .45em;text-align:center;white-space:nowrap';
+  const NR=d.rows.length,td='border:1.5px solid #555;padding:.15em '+(NR>11?'.22em':'.45em')+';text-align:center;white-space:nowrap'+(NR>13?';font-size:.88em':'');
   let H=`<div class="lwbox" style="margin-top:.7em;border:2px dashed ${c};border-radius:8px;padding:.45em .8em;break-inside:avoid"><div style="margin-bottom:.35em"><b style="color:${c}">🔤 Selbstkontrolle:</b> Suche dein Ergebnis in der Tabelle und schreibe den Buchstaben zur passenden Aufgabe. Ist alles richtig, entsteht ein Lösungswort.</div>`;
-  const per=Math.min(d.rows.length,it.lwC||9);for(let s=0;s<d.rows.length;s+=per){const R=d.rows.slice(s,s+per);
+  const per=NR<=17?NR:Math.ceil(NR/2);for(let s=0;s<d.rows.length;s+=per){const R=d.rows.slice(s,s+per);
    H+=`<table style="border-collapse:collapse;margin:0 0 .35em"><tr><td style="${td};background:#eef6ee;font-weight:700">Ergebnis</td>${R.map(r=>`<td style="${td}">${r.a}</td>`).join('')}</tr><tr><td style="${td};background:#eef6ee;font-weight:700">Buchstabe</td>${R.map(r=>`<td style="${td};font-weight:700">${r.l}</td>`).join('')}</tr></table>`;}
   NUMIT=it;H+=`<div style="display:flex;flex-wrap:wrap;gap:.35em;align-items:flex-end"><b style="margin-right:.4em">Lösungswort:</b>${A.map((a,i)=>`<div style="text-align:center"><div style="width:1.7em;height:1.7em;border:1.5px solid #000;display:flex;align-items:center;justify-content:center;font-weight:700">${sh?`<span class="sv">${d.w[i]}</span>`:''}</div><div style="font-size:.75em">${poL(i)}</div></div>`).join('')}</div></div>`;
   return H;}
