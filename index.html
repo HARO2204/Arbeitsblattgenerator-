@@ -14427,6 +14427,76 @@ RQP.tti=[['md','sel',[['int','Term im Sachzusammenhang interpretieren'],['bed','
 /* Herausheben: bei den langen Stufen 12–14 automatisch 1 Spalte (umstellbar) */
 (function(){try{const _g=teGen;teGen=function(it){if(it&&it.type==='teh'){const lv=+it.lv||1;if(it._lvP!=null&&it._lvP!==lv&&[12,13,14].includes(lv)&&(+it.co||1)>1){it.co=1;try{toast('Für die langen Aufgaben auf 1 Spalte gestellt. Wenn du ohne Lösungslinien arbeitest, kannst du wieder 2 Spalten wählen.');}catch(_){}}it._lvP=lv;}return _g.apply(this,arguments);};}catch(e){console.error(e);}})();
 
+/* ===== Bruchterme: Fehler finden, erkennen, aus Text aufstellen, Lücken, Zahl als Bruch ===== */
+const BT2=['btf','btx'];POT.push(...BT2);TLT.push(...BT2);RQT.push(...BT2);
+Object.assign(TLN,{btf:'Bruchterme: Wo steckt der Fehler?',btx:'Bruchterme: erkennen, aus Text, Lücken, als ein Bruch'});
+TLD.btf={w:714,n:4,co:2,rk:true};TLD.btx={w:714,md:'erk',n:6,co:2};
+const b2F=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`,b2S=v=>v<0?' − ':' + ',b2N=(c,v)=>(c===1&&v?'':c===-1&&v?'−':String(c).replace('-','−'))+(v||'');
+const b2V=()=>tpick(['x','a','y','b','m','n','p','r','t']);
+const BTN=['Tom','Lea','Ben','Mia','Paul','Emma','Noah','Lena','Jonas','Sophie','Elias','Anna'];
+function btfOne(t){const v=b2V(),w=tpick(['x','y','a','b','m','n'].filter(q=>q!==v));
+ if(t==='sk'){const a=kri(2,5),m=kri(2,6),b=a*m;return{h:`${b2F(`${a}${v} + ${b}`,`${a}${v}`)} = ${b}`,c:`${b2F(`${a}${v} + ${b}`,`${a}${v}`)} = ${b2F(`${a} · (${v} + ${m})`,`${a}${v}`)} = ${b2F(`${v} + ${m}`,v)}`,e:'Aus Summen darf man nicht kürzen – zuerst herausheben, dann nur Faktoren kürzen.'};}
+ if(t==='sd'){const k=kri(2,9);return{h:`${b2F(`${v} + ${k}`,k)} = ${v}`,c:`${b2F(`${v} + ${k}`,k)} lässt sich nicht kürzen (oder: ${b2F(v,k)} + 1)`,e:`${k} ist kein Faktor des ganzen Zählers – Summanden darf man nicht kürzen.`};}
+ if(t==='mi'){const n=kri(3,9),c=kri(1,n-1),d=kri(1,9),k=kri(2,7);return{h:`${b2F(`${n}${v}`,`${k}${w}`)} − ${b2F(`${c}${v} + ${d}`,`${k}${w}`)} = ${b2F(`${n-c}${v} + ${d}`,`${k}${w}`)}`,c:`${b2F(`${n}${v} − (${c}${v} + ${d})`,`${k}${w}`)} = ${b2F(`${b2N(n-c,v)} − ${d}`,`${k}${w}`)}`,e:'Das Minus vor dem Bruch gilt für den ganzen Zähler – Klammer setzen, alle Vorzeichen drehen.'};}
+ if(t==='na'){const a=kri(1,7),b=kri(1,7),k=tpick([1,2,3,5]);const N=k===1?v:k+v;return{h:`${b2F(a,N)} + ${b2F(b,N)} = ${b2F(a+b,(k===1?'2':2*k)+v)}`,c:`${b2F(a,N)} + ${b2F(b,N)} = ${b2F(a+b,N)}`,e:'Bei gleichnamigen Brüchen bleibt der Nenner gleich – Nenner werden nicht addiert.'};}
+ if(t==='kw'){const a=kri(2,9),b=kri(2,9);return{h:`${b2F(a,v)} : ${b2F(b,w)} = ${b2F(`${a*b}`,`${v}${w}`.split('').sort().join(''))}`,c:`${b2F(a,v)} · ${b2F(w,b)} = ${b2F(`${a}${w}`,`${b}${v}`)}`,e:'Beim Dividieren mit dem Kehrwert des zweiten Bruchs multiplizieren.'};}
+ if(t==='hn'){const a=kri(1,5),b=kri(1,5),p=tpick([2,3,4]),q=tpick([3,5,7].filter(x=>x!==p));return{h:`${b2F(a,`${p}${v}`)} + ${b2F(b,`${q}${v}`)} = ${b2F(a+b,`${p+q}${v}`)}`,c:`${b2F(`${a*q}`,`${p*q}${v}`)} + ${b2F(`${b*p}`,`${p*q}${v}`)} = ${b2F(a*q+b*p,`${p*q}${v}`)}`,e:'Ungleichnamige Brüche zuerst auf den Hauptnenner erweitern – Zähler und Nenner nicht einfach addieren.'};}
+ /* 'bi': binomische Formel beim Kürzen falsch */const c=kri(2,7);return{h:`${b2F(`${v}<sup>2</sup> + ${c*c}`,`${v} + ${c}`)} = ${v} + ${c}`,c:`${b2F(`${v}<sup>2</sup> + ${c*c}`,`${v} + ${c}`)} lässt sich nicht kürzen; aber ${b2F(`${v}<sup>2</sup> + ${2*c}${v} + ${c*c}`,`${v} + ${c}`)} = ${b2F(`(${v} + ${c})<sup>2</sup>`,`${v} + ${c}`)} = ${v} + ${c}`,e:`${v}² + ${c*c} ist nicht (${v} + ${c})² – es fehlt das gemischte Glied ${2*c}${v}.`};}
+function btfGen(it){const n=Math.max(1,Math.min(8,+it.n||4)),T=tshuf(['sk','sd','mi','na','kw','hn','bi']),nm=tshuf(BTN),L=[];
+ for(let i=0;i<n;i++){const o=btfOne(T[i%T.length]);o.nm=nm[i%nm.length];L.push(o);}
+ if(it.rk&&n>=3){const i=kri(0,n-1),o=btfOne(tpick(['na','kw','hn','mi','sk']));L[i]={nm:L[i].nm,h:o.c,c:o.c,e:'',ok:true};}
+ it.d=L.map(o=>o.ok?o:Object.assign(o,{ok:false}));}
+function btfBlk(it){NUMIT=it;const d=it.d||[],sh=tlS(it),co=Math.max(1,Math.min(2,+it.co||2));
+ return wnH1('Wo steckt der Fehler? Kreuze an, beschreibe den Fehler und stelle die Aufgabe richtig.')+tlGrid(co,d.map((o,i)=>`<div style="break-inside:avoid;border:1px solid #c5ccd4;border-radius:8px;padding:.45em .7em"><div><b>${poL(i)}</b> ${o.nm} hat so gerechnet:</div><div style="margin:.35em 0 .35em .6em;font-size:1.06em">${o.h}</div>
+  <div style="line-height:2"><span style="white-space:nowrap">${gqBox(sh,!!o.ok)} richtig</span> &nbsp; <span style="white-space:nowrap">${gqBox(sh,!o.ok)} falsch</span></div>
+  <div style="display:flex;gap:.4em;align-items:flex-end"><span>Fehler:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,o.ok?'–':o.e)}</span></div>
+  <div style="display:flex;gap:.4em;align-items:flex-end;margin-top:.5em"><span>Richtig:</span><span class="tlln" style="flex:1;min-width:6em;min-height:2.2em">${o.ok?(sh?'<span class="sv">ist richtig</span>':''):tlSv(it,o.c)}</span></div></div>`).join(''));}
+/* --- btx --- */
+const BTE={ja:[[1,'a'],['x + y','x − y'],[1,'3z<sup>2</sup>'],['k','p'],[5,'x'],['k + 1','k − 1'],[1,'3f + 1'],[3,'2 · (x + 1)'],['2a','b'],['7','m + 2'],['x<sup>2</sup>','4x']],nein:[[7,8],['x',2],['3 · (a + 2)',4],['a + b',5],['2v',10],[2,3],['b<sup>2</sup>','2 · (3 + 1)'],['k<sup>3</sup>',2],['5t',5],['x + 1','3'],['y<sup>2</sup>',7]]};
+function btxGen(it){const md=it.md||'erk',n=Math.max(1,Math.min(10,+it.n||6)),D=[];
+ if(md==='erk'){const m=Math.max(6,Math.min(14,n*2)),J=tshuf(BTE.ja).slice(0,Math.ceil(m/2)),N=tshuf(BTE.nein).slice(0,Math.floor(m/2));D.push({L:tshuf(J.map(t=>({t,ok:1})).concat(N.map(t=>({t,ok:0}))))});}
+ else if(md==='txt'){const G=tpick([100,120,150,200,240,300]),k=kri(2,4),z=tpick([10,20,30,50]),L=tpick([60,80,90,120,150]),W=tpick([12,15,18,20]);
+  const S=tshuf([[`Ein Gewinn von ${G} € wird auf x Personen aufgeteilt.`,[[`Wie viel bekommt jede Person?`,b2F(G,'x')],[`${['','','Zwei','Drei','Vier'][k]} Personen wollen ihren Anteil nicht.`,b2F(G,`x − ${k}`)],[`Es kommen weitere ${z} € zum Gewinn dazu.`,b2F(G+z,`x − ${k}`)]]],
+   [`Ein ${L} cm langes Brett soll in s gleich lange Stücke geteilt werden.`,[[`Wie lang ist ein Stück?`,b2F(L,'s')],[`Die Anzahl der Stücke wird verdoppelt.`,b2F(L,'2s')],[`Das Brett wird zuerst an einem Ende um t cm gekürzt.`,b2F(`${L} − t`,'2s')]]],
+   [`Eine Wandergruppe geht ${W} km in t Stunden.`,[[`Wie viele km schafft sie durchschnittlich pro Stunde?`,b2F(W,'t')],[`Sie macht unterwegs eine Pause von 1 Stunde (ohne zu gehen).`,b2F(W,'t − 1')],[`Am Ende geht sie noch 3 km weiter in derselben Gesamtzeit.`,b2F(W+3,'t − 1')]]],
+   [`Die Klasse hat k Kinder. Der Bus kostet ${tpick([360,450,480])} €.`,[[`Wie viel zahlt jedes Kind für den Bus?`,'b'],[`Zusätzlich kostet der Eintritt für alle zusammen 120 €.`,'e'],[`Zwei Kinder sind krank und fahren nicht mit.`,'k']]]]);
+  S.slice(0,Math.max(1,Math.min(3,Math.ceil(n/3)))).forEach(s=>{if(s[1][0][1]==='b'){const B=+s[0].match(/(\d+) €/)[1];s[1]=[[s[1][0][0],b2F(B,'k')],[s[1][1][0],b2F(`${B} + 120`,'k')],[s[1][2][0],b2F(`${B} + 120`,'k − 2')]];}D.push({s:s[0],L:s[1]});});}
+ else if(md==='lk'){for(let i=0;i<n;i++){const v=b2V(),w=tpick(['m','n','q','s'].filter(q=>q!==v)),k=kri(2,9),a=kri(1,9),c=a+kri(1,9),sub=Math.random()<.35;
+   const den=`${k}${w}`;D.push(sub?{q:`${b2F(`${c}${v}`,den)} − ${b2F('□',den)} = ${b2F(`${a}${v}`,den)}`,a:`${c-a}${v}`}:{q:`${b2F(`${a}${v}`,den)} + ${b2F('□',den)} = ${b2F(`${c}${v}`,den)}`,a:`${c-a}${v}`});}}
+ else{const T=tshuf(['p','m','xp','xm','pc']);for(let i=0;i<n;i++){const v=b2V(),a=kri(1,4),b=kri(1,6),c=kri(1,5),t=T[i%T.length];let q,s;
+   if(t==='p'){q=`${a} + ${b2F(b,v)}`;s=b2F(`${b2N(a,v)} + ${b}`,v);}else if(t==='m'){q=`${a} − ${b2F(b,`${v} + ${c}`)}`;s=b2F(`${b2N(a,v)} + ${a*c-b}`.replace('+ -','− ').replace(' + 0',''),`${v} + ${c}`);}
+   else if(t==='xp'){q=`${v} + ${b2F(b,v)}`;s=b2F(`${v}<sup>2</sup> + ${b}`,v);}else if(t==='xm'){q=`${v} − ${b2F(b,`${v} + ${c}`)}`;s=b2F(`${v}<sup>2</sup> + ${b2N(c,v)} − ${b}`,`${v} + ${c}`);}
+   else{q=`${b2F(1,`${v} − ${c}`)} − 1`;s=b2F(`${c+1} − ${v}`,`${v} − ${c}`);}D.push({q:q+' =',a:s});}}
+ it.d=D;}
+function btxBlk(it){NUMIT=it;const d=it.d||[],sh=tlS(it),md=it.md||'erk',co=Math.max(1,Math.min(3,+it.co||2));
+ if(md==='erk'){const L=d[0]?d[0].L:[];return wnH1('Kreise alle Bruchterme ein! (Bruchterm: im Nenner steht mindestens eine Variable.)')+`<div style="display:flex;flex-wrap:wrap;gap:.9em 1.2em;margin-top:.4em;align-items:center">${L.map(o=>`<div style="padding:.25em .7em;border-radius:999px;${sh&&o.ok?'border:2px solid #c0392b':'border:2px solid transparent'};font-size:1.1em">${b2F(o.t[0],o.t[1])}</div>`).join('')}</div>`;}
+ if(md==='txt')return wnH1('Erstelle zum Text einen passenden Bruchterm!')+d.map((o,i)=>`<div style="break-inside:avoid;margin-bottom:.7em"><div class="tlrw" style="align-items:flex-start"><b>${poL(i)}</b><span>${o.s}</span></div>${o.L.map(l=>`<div style="display:flex;gap:.5em;align-items:flex-end;margin:.45em 0 0 1.6em"><span style="flex:1">${l[0]}</span><span>⇒</span><span class="tlln" style="width:9em;min-height:2.4em;text-align:center">${sh?`<span class="sv">${l[1]}</span>`:''}</span></div>`).join('')}</div>`).join('');
+ if(md==='lk')return wnH1('Fülle die Lücke so aus, dass eine richtige Rechnung entsteht!')+tlGrid(co,d.map((o,i)=>`<div class="tlrw" style="align-items:center"><b>${poL(i)}</b><span style="white-space:nowrap;font-size:1.06em">${o.q.replace('□',`<span style="display:inline-block;min-width:2.4em;border-bottom:1.2px solid #000;text-align:center">${sh?`<span class="sv">${o.a}</span>`:'&nbsp;'}</span>`)}</span></div>`).join(''));
+ return wnH1('Schreibe als einen Bruch (auf einen Bruchstrich) und vereinfache!')+tlGrid(co,d.map((o,i)=>`<div class="tlrw" style="align-items:center"><b>${poL(i)}</b><span style="white-space:nowrap;font-size:1.06em">${o.q}</span><span class="tlln" style="flex:1;min-width:5em;min-height:2.4em">${tlSv(it,o.a)}</span></div>`).join(''));}
+{const _g=rqGen,_b=rqBlk,_s=rqSol;const DISP=['show','co','fs','nc'];
+ rqGen=function(it){if(!BT2.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;return it.type==='btf'?btfGen(it):btxGen(it);};
+ rqBlk=function(it){return it.type==='btf'?btfBlk(it):it.type==='btx'?btxBlk(it):_b(it);};rqSol=function(it){return BT2.includes(it.type)?[]:_s(it);};}
+RQP.btf=[['n','num','Anzahl',1,8],['co','sel',[[1,'1'],[2,'2']],'Spalten'],['rk','ck','Auch eine richtige Rechnung dabei']];
+RQP.btx=[['md','sel',[['erk','Bruchterme erkennen (einkreisen)'],['txt','Bruchterm zum Text aufstellen'],['lk','Lücken bei Addition/Subtraktion'],['ganz','Zahl/Variable und Bruch als ein Bruch']],'Aufgabe'],['n','num','Anzahl',1,10],['co','sel',[[1,'1'],[2,'2'],[3,'3']],'Spalten',it=>it.md==='lk'||it.md==='ganz']];
+(function(){try{
+ const _co=catOf;catOf=function(it){return it&&BT2.includes(it.type)?'te':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&BT2.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ const P=document.querySelector('.catp[data-c="te"]');if(!P)return;
+ const T=(x,y,t,s,c)=>`<text x="${x}" y="${y}" font-size="${s||10}" font-family="Arial" fill="${c||'#000'}" text-anchor="middle">${t}</text>`;
+ const tile=(t,svg)=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${svg}</svg><span>${TLN[t]}</span></div>`;
+ const m=P.querySelector('.pal[data-t="bfm"]');const h=tile('btx',T(22,16,'5')+'<path d="M15 20H29" stroke="#000"/>'+T(22,31,'x')+'<ellipse cx="22" cy="21" rx="13" ry="15" fill="none" stroke="#c0392b" stroke-width="1.6"/>'+T(66,25,'100 € / x Pers.',9))+tile('btf',T(30,16,'2x + 6')+'<path d="M12 20H48" stroke="#000"/>'+T(30,31,'2x')+T(62,25,'= 6',11,'#c0392b')+'<path d="M76 12l14 16M90 12L76 28" stroke="#c0392b" stroke-width="2.2"/>');
+ if(m)m.insertAdjacentHTML('afterend',h);else P.insertAdjacentHTML('beforeend',h);
+}catch(e){console.error(e);}})();
+/* KlaPuStri-Merkkasten: Option „mit Potenzen (KlaPoPuStri)“ */
+setTimeout(function(){try{if(!RQP.kpk)return;RQP.kpk.push(['po','ck','mit Potenzen (KlaPoPuStri)']);
+ const _b=rqBlk;rqBlk=function(it){let h=_b(it);if(it.type!=='kpk'||!it.po)return h;
+  h=h.replace('KlaPuStri-Regel','KlaPoPuStri-Regel');
+  const f=it.kf!==false,po=`<span style="color:${f?'#7b3fa0':'inherit'};font-weight:700">Po</span>`;
+  h=h.replace(/(<b>Merkwort<\/b><div[^>]*>)(.*?)(<\/div>)/,(m,a,b,c)=>a+b.replace(/(<b[^>]*>Pu<\/b>)(?=<b[^>]*>Stri)/,po+'$1').replace('<b>Kla</b>mmer, <b>Pu</b>nkt','<b>Kla</b>mmer, <b>Po</b>tenz, <b>Pu</b>nkt')+c);
+  const line=`<div style="margin:5px 0"><b>${po} – Potenzen</b><div style="padding-left:1.2em">Nach den Klammern werden die Potenzen berechnet: 2 · 3<sup>2</sup> = 2 · 9 = 18 (nicht 6<sup>2</sup>!).</div></div>`;
+  const i=h.indexOf('– Punkt vor Strich');if(i>0){const j=h.lastIndexOf('<div style="margin:5px 0">',i);if(j>0)h=h.slice(0,j)+line+h.slice(j);}
+  return h;};}catch(e){console.error(e);}},0);
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
