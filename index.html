@@ -14266,7 +14266,7 @@ function pppBlk(it){NUMIT=it;const d=it.d||[],co=Math.max(1,Math.min(4,+it.co||3
 {const _g=rqGen,_b=rqBlk,_s=rqSol;const DISP=['show','co','fs','nc'];
  rqGen=function(it){if(it.type==='pmk'){it.d=[1];return;}if(it.type!=='ppp')return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;return pppGen(it);};
  rqBlk=function(it){if(it.type==='pmk'){const t=PMK[it.md]||PMK.pz;return MKB(t[0],t[1]);}return it.type==='ppp'?pppBlk(it):_b(it);};
- rqSol=function(it){if(it.type==='pmk')return [];if(it.type==='ppp')return (it.d||[]).map(o=>String(o.s).replace(/<[^>]*>/g,m=>m==='<sup>'?'^':'')) ;return _s(it);};}
+ rqSol=function(it){if(it.type==='pmk')return [];if(it.type==='ppp')return (it.d||[]).map(o=>String(o.s));return _s(it);};}
 RQP.pmk=[['md','sel',[['pz','Potenz: Basis und Hochzahl'],['ng','Potenzen mit negativer Basis'],['md','Multiplizieren und Dividieren (gleiche Basis)'],['pq','Produkt und Quotient potenzieren'],['pp','Potenz potenzieren'],['vr','Vorrangregeln: KlaPoPuStri'],['zp','Zehnerpotenzen'],['gk','Gleitkommadarstellung'],['all','Alle Rechenregeln (Zusammenfassung)']],'Inhalt']];
 RQP.ppp=[['md','sel',[['pp','Potenz potenzieren: (a³)⁴ = a¹²'],['lk','Fehlende Hochzahl ergänzen'],['pr','Gemischt: mit Multiplizieren und Dividieren'],['rg','Rechenregel erkennen und benennen'],['rf','Richtig oder falsch?']],'Aufgabe'],['bt','sel',[['zahl','Zahlen als Basis'],['var','Variablen als Basis'],['mix','gemischt']],'Basis'],['lv','sel',[[1,'leichter (kleine Hochzahlen)'],[2,'schwieriger']],'Schwierigkeit'],['n','num','Anzahl',2,18],['co','sel',[[1,'1'],[2,'2'],[3,'3'],[4,'4']],'Spalten']];
 (function(){try{
@@ -14309,7 +14309,8 @@ POT.push('lqr');TLT.push('lqr');RQT.push('lqr');TLN.lqr='Lösungs-QR-Code (Selbs
 TLD.lqr={x:560,w:220,qs:'m',sc:'pg',cap:'📱 Lösungen: Scanne mich!',ttl:''};
 RQP.lqr=[['sc','sel',[['pg','Aufgaben auf dieser Seite (bzw. Blatthälfte)'],['all','alle Aufgaben im Dokument']],'Lösungen von'],['qs','sel',[['k','klein (2,5 cm)'],['m','mittel (3,5 cm)'],['g','groß (4,5 cm)']],'Größe']];
 const LQ_URL='https://claude.ai/artifact/9RmqwMouE8Fm2tDHY1BDXv';
-const lqTxt=s=>String(s==null?'':s).replace(/<[^>]*>/g,' ').replace(/&nbsp;|&#160;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
+const LQSUP={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','−':'⁻','-':'⁻','n':'ⁿ','m':'ᵐ',' ':'','·':'·'};
+const lqTxt=s=>String(s==null?'':s).replace(/<sup>(.*?)<\/sup>/g,(m,a)=>{const t=a.replace(/<[^>]*>/g,'');return [...t].every(c=>c in LQSUP)?[...t].map(c=>LQSUP[c]).join(''):'^('+t+')';}).replace(/<[^>]*>/g,' ').replace(/&nbsp;|&#160;/g,' ').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/\s+/g,' ').trim();
 function lqGather(q){const sec=y=>{const c=items.filter(i=>i.type==='cutl').map(i=>i.y);return c.filter(v=>v<y+4).length;},pg=Math.floor(q.y/PH),sq=sec(q.y);
  const src=items.filter(i=>i!==q&&i.type!=='lqr'&&(q.sc==='all'||(Math.floor(i.y/PH)===pg&&sec(i.y)===sq))).sort((a,b)=>a.y-b.y||a.x-b.x);const G=[];
  src.forEach(it=>{let v=[];try{if(RQT.includes(it.type))v=rqSol(it)||[];else if(typeof LBT!=='undefined'&&LBT.includes(it.type))v=lbVals(it)||[];if(!v.length&&Array.isArray(it.d)&&it.d.length&&it.d.every(x=>x&&typeof x==='object'&&'a' in x))v=it.d.map(x=>x.a);}catch(_){}
@@ -14477,12 +14478,12 @@ function lqAfter(){if(lqBusy)return;items.filter(i=>i.type==='lqr').forEach(it=>
 (function(){try{
  const WL={2:['JA','OK','UF'],3:['TOP','JUHU','ZOO','UHU','EIS','SPA','HUT','OHR'],4:['TOLL','KLAR','HURRA','MUT','EULE','OTTER','MATHE','FUCHS','PAUSE','SUPER'],5:['SUPER','PRIMA','BRAVO','MATHE','PAUSE','FUCHS','OTTER','JUBEL','ZAHLEN'],6:['KLASSE','SPITZE','GENIAL','ZAHLEN','FERIEN','SCHULE','PIRATE','RAKETE','KOMMA'],7:['RECHNEN','GEWONNEN','SPITZE','ERFOLG','TOLLDAS','SCHLAUE','KLASSIK'],8:['SUPERSTAR','GEWONNEN','RECHNERIN','TASCHEN','GESCHAFFT','MATHEASS','WUNDERBAR','MEISTERIN'],9:['GESCHAFFT','WUNDERBAR','MEISTERIN','RECHNERIN','SUPERSTAR','DRACHENEI'],10:['FANTASTISCH','HERVORRAGEND','ZAUBERHAFT','MATHEPROFI','SCHATZTRUHE','KOPFRECHNEN'],11:['FANTASTISCH','SCHATZTRUHE','KOPFRECHNEN','SCHNEEFLOCKE'],12:['HERVORRAGEND','SCHNEEFLOCKE','MATHEGENIES','MATHEPROFIS']};
  const wordsOf=n=>Object.values(WL).flat().filter((w,i,a)=>a.indexOf(w)===i&&w.length===n);
- const ans=it=>{try{return (rqSol(it)||[]).map(s=>String(s).replace(/<[^>]*>/g,'').replace(/&nbsp;/g,' ').trim());}catch(_){return [];}};
+ const ans=it=>{try{return (rqSol(it)||[]).map(s=>String(s).replace(/<(?!\/?su[pb]>)[^>]*>/g,'').replace(/\^\(([^)]*)\)|\^(\S+)/g,(m,a,b)=>'<sup>'+(a||b)+'</sup>').replace(/&nbsp;/g,' ').trim());}catch(_){return [];}};
  const okFor=it=>RQT.includes(it.type)&&!['cutl','ffa','ffm','efa','efm','kpk'].includes(it.type);
  const num=s=>{const t=s.replace(/[\s  ]/g,'');if(!/^-?\d+(,\d+)?$/.test(t))return null;return {v:+t.replace(',','.'),dec:(t.split(',')[1]||'').length};};
  const fmt=(v,dec)=>{const neg=v<0;v=Math.abs(v);let s=dec?v.toFixed(dec):String(Math.round(v));let [a,b]=s.split('.');a=qTs(a);return (neg?'−':'')+a+(b?','+b:'');};
  const AL='ABDEFGHIKLMNOPRSTUW';
- function lwData(it){const A=ans(it);if(A.length<2)return {err:'Diese Aufgabe hat keine Ergebnisse für ein Lösungswort.'};if(A.some(a=>a.length>22))return {err:'Die Ergebnisse sind zu lang für eine Lösungswort-Tabelle.'};
+ function lwData(it){const A=ans(it);if(A.length<2)return {err:'Diese Aufgabe hat keine Ergebnisse für ein Lösungswort.'};if(A.some(a=>a.replace(/<[^>]*>/g,'').length>22))return {err:'Die Ergebnisse sind zu lang für eine Lösungswort-Tabelle.'};
   const sig=A.join('|');let w=(it.lwW||'').toUpperCase().replace(/[^A-ZÄÖÜ]/g,'');
   const own=w&&w.length===A.length;if(it.lwD&&it.lwD.sig===sig&&(own?it.lwD.w===w:it.lwD.auto))return it.lwD;
   const auto=!own;if(auto){const C=wordsOf(A.length);w=C.length?tpick(C):Array.from({length:A.length},(_,i)=>'LÖSUNGSWORT'[i%11]).join('');}
@@ -14490,6 +14491,7 @@ function lqAfter(){if(lqBusy)return;items.filter(i=>i.type==='lqr').forEach(it=>
   const first={};let clash=false;A.forEach((a,i)=>{if(a in first){if(w[first[a]]!==w[i])clash=true;}else first[a]=i;});
   const rows=[];const seen={};A.forEach((a,i)=>{if(!(a in seen)){seen[a]=1;rows.push({a,l:w[i]});}});
   const nn=A.map(num).filter(Boolean),pool=[];
+  {const PW=A.map(a=>a.match(/^(.+)<sup>(\d+)<\/sup>$/)).filter(Boolean);for(let g=0;g<60&&PW.length&&pool.length<3;g++){const m=tpick(PW),e=+m[2]+tpick([1,-1,2,-2,3]);if(e<2)continue;const s=m[1]+'<sup>'+e+'</sup>';if(!A.includes(s)&&!pool.includes(s))pool.push(s);}}
   if(nn.length){for(let g=0;g<60&&pool.length<3;g++){const b=tpick(nn),d=b.dec?tpick([1,10,-1,-10,.1,-.1].map(x=>x/(b.dec>1?10:1))):tpick([1,-1,10,-10,100,2]);const v=Math.round((b.v+d)*10**b.dec)/10**b.dec;const s=fmt(v,b.dec);if(v>=0&&!A.includes(s)&&!pool.includes(s))pool.push(s);}}
   pool.forEach(a=>rows.push({a,l:AL[kri(0,AL.length-1)],x:1}));
   const d={sig,w,auto,clash,rows:tshuf(rows),n:A.length};it.lwD=d;return d;}
