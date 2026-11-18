@@ -3299,7 +3299,7 @@ function renderTe(){const g=$('#g-te'),it=items.find(i=>i.id===sel&&TET.includes
  if(k==='tez')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · eine Variable'],[2,'2 · zwei Variablen'],[3,'3 · Potenzen und Zahlen'],[4,'4 · drei Variablen'],[5,'5 · vier Variablen']])+`<label>Anzahl der Glieder${sl('nt',tN([3,4,5,6,7,8]))}</label>`+co([1,2])+ck('pr','Probe mit Zahlen')+ck('mk','Merkkasten');
  if(k==='tek')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · Zahl und Variable'],[2,'2 · Variablen, auch zwei'],[3,'3 · zwei Klammern']])+co([1,2])+ck('zw','Zwischenzeile (Klammern aufgelöst)')+ck('mk','Merkkasten (Klammerregeln)');
  if(k==='tem')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['mm','Monom · Monom'],['mb','Monom · Binom'],['mp','Monom · Polynom'],['bb','Binom · Binom']])}</label>`+nn([2,4,6,8,10,12,14,16])+lv(L4)+co([1,2,3])+ck('zw','Zwischenzeile (jedes Glied einzeln)')+ck('mk','Merkkasten');
- if(k==='teh')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · nur Zahlen herausheben'],[2,'2 · nur Variable herausheben'],[3,'3 · Zahl und Variable'],[4,'4 · auch Potenzen']])+co([1,2])+ck('pr','Probe (Ausmultiplizieren)')+ck('mk','Merkkasten');
+ if(k==='teh')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · nur Zahlen herausheben'],[2,'2 · nur Variable herausheben'],[3,'3 · Zahl und Variable'],[4,'4 · auch Potenzen'],[5,'5 · mehrere Variablen (z. B. 6ab)'],[6,'6 · mehrere Variablen mit Potenzen (z. B. 4x²y)'],[7,'7 · eine Klammer herausheben'],[8,'8 · mit Minus herausheben'],[9,'gemischt leicht (Stufe 1–4)'],[10,'gemischt schwer (Stufe 3–8)'],[11,'gemischt: alle Stufen']])+co([1,2])+ck('pr','Probe (Ausmultiplizieren)')+ck('mk','Merkkasten');
  if(k==='tbf')H+=`<label>Formel${sl('md',[['mix','alle drei gemischt'],['p','(a + b)²'],['m','(a − b)²'],['q','(a + b)² und (a − b)²'],['pm','(a + b) · (a − b)']])}</label>`+nn([2,4,6,8,10,12,14,16])+lv([[1,'1 · x + 3 oder a + b'],[2,'2 · mit einem Koeffizienten'],[3,'3 · mit zwei Koeffizienten'],[4,'4 · auch −x + 3y und Potenzen']])+co([1,2,3])+ck('zw','Zwischenzeile (Formel einsetzen)')+ck('mk','Merkkasten (Formeln)');
  if(k==='tbr')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['prod','Quadrat erkennen (a ± b)²'],['dif','Produkt erkennen (a + b)(a − b)'],['erg','fehlendes Glied ergänzen □']])}</label>`+nn([2,4,6,8,10,12])+lv(L4.slice(0,3))+co([1,2])+ck('mk','Merkkasten (Formeln)');
  if(k==='tbk')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['q','Quadrate (z. B. 102²)'],['p','Produkte (z. B. 49 · 51)']])}</label>`+nn([2,3,4,6,8,10])+co([1,2])+ck('zw','Zwischenzeile (Rechenweg)')+ck('mk','Merkkasten');
@@ -14278,6 +14278,37 @@ RQP.ppp=[['md','sel',[['pp','Potenz potenzieren: (a³)⁴ = a¹²'],['lk','Fehle
  const t1=`<div class="pal" draggable="true" data-t="pmk" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><rect x="6" y="5" width="88" height="30" rx="5" fill="#f3f6ff" stroke="#1f3a8a" stroke-width="2"/><text x="12" y="17" font-size="9" font-weight="700" fill="#1f3a8a">📌 Merke</text><text x="12" y="30" font-size="11" font-family="Arial">a<tspan dy="-4" font-size="7">m</tspan><tspan dy="4"> · a</tspan><tspan dy="-4" font-size="7">n</tspan><tspan dy="4"> = a</tspan><tspan dy="-4" font-size="7">m+n</tspan></text></svg><span>${TLN.pmk}</span></div>`;
  const t2=`<div class="pal" draggable="true" data-t="ppp" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><text x="8" y="26" font-size="14" font-family="Arial">(a<tspan dy="-6" font-size="9">3</tspan><tspan dy="6">)</tspan><tspan dy="-6" font-size="9">4</tspan><tspan dy="6"> = a</tspan><tspan dy="-6" font-size="9" fill="#c0392b">12</tspan></text></svg><span>${TLN.ppp}</span></div>`;
  P.insertAdjacentHTML('afterbegin',t1);const pq=P.querySelector('.pal[data-t="ppq"]');if(pq)pq.insertAdjacentHTML('afterend',t2);else P.insertAdjacentHTML('beforeend',t2);
+}catch(e){console.error(e);}})();
+
+/* ===== Herausheben: weitere Stufen und gemischte Varianten ===== */
+(function(){try{
+ const _teH=teH,V=['x','y','a','b','z','m','n','r','s','t'];
+ const mono=(c,e)=>({c,e:Object.fromEntries(Object.entries(e).filter(x=>x[1]))});
+ const okF=F=>{if(teN(F).length!==F.length||F.length<2)return false;if(F.reduce((x,t)=>teGcd(x,t.c),0)!==1)return false;
+  const vs=new Set(F.flatMap(t=>Object.keys(t.e)));for(const v of vs)if(F.every(t=>(t.e[v]||0)>=1))return false;return true;};
+ /* Stufe 5: Zahl und mehrere Variablen (z. B. 6ab); Stufe 6: auch Potenzen (z. B. 4x²y) */
+ function hMulti(lv){for(let g=0;g<400;g++){const vv=tshuf(V).slice(0,3),gv=vv.slice(0,lv===5?2:kri(1,2)),ge={};gv.forEach(v=>ge[v]=lv===6?kri(1,3):1);
+   if(lv===6&&gv.length===1)ge[gv[0]]=kri(2,3);const G=mono(lv===5?tpick([1,2,3,4,5,6,8]):kri(2,9),ge);
+   const nt=kri(2,3),F=[];for(let i=0;i<nt;i++){const e={};vv.forEach(v=>{if(Math.random()<.5)e[v]=lv===6?kri(1,2):1;});F.push(mono((i&&Math.random()<.35?-1:1)*kri(1,7),e));}
+   if(!okF(F))continue;const N=teN(F);if(N[0].c<0)continue;const E=teMul([G],N);if(E.length!==N.length)continue;const deg=x=>Object.values(x.e).reduce((s,v)=>s+v,0);if(E.some(x=>deg(x)>(lv===5?3:5))||Math.max(...E.map(x=>Math.abs(x.c)))>(lv===5?48:72))continue;
+   return{q:teS(E)+' =',a:`${teMo(G)} · (${teS(N)})`,_l:E,_G:G,_F:N};}
+  return _teH(4);}
+ /* Stufe 7: eine Klammer herausheben: 3x · (a + b) + 5y · (a + b) */
+ function hKl(){for(let g=0;g<200;g++){const vv=tshuf(V).slice(0,4),P=tpick([[mono(1,{[vv[0]]:1}),mono(1,{[vv[1]]:1})],[mono(1,{[vv[0]]:1}),mono(-1,{[vv[1]]:1})],[mono(1,{[vv[0]]:1}),mono(tpick([1,-1])*kri(2,9),{})],[mono(kri(2,4),{[vv[0]]:1}),mono(tpick([1,-1]),{})]]);
+   const e1=Math.random()<.7?{[vv[2]]:1}:{},e2=Math.random()<.6?{[vv[3]]:1}:{},m1=mono(Object.keys(e1).length?kri(1,8):kri(2,8),e1),m2=mono(tpick([1,-1])*(Object.keys(e2).length?kri(1,8):kri(2,8)),e2);
+   const M=teN([m1,m2]);if(M.length!==2||M.reduce((x,t)=>teGcd(x,t.c),0)!==1||(!Object.keys(m1.e).length&&!Object.keys(m2.e).length))continue;
+   const Ps='('+teS(teN(P))+')',f=t=>(Math.abs(t.c)===1&&Object.keys(t.e).length?(t.c<0?'':'')+teMo(t):teMo(t));
+   const q=`${f(m1)} · ${Ps} ${m2.c<0?'−':'+'} ${f(m2)} · ${Ps}`;
+   return{q:q+' =',a:`${Ps} · (${teS([m1,m2])})`,_l:teMul(teN(P),[m1,m2])};}
+  return _teH(3);}
+ /* Stufe 8: mit Minus herausheben (−4x − 8 = −4 · (x + 2)) */
+ function hMin(){for(let g=0;g<300;g++){const vv=tshuf(V).slice(0,3),G=mono(-kri(2,9),Math.random()<.6?{[vv[0]]:1}:{});
+   const F=[];const nt=kri(2,3);for(let i=0;i<nt;i++){const e={};if(i<nt-1||Math.random()<.5)e[tpick(vv.slice(i===0?0:1))]=1;F.push(mono((i&&Math.random()<.3?-1:1)*kri(1,6),e));}
+   if(!okF(F))continue;const N=teN(F);if(N[0].c<0)continue;const E=teMul([G],N);if(E.length!==N.length||E[0].c>0)continue;
+   return{q:teS(E)+' =',a:`−${teMo(G)} · (${teS(N)})`,_l:E,_G:G,_F:N};}
+  return _teH(3);}
+ const MIX={9:[1,2,3,4],10:[3,4,5,6,8],11:[1,2,3,4,5,6,7,8]};
+ teH=function(lv){if(MIX[lv])lv=tpick(MIX[lv]);if(lv===5||lv===6)return hMulti(lv);if(lv===7)return hKl();if(lv===8)return hMin();return _teH(lv);};
 }catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
