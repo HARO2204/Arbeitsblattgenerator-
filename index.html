@@ -14221,6 +14221,65 @@ function ff2Sol(it){return (it.d||[]).filter(Boolean).map(o=>o.ok?'richtig':'fal
  const P3=document.querySelector('#gepal')||document.querySelector('.catp[data-c="ge"]');if(P3)P3.insertAdjacentHTML('beforeend',tile('ffq'));
 }catch(e){console.error(e);}})();
 
+/* ===== Potenzen: Merkkästen (pmk) und Potenzen potenzieren / Rechenregeln (ppp) ===== */
+const PZT=['pmk','ppp'];POT.push(...PZT);TLT.push(...PZT);RQT.push(...PZT);
+Object.assign(TLN,{pmk:'Merkkasten: Potenzen',ppp:'Potenzen potenzieren und Rechenregeln anwenden'});
+TLD.pmk={w:714,md:'pz'};TLD.ppp={w:714,md:'pp',n:9,co:3,lv:1,bt:'zahl'};
+const pzS=e=>'<sup>'+e+'</sup>',pzB=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const pzN=t=>'<span style="white-space:nowrap">'+t+'</span>';
+const PMK={
+ pz:['Potenzen',[['Potenz','Ein Produkt mit gleichen Faktoren kann als Potenz angeschrieben werden: 3 · 3 · 3 · 3 = 3'+pzS(4)+'.'],['Basis und Hochzahl','In a'+pzS('n')+' heißt <b>a</b> die <b>Basis</b> (Grundzahl) und <b>n</b> die <b>Hochzahl</b> (Exponent). Die Hochzahl gibt an, wie oft die Basis als Faktor vorkommt.'],['Hochzahl 1','a'+pzS(1)+' = a, zum Beispiel 7'+pzS(1)+' = 7.'],['Achtung','2'+pzS(3)+' = 2 · 2 · 2 = 8 und nicht 2 · 3 = 6!']]],
+ ng:['Potenzen mit negativer Basis',[['Gerade Hochzahl','Der Wert ist <b>positiv</b>: (−2)'+pzS(4)+' = 16.'],['Ungerade Hochzahl','Der Wert ist <b>negativ</b>: (−2)'+pzS(3)+' = −8.'],['Klammer beachten','(−2)'+pzS(2)+' = (−2) · (−2) = 4, aber −2'+pzS(2)+' = −(2 · 2) = −4.']]],
+ md:['Multiplizieren und Dividieren von Potenzen mit gleicher Basis',[['Multiplizieren','Potenzen gleicher Basis werden multipliziert, indem man ihre <b>Hochzahlen addiert</b>:<br>'+pzN('a'+pzS('m')+' · a'+pzS('n')+' = a'+pzS('m + n'))+', &nbsp; z. B. '+pzN('3'+pzS(4)+' · 3'+pzS(2)+' = 3'+pzS(6))+'.'],['Dividieren','Potenzen gleicher Basis werden dividiert, indem man ihre <b>Hochzahlen subtrahiert</b>:<br>'+pzN(pzB('a'+pzS('m'),'a'+pzS('n'))+' = a'+pzS('m − n'))+', &nbsp; z. B. '+pzN(pzB('3'+pzS(6),'3'+pzS(4))+' = 3'+pzS(2))+'.'],['Hochzahl 0','Jede Zahl (außer 0) hoch 0 ist 1: a'+pzS(0)+' = 1.'],['Achtung','Die Basis bleibt gleich! 2'+pzS(3)+' · 2'+pzS(2)+' = 2'+pzS(5)+' und nicht 4'+pzS(5)+'.']]],
+ pq:['Potenzieren eines Produkts und eines Quotienten',[['Produkt','Ein Produkt wird potenziert, indem <b>jeder Faktor potenziert</b> wird:<br>'+pzN('(a · b)'+pzS('n')+' = a'+pzS('n')+' · b'+pzS('n'))+', &nbsp; z. B. '+pzN('(2 · 3)'+pzS(3)+' = 2'+pzS(3)+' · 3'+pzS(3))+'.'],['Quotient','Ein Quotient wird potenziert, indem man <b>Dividend und Divisor potenziert</b>:<br>'+pzN('('+pzB('a','b')+')'+pzS('n')+' = '+pzB('a'+pzS('n'),'b'+pzS('n')))+', &nbsp; z. B. '+pzN('('+pzB(1,2)+')'+pzS(4)+' = '+pzB(1,16))+'.']]],
+ pp:['Potenzieren einer Potenz',[['Regel','Eine Potenz wird potenziert, indem man die <b>Hochzahlen multipliziert</b>: '+pzN('(a'+pzS('m')+')'+pzS('n')+' = a'+pzS('m · n'))+'.'],['Warum?','(2'+pzS(3)+')'+pzS(4)+' = 2'+pzS(3)+' · 2'+pzS(3)+' · 2'+pzS(3)+' · 2'+pzS(3)+' = 2'+pzS('3 + 3 + 3 + 3')+' = 2'+pzS(12)+'.'],['Nicht verwechseln','(a'+pzS(2)+')'+pzS(3)+' = a'+pzS(6)+' (multiplizieren), aber a'+pzS(2)+' · a'+pzS(3)+' = a'+pzS(5)+' (addieren).']]],
+ vr:['Vorrangregeln mit Potenzen – KlaPoPuStri',[['<span style="color:#c0392b">Kla</span> – Klammer zuerst','Rechnungen in Klammern werden zuerst berechnet.'],['<span style="color:#7b3fa0">Po</span> – Potenzen','Danach werden die Potenzen berechnet.'],['<span style="color:#1f5fa8">Pu</span> – Punkt vor <span style="color:#2e7d32">Stri</span>ch','Dann · und :, zum Schluss + und −. Gleichrangige Rechnungen von links nach rechts.'],['Beispiel',pzN('5 − (2'+pzS(2)+' + 3)'+pzS(2)+' = 5 − (4 + 3)'+pzS(2)+' = 5 − 7'+pzS(2)+' = 5 − 49 = −44')]]],
+ zp:['Zehnerpotenzen',[['Zehnerpotenz','Eine Potenz mit der Basis 10 heißt Zehnerpotenz: 10 = 10'+pzS(1)+', 100 = 10'+pzS(2)+', 1 000 = 10'+pzS(3)+' …'],['Nullen zählen','Die Hochzahl gibt die Anzahl der Nullen an: 10'+pzS(6)+' = 1 000 000.'],['Vorzahl','80 000 = 8 · 10 000 = 8 · 10'+pzS(4)+'. 8 heißt Vorzahl.'],['Größer oder kleiner','Je größer die Hochzahl, desto größer die Zahl: 10'+pzS(4)+' > 10'+pzS(3)+'.']]],
+ gk:['Gleitkommadarstellung',[['Gleitkommadarstellung','Das Produkt aus einer Vorzahl m mit 1 ≤ m < 10 und einer Zehnerpotenz heißt Gleitkommadarstellung: 84 000 000 = 8,4 · 10'+pzS(7)+'.'],['Mantisse','Die Vorzahl m heißt auch <b>Mantisse</b>. Vor dem Komma steht genau eine Ziffer, die nicht 0 ist.'],['Zurückverwandeln','Das Komma rückt so viele Stellen nach rechts, wie die Hochzahl angibt: 4,1 · 10'+pzS(3)+' = 4 100.'],['Taschenrechner','3,2E4 bedeutet 3,2 · 10'+pzS(4)+'.']]],
+ all:['Potenzen – alle Rechenregeln',[['Multiplizieren (gleiche Basis)','a'+pzS('m')+' · a'+pzS('n')+' = a'+pzS('m + n')],['Dividieren (gleiche Basis)',pzB('a'+pzS('m'),'a'+pzS('n'))+' = a'+pzS('m − n')+' &nbsp; und &nbsp; a'+pzS(0)+' = 1'],['Produkt / Quotient potenzieren','(a · b)'+pzS('n')+' = a'+pzS('n')+' · b'+pzS('n')+' &nbsp;&nbsp; ('+pzB('a','b')+')'+pzS('n')+' = '+pzB('a'+pzS('n'),'b'+pzS('n'))],['Potenz potenzieren','(a'+pzS('m')+')'+pzS('n')+' = a'+pzS('m · n')],['Negative Basis','gerade Hochzahl → positiv, ungerade Hochzahl → negativ']]]};
+/* --- Aufgaben --- */
+const PZV=['a','b','x','y','z','m','n','r','s','t'];
+function pppGen(it){const n=Math.max(2,Math.min(18,+it.n||9)),lv=+it.lv||1,md=it.md||'pp',bt=it.bt||'zahl',EM=lv>1?12:6;
+ const B=()=>bt==='var'?tpick(PZV):bt==='mix'?(Math.random()<.5?tpick(PZV):String(kri(2,9))):String(kri(2,lv>1?12:9));
+ const P=(b,e)=>e===1?b:b+pzS(e),L=[];const seen=new Set();
+ for(let g=0;L.length<n&&g<500;g++){let o;const b=B(),m=kri(2,EM),k=kri(2,lv>1?9:5);
+  if(md==='pp')o={q:`(${P(b,m)})${pzS(k)}`,s:P(b,m*k)};
+  else if(md==='lk'){const t=kri(0,1);o=t?{q:`(${P(b,m)})<sup><span class="pzl"></span></sup> = ${P(b,m*k)}`,s:String(k),lk:1}:{q:`(${b}<sup><span class="pzl"></span></sup>)${pzS(k)} = ${P(b,m*k)}`,s:String(m),lk:1};}
+  else if(md==='pr'){const fs=[m,k,kri(1,EM)];o={q:`(${P(b,fs[0])})${pzS(fs[1])} · ${P(b,fs[2])}`,s:P(b,fs[0]*fs[1]+fs[2])};if(lv>1&&Math.random()<.5){const d=kri(2,Math.min(fs[0]*fs[1]+fs[2]-1,20));o={q:pzB(`(${P(b,fs[0])})${pzS(fs[1])} · ${P(b,fs[2])}`,P(b,d)),s:P(b,fs[0]*fs[1]+fs[2]-d)};}}
+  else if(md==='rg'){const r=tpick(['m','d','p']);if(r==='m'){const a=kri(2,EM),c=kri(2,EM);o={q:`${P(b,a)} · ${P(b,c)}`,s:P(b,a+c),r:'Hochzahlen addieren'};}else if(r==='d'){const a=kri(3,EM+3),c=kri(1,a-1);o={q:pzB(P(b,a),P(b,c)),s:P(b,a-c),r:'Hochzahlen subtrahieren'};}else o={q:`(${P(b,m)})${pzS(k)}`,s:P(b,m*k),r:'Hochzahlen multiplizieren'};}
+  else{/* rf: richtig oder falsch */const t=tpick(['pp','m','d']),ok=Math.random()<.5;let q,w,r;
+   if(t==='pp'){r=m*k;w=ok?r:tpick([m+k,m*k+1,m*k-1].filter(x=>x!==r&&x>0));q=`(${P(b,m)})${pzS(k)} = ${P(b,w)}`;}
+   else if(t==='m'){const c=kri(2,EM);r=m+c;w=ok?r:m*c;q=`${P(b,m)} · ${P(b,c)} = ${P(b,w)}`;}
+   else{const a=m+kri(2,6),c=m;r=a-c;w=ok?r:(a%c===0&&a/c!==r?a/c:a+c);q=`${pzB(P(b,a),P(b,c))} = ${P(b,w)}`;}
+   o={q,ok:w===r,s:w===r?'richtig':'falsch, richtig: '+P(b,r)};}
+  if(seen.has(o.q))continue;seen.add(o.q);L.push(o);}
+ it.d=L;}
+function pppBlk(it){NUMIT=it;const d=it.d||[],co=Math.max(1,Math.min(4,+it.co||3)),md=it.md||'pp',sh=tlS(it);
+ const row=(i,c)=>`<div class="tlrw" style="align-items:center"><b>${poL(i)}</b>${c}</div>`;
+ const H={pp:'Schreibe als Potenz mit einer einzigen Hochzahl!',lk:'Ergänze die fehlende Hochzahl!',pr:'Vereinfache mit Hilfe der Rechenregeln und schreibe als eine Potenz!',rg:'Schreibe als eine Potenz und gib an, welche Rechenregel du verwendet hast!',rf:'Richtig oder falsch? Kreuze an und stelle falsche Rechnungen richtig!'}[md];
+ let body;
+ if(md==='lk')body=tlGrid(co,d.map((o,i)=>row(i,`<span style="white-space:nowrap">${o.q.replace('<span class="pzl"></span>',`<span style="display:inline-block;min-width:1.4em;border-bottom:1.2px solid #000;text-align:center;font-size:1.1em">${sh?`<span class="sv">${o.s}</span>`:'&nbsp;'}</span>`)}</span>`)).join(''));
+ else if(md==='rg')body=tlGrid(Math.min(co,2),d.map((o,i)=>`<div style="break-inside:avoid;margin-bottom:.35em">${row(i,`<span style="white-space:nowrap">${o.q} =</span><span class="tlln" style="flex:1;min-width:4em">${tlSv(it,o.s)}</span>`)}<div style="display:flex;gap:.4em;align-items:flex-end;margin-left:1.6em"><span style="font-size:.9em">Regel:</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,o.r)}</span></div></div>`).join(''));
+ else if(md==='rf')body=tlGrid(Math.min(co,2),d.map((o,i)=>`<div style="break-inside:avoid;margin-bottom:.35em">${row(i,`<span style="white-space:nowrap">${o.q}</span><span style="white-space:nowrap;margin-left:.6em">${gqBox(sh,o.ok)} r &nbsp;${gqBox(sh,!o.ok)} f</span>`)}<div style="display:flex;gap:.4em;align-items:flex-end;margin-left:1.6em"><span style="font-size:.9em">richtig:</span><span class="tlln" style="flex:1;min-width:4em">${o.ok?(sh?'<span class="sv">–</span>':''):tlSv(it,o.s.replace('falsch, richtig: ',''))}</span></div></div>`).join(''));
+ else body=tlGrid(co,d.map((o,i)=>row(i,`<span style="white-space:nowrap">${o.q} =</span><span class="tlln" style="flex:1;min-width:3em">${tlSv(it,o.s)}</span>`)).join(''));
+ return wnH1(H)+body;}
+{const _g=rqGen,_b=rqBlk,_s=rqSol;const DISP=['show','co','fs','nc'];
+ rqGen=function(it){if(it.type==='pmk'){it.d=[1];return;}if(it.type!=='ppp')return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;return pppGen(it);};
+ rqBlk=function(it){if(it.type==='pmk'){const t=PMK[it.md]||PMK.pz;return MKB(t[0],t[1]);}return it.type==='ppp'?pppBlk(it):_b(it);};
+ rqSol=function(it){if(it.type==='pmk')return [];if(it.type==='ppp')return (it.d||[]).map(o=>String(o.s).replace(/<[^>]*>/g,m=>m==='<sup>'?'^':'')) ;return _s(it);};}
+RQP.pmk=[['md','sel',[['pz','Potenz: Basis und Hochzahl'],['ng','Potenzen mit negativer Basis'],['md','Multiplizieren und Dividieren (gleiche Basis)'],['pq','Produkt und Quotient potenzieren'],['pp','Potenz potenzieren'],['vr','Vorrangregeln: KlaPoPuStri'],['zp','Zehnerpotenzen'],['gk','Gleitkommadarstellung'],['all','Alle Rechenregeln (Zusammenfassung)']],'Inhalt']];
+RQP.ppp=[['md','sel',[['pp','Potenz potenzieren: (a³)⁴ = a¹²'],['lk','Fehlende Hochzahl ergänzen'],['pr','Gemischt: mit Multiplizieren und Dividieren'],['rg','Rechenregel erkennen und benennen'],['rf','Richtig oder falsch?']],'Aufgabe'],['bt','sel',[['zahl','Zahlen als Basis'],['var','Variablen als Basis'],['mix','gemischt']],'Basis'],['lv','sel',[[1,'leichter (kleine Hochzahlen)'],[2,'schwieriger']],'Schwierigkeit'],['n','num','Anzahl',2,18],['co','sel',[[1,'1'],[2,'2'],[3,'3'],[4,'4']],'Spalten']];
+(function(){try{
+ const _co=catOf;catOf=function(it){return it&&it.type==='pmk'?'md':it&&it.type==='ppp'?'po':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&PZT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='pmk');try{return _h.apply(this,arguments);}finally{items=keep;}};
+ if(typeof LBT!=='undefined'&&!LBT.includes('ppp')){LBT.push('ppp');LBN.ppp='Potenzen potenzieren';}
+ const P=document.querySelector('.catp[data-c="po"]');if(!P)return;
+ const t1=`<div class="pal" draggable="true" data-t="pmk" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><rect x="6" y="5" width="88" height="30" rx="5" fill="#f3f6ff" stroke="#1f3a8a" stroke-width="2"/><text x="12" y="17" font-size="9" font-weight="700" fill="#1f3a8a">📌 Merke</text><text x="12" y="30" font-size="11" font-family="Arial">a<tspan dy="-4" font-size="7">m</tspan><tspan dy="4"> · a</tspan><tspan dy="-4" font-size="7">n</tspan><tspan dy="4"> = a</tspan><tspan dy="-4" font-size="7">m+n</tspan></text></svg><span>${TLN.pmk}</span></div>`;
+ const t2=`<div class="pal" draggable="true" data-t="ppp" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><text x="8" y="26" font-size="14" font-family="Arial">(a<tspan dy="-6" font-size="9">3</tspan><tspan dy="6">)</tspan><tspan dy="-6" font-size="9">4</tspan><tspan dy="6"> = a</tspan><tspan dy="-6" font-size="9" fill="#c0392b">12</tspan></text></svg><span>${TLN.ppp}</span></div>`;
+ P.insertAdjacentHTML('afterbegin',t1);const pq=P.querySelector('.pal[data-t="ppq"]');if(pq)pq.insertAdjacentHTML('afterend',t2);else P.insertAdjacentHTML('beforeend',t2);
+}catch(e){console.error(e);}})();
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
