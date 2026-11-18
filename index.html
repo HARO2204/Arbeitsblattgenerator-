@@ -14518,9 +14518,10 @@ function lqAfter(){if(lqBusy)return;items.filter(i=>i.type==='lqr').forEach(it=>
  b1.title='Gibt allen Aufgaben auf dem Blatt eine Nummer (1., 2., 3. …) von oben nach unten. Nochmals klicken ordnet die Nummern neu.';b2.title='Entfernt alle Nummern 1., 2., 3. … vom Blatt';
  [b1,b2].forEach(b=>{b.style.cssText='margin-left:6px;padding:3px 9px;border:1px solid #9aa3ad;border-radius:5px;background:#fff;cursor:pointer;font:inherit';});lab.after(b1);b1.after(b2);
  const SKIP=['text','num','frm','ckf','head'];
- const isTask=i=>{if(SKIP.includes(i.type)||String(i.type).startsWith('deko'))return false;const e=elOf(i.id);if(!e)return false;const h=e.querySelector('.wnh');if(h&&h.offsetHeight&&h.textContent.trim())return true;if(e.dataset.mz||e.querySelector('.mkb'))return false;
-  /* Aufgaben ohne .wnh (z. B. Terme): fett gedruckte Arbeitsanweisung ganz oben */
-  const top=e.getBoundingClientRect().top;for(const d of e.querySelectorAll('div')){const r=d.getBoundingClientRect();if(r.top-top>40)break;if(!d.offsetHeight||d.children.length>2)continue;const t=d.textContent.trim();if(t.length<6)continue;const fw=getComputedStyle(d).fontWeight;if((+fw||0)>=600||fw==='bold')return /[!.:?]$|^(Berechne|Schreibe|Hebe|Vereinfache|Löse|Ergänze|Bestimme|Fülle|Kreuze|Ordne|Gib|Mache|Multipliziere|Zeichne|Überprüfe|Male|Lies|Was)/.test(t);}return false;};
+ const NOCAT=['tx','kf','lb','fm','dk'],FIG=['rechteck','quadrat','raute','parallelogramm','trapez','deltoid','viereck','kre:k','kre'],TOOLS=['cutl','lqr','ftb','tb'];
+ const isMerk=(i,e)=>e.dataset.mz||e.querySelector('.mkb')||/Merkkasten|Merktext|Merke\b/.test(TLN[i.type]||'')||/^\s*(📌|💡)?\s*Merke\b/.test(e.textContent)||['kpk','pmk','tmk','b1k','bq','prq','lsb'].includes(i.type);
+ const isTask=i=>{if(SKIP.includes(i.type)||TOOLS.includes(i.type)||FIG.includes(i.type)||/^(deko|kb_|kn_)/.test(String(i.type)))return false;const e=elOf(i.id);if(!e||e.offsetHeight<30)return false;
+  let c='';try{c=catOf(i);}catch(_){}if(NOCAT.includes(c))return false;if(isMerk(i,e))return false;return true;};
  const sortNums=()=>{const ix=[];items.forEach((i,k)=>{if(i.type==='num'&&i.kind==='n')ix.push(k);});const nu=ix.map(k=>items[k]).sort((x,y)=>x.y-y.y||x.x-y.x);ix.forEach((k,j)=>{items[k]=nu[j];});};
  window.numberAll=function(){const nums=items.filter(i=>i.type==='num'&&i.kind==='n');const T=items.filter(isTask).sort((a,b)=>a.y-b.y||a.x-b.x);let neu=0;rec();const R0=rec;rec=()=>{};
   try{T.forEach(t=>{const has=(t.gid&&items.some(i=>i.gid===t.gid&&i.type==='num'))||nums.some(n=>Math.abs(n.y-t.y)<28&&n.x<t.x+10&&n.x>t.x-70);if(has)return;
