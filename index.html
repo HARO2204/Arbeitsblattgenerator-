@@ -3299,7 +3299,7 @@ function renderTe(){const g=$('#g-te'),it=items.find(i=>i.id===sel&&TET.includes
  if(k==='tez')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · eine Variable'],[2,'2 · zwei Variablen'],[3,'3 · Potenzen und Zahlen'],[4,'4 · drei Variablen'],[5,'5 · vier Variablen']])+`<label>Anzahl der Glieder${sl('nt',tN([3,4,5,6,7,8]))}</label>`+co([1,2])+ck('pr','Probe mit Zahlen')+ck('mk','Merkkasten');
  if(k==='tek')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · Zahl und Variable'],[2,'2 · Variablen, auch zwei'],[3,'3 · zwei Klammern']])+co([1,2])+ck('zw','Zwischenzeile (Klammern aufgelöst)')+ck('mk','Merkkasten (Klammerregeln)');
  if(k==='tem')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['mm','Monom · Monom'],['mb','Monom · Binom'],['mp','Monom · Polynom'],['bb','Binom · Binom']])}</label>`+nn([2,4,6,8,10,12,14,16])+lv(L4)+co([1,2,3])+ck('zw','Zwischenzeile (jedes Glied einzeln)')+ck('mk','Merkkasten');
- if(k==='teh')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · nur Zahlen herausheben'],[2,'2 · nur Variable herausheben'],[3,'3 · Zahl und Variable'],[4,'4 · auch Potenzen'],[5,'5 · mehrere Variablen (z. B. 6ab)'],[6,'6 · mehrere Variablen mit Potenzen (z. B. 4x²y)'],[7,'7 · eine Klammer herausheben'],[8,'8 · mit Minus herausheben'],[12,'12 · herausheben, dann binomische Formel'],[9,'gemischt leicht (Stufe 1–4)'],[10,'gemischt schwer (Stufe 3–8)'],[11,'gemischt: alle Stufen']])+co([1,2])+ck('pr','Probe (Ausmultiplizieren)')+ck('mk','Merkkasten');
+ if(k==='teh')H+=nn([2,4,6,8,10,12])+lv([[1,'1 · nur Zahlen herausheben'],[2,'2 · nur Variable herausheben'],[3,'3 · Zahl und Variable'],[4,'4 · auch Potenzen'],[5,'5 · mehrere Variablen (z. B. 6ab)'],[6,'6 · mehrere Variablen mit Potenzen (z. B. 4x²y)'],[7,'7 · eine Klammer herausheben'],[8,'8 · mit Minus herausheben'],[12,'12 · herausheben, dann binomische Formel'],[13,'13 · Profi: große Zahlen, drei Variablen, hohe Hochzahlen'],[14,'gemischt Profi (Stufe 6, 8, 12, 13)'],[9,'gemischt leicht (Stufe 1–4)'],[10,'gemischt schwer (Stufe 3–8)'],[11,'gemischt: alle Stufen']])+co([1,2])+ck('pr','Probe (Ausmultiplizieren)')+ck('mk','Merkkasten');
  if(k==='tbf')H+=`<label>Formel${sl('md',[['mix','alle drei gemischt'],['p','(a + b)²'],['m','(a − b)²'],['q','(a + b)² und (a − b)²'],['pm','(a + b) · (a − b)']])}</label>`+nn([2,4,6,8,10,12,14,16])+lv([[1,'1 · x + 3 oder a + b'],[2,'2 · mit einem Koeffizienten'],[3,'3 · mit zwei Koeffizienten'],[4,'4 · auch −x + 3y und Potenzen']])+co([1,2,3])+ck('zw','Zwischenzeile (Formel einsetzen)')+ck('mk','Merkkasten (Formeln)');
  if(k==='tbr')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['prod','Quadrat erkennen (a ± b)²'],['dif','Produkt erkennen (a + b)(a − b)'],['erg','fehlendes Glied ergänzen □']])}</label>`+nn([2,4,6,8,10,12])+lv(L4.slice(0,3))+co([1,2])+ck('mk','Merkkasten (Formeln)');
  if(k==='tbk')H+=`<label>Aufgabenart${sl('md',[['mix','gemischt'],['q','Quadrate (z. B. 102²)'],['p','Produkte (z. B. 49 · 51)']])}</label>`+nn([2,3,4,6,8,10])+co([1,2])+ck('zw','Zwischenzeile (Rechenweg)')+ck('mk','Merkkasten');
@@ -14411,6 +14411,17 @@ RQP.tti=[['md','sel',[['int','Term im Sachzusammenhang interpretieren'],['bed','
   if(t==='kl'){const E=teS(ApB);return{q:`${teMo(A)} · (${E}) − ${teMo(Bm)} · (${E}) =`,a:`(${E}) · (${teS(AmB)})`,_l:teMul(ApB,AmB)};}
   const inner=t==='p'?teMul(ApB,ApB):t==='m'?teMul(AmB,AmB):teMul(ApB,AmB),E=teMul([G],inner);
   return{q:teS(E)+' =',a:t==='d'?`${k} · (${teS(ApB)}) · (${teS(AmB)})`:`${k} · (${teS(t==='p'?ApB:AmB)})<sup>2</sup>`,_l:E};};}catch(e){console.error(e);}})();
+/* Herausheben: Stufe 13 – Profi (große Koeffizienten, drei Variablen, hohe Hochzahlen, bis zu vier Glieder) */
+(function(){try{const _h=teH,V=['a','b','c','x','y','z','m','n','r','s','t','w'];
+ const okF=F=>{if(teN(F).length!==F.length||F.length<3)return false;if(F.reduce((x,t)=>teGcd(x,t.c),0)!==1)return false;const vs=new Set(F.flatMap(t=>Object.keys(t.e)));for(const v of vs)if(F.every(t=>(t.e[v]||0)>=1))return false;return true;};
+ function hPro(){for(let g=0;g<600;g++){const vv=tshuf(V).slice(0,3).sort(),gv=vv.slice(0,kri(2,3)),ge={};gv.forEach(v=>ge[v]=kri(1,4));
+   const G=t4M(tpick([6,8,9,12,13,14,15,16,18,21,24,25]),ge),nt=kri(3,4),F=[];
+   for(let i=0;i<nt;i++){const e={};vv.forEach(v=>{if(Math.random()<.6)e[v]=kri(1,4);});F.push(t4M((i&&Math.random()<.4?-1:1)*kri(1,9),e));}
+   if(!okF(F))continue;const N=teN(F);if(N[0].c<0)continue;const E=teMul([G],N);if(E.length!==N.length)continue;
+   const deg=x=>Object.values(x.e).reduce((s,v)=>s+v,0);if(E.some(x=>deg(x)>14)||Math.max(...E.map(x=>Math.abs(x.c)))>200)continue;
+   return{q:teS(E)+' =',a:`${teMo(G)} · (${teS(N)})`,_l:E,_G:G,_F:N};}
+  return _h(6);}
+ teH=function(lv){if(lv===13)return hPro();if(lv===10&&Math.random()<.2)return hPro();if(lv===14)return Math.random()<.5?hPro():_h(tpick([6,8,12]));return _h(lv);};}catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
