@@ -14823,6 +14823,34 @@ RQP.wrt=[['n','num','Anzahl der Rätsel',1,10]];
  document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset||!t.dataset.zb)return;const it=items.find(i=>i.id===sel);if(!it)return;it.zb=t.value;regen(it);});
  document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-zbn]');if(!b)return;const it=items.find(i=>i.id===sel);if(it)regen(it);});
 }catch(e){console.error(e);}})();
+/* ===== Potenzen (tpo): mehr verschiedene Hochzahlen, selten gleiche Hochzahl innen und außen ===== */
+(function(){try{if(typeof TEX==='undefined'||!TEX.tpo)return;
+ const R=(l,h)=>l+Math.floor(Math.random()*(h-l+1)),P=a=>a[Math.floor(Math.random()*a.length)],sp=k=>k===1?'':`<sup>${k}</sup>`;
+ const pair=(l,h,same)=>{let a=R(l,h),b=R(l,h);for(let g=0;a===b&&Math.random()>(same||.1)&&g<20;g++)b=R(l,h);return[a,b];};
+ const ex=(e,p)=>Object.fromEntries(Object.entries(e).map(([k,x])=>[k,x*p]));
+ const old=TEX.tpo.gen;
+ TEX.tpo.gen=function(it,lv){let md=it.md||'mix';if(md==='mix')md=P(['mul','mul','mul','div','div','pot','pot']);
+  const[v1,v2]=teVP(),sg=()=>Math.random()<.3?-1:1;
+  if(md==='mul'){let A,B;
+   if(lv===1){const[a,b]=pair(1,9);A=teC(1,v1,a);B=teC(1,v1,b);}
+   else if(lv===2){const[a,b]=pair(1,8);A=teC(R(2,12),v1,a);B=teC(sg()*R(2,9),v1,b);}
+   else{const[a,b]=pair(1,5),[c,d]=pair(1,5);A={c:R(2,9),e:{[v1]:a,[v2]:c}};B={c:R(1,7),e:{[v1]:b,[v2]:d}};if(Math.random()<.4)B.c=-B.c;}
+   const Pr=teMul([A],[B]);if(!Pr.length)return old(it,lv);
+   const w=lv===2?`${A.c} · ${B.c<0?'('+B.c+')':B.c} · ${v1}<sup>${A.e[v1]}</sup> · ${v1}<sup>${B.e[v1]}</sup> = ${A.c*B.c} ${v1}<sup>${A.e[v1]}+${B.e[v1]}</sup>`:'';
+   return{q:`${teSg(A)} · ${(B.c<0?'(':'')+teSg(B)+(B.c<0?')':'')} =`,w,a:teS(Pr)};}
+  if(md==='div'){let Q,Dv;
+   if(lv===1){const[a,b]=pair(1,8);Dv=teC(1,v1,a);Q=teC(1,v1,b);}
+   else if(lv===2){const[a,b]=pair(1,7);Dv=teC(R(2,9),v1,a);Q=teC(R(2,12),v1,b);}
+   else{Dv={c:R(2,8),e:{[v1]:R(1,4),[v2]:R(1,3)}};Q={c:R(2,9),e:{[v1]:R(1,5),[v2]:R(0,4)}};if(!Q.e[v2])delete Q.e[v2];}
+   const Dd=teMul([Q],[Dv]);return{q:`${teMo(Dd[0])} : ${teMo(Dv)} =`,w:'',a:teMo(Q)};}
+  let B,p;
+  if(lv===1){p=R(2,5);let k=R(1,7);for(let g=0;k===p&&Math.random()>.1&&g<20;g++)k=R(1,7);if(k===1&&Math.random()<.6)k=R(2,7);if(k===p&&Math.random()>.1)k=p+1;B=teC(1,v1,k);}
+  else if(lv===2){p=R(2,4);let k=R(1,6);if(k===p&&Math.random()>.15)k=k%6+1;const c=R(2,p===4?3:p===3?5:9);B=teC((p===2?sg():1)*c,v1,k);}
+  else{p=R(2,3);const[a,b]=pair(1,4,.3);B={c:R(2,p===3?4:7),e:{[v1]:a,[v2]:b}};if(Math.random()<.3)B.c=-B.c;}
+  const Rr={c:Math.pow(B.c,p),e:ex(B.e,p)};
+  const bs=teSg(B),w=Object.keys(B.e).length&&lv>=2?`${B.c<0?'(−'+Math.abs(B.c)+')':B.c}<sup>${p}</sup> · ${Object.keys(B.e).map(k=>k+'<sup>'+B.e[k]+'·'+p+'</sup>').join(' · ')}`:'';
+  return{q:`(${bs})<sup>${p}</sup> =`,w,a:teS([Rr])};};
+}catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
