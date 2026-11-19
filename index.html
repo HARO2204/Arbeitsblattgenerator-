@@ -701,7 +701,7 @@ sheet.addEventListener('pointerdown',e=>{if(e.target===sheet)select(null);});
 /* ===== Körper, Netze, Oberflächen, Textaufgaben ===== */
 const kfm=(v,d)=>{const s=(d==null?String(+(+v).toFixed(4)):(+v).toFixed(d)).replace('.',',');return s.replace('-','−');};
 const kgr=(v,d)=>{const s=kfm(v,d),neg=s.startsWith('−'),b=neg?s.slice(1):s,p=b.split(','),i=p[0].length>=5?p[0].replace(/\B(?=(\d{3})+(?!\d))/g,' '):p[0];return(neg?'−':'')+i+(p[1]!=null?','+p[1]:'');};
-const kri=(l,h)=>l+Math.floor(Math.random()*(h-l+1));
+let kri=(l,h)=>l+Math.floor(Math.random()*(h-l+1));
 const ksh=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
 const KORD=['quader','wuerfel','zylinder','kegel','kugel','pyramide'];
 const KN={quader:'Quader',wuerfel:'Würfel',zylinder:'Zylinder',kegel:'Kegel',kugel:'Kugel',pyramide:'Pyramide'};
@@ -3163,7 +3163,7 @@ const tePar=(t,sq)=>{const s=teMo(t);return (t.c<0?'('+'−'+s+')':(sq&&teLen(s)
 const teC=(c,v,e)=>({c,e:v?{[v]:e||1}:{}});
 const teBox='<span style="display:inline-block;width:2.6em;height:1em;border-bottom:1.4px solid #000;vertical-align:-.1em;margin:0 .15em"></span>';
 const teGcd=(a,b)=>b?teGcd(b,a%b):Math.abs(a);
-const teVP=()=>tpick([['x','y'],['a','b'],['m','n'],['p','q'],['r','s'],['x','y'],['a','b'],['u','v'],['c','d']]);
+let teVP=()=>tpick([['x','y'],['a','b'],['m','n'],['p','q'],['r','s'],['x','y'],['a','b'],['u','v'],['c','d']]);
 const teMk=h=>`<div style="border:1.4px solid #000;border-radius:4px;padding:.5em .8em;margin:0 0 1em;break-inside:avoid"><b>Merke:</b> ${h}</div>`;
 const teBF3=`<div style="margin-top:.2em">1. Formel: &nbsp;(a + b)<sup>2</sup> = a<sup>2</sup> + 2ab + b<sup>2</sup></div><div>2. Formel: &nbsp;(a − b)<sup>2</sup> = a<sup>2</sup> − 2ab + b<sup>2</sup></div><div>3. Formel: &nbsp;(a + b) · (a − b) = a<sup>2</sup> − b<sup>2</sup></div><div style="margin-top:.2em">Quadrat des ersten Gliedes ± doppeltes Produkt + Quadrat des zweiten Gliedes. Achtung: (a + b)<sup>2</sup> ≠ a<sup>2</sup> + b<sup>2</sup>!</div>`;
 /* Binom A ± B erzeugen */
@@ -14779,6 +14779,50 @@ RQP.wrt=[['n','num','Anzahl der Rätsel',1,10]];
  const P=document.querySelector('.catp[data-c="wk"]');if(!P)return;const tile=(t,s)=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`;
  P.insertAdjacentHTML('afterbegin',tile('wmw','<rect x="6" y="5" width="88" height="30" rx="5" fill="#f3f6ff" stroke="#1f3a8a" stroke-width="2"/><text x="50" y="17" font-size="9" text-anchor="middle" fill="#1f3a8a" font-weight="700">📌 Merke</text><path d="M30 31H70M30 31L62 19" stroke="#000"/><path d="M42 31A12 12 0 0 0 41 27" fill="none" stroke="#1f5fa8"/>'));
  P.insertAdjacentHTML('beforeend',tile('wrt','<text x="50" y="27" font-size="20" text-anchor="middle">🧩 ?°</text>'));}catch(e){console.error(e);}})();
+
+/* ===== Terme: mehr Vielfalt (Zahlenbereich, mehr Variablen, neues Herausheben Stufe 1–4) ===== */
+(function(){try{
+ const RND=(l,h)=>l+Math.floor(Math.random()*(h-l+1)),PICK=a=>a[Math.floor(Math.random()*a.length)];
+ /* 1) Zahlenbereich: kri wird während der Erzeugung von Terme-Aufgaben aufgeweitet */
+ const ZB={k:1,m:1.8,g:3};
+ const isTE=it=>{if(!it)return false;if(['tea','tez','tek','tem','teh','tbf','tbr','tbw'].includes(it.type))return true;return typeof TEX!=='undefined'&&!!TEX[it.type]&&(()=>{try{return catOf(it)==='te';}catch(_){return false;}})();};
+ const KRI=kri;
+ const widen=f=>(l,h)=>{if(f>1&&l>=1&&l<=3&&h>=5&&h<=12&&h-l>=2){const H=Math.max(h,Math.round(h*f));return KRI(l,H);}return KRI(l,h);};
+ const _tg=teGen;teGen=function(it){const f=ZB[it&&it.zb||'m']||1;if(!isTE(it)||f===1)return _tg.apply(this,arguments);const old=kri;kri=widen(f);try{return _tg.apply(this,arguments);}finally{kri=old;}};
+ /* 2) mehr Variablenpaare */
+ const VP=[['x','y'],['a','b'],['m','n'],['p','q'],['r','s'],['u','v'],['c','d'],['e','f'],['g','h'],['k','n'],['s','t'],['v','w'],['x','z'],['a','c'],['b','d'],['m','p'],['t','u'],['y','z']];
+ teVP=()=>PICK(VP);
+ /* 3) Herausheben Stufe 1–4 neu: viele verschiedene gemeinsame Faktoren */
+ const V=['a','b','c','d','e','f','g','h','k','m','n','p','r','s','t','u','v','w','x','y','z'];
+ const G1=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,24,25,30,32,36,40,45,50],G1k=[2,3,4,5,6,7,8,9,10,11,12,15,20],G3=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,20,24,25];
+ const gcdA=a=>a.reduce((x,y)=>{x=Math.abs(x);y=Math.abs(y);while(y){[x,y]=[y,x%y];}return x;},0);
+ const mono=(c,e)=>({c,e:Object.fromEntries(Object.entries(e||{}).filter(x=>x[1]))});
+ const ok=F=>{if(F.length<2)return false;if(teN(F).length!==F.length)return false;if(gcdA(F.map(t=>t.c))!==1)return false;const vs=new Set(F.flatMap(t=>Object.keys(t.e)));for(const v of vs)if(F.every(t=>(t.e[v]||0)>=1))return false;return true;};
+ function hNew(lv,big){for(let g=0;g<500;g++){const vv=[...V].sort(()=>Math.random()-.5).slice(0,4),w=vv[0];let G;
+   if(lv===1)G=mono(PICK(big?G1:G1k),{});else if(lv===2)G=mono(1,{[w]:1});else if(lv===3)G=mono(PICK(G3),{[w]:1});else{const k=RND(1,4);G=mono(Math.random()<.25?1:PICK(G3),{[w]:k});if(G.c===1&&k===1)G.e[w]=RND(2,4);}
+   const nt=RND(2,lv===1?4:3),cm=lv===1?(G.c>=20?6:12):lv===2?15:lv===3?(G.c>=15?6:10):(G.c>=12?6:9),F=[];
+   for(let i=0;i<nt;i++){const e={};if(lv===4){if(Math.random()<.6)e[w]=RND(1,3);if(Math.random()<.5)e[PICK(vv.slice(1))]=RND(1,2);}else if(Math.random()<.8||i<nt-1)e[PICK(vv.slice(1))]=1;
+    F.push(mono((i&&Math.random()<.35?-1:1)*RND(1,cm),e));}
+   if(lv===1&&F.every(t=>!Object.keys(t.e).length))continue;
+   if(!ok(F))continue;const N=teN(F);if(N[0].c<0)continue;const E=teMul([G],N);if(E.length!==N.length)continue;
+   if(Math.max(...E.map(t=>Math.abs(t.c)))>(lv===1?300:200))continue;
+   return{q:teS(E)+' =',a:`${teMo(G)} · (${teS(N)})`,_l:E,_G:G,_F:N};}
+  return null;}
+ const _h=teH,MX={9:[1,2,3,4],11:[1,2,3,4,5,6,7,8]};
+ teH=function(lv){if(lv>=1&&lv<=4){const r=hNew(lv,true);if(r)return r;}
+  if(MX[lv]){const l=PICK(MX[lv]);return teH(l);}
+  if(lv===10){if(Math.random()<.2)return _h(13);return teH(PICK([3,4,5,6,8]));}
+  return _h(lv);};
+ /* 4) Einstellung „Zahlenbereich“ bei allen Terme-Aufgaben */
+ function zbPanel(){const old=document.getElementById('g-zb');if(old)old.remove();const it=items.find(i=>i.id===sel);if(!isTE(it))return;const rp=$('#rp');if(!rp)return;
+  const z=it.zb||'m',g=document.createElement('div');g.id='g-zb';g.className='grp';g.style.cssText='display:block;margin:0 0 8px';
+  g.innerHTML=`<label>Zahlenbereich der Koeffizienten<select data-zb="1"><option value="k"${z==='k'?' selected':''}>klein (meist 1–9)</option><option value="m"${z==='m'?' selected':''}>mittel (bis etwa 20)</option><option value="g"${z==='g'?' selected':''}>groß (bis etwa 30)</option></select></label><button type="button" data-zbn="1" style="margin-top:3px">🎲 Neue Zahlen</button>`;
+  const f=rp.querySelector('.grp');if(f)f.after(g);else rp.prepend(g);}
+ const _rp=renderProps;renderProps=function(){const r=_rp.apply(this,arguments);try{zbPanel();}catch(e){console.error(e);}return r;};
+ const regen=it=>{rec();it.d=null;try{teGen(it);}catch(e){console.error(e);}render();renderProps();};
+ document.addEventListener('change',ev=>{const t=ev.target;if(!t.dataset||!t.dataset.zb)return;const it=items.find(i=>i.id===sel);if(!it)return;it.zb=t.value;regen(it);});
+ document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-zbn]');if(!b)return;const it=items.find(i=>i.id===sel);if(it)regen(it);});
+}catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
