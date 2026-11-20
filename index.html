@@ -14984,12 +14984,17 @@ function lqAfter(){if(lqBusy)return;items.filter(i=>i.type==='lqr').forEach(it=>
   try{const old=items.filter(i=>i!==cut&&i.type!=='frm'&&i.type!=='ckf'&&i.y>=cut.y&&i.y<top+PH).length;items=items.filter(i=>!(i!==cut&&i.type!=='frm'&&i.type!=='ckf'&&i.y>=cut.y&&i.y<top+PH));
    const gm={};src.forEach(i=>{const c=JSON.parse(JSON.stringify(i));c.id=uid++;c.y=Math.round(i.y+sh);if(i.gid){gm[i.gid]=gm[i.gid]||uid++;c.gid=gm[i.gid];}items.push(c);if(regen&&POT.includes(c.type)&&c.d){try{poGen(c);}catch(_){}}});
    render();toast((regen?'Obere Hälfte mit neuen Zahlen nach unten kopiert.':'Obere Hälfte nach unten kopiert.')+(old?' Der alte Inhalt unten wurde ersetzt (Rückgängig möglich).':'')+(over?' Achtung: Die obere Hälfte ist zu lang – die Kopie ragt über den Seitenrand.':''));}finally{rec=R0;}};
+ window.halfMove=function(cm){const p=curPage(),cut=items.filter(i=>i.type==='cutl'&&Math.floor(i.y/PH)===p)[0];if(!cut){toast('Auf dieser Seite gibt es keine Schnittlinie.');return;}
+  const dy=Math.round(cm*PH/29.7),top=p*PH,low=items.filter(i=>i.type!=='frm'&&i.type!=='ckf'&&i.y>=cut.y-1&&i.y<top+PH);
+  if(dy<0&&items.some(i=>i.type!=='frm'&&i.type!=='ckf'&&!low.includes(i)&&i.y>=top&&i.y+H(i)>cut.y+dy+2)){toast('Weiter nach oben geht nicht – sonst überdeckt die Linie die obere Hälfte.');return;}
+  const bot=Math.max(...low.map(i=>i.y+H(i)));if(dy>0&&bot+dy>top+PH-4){toast('Weiter nach unten geht nicht – unten ist kein Platz mehr.');return;}
+  rec();low.forEach(i=>i.y+=dy);render();toast(`Schnittlinie mit unterer Hälfte ${dy>0?'nach unten':'nach oben'} verschoben (${String(Math.abs(cm)).replace('.',',')} cm).`);};
  window.halfDel=function(){const n=items.filter(i=>i.type==='cutl').length;if(!n){toast('Es gibt keine Schnittlinie.');return;}rec();items=items.filter(i=>i.type!=='cutl');render();toast('Schnittlinien entfernt.');};
  ['hn','hdt','hnp'].forEach(id=>{const x=document.getElementById(id);if(x)x.addEventListener('change',()=>{if(items.some(i=>i.type==='cutl'))render();});});
  const anchor=document.getElementById('numdel')||(document.getElementById('autot')||{}).closest&&document.getElementById('autot').closest('label');if(!anchor)return;
  const s=document.createElement('select');s.id='halfm';s.title='Halbe Seiten: zwei Themen oder zweimal dasselbe auf ein A4-Blatt';s.style.cssText='margin-left:6px;padding:3px 6px;border:1px solid #9aa3ad;border-radius:5px;background:#fff;font:inherit;cursor:pointer';
- s.innerHTML='<option value="">✂️ Halbe Seite …</option><option value="cut">Schnittlinie in die Mitte</option><option value="copy">Obere Hälfte nach unten kopieren</option><option value="regen">Obere Hälfte nach unten kopieren – mit neuen Zahlen</option><option value="del">Schnittlinien entfernen</option>';
- s.onchange=()=>{const v=s.value;s.value='';if(v==='cut')halfCut();else if(v==='copy')halfCopy(false);else if(v==='regen')halfCopy(true);else if(v==='del')halfDel();};anchor.after(s);
+ s.innerHTML='<option value="">✂️ Halbe Seite …</option><option value="cut">Schnittlinie in die Mitte</option><option value="copy">Obere Hälfte nach unten kopieren</option><option value="regen">Obere Hälfte nach unten kopieren – mit neuen Zahlen</option><option value="dn">Schnittlinie 0,5 cm nach unten</option><option value="up">Schnittlinie 0,5 cm nach oben</option><option value="del">Schnittlinien entfernen</option>';
+ s.onchange=()=>{const v=s.value;s.value='';if(v==='dn')halfMove(.5);else if(v==='up')halfMove(-.5);else if(v==='cut')halfCut();else if(v==='copy')halfCopy(false);else if(v==='regen')halfCopy(true);else if(v==='del')halfDel();};anchor.after(s);
 }catch(e){console.error(e);}})();
 
 /* ===== Merkkasten KlaPuStri-Regel ===== */
