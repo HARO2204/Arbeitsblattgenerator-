@@ -14952,7 +14952,7 @@ RQP.wrt=[['n','num','Anzahl der Rätsel',1,10]];
 (function(){try{
 const SCT=['scr','sca','mft'];POT.push(...SCT);TLT.push(...SCT);RQT.push(...SCT);
 Object.assign(TLN,{scr:'Screeningbogen (1.–4. Klasse)',sca:'Screening: Auswerteraster mit Ampel',mft:'Mathe-Fit: 5 Minuten jeden Tag'});
-TLD.scr={w:714,kl:'1',ver:'A',rl:true};TLD.sca={w:714,kl:'1',n:25};TLD.mft={w:714,kl:'1',tag:'mo',lv:'2'};
+TLD.scr={w:714,kl:'1',ver:'A',rl:true};TLD.sca={w:714,kl:'1',n:25};TLD.mft={w:714,kl:'1',tag:'mo',lv:'2',co:2,th:'plan',th2:'-',n:0};
 /* --- Zufall mit Startwert (Version A/B/C bleiben immer gleich) --- */
 const seeded=(seed,fn)=>{const r=Math.random;let s=seed>>>0;Math.random=()=>{s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};try{return fn();}finally{Math.random=r;}};
 const R=(l,h,s)=>{s=s||1;return l+s*Math.floor(Math.random()*(Math.floor((h-l)/s)+1));},P=a=>a[Math.floor(Math.random()*a.length)],SH=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
@@ -15186,13 +15186,39 @@ const MF={
     do:['Prozent und Geometrie',[['pzVon','geoPy'],['pzVon','pzSatz','geoPy','geoKr'],['pzGW','pzErh','geoPyK','stMed']]],
     fr:['Sachaufgaben',[[1],[1,2],[2,3]]]}};
 const MFN={1:10,2:10,3:8};
+const TH={
+ e1x1:['Einmaleins',[['mal','geteilt'],['mal','geteilt','mal2'],['mal2','kMal3','geteilt']]],
+ kopf:['Kopfrechnen',[['kAdd','kSub','k10'],['kAdd2','kSub2','k10','mal2'],['kAdd2','kSub2','kMal3','vrg']]],
+ stw:['Zahlen und Stellenwert',[['zsSchreib','zsNach','zsZiffer'],['zsSchreib','zsZiffer','zsRund','zsNach'],['zsRund','zsZiffer','zsOrd']]],
+ schr:['Schriftlich rechnen',[['sAdd','sSub'],['sAdd','sSub','sMul','sDiv'],['sMul2','sDiv2','dzMulZ']]],
+ gr:['Größen umwandeln',[['grM','grKg','grH'],['grM','grKg','grH','grEu'],['grDm','grDkg','grDmin','grEu']]],
+ grd:['Größen mit Kommazahlen',[['grDm','grDkg'],['grDm','grDkg','grDmin','grDt'],['grDm','grDkg','grDt','grL']]],
+ dez:['Dezimalzahlen',[['dzSchreib','dz10','dzVgl'],['dzAdd','dzSub','dz10','dzRund'],['dzAdd','dzSub','dzMulZ','dzMul','dzDivZ']]],
+ vrg:['Vorrangregeln',[['vrg'],['vrg','kMal3'],['vrg','dzMul','kMal3']]],
+ teil:['Teilbarkeit',[['teilbar'],['teilbar','teiler'],['teilbar','teiler']]],
+ brg:['Brüche: Grundlagen',[['brHalb','brViert','brVon'],['brVon','brKurz','brErw'],['brKurz','brErw','brVgl','brDz']]],
+ brr:['Bruchrechnen',[['brErw','brKurz','brAddG'],['brKurz','brAddG','brAdd','brVon'],['brAdd','brMalZ','brDz']]],
+ pz:['Prozentrechnung',[['pzVon','pzDz'],['pzVon','pzDz','pzBr','pzSatz'],['pzSatz','pzRab','pzErh','pzGW']]],
+ term:['Terme',[['tWert','tZus'],['tWert','tZus','klAus'],['tZus2','klAus','poMon']]],
+ gl:['Gleichungen',[['glAdd','glMal'],['gl2','gl3','glAdd'],['glK','glB','glT','gl3']]],
+ gz:['Ganze Zahlen',[['gzAdd','gzSub'],['gzAdd','gzSub','gzSub2','gzMal'],['gzSub2','gzMal','gzDiv','gzOrd']]],
+ pot:['Potenzen',[['poZp','poQ'],['poZp','poMul','poQ'],['poMul','poMon','poQ']]],
+ geo:['Umfang, Fläche, Volumen',[['geoU','geoA','geoQU'],['geoA','geoDr','geoPa'],['geoDr','geoPa','geoQd','geoWs']]],
+ wink:['Winkel',[['geoWa'],['geoWa','geoWs'],['geoWs','geoWa']]],
+ py:['Pythagoras und Kreis',[['geoPy'],['geoPy','geoPyK'],['geoPyK','geoKr','geoPr']]],
+ st:['Statistik und Schlussrechnung',[['stMw','slR'],['stMw','stMed','slR'],['stMed','slV','slR']]],
+ sach:['Sachaufgaben',null]};
+function mfTheme(kl,th,th2,lv,n){if(th==='sach'){const pool=SA[kl];return {t:TH.sach[0],T:SH(pool).slice(0,lv===1?1:2).map(f=>Object.assign(f(),{fr:1}))};}
+ let K=TH[th][1][lv-1].slice(),t=TH[th][0];if(th2&&th2!=='-'&&TH[th2]&&TH[th2][1]){K=K.concat(TH[th2][1][lv-1]);t+=' + '+TH[th2][0];}
+ const T=[],seen=new Set();let g=0,i=0;K=SH(K);while(T.length<n&&g++<300){const x=G[K[i++%K.length]]();if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T};}
 function mfDay(kl,tag,lv,n){const [t,L]=MF[kl][tag],K=L[lv-1];if(tag==='fr'){const S=SA[kl==='1'?1:+kl-0];return {t,T:K.map(k=>{const pool=SA[kl];return pool[(k-1+R(0,pool.length-1))%pool.length]();}).map(x=>Object.assign(x,{fr:1}))};}
  const T=[],seen=new Set();let g=0;while(T.length<n&&g++<200){const x=G[K[T.length%K.length]]();if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T};}
-function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo';
- if(tag==='woche')it.d=Object.keys(TAGE).map(k=>Object.assign({k},mfDay(kl,k,lv,6)));else it.d=[Object.assign({k:tag},mfDay(kl,tag,lv,MFN[lv]))];}
+function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo',th=it.th||'plan',n=+it.n||0;
+ if(th!=='plan'){const days=tag==='woche'?Object.keys(TAGE):[tag];it.d=days.map(k=>{const b=Object.assign({k},mfTheme(kl,th,it.th2,lv,n||(tag==='woche'?6:MFN[lv])));if(tag==='woche'&&b.T.filter(t=>t.w==='f'||t.fr).length>2)b.T=b.T.slice(0,Math.min(b.T.length,n?Math.min(n,4):4));return b;});return;}
+ if(tag==='woche')it.d=Object.keys(TAGE).map(k=>Object.assign({k},mfDay(kl,k,lv,6)));else it.d=[Object.assign({k:tag},mfDay(kl,tag==='frei'?'mo':tag,lv,n||MFN[lv]))];}
 const ST=lv=>'★'.repeat(lv);
 function mfBlock(it,b,wk){const lv=+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co=wk?3:(+it.co||2);let k=0;
- let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff4e0;border:1.5px solid #e08a00;border-radius:7px;padding:1px 8px;margin-bottom:4px;flex-wrap:wrap;gap:0 .8em"><span style="font-weight:800;color:#a35a00">💪 Mathe-Fit · ${TAGE[b.k]} · ${b.t} <span style="color:#e08a00">${ST(lv)}</span></span><span style="font-size:.85em;white-space:nowrap">${wk?'':'Name: __________ '}Zeit: _____ min · Richtig: ____ / ${b.T.length}</span></div>`;
+ let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff4e0;border:1.5px solid #e08a00;border-radius:7px;padding:1px 8px;margin-bottom:4px;flex-wrap:wrap;gap:0 .8em"><span style="font-weight:800;color:#a35a00">💪 Mathe-Fit · ${TAGE[b.k]?TAGE[b.k]+' · ':''}${b.t} <span style="color:#e08a00">${ST(lv)}</span></span><span style="font-size:.85em;white-space:nowrap">${wk?'':'Name: __________ '}Zeit: _____ min · Richtig: ____ / ${b.T.length}</span></div>`;
  if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:.3em 1.2em">`+sh.map(t=>tRow(it,t,k++)).join('')+'</div>';
  if(full.length)h+=`<div style="margin-top:.3em">`+full.map(t=>t.fr?`<div style="margin-bottom:.35em"><div style="display:flex;gap:.3em"><b>${String.fromCharCode(97+k++)})</b><span>${t.q}</span></div><div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.4em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`:tRow(it,t,k++,true)).join('')+'</div>';
  return h;}
@@ -15205,7 +15231,7 @@ function mftBlk(it){const d=it.d||[],wk=it.tag==='woche';return `<div style="lin
 const KL=[['1','Beginn 1. Klasse (Volksschulstoff)'],['2','Beginn 2. Klasse (Stoff 1. Klasse)'],['3','Beginn 3. Klasse (Stoff 2. Klasse)'],['4','Beginn 4. Klasse (Stoff 3. Klasse)']];
 RQP.scr=[['kl','sel',KL,'Klasse'],['ver','sel',[['A','Version A (Herbst)'],['B','Version B (nach Weihnachten)'],['C','Version C (Schulschluss)'],['neu','zufällige neue Zahlen']],'Version'],['rl','ck','Rechenzeile bei Sachaufgaben']];
 RQP.sca=[['kl','sel',KL,'Klasse'],['n','sel',[[15,'15 Kinder'],[20,'20 Kinder'],[25,'25 Kinder'],[28,'28 Kinder']],'Zeilen']];
-RQP.mft=[['kl','sel',[['1','1. Klasse'],['2','2. Klasse'],['3','3. Klasse'],['4','4. Klasse']],'Klasse'],['tag','sel',[['mo','Montag'],['di','Dienstag'],['mi','Mittwoch'],['do','Donnerstag'],['fr','Freitag'],['woche','ganze Woche auf einem Blatt']],'Tag'],['lv','sel',[['1','★ Basis (Gruppe Rot)'],['2','★★ Standard (Gruppe Gelb)'],['3','★★★ Plus (Gruppe Grün)']],'Niveau'],['co','sel',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten']],'Spalten']];
+RQP.mft=[['kl','sel',[['1','1. Klasse'],['2','2. Klasse'],['3','3. Klasse'],['4','4. Klasse']],'Klasse'],['tag','sel',[['mo','Montag'],['di','Dienstag'],['mi','Mittwoch'],['do','Donnerstag'],['fr','Freitag'],['frei','ohne Wochentag'],['woche','ganze Woche auf einem Blatt']],'Tag'],['th','sel',[['plan','Wochenplan (Thema je nach Tag)'],...Object.entries(TH).map(([k,v])=>[k,v[0]])],'Thema'],['th2','sel',[['-','kein 2. Thema'],...Object.entries(TH).filter(e=>e[1][1]).map(([k,v])=>[k,v[0]])],'2. Thema dazumischen'],['lv','sel',[['1','★ Basis (Gruppe Rot)'],['2','★★ Standard (Gruppe Gelb)'],['3','★★★ Plus (Gruppe Grün)']],'Niveau'],['n','sel',[[0,'automatisch'],[4,'4'],[6,'6'],[8,'8'],[10,'10'],[12,'12'],[15,'15']],'Anzahl der Aufgaben'],['co','sel',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten']],'Spalten']];
 window.SCR_TEST={G,SA,SCR,scrGen,mftGen,MF};
 (function(){try{const _co=catOf;catOf=function(it){return it&&SCT.includes(it.type)?'fm':_co.apply(this,arguments);};
  const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&SCT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
