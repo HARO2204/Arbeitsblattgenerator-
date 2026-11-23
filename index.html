@@ -10593,7 +10593,7 @@ function hasSol(){return items.some(i=>(TLT.includes(i.type)&&!KFT.includes(i.ty
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',6000);}
 function pvOn(on){if(!on&&SOL){SOL=false;$('#solmark').style.display='none';$('#pvl').textContent='Lösung anzeigen';}sel=null;render();showG([]);document.body.classList.toggle('pv',on);if(on)$('main').scrollTop=0;sync();}
 function printAll(){const prev=sel,solBefore=SOL;sel=null;let cl=null;
- try{if($('#solpdf').checked&&hasSol()){SOL=true;$('#solmark').style.display='block';render();cl=sheet.cloneNode(true);cl.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));cl.querySelectorAll('.trash,.rzh,.gh').forEach(e=>e.remove());cl.setAttribute('data-sol','1');SOL=solBefore;$('#solmark').style.display=SOL?'block':'none';}
+ try{if($('#solpdf').checked&&hasSol()&&window.KZL_ON&&KZL_ON()){const rs=kzlSwap();SOL=false;render();cl=sheet.cloneNode(true);cl.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));cl.querySelectorAll('.trash,.rzh,.gh').forEach(e=>e.remove());cl.setAttribute('data-sol','1');rs();SOL=solBefore;}else if($('#solpdf').checked&&hasSol()){SOL=true;$('#solmark').style.display='block';render();cl=sheet.cloneNode(true);cl.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));cl.querySelectorAll('.trash,.rzh,.gh').forEach(e=>e.remove());cl.setAttribute('data-sol','1');SOL=solBefore;$('#solmark').style.display=SOL?'block':'none';}
   render();showG([]);if(cl)sheet.after(cl);
   const t0=document.title;document.title=pdfName().replace(/\.pdf$/,'');
   const done=()=>{if(cl&&cl.parentNode)cl.remove();cl=null;document.title=t0;sel=prev;render();sync();};
@@ -10608,7 +10608,7 @@ async function makePdf(){let fb=false;const bs=['#pdfb','#pvp'].map(s=>$(s)),old
   const shot=async(k)=>{try{await document.fonts.ready}catch(_){}return html2canvas(sheet,{scale:3,backgroundColor:'#ffffff',useCORS:true,windowWidth:1100,x:0,y:k*PH,width:794,height:PH,scrollX:0,scrollY:0,onclone:d=>{d.body.classList.add('pv');d.documentElement.style.height='auto';d.body.style.height='auto';d.querySelector('.bar').style.display='none';d.querySelector('aside').style.display='none';d.querySelector('.wrap').style.cssText='display:block;overflow:visible;flex:none';d.querySelector('main').style.cssText='display:block;overflow:visible;padding:0;flex:none';const s=d.querySelector('#sheet');s.style.boxShadow='none';s.style.margin='0';}})};
   const np=PGN,doc=new window.jspdf.jsPDF({unit:'mm',format:'a4',compress:true});
   for(let k=0;k<np;k++){const cv=await shot(k);if(k)doc.addPage();doc.addImage(cv.toDataURL('image/png'),'PNG',0,0,210,297,undefined,'FAST');}
-  if($('#solpdf').checked&&hasSol()){SOL=true;$('#solmark').style.display='block';render();await new Promise(r=>setTimeout(r,60));const n2=Math.max(np,PGN);for(let k=0;k<n2;k++){const cv2=await shot(k);doc.addPage();doc.addImage(cv2.toDataURL('image/png'),'PNG',0,0,210,297,undefined,'FAST');}}
+  if($('#solpdf').checked&&hasSol()){if(window.KZL_ON&&KZL_ON()){const rs=kzlSwap();try{SOL=false;$('#solmark').style.display='none';render();await new Promise(r=>setTimeout(r,60));for(let k=0;k<PGN;k++){const cv2=await shot(k);doc.addPage();doc.addImage(cv2.toDataURL('image/png'),'PNG',0,0,210,297,undefined,'FAST');}}finally{rs();render();}}else{SOL=true;$('#solmark').style.display='block';render();await new Promise(r=>setTimeout(r,60));const n2=Math.max(np,PGN);for(let k=0;k<n2;k++){const cv2=await shot(k);doc.addPage();doc.addImage(cv2.toDataURL('image/png'),'PNG',0,0,210,297,undefined,'FAST');}}}
   const blob=doc.output('blob'),dl=(window.claude&&claude.use)?await claude.use('downloads'):null;
   if(dl){await dl.save({filename:pdfName(),data:blob});}
   else{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=pdfName();document.body.appendChild(a);a.click();a.remove();}
@@ -15012,10 +15012,10 @@ function frGen(it){const fq=Math.max(1,Math.min(3,+it.fq||2)),n=Math.max(1,Math.
  it.d=D;}
 const _g=mdGen;mdGen=function(it){if(it&&it.type==='ms'&&it.ty==='frage'){frGen(it);return;}const r=_g.apply(this,arguments);try{if(it&&it.type==='ms'&&it.ty!=='mehrd'&&Array.isArray(it.d))it.d.forEach(t=>{if(t&&typeof t.q==='string'&&!t._v){t.q=vary(t.q);t._v=1;}});}catch(e){}return r;};
 /* Darstellung „Fragen selbst formulieren“: Fragezeilen mit Lösungsvorschlägen */
-const _b=mdBlock;mdBlock=function(it){if(!(it&&it.type==='ms'&&it.ty==='frage'&&Array.isArray(it.d)))return _b.apply(this,arguments);const fq=Math.max(1,Math.min(3,+it.fq||2)),keep=it.d.map(t=>[t.q,t.s]);
+const _b=mdBlock;mdBlock=function(it){if(!(it&&it.type==='ms'&&it.ty==='frage'&&Array.isArray(it.d)))return _b.apply(this,arguments);const fq=Math.max(1,Math.min(3,+it.fq||2)),keep=it.d.map(t=>[t.q,t.s,t.calc]);
  it.d.forEach((t,i)=>{const ord=[0,1,P([2,3])].slice(0,fq),Lz=(lab,sol)=>`<div style="display:flex;gap:.4em;align-items:flex-end;margin:.25em 0 0 1.4em"><span style="white-space:nowrap;font-size:.92em">${lab}</span><span class="tlln" style="flex:1;min-height:1.55em;border-bottom:1px solid #000">${tlSv(it,sol)}</span></div>`;
-  t.q=`${t.st} <i style="font-size:.92em">Schreibe ${fq>1?fq+' passende Fragen':'eine passende Frage'} auf und beantworte ${fq>1?'sie':'sie'}.</i>`+(t._ord||(t._ord=ord)).map((k,j)=>Lz(`Frage ${fq>1?j+1:''}:`,t.Q[k][0])+Lz('Rechnung:',t.Q[k][1])+Lz('Antwort:',t.Q[k][2])).join('');t.s='';});
- const sv={rl:it.rl,al:it.al,kz:it.kz,an:it.an};it.rl=0;it.al=false;it.kz=0;it.an=false;let h;try{h=_b.apply(this,arguments);}finally{Object.assign(it,sv);it.d.forEach((t,i)=>{t.q=keep[i][0];t.s=keep[i][1];});}
+  t.calc='';t.q=`${t.st} <i style="font-size:.92em">Schreibe ${fq>1?fq+' passende Fragen':'eine passende Frage'} auf und beantworte ${fq>1?'sie':'sie'}.</i>`+(t._ord||(t._ord=ord)).map((k,j)=>Lz(`Frage ${fq>1?j+1:''}:`,t.Q[k][0])+Lz('Rechnung:',t.Q[k][1])+Lz('Antwort:',t.Q[k][2])).join('');t.s='';});
+ const sv={rl:it.rl,al:it.al,kz:it.kz,an:it.an};it.rl=0;it.al=false;it.kz=0;it.an=false;let h;try{h=_b.apply(this,arguments);}finally{Object.assign(it,sv);it.d.forEach((t,i)=>{t.q=keep[i][0];t.s=keep[i][1];t.calc=keep[i][2];});}
  return h.replace(/<div[^>]*>\s*Antwort:\s*<\/div>/g,'');};
 window.MSQ_TEST={frGen,vary,FT};
 }catch(e){console.error(e);}})();
@@ -15806,6 +15806,35 @@ const _rp=renderProps;renderProps=function(){const r=_rp.apply(this,arguments);t
 document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.lo)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();it.lo=+t.value;render();});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-lo-auto]');if(!b)return;const it=items.find(i=>i.id===sel);if(!it)return;const p=prevItem(it);if(!p){toast&&toast('Über dieser Aufgabe gibt es keine Aufgabe mit a), b), c) …');return;}rec();it.lo=cnt(p);render();renderProps();toast&&toast('Die Nummerierung beginnt jetzt mit '+'abcdefghijklmnopqrstuvwxyz'[it.lo]+').');});
 window.NUMFORT={cnt,prevItem};
+}catch(e){console.error(e);}})();
+
+/* ===== Kurzlösung: nur die Ergebnisse, ohne Angaben (für PDF und Drucken) ===== */
+(function(){try{
+POT.push('kzl');TLT.push('kzl');RQT.push('kzl');TLN.kzl='Kurzlösung';TLD.kzl={w:714};
+{const _g=rqGen,_b=rqBlk,_s=rqSol;rqGen=function(it){if(it.type==='kzl'){it.d=[1];return;}return _g(it);};rqBlk=function(it){return it.type==='kzl'?(it.html||''):_b(it);};rqSol=function(it){return it.type==='kzl'?[]:_s(it);};}
+{const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='kzl');try{return _h.apply(this,arguments);}finally{items=keep;}};}
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const SKIP=['num','text','frm','ckf','head','kzl','cutl','lqr'];
+function numOf(it){const c=items.filter(n=>n.type==='num'&&Math.abs(n.y-it.y)<40&&n.x<it.x+60);c.sort((a,b)=>Math.abs(a.y-it.y)-Math.abs(b.y-it.y));if(!c.length)return '';const e=document.querySelector(`.item[data-id="${c[0].id}"]`);const m=e?/\d+\./.exec(e.textContent):null;return m?m[0]:'';}
+function build(){const old=SOL;let blocks=[],title='';
+ try{const T0={};SOL=false;render();items.forEach(i=>{const e=document.querySelector(`.item[data-id="${i.id}"]`);if(e)T0[i.id]=e.textContent;});SOL=true;render();
+  const hd=items.find(i=>i.type==='text'&&i.fs>=24&&i.y<PH);if(hd){const e=document.querySelector(`.item[data-id="${hd.id}"]`);title=e?e.textContent.trim():'';}
+  const L=items.filter(i=>!SKIP.includes(i.type)).sort((a,b)=>Math.floor(a.y/PH)-Math.floor(b.y/PH)||a.y-b.y||a.x-b.x);
+  for(const it of L){const e=document.querySelector(`.item[data-id="${it.id}"]`);if(!e)continue;const parts=[];let lab='',cur=null;
+   e.querySelectorAll('b,.sv').forEach(n=>{if(n.closest('.no-print,.pxb'))return;if(n.classList.contains('sv')){if(n.parentElement&&n.parentElement.closest('.sv'))return;const t=n.textContent.replace(/\s+/g,' ').trim();if(!t||/^[.;,]$/.test(t))return;if(!cur||cur.lab!==lab){cur={lab,t:[]};parts.push(cur);}cur.t.push(t);return;}
+    const t=n.textContent.trim();if(/^([a-z]|\d{1,2})\)$/.test(t)||/^\d{1,2}\.$/.test(t)&&n.closest('.item')===e&&parts.length===0&&false)lab=t;});
+   parts.forEach(p=>{p.t=p.t.map(x=>x.replace(/[;.]\s*$/,'').trim()).filter(Boolean);if(p.t.length>1&&p.t.some(x=>x.includes('=')))p.t=p.t.filter(x=>!/^[\d\s]{1,6}$/.test(x));});
+   if(parts.length===1&&!parts[0].lab&&parts[0].t.length>5&&parts[0].t.every(x=>/^[\d\s,−-]{1,9}$/.test(x)))parts.length=0;
+   if(!parts.length){if(T0[it.id]!=null&&T0[it.id]!==e.textContent){const c=e.cloneNode(true);c.querySelectorAll('.no-print,.pxb,.trash,.rzh,.gh').forEach(x=>x.remove());blocks.push({nr:numOf(it),html:`<div style="zoom:.7;max-width:100%;overflow:hidden">${c.innerHTML}</div>`});}continue;}blocks.push({nr:numOf(it),parts});}}
+ finally{SOL=old;render();}
+ const body=blocks.map(b=>`<div style="break-inside:avoid;margin:0 0 .45em;display:flex;gap:.4em"><b style="min-width:1.6em">${esc(b.nr)}</b><div style="flex:1;min-width:0">${b.html?b.html:b.parts.map(p=>`<span style="white-space:normal">${p.lab?`<b>${esc(p.lab)}</b> `:''}${p.t.map(esc).join('; ')}</span>`).join('<span style="color:#999"> &nbsp;|&nbsp; </span>')}</div></div>`).join('');
+ return `<div style="border-bottom:2.5px solid #1f3a8a;margin-bottom:8px;display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:1.25em;color:#1f3a8a">✅ Kurzlösung${title?' – '+esc(title):''}</b><span style="font-size:.8em;color:#555">nur Ergebnisse, ohne Angaben</span></div><div style="column-count:${blocks.length>4?2:1};column-gap:1.6em;font-size:.92em;line-height:1.35">${body}</div>`;}
+window.kzlBuild=build;
+window.KZL_ON=()=>{const s=document.getElementById('solart');return !!(s&&s.value==='kurz');};
+/* Kurzlösung als eigene Seite(n): Blatt kurz austauschen, fotografieren, zurücktauschen */
+window.kzlSwap=function(){const html=build(),back=items;items=[{id:uid++,type:'kzl',x:40,y:40,w:714,html,d:[1]}];return ()=>{items=back;};};
+/* Auswahl neben „Lösungsblatt im PDF“ */
+const cb=document.getElementById('solpdf');if(cb){const s=document.createElement('select');s.id='solart';s.title='Wie soll das Lösungsblatt aussehen?';s.style.cssText='margin-left:4px';s.innerHTML='<option value="voll">vollständig (mit Angaben)</option><option value="kurz">Kurzlösung (nur Ergebnisse)</option>';try{const v=localStorage.getItem('solart');if(v)s.value=v;}catch(_){}s.onchange=()=>{try{localStorage.setItem('solart',s.value);}catch(_){}};(cb.closest('label')||cb).after(s);}
 }catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
