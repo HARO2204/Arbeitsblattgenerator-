@@ -15014,6 +15014,15 @@ const _b=mdBlock;mdBlock=function(it){if(!(it&&it.type==='ms'&&it.ty==='frage'&&
  return h.replace(/<div[^>]*>\s*Antwort:\s*<\/div>/g,'');};
 window.MSQ_TEST={frGen,vary,FT};
 }catch(e){console.error(e);}})();
+/* ===== Überschriften bei Sachaufgaben (z. B. „Das Schwimmtraining“) optional – Standard: ohne ===== */
+(function(){try{
+const strip=q=>typeof q==='string'?q.replace(/^\s*<b>[^<]{2,60}<\/b><br>/,''):q;
+const _b=mdBlock;mdBlock=function(it){if(!(it&&(it.type==='ms'||it.type==='v4')&&Array.isArray(it.d))||it.ue===true)return _b.apply(this,arguments);const keep=it.d.map(t=>t&&t.q);it.d.forEach(t=>{if(t)t.q=strip(t.q);});try{return _b.apply(this,arguments);}finally{it.d.forEach((t,i)=>{if(t)t.q=keep[i];});}};
+function panel(){const old=document.getElementById('g-ue');if(old)old.remove();const it=items.find(i=>i.id===sel);if(!it||(it.type!=='ms'&&it.type!=='v4')||!Array.isArray(it.d)||!it.d.some(t=>t&&/^\s*<b>[^<]{2,60}<\/b><br>/.test(t.q||'')))return;const s=document.querySelector('#rp select[data-md="ty"]')||document.querySelector('#rp select[data-md="ra"]')||document.querySelector('#rp select[data-md]');if(!s)return;
+ const l=document.createElement('label');l.id='g-ue';l.className='ck';l.innerHTML=`<input type="checkbox" data-ue="1"${it.ue===true?' checked':''}> Überschriften bei den Aufgaben (z. B. „Das Schwimmtraining“)`;(s.closest('label')||s).after(l);}
+const _rp=renderProps;renderProps=function(){const r=_rp.apply(this,arguments);try{panel();}catch(e){console.error(e);}return r;};
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.ue)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();it.ue=t.checked;render();});
+}catch(e){console.error(e);}})();
 
 /* ===== Screening 1.–4. Klasse, Auswerteraster, Mathe-Fit ===== */
 (function(){try{
