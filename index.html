@@ -15612,6 +15612,51 @@ document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.clos
  const P2=document.querySelector('.catp[data-c="fm"]');if(!P2)return;const a=P2.querySelector('.pal[data-t="twk"]');const html=`<div class="pal" draggable="true" data-t="twr" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><rect x="4" y="5" width="40" height="30" rx="4" fill="#f3f6ff" stroke="#1f3a8a" stroke-width="2"/><text x="24" y="25" font-size="14" text-anchor="middle">🧩</text><rect x="52" y="5" width="44" height="30" rx="4" fill="#fff" stroke="#555" stroke-dasharray="3 2"/><text x="74" y="25" font-size="14" text-anchor="middle">📱</text></svg><span>${TLN.twr}</span></div>`;if(a)a.insertAdjacentHTML('afterend',html);}catch(e){console.error(e);}})();
 }catch(e){console.error(e);}})();
 
+/* ===== Arbeitsblatt-Assistent: übersichtliche Ordnung (Suche, aufklappbare Gruppen, Themenblätter unten) ===== */
+(function(){try{
+const css=document.createElement('style');css.textContent=`#astm details.agp{border:1px solid var(--line,#ddd);border-radius:8px;margin:5px 0;background:var(--panel,#fff)}#astm details.agp>summary{cursor:pointer;padding:6px 10px;text-align:left;font-weight:600;font-size:13.5px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}#astm details.agp>summary::-webkit-details-marker{display:none}#astm details.agp>summary:before{content:'▸';margin-right:6px;transition:transform .15s;display:inline-block}#astm details.agp[open]>summary:before{transform:rotate(90deg)}#astm details.agp>.ach{padding:2px 10px 9px}#astm .agc{font-weight:400;font-size:12px;color:var(--mut,#777);white-space:nowrap}#astm .agc b{color:var(--acc,#2f6fed)}#astm .asec{margin:14px 0 4px;font-weight:800;font-size:14px;display:flex;align-items:center;gap:8px}#astm .asec small{font-weight:400;color:var(--mut,#777);font-size:12px}#astm .ahide{display:none!important}#astm .tbsec details.agp{background:#fffaf0;border-color:#f0d9a8}#astm #ast-q{margin:8px 0 2px}`;document.head.appendChild(css);
+const TOPIC=[[/^(Statistik|Baumdiagramm|Kennzahlen|Diagramme)/,'Statistik und Diagramme'],[/^(Kreis|Kreisteile)/,'Kreis'],[/^(Potenzen|Zehnerpotenzen)/,'Potenzen'],[/^Winkel/,'Winkel'],[/^(Multiplizieren)/,'Multiplizieren'],[/^(Dividieren)/,'Dividieren'],[/^(Vorrangregeln|Verteilungsgesetz|Rechenanweisungen|Vier Grundrechnungsarten)/,'Vorrangregeln und Rechengesetze'],[/^(Ganze Zahlen|Rationale Zahlen)/,'Ganze und rationale Zahlen'],[/([Gg]leichung|Waage|Variable auf beiden|Quadrierte Variablen|Sonderfälle: L)/,'Gleichungen'],[/^(Längenmaße|Massenmaße|Zeitmaße|Zeitpunkt|Uhrzeit|Geld|Rechnen mit Größen|Dekadische Zeitangaben|Maßstab|Flächenmaße|Raummaße|Hohlmaße)/,'Größen und Maße'],[/(Dezimal|^Runden)/,'Dezimalzahlen und Runden'],[/(Brüch|Bruch|Kürzen|Erweitern)/,'Brüche'],[/^(Addition|Addieren|Subtrah)/,'Addieren und Subtrahieren'],[/^(Terme|Term)/,'Terme'],[/^(Prozent)/,'Prozent'],[/^(Natürliche|Zahlen|Stellenwert)/,'Natürliche Zahlen'],[/^(Geometrie|Dreieck|Viereck|Rechteck|Quadrat|Fläche|Umfang|Körper|Quader|Würfel|Prisma)/,'Geometrie']];
+const topicOf=t=>{for(const[r,n]of TOPIC)if(r.test(t))return n;return t.split(':')[0].split(' (')[0].trim();};
+function organize(){const ab=document.getElementById('ast-ab');if(!ab)return;const m=document.getElementById('astm');
+ /* 1) alte Struktur einsammeln */
+ let tb=null;const groups=[];[...ab.querySelectorAll(':scope > h4')].forEach(h=>{const nx=h.nextElementSibling;if(!nx)return;if(/Fertige Themenbl/.test(h.textContent)){tb={h,box:nx};return;}if(nx.classList.contains('ach'))groups.push({h,box:nx});});
+ if(!ab.querySelector('#ast-q')){
+  /* Suchfeld + Zähler oben (nach dem Einleitungstext und den Gestaltungs-Optionen) */
+  const bar=document.createElement('div');bar.innerHTML=`<input type="text" id="ast-q" placeholder="🔍 Thema suchen, z. B. Brüche, Winkel, Runden …"><div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut,#666)"><span id="ast-sel">Noch nichts ausgewählt.</span><a href="#" id="ast-clr" style="color:var(--acc,#2f6fed)">Auswahl löschen</a></div>`;
+  const firstGroup=groups[0]?groups[0].h:null;
+  /* Abschnitt 1: einzelne Aufgaben */
+  const s1=document.createElement('div');s1.className='asec';s1.id='ast-s1';s1.innerHTML='🧩 Einzelne Aufgaben <small>– mehrere auswählen, sie kommen der Reihe nach aufs Blatt</small>';
+  const c1=document.createElement('div');c1.id='ast-c1';
+  /* Gestaltung/Lösungsbox bleiben oben – Suchleiste davor */
+  const optH=[...ab.querySelectorAll(':scope > h4')].find(h=>/Gestaltung/.test(h.textContent));(optH||firstGroup||ab.firstChild).before(bar);
+  if(firstGroup)firstGroup.before(s1);else ab.appendChild(s1);s1.after(c1);
+  groups.forEach(g=>{const t=g.h.textContent.trim(),base=[...c1.querySelectorAll(':scope > details')].find(x=>{const bt=x.dataset.gt;return bt&&(t.startsWith(bt+':')||t.startsWith(bt+' '));});if(base){const box=base.querySelector('.ach');[...g.box.children].forEach(l=>box.appendChild(l));g.box.remove();g.h.remove();return;}const d=document.createElement('details');d.dataset.gt=t;d.className='agp';d.innerHTML=`<summary><span style="flex:1">${g.h.textContent}</span><span class="agc"></span></summary>`;d.appendChild(g.box);c1.appendChild(d);g.h.remove();});
+  /* Abschnitt 2: fertige Themenblätter ganz unten, nach Thema sortiert */
+  const s2=document.createElement('div');s2.className='asec';s2.id='ast-s2';s2.innerHTML='⭐ Fertige Themenblätter <small>– füllen ein ganzes A4-Blatt, nur eines auswählen</small>';
+  const c2=document.createElement('div');c2.id='ast-c2';c2.className='tbsec';ab.appendChild(s2);ab.appendChild(c2);
+  if(tb){tb.h.remove();tb.box.dataset.tbsrc='1';tb.box.style.display='none';ab.appendChild(tb.box);}
+  m.querySelector('#ast-q').addEventListener('input',filter);
+  m.querySelector('#ast-clr').addEventListener('click',e=>{e.preventDefault();m.querySelectorAll('#ast-ab .ach input:checked').forEach(i=>{i.checked=false;i.closest('label').classList.remove('on');});count();});
+  ab.addEventListener('change',e=>{const i=e.target;if(!i.matches||!i.matches('.ach input[type=checkbox]'))return;
+   /* Themenblatt: nur eines – und dann keine Einzelaufgaben dazu */
+   if(i.checked&&i.closest('#ast-c2'))m.querySelectorAll('#ast-c2 .ach input:checked').forEach(x=>{if(x!==i){x.checked=false;x.closest('label').classList.remove('on');}});
+   setTimeout(count,0);});}
+ /* 3) Themenblätter (auch später ergänzte) in Themen-Gruppen verteilen */
+ const src=ab.querySelector('[data-tbsrc]'),c2=ab.querySelector('#ast-c2');
+ if(src&&c2){[...src.querySelectorAll('label')].forEach(l=>{const t=topicOf(l.textContent.trim());let d=[...c2.querySelectorAll(':scope > details')].find(x=>x.dataset.tp===t);if(!d){d=document.createElement('details');d.className='agp';d.dataset.tp=t;d.innerHTML=`<summary><span style="flex:1">${t}</span><span class="agc"></span></summary><div class="ach"></div>`;c2.appendChild(d);}d.querySelector('.ach').appendChild(l);});
+  [...c2.querySelectorAll(':scope > details')].sort((a,b)=>a.dataset.tp.localeCompare(b.dataset.tp,'de')).forEach(d=>{c2.appendChild(d);const box=d.querySelector('.ach'),kap=l=>{const m=/Kap\. (\d+)/.exec(l.textContent);return m?+m[1]:999;};[...box.children].map((l,i)=>[l,i]).sort((a,b)=>kap(a[0])-kap(b[0])||a[1]-b[1]).forEach(([l])=>box.appendChild(l));});}
+ /* später ergänzte normale Gruppen (h4 + .ach) ebenfalls einsortieren */
+ const c1=ab.querySelector('#ast-c1');[...ab.querySelectorAll(':scope > h4')].forEach(h=>{const nx=h.nextElementSibling;if(!nx||!nx.classList.contains('ach')||/Gestaltung|Lösungsbox/.test(h.textContent))return;const d=document.createElement('details');d.className='agp';d.innerHTML=`<summary><span style="flex:1">${h.textContent}</span><span class="agc"></span></summary>`;d.appendChild(nx);c1.appendChild(d);h.remove();});
+ count();}
+function count(){const m=document.getElementById('astm');if(!m)return;let tot=0;const names=[];m.querySelectorAll('#ast-ab details.agp').forEach(d=>{const n=d.querySelectorAll('.ach input:checked').length,all=d.querySelectorAll('.ach input').length;tot+=n;d.querySelector('.agc').innerHTML=n?`<b>${n} ausgewählt</b> · ${all}`:`${all}`;d.querySelectorAll('.ach input:checked').forEach(i=>names.push(i.closest('label').textContent.trim()));});
+ const s=m.querySelector('#ast-sel');if(s)s.textContent=tot?`Ausgewählt (${tot}): ${names.slice(0,4).join(', ')}${names.length>4?' …':''}`:'Noch nichts ausgewählt.';}
+function filter(){const m=document.getElementById('astm'),q=(m.querySelector('#ast-q').value||'').trim().toLowerCase();
+ m.querySelectorAll('#ast-ab details.agp').forEach(d=>{let any=false;const gm=d.querySelector('summary').textContent.toLowerCase().includes(q);d.querySelectorAll('.ach label').forEach(l=>{const hit=!q||gm||l.textContent.toLowerCase().includes(q);l.classList.toggle('ahide',!hit);if(hit)any=true;});d.classList.toggle('ahide',!any);if(q)d.open=any;});
+ if(!q)m.querySelectorAll('#ast-ab details.agp').forEach(d=>{if(!d.querySelector('.ach input:checked'))d.open=false;});}
+const b=document.getElementById('asst');if(b)b.addEventListener('click',()=>setTimeout(organize,0));
+setTimeout(organize,0);window.astOrganize=organize;
+}catch(e){console.error(e);}})();
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
