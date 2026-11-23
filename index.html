@@ -1586,14 +1586,14 @@ function renderMd(){const g=$('#g-md'),k2=$('#g-kf'),it=items.find(i=>i.id===sel
  if(k==='ak')H+=nn([1,2,3,4,5])+`<label>Aufgabenart${sl('ty',[['beide','Addieren und Subtrahieren'],['add','nur Addieren (mehrere Zahlen)'],['sub','nur Subtrahieren (kleinere von größerer)']])}</label><label>Anzahl der Zahlen beim Addieren${sl('nz',tN([2,3,4]))}</label><label>Größte Zahl hat${sl('la',[[3,'3 Stellen'],[4,'4 Stellen'],[5,'5 Stellen'],[6,'6 Stellen']])}</label><label>Karo-Feld (Zeilen)${sl('kz',tN([4,5,7,9,12]))}</label>`+ck('ue','Überschlagsrechnung (Ü:) beim Addieren')+ck('hd','Anweisung zu jeder Aufgabe anzeigen')+`<label>Nummerierung${sl('lab',[['a','a) b) c)'],['n','1. 2. 3.'],['none','keine']])}</label>`;
  if(k==='mz')H+=`<label>Bild${sl('pic',Object.keys(MZP).map(x=>[x,MZP[x][0]]))}</label><label>Darstellung${sl('mo',[['rech','Rechnungen'],['zahl','Zahlen']])}</label>`+(it.mo==='zahl'?'':`<label>Rechenart${sl('ma',[['add','Plus und Minus (gemischt)'],['mul','Mal'],['div','Geteilt'],['mix','alle vier gemischt']])}</label><label>Zahlenraum (Plus/Minus)${sl('mr',[[1,'bis 20'],[2,'bis 100'],[3,'bis 1 000']])}</label>`)+`<label>Feldgröße${sl('mzs',[[40,'klein'],[46,'mittel'],[50,'normal'],[56,'groß']])}</label>`;
  if(k==='v4')H+=nn([1,2,3,4,5,6])+`<label>Rechenart${sl('ra',[['all','alle 4 Grundrechnungsarten'],['mul','Multiplizieren (mehrschrittig)'],['div','Dividieren (mehrschrittig)'],['mix','Multiplizieren und Dividieren gemischt']])}</label><label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label><label>Karo-Rechenfeld (Zeilen)${sl('kz',tN([0,3,4,5,8,10,14]))}</label><label>Leerer Platz zum Rechnen (Zeilen)${sl('bl',tN([0,2,3,4,6,8]))}</label>`+ck('an','Antwortsatz');
- if(k==='ms')H+=nn(it.ty==='jug'?[1,2,3,4,5,6,8]:it.ty==='mehr'?[1,2,3,4,5,6,8,10,14]:it.ty==='mehrd'?[1,2,3,4,5,6,8]:[1,2,3,4,5,6])+`<label>Aufgabenart${sl('ty',[['beide','Multiplizieren und Dividieren'],['mul','nur Multiplizieren'],['div','nur Dividieren'],['mehr','Mehrschrittige Sachaufgaben (Multiplikation)'],['mehrd','Mehrschrittige Sachaufgaben (Division)'],['jug','Alltag Jugendlicher (Multiplikation, mit Stufen)']])}</label>`+(it.ty==='jug'?`<label>Schwierigkeit${sl('sw',[['mix','gemischt (Stufe 1–3)'],['1','Stufe 1 · 2. Zahl einstellig'],['2','Stufe 2 · 2. Zahl zwei- oder mehrstellig'],['3','Stufe 3 · mehrschrittig']])}</label>`:'')+((it.ty==='mehr'||it.ty==='mehrd'||it.ty==='jug')?'':`<label>Zahlen${sl('zt',[['nat','natürliche Zahlen'],['dez','Dezimalzahlen'],['ganz','ganze Zahlen (auch negative)'],['mix','Dezimalzahlen und ganze Zahlen gemischt']])}</label><label>Stellen der großen Zahl${sl('la',tN([2,3,4]))}</label><label>Stellen der kleinen Zahl${sl('lb',tN([1,2]))}</label>`)+ck('rest','Dividieren mit Rest')+`<label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label><label>Karo-Rechenfeld (Zeilen)${sl('kz',tN([0,3,4,5,8,10]))}</label>`+ck('an','Antwortfeld')+ck('xp','Bilder zu den Aufgaben (jedes Bild einzeln verschiebbar/löschbar)');
+ if(k==='ms')H+=nn(it.ty==='jug'?[1,2,3,4,5,6,8]:it.ty==='frage'?[1,2,3]:it.ty==='mehr'?[1,2,3,4,5,6,8,10,14]:it.ty==='mehrd'?[1,2,3,4,5,6,8]:[1,2,3,4,5,6])+`<label>Aufgabenart${sl('ty',[['beide','Multiplizieren und Dividieren'],['mul','nur Multiplizieren'],['div','nur Dividieren'],['mehr','Mehrschrittige Sachaufgaben (Multiplikation)'],['mehrd','Mehrschrittige Sachaufgaben (Division)'],['jug','Alltag Jugendlicher (Multiplikation, mit Stufen)'],['frage','Fragen selbst formulieren (Multiplikation, Modellieren)']])}</label>`+(it.ty==='frage'?`<label>Fragen pro Aufgabe${sl('fq',[['1','1 Frage'],['2','2 Fragen'],['3','3 Fragen']])}</label>`:'')+(it.ty==='jug'?`<label>Schwierigkeit${sl('sw',[['mix','gemischt (Stufe 1–3)'],['1','Stufe 1 · 2. Zahl einstellig'],['2','Stufe 2 · 2. Zahl zwei- oder mehrstellig'],['3','Stufe 3 · mehrschrittig']])}</label>`:'')+((it.ty==='mehr'||it.ty==='mehrd'||it.ty==='jug'||it.ty==='frage')?'':`<label>Zahlen${sl('zt',[['nat','natürliche Zahlen'],['dez','Dezimalzahlen'],['ganz','ganze Zahlen (auch negative)'],['mix','Dezimalzahlen und ganze Zahlen gemischt']])}</label><label>Stellen der großen Zahl${sl('la',tN([2,3,4]))}</label><label>Stellen der kleinen Zahl${sl('lb',tN([1,2]))}</label>`)+ck('rest','Dividieren mit Rest')+`<label>Rechenzeilen${sl('rl',tN([0,1,2,3,4]))}</label><label>Karo-Rechenfeld (Zeilen)${sl('kz',tN([0,3,4,5,8,10]))}</label>`+ck('an','Antwortfeld')+ck('xp','Bilder zu den Aufgaben (jedes Bild einzeln verschiebbar/löschbar)');
  if(k==='mm'||k==='mv')H+=`<label>Nummerierung${sl('lab',[['a','a) b) c)'],['n','1. 2. 3.'],['none','keine']])}</label>`+`<label>Eigene Zahlen (leer = zufällig)<textarea data-md="own" rows="3" placeholder="Je Zeile zwei Zahlen: ${k==='mm'?'234 56':'546 3'}" style="width:100%;font:inherit;font-size:13px;padding:6px;border:1px solid var(--line);border-radius:6px;background:#fff;box-sizing:border-box">${(it.own||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</textarea></label>`;
  if(k==='mm'||k==='mv')H+=ck('ov','Mit Überschlagsrechnung (Hinweis + Zeile)');
  H+=ck('show','Lösung zeigen')+'<button data-md-act="mix">Neu mischen</button>';g.innerHTML=H;}
 const mdHandler=e=>{const t=e.target,k=t.dataset.md;if(!k)return;const it=items.find(i=>i.id===sel&&MDT.includes(i.type));if(!it)return;
  if(k==='own'&&e.type==='input')return;if(k!=='own'&&e.type==='change')return;
  let v=t.type==='checkbox'?t.checked:t.value;if(['n','la','lb','rl','kz','ks','kc','kr','mzs','mr','bl','nz'].includes(k)&&!(['la','lb'].includes(k)&&/^mix/.test(v))){v=+v;if(!(v>0)&&!['rl','kz'].includes(k))return;}
- rec('md'+k);it[k]=v;if(['n','la','lb','ty','sw','ra','zt','rest','own','ks','kc','kr','pic','mo','ma','mr','nz','ue'].includes(k))mdGen(it);if(it.type==='ak'&&(k==='ty'||k==='ue'))akAngabe(it);render();if(it.type==='ms'&&(k==='ty'||k==='zt'))renderProps();};
+ rec('md'+k);it[k]=v;if(['n','la','lb','ty','sw','ra','fq','zt','rest','own','ks','kc','kr','pic','mo','ma','mr','nz','ue'].includes(k))mdGen(it);if(it.type==='ak'&&(k==='ty'||k==='ue'))akAngabe(it);render();if(it.type==='ms'&&(k==='ty'||k==='zt'))renderProps();};
 $('#rp').addEventListener('input',mdHandler);$('#rp').addEventListener('change',mdHandler);
 $('#rp').addEventListener('click',e=>{const b=e.target.closest('[data-md-act]');if(!b)return;const it=items.find(i=>i.id===sel&&MDT.includes(i.type));if(!it)return;rec();
  if(b.dataset.mdAct==='fw'){it.kc=Math.floor(714/((+it.ks||5)*MMPX));}mdGen(it);render();renderProps();});
@@ -14949,6 +14949,72 @@ RQP.wrt=[['n','num','Anzahl der Rätsel',1,10]];
   return o;};
 }catch(e){console.error(e);}})();
 
+/* ===== Sachaufgaben Multiplikation: abwechslungsreiche Fragestellungen + Fragen selbst formulieren ===== */
+(function(){try{
+const R=(l,h,s)=>{s=s||1;return l+s*Math.floor(Math.random()*(Math.floor((h-l)/s)+1));},P=a=>a[Math.floor(Math.random()*a.length)],F=n=>tfm(n);
+/* 1) neue Vorlagen mit anderen Fragestellungen (a = größere Zahl, b = kleinere Zahl) */
+if(typeof MDS!=='undefined'&&MDS.mul)MDS.mul.push(
+ ['Ein Fahrradgeschäft verkauft {b} Fahrräder. Jedes Fahrrad kostet {a} €. Welchen Umsatz erzielt das Geschäft?','Das Geschäft erzielt einen Umsatz von {r} €.'],
+ ['In einer Bibliothek stehen {b} Regale. In jedes Regal passen {a} Bücher. Wie viele Bücher finden in den Regalen Platz?','In den Regalen finden {r} Bücher Platz.'],
+ ['Ein Drucker druckt an einem Tag {a} Seiten. Wie viele Seiten hat er nach {b} Tagen gedruckt?','Nach {b} Tagen hat er {r} Seiten gedruckt.'],
+ ['Eine Fabrik verpackt {b} Schachteln mit jeweils {a} Schrauben. Wie viele Schrauben befinden sich in allen Schachteln zusammen?','In allen Schachteln befinden sich {r} Schrauben.'],
+ ['Ein Hotelschiff hat {a} Kabinen. Jede Kabine bietet Platz für {b} Personen. Für wie viele Gäste reicht die Kapazität des Schiffs?','Die Kapazität reicht für {r} Gäste.'],
+ ['Ein Bus fährt jeden Tag {a} km. Welche Strecke legt er in {b} Tagen zurück?','In {b} Tagen legt er {r} km zurück.'],
+ ['Eine Tribüne hat {b} Blöcke mit je {a} Sitzplätzen. Über wie viele Sitzplätze verfügt die Tribüne?','Die Tribüne verfügt über {r} Sitzplätze.'],
+ ['Ein Landwirt liefert {b} Fuhren Heu zu je {a} kg. Wie schwer ist die gesamte Lieferung?','Die gesamte Lieferung wiegt {r} kg.'],
+ ['Eine Schule sammelt jeden Monat {a} kg Altpapier. Wie viel Altpapier kommt in {b} Monaten zusammen?','In {b} Monaten kommen {r} kg Altpapier zusammen.'],
+ ['Ein Laptop kostet {a} €. Eine Schule kauft {b} Laptops. Wie hoch sind die Gesamtkosten?','Die Gesamtkosten betragen {r} €.'],
+ ['Eine Konzerthalle verkauft für jedes Konzert {a} Karten. Wie viele Besucherinnen und Besucher kommen zu {b} Konzerten?','Zu {b} Konzerten kommen {r} Besucherinnen und Besucher.'],
+ ['Ein Zug legt bei jeder Fahrt {a} km zurück. Er fährt {b}-mal. Wie weit fährt der Zug insgesamt?','Der Zug fährt insgesamt {r} km.'],
+ ['Eine Pumpe fördert jede Stunde {a} Liter Wasser. Welche Wassermenge fördert sie in {b} Stunden?','In {b} Stunden fördert sie {r} Liter Wasser.'],
+ ['Ein Flugzeug hat {a} Sitzplätze. Es fliegt an einem Tag {b}-mal voll besetzt. Wie viele Fluggäste befördert es an diesem Tag?','Es befördert {r} Fluggäste.'],
+ ['Eine Familie verbraucht im Monat {a} kWh Strom. Mit welchem Verbrauch muss sie in {b} Monaten rechnen?','Sie muss mit {r} kWh rechnen.'],
+ ['Ein Bauer hat {b} Kühe. Jede Kuh gibt im Monat {a} Liter Milch. Welche Milchmenge erhält der Bauer in einem Monat?','Er erhält {r} Liter Milch.'],
+ ['Ein Zirkuszelt hat {a} Plätze. Bei {b} Vorstellungen ist es ausverkauft. Wie viele Zuschauerinnen und Zuschauer haben die Vorstellungen gesehen?','{r} Zuschauerinnen und Zuschauer haben die Vorstellungen gesehen.'],
+ ['Ein Reisebüro verkauft {b} Reisen zu je {a} €. Welchen Betrag nimmt das Reisebüro ein?','Das Reisebüro nimmt {r} € ein.'],
+ ['Ein Schwimmbad hat an jedem Sommertag {a} Gäste. Mit wie vielen Gästen kann es an {b} Sommertagen rechnen?','Es kann mit {r} Gästen rechnen.']);
+/* 2) „Wie viel …“-Fragen abwandeln (bei allen Sachaufgaben zur Multiplikation) */
+const VAR=[[/Wie viel kosten (sie|die [A-Za-zäöüß-]+|alle [A-Za-zäöüß-]+) zusammen\?/,()=>P(['Wie hoch sind die Gesamtkosten?','Welchen Betrag muss man insgesamt bezahlen?','Mit welchen Kosten muss man rechnen?'])],
+ [/Wie viel kosten alle Tickets\?/,()=>P(['Wie hoch ist der Gesamtpreis aller Tickets?','Welchen Betrag zahlen sie für alle Tickets?'])],
+ [/Wie viel nimmt (der Shop|das Geschäft|es|er) (dafür )?ein\?/,m=>P([`Welche Einnahmen erzielt ${m[1]}?`,`Welchen Umsatz macht ${m[1]}${m[2]?' damit':''}?`])],
+ [/Wie viel muss (.+?) bezahlen\?/,m=>P([`Welchen Betrag muss ${m[1]} bezahlen?`,`Wie hoch ist die Rechnung für ${m[1]}?`])],
+ [/Wie viel zahlt man in (.+?)\?/,m=>P([`Welche Kosten entstehen in ${m[1]}?`,`Welchen Betrag zahlt man in ${m[1]}?`])],
+ [/Wie viele Minuten sind das in (.+?)\?/,m=>P([`Wie lange ist das insgesamt in ${m[1]}?`,`Wie viel Zeit kommt in ${m[1]} zusammen?`])],
+ [/Wie viele Kilometer sind das (mit|in) (.+?)\?/,m=>P([`Welche Strecke ist das ${m[1]} ${m[2]}?`,`Wie weit kommt man ${m[1]} ${m[2]}?`])],
+ [/Wie viel Sand transportiert er insgesamt\?/,()=>P(['Welche Menge Sand transportiert er insgesamt?','Wie schwer ist der gesamte Sand?'])],
+ [/Wie viele Personen haben (im [A-Za-zäöüß]+ |in der [A-Za-zäöüß]+ )?Platz\?/,m=>P([`Für wie viele Personen reicht der Platz${m[1]?' '+m[1].trim():''}?`,`Wie viele Personen finden ${m[1]?m[1]:''}Platz?`.replace('  ',' ')])],
+ [/Wie viele ([A-Za-zäöüß]+) sind das in (\d[\d\s ]* [A-Za-zäöüß]+)\?/,m=>P([`Wie viele ${m[1]} kommen in ${m[2]} zusammen?`,`Auf wie viele ${m[1]} kommt man in ${m[2]}?`])],
+ [/Wie lange wird insgesamt gespielt\?/,()=>P(['Welche Spielzeit ergibt sich insgesamt?','Wie lange dauern alle Spiele zusammen?'])],
+ [/Wie viele Kilogramm erntet er insgesamt\?/,()=>P(['Wie groß ist seine gesamte Ernte?','Welche Erntemenge erhält er insgesamt?'])]];
+const vary=q=>{for(const[re,f]of VAR){const m=re.exec(q);if(m&&Math.random()<.6)return q.replace(m[0],f(m));}return q;};
+/* 3) Fragen selbst formulieren */
+const FT=[
+ {s:(a,b)=>`Eine Bäckerei backt täglich ${b} Bleche mit je ${a} Semmeln.`,n:'Semmeln',q:'Wie viele Semmeln werden täglich gebacken?',re:X=>`Reichen die Semmeln für ${X} Kundinnen und Kunden, die je eine Semmel kaufen?`,rs:Z=>`Wie viele Semmeln bleiben übrig, wenn ${Z} verkauft werden?`},
+ {s:(a,b)=>`Ein Kino hat ${b} Reihen mit je ${a} Plätzen.`,n:'Plätze',q:'Wie viele Plätze hat das Kino?',re:X=>`Reichen die Plätze für ${X} Schülerinnen und Schüler?`,rs:Z=>`Wie viele Plätze bleiben frei, wenn ${Z} Karten verkauft werden?`},
+ {s:(a,b)=>`Für ein Schulfest werden ${b} Kisten mit je ${a} Flaschen geliefert.`,n:'Flaschen',q:'Wie viele Flaschen werden geliefert?',re:X=>`Reichen die Flaschen für ${X} Gäste, wenn jeder eine Flasche bekommt?`,rs:Z=>`Wie viele Flaschen bleiben übrig, wenn ${Z} getrunken werden?`},
+ {s:(a,b)=>`Eine Schule bestellt ${b} Packungen mit je ${a} Buntstiften.`,n:'Buntstifte',q:'Wie viele Buntstifte werden geliefert?',re:X=>`Reichen die Buntstifte für ${X} Kinder, wenn jedes Kind einen Stift bekommt?`,rs:Z=>`Wie viele Buntstifte bleiben übrig, wenn ${Z} verteilt werden?`},
+ {s:(a,b)=>`In einer Bücherei stehen ${b} Regale mit je ${a} Büchern.`,n:'Bücher',q:'Wie viele Bücher stehen in der Bücherei?',re:X=>`Reichen die Bücher, wenn ${X} Personen je ein Buch ausleihen möchten?`,rs:Z=>`Wie viele Bücher stehen noch im Regal, wenn ${Z} ausgeliehen sind?`},
+ {s:(a,b)=>`Ein Bauernhof liefert jede Woche ${b} Kartons mit je ${a} Eiern.`,n:'Eier',q:'Wie viele Eier liefert der Bauernhof pro Woche?',re:X=>`Reichen die Eier für eine Bestellung von ${X} Eiern?`,rs:Z=>`Wie viele Eier bleiben übrig, wenn ${Z} verkauft werden?`},
+ {s:(a,b)=>`Eine Tribüne hat ${b} Reihen mit je ${a} Sitzplätzen.`,n:'Sitzplätze',q:'Wie viele Sitzplätze hat die Tribüne?',re:X=>`Haben ${X} Fans auf der Tribüne einen Sitzplatz?`,rs:Z=>`Wie viele Sitzplätze sind frei, wenn ${Z} Fans gekommen sind?`},
+ {s:(a,b)=>`Eine Fabrik füllt ${b} Schachteln mit je ${a} Schrauben.`,n:'Schrauben',q:'Wie viele Schrauben werden abgefüllt?',re:X=>`Reichen die Schrauben für einen Auftrag über ${X} Schrauben?`,rs:Z=>`Wie viele Schrauben bleiben übrig, wenn ${Z} verbraucht werden?`},
+ {s:(a,b)=>`Ein Gärtner pflanzt ${b} Reihen mit je ${a} Tulpen.`,n:'Tulpen',q:'Wie viele Tulpen pflanzt der Gärtner?',re:X=>`Hat er mehr als ${X} Tulpen gepflanzt?`,rs:Z=>`Wie viele Tulpen bleiben stehen, wenn ${Z} gepflückt werden?`},
+ {s:(a,b)=>`Ein Konzertsaal hat ${b} Reihen mit je ${a} Plätzen. Eine Karte kostet ${R(2,6)*5} €.`,n:'Plätze',q:'Wie viele Plätze hat der Konzertsaal?',re:X=>`Reichen die Plätze für ${X} Besucherinnen und Besucher?`,rs:Z=>`Wie viele Plätze bleiben leer, wenn ${Z} Karten verkauft werden?`}];
+const rnd=(x,s)=>Math.max(s,Math.round(x/s)*s);
+function frGen(it){const fq=Math.max(1,Math.min(3,+it.fq||2)),n=Math.max(1,Math.min(fq===1?5:fq===2?3:2,+it.n||2)),T=tshuf(FT.slice()),D=[];for(let i=0;i<n;i++){const t=T[i%T.length],a=R(14,45),b=R(12,32),r=a*b;
+  let X=rnd(r*P([.85,.9,1.1,1.15]),50);if(X===r)X+=50;const Y=Math.floor(r*.8/100)*100||Math.floor(r*.8/10)*10,Z=rnd(r*R(45,75)/100,10);
+  const Q=[[t.q,`${b} · ${a} = ${F(r)}`,`${F(r)} ${t.n}.`],[t.re(F(X)),`${b} · ${a} = ${F(r)}; ${F(r)} ${r>=X?'≥':'<'} ${F(X)}`,r>=X?`Ja, ${F(r)} ${t.n} reichen (es bleiben ${F(r-X)} übrig).`:`Nein, es fehlen ${F(X-r)} ${t.n}.`],[`Um wie viele ${t.n} wird die Zahl ${F(Y)} überschritten?`,`${F(r)} − ${F(Y)} = ${F(r-Y)}`,`Um ${F(r-Y)} ${t.n}.`],[t.rs(F(Z)),`${F(r)} − ${F(Z)} = ${F(r-Z)}`,`Es bleiben ${F(r-Z)} ${t.n}.`]];
+  D.push({st:t.s(a,b),Q,q:t.s(a,b),calc:`${b} · ${a} = ${F(r)}`,s:Q[0][2],pic:[]});}
+ it.d=D;}
+const _g=mdGen;mdGen=function(it){if(it&&it.type==='ms'&&it.ty==='frage'){frGen(it);return;}const r=_g.apply(this,arguments);try{if(it&&it.type==='ms'&&it.ty!=='mehrd'&&Array.isArray(it.d))it.d.forEach(t=>{if(t&&typeof t.q==='string'&&!t._v){t.q=vary(t.q);t._v=1;}});}catch(e){}return r;};
+/* Darstellung „Fragen selbst formulieren“: Fragezeilen mit Lösungsvorschlägen */
+const _b=mdBlock;mdBlock=function(it){if(!(it&&it.type==='ms'&&it.ty==='frage'&&Array.isArray(it.d)))return _b.apply(this,arguments);const fq=Math.max(1,Math.min(3,+it.fq||2)),keep=it.d.map(t=>[t.q,t.s]);
+ it.d.forEach((t,i)=>{const ord=[0,1,P([2,3])].slice(0,fq),Lz=(lab,sol)=>`<div style="display:flex;gap:.4em;align-items:flex-end;margin:.25em 0 0 1.4em"><span style="white-space:nowrap;font-size:.92em">${lab}</span><span class="tlln" style="flex:1;min-height:1.55em;border-bottom:1px solid #000">${tlSv(it,sol)}</span></div>`;
+  t.q=`${t.st} <i style="font-size:.92em">Schreibe ${fq>1?fq+' passende Fragen':'eine passende Frage'} auf und beantworte ${fq>1?'sie':'sie'}.</i>`+(t._ord||(t._ord=ord)).map((k,j)=>Lz(`Frage ${fq>1?j+1:''}:`,t.Q[k][0])+Lz('Rechnung:',t.Q[k][1])+Lz('Antwort:',t.Q[k][2])).join('');t.s='';});
+ const sv={rl:it.rl,al:it.al,kz:it.kz,an:it.an};it.rl=0;it.al=false;it.kz=0;it.an=false;let h;try{h=_b.apply(this,arguments);}finally{Object.assign(it,sv);it.d.forEach((t,i)=>{t.q=keep[i][0];t.s=keep[i][1];});}
+ return h.replace(/<div[^>]*>\s*Antwort:\s*<\/div>/g,'');};
+window.MSQ_TEST={frGen,vary,FT};
+}catch(e){console.error(e);}})();
+
 /* ===== Screening 1.–4. Klasse, Auswerteraster, Mathe-Fit ===== */
 (function(){try{
 const SCT=['scr','sca','mft'];POT.push(...SCT);TLT.push(...SCT);RQT.push(...SCT);
@@ -15695,6 +15761,22 @@ const _r=renderPo;renderPo=function(){const r=_r.apply(this,arguments);try{const
 /* tp-Schalter: nur neu zeichnen */
 $('#rp').addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.m1==='tp'){e.stopImmediatePropagation();const it=items.find(i=>i.id===sel);if(it){rec();it.tp=t.checked;render();}}},true);
 /* Assistent: Aufgabe „Partnerzahlen“ anbieten */
+}catch(e){console.error(e);}})();
+/* ===== Fachbegriffe Faktor und Produkt (Multiplikation: Grundlagen) ===== */
+(function(){try{
+const R=(l,h)=>l+Math.floor(Math.random()*(h-l+1)),P=a=>a[Math.floor(Math.random()*a.length)],N=x=>String(x).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const CTX=[(a,b)=>[`Im Turnsaal werden ${a} Reihen mit jeweils ${b} Sesseln aufgestellt.`,'Sessel'],(a,b)=>[`Eine Bäckerei verkauft ${a} Kisten mit jeweils ${b} Semmeln.`,'Semmeln'],(a,b)=>[`In der Klasse stehen ${a} Tische. An jedem Tisch sitzen ${b} Kinder.`,'Kinder'],(a,b)=>[`Ein Regal hat ${a} Fächer mit je ${b} Ordnern.`,'Ordner'],(a,b)=>[`Für das Schulfest werden ${a} Packungen mit je ${b} Bechern gekauft.`,'Becher'],(a,b)=>[`Ein Parkhaus hat ${a} Etagen mit je ${b} Parkplätzen.`,'Parkplätze']];
+function fbItem(lv,i){const t=i%4;const f1=lv>1?R(12,35):R(3,9),f2=lv>1?R(6,40):R(4,12);const p=f1*f2;
+ if(t===0)return {k:'fa',q:P([`Das Produkt beträgt ${N(p)}. Ein Faktor ist ${f1}. Wie lautet der andere Faktor?`,`Das Produkt beträgt ${N(p)}. Ein Faktor ist ${f1}. Welcher Faktor fehlt?`,`Das Produkt ist ${N(p)}, der erste Faktor ist ${f1}. Wie heißt der zweite Faktor?`]),a:`${N(p)} : ${f1} = ${f2}. Der andere Faktor ist ${f2}.`};
+ if(t===1)return {k:'pr',q:P([`Ein Faktor ist ${f1}, der andere ${f2}. Wie groß ist das Produkt?`,`Multipliziere die Faktoren ${f1} und ${f2}. Wie lautet das Produkt?`,`Berechne das Produkt aus ${f1} und ${f2}.`]),a:`${f1} · ${f2} = ${N(p)}. Das Produkt ist ${N(p)}.`};
+ if(t===2){const a=R(6,25),b=R(3,9),[s,u]=P(CTX)(a,b);return {k:'kx',q:`${s}<br>a) Nenne die Faktoren. b) Berechne das Produkt. c) Was gibt das Produkt hier an?`,a:`a) Faktoren: ${a} und ${b}; b) ${a} · ${b} = ${N(a*b)}; c) die Anzahl aller ${u}.`,w:1};}
+ const g=R(2,9),x=R(2,9);return {k:'wa',q:P([`Das Produkt aus ${g} und einer Zahl ist ${g*x}. Wie heißt die Zahl?`,`Ein Lehrer sagt: „Das Produkt aus der Anzahl der Tische (${g}) und der Anzahl der Sessel pro Tisch (${x}) ergibt die Anzahl aller Sitzplätze.“ Bestimme das Produkt.`]),a:''+N(g*x)};}
+const _g=m1Gen;m1Gen=function(it){if(it.type==='mgb'&&it.md==='fb'){const n=Math.max(1,Math.min(10,+it.n||6)),lv=+it.lv||1;const o=[];for(let i=0;o.length<n&&i<n*10;i++){const x=fbItem(lv,o.length);if(!o.some(y=>y.q===x.q))o.push(x);}
+  o.forEach(x=>{if(x.k==='wa'&&/Zahl\?$/.test(x.q)){const m=/aus (\d+) und einer Zahl ist (\d+)/.exec(x.q);x.a=`${m[2]} : ${m[1]} = ${m[2]/m[1]}`;}});it.d=o;return;}return _g.apply(this,arguments);};
+const _b=m1Blk;m1Blk=function(it){if(!(it.type==='mgb'&&it.md==='fb'))return _b.apply(this,arguments);const d=it.d||[];
+ return wnH1('Faktor · Faktor = Produkt. Löse die Aufgaben und verwende die Fachbegriffe!')+`<div style="font-size:.85em;background:#f3f6ff;border:1px solid #c8d3ea;border-radius:6px;padding:2px 8px;margin-bottom:6px">💡 <b>7 · 8 = 56</b> &nbsp; 7 und 8 sind die <b>Faktoren</b>, 56 ist das <b>Produkt</b>. Fehlt ein Faktor, rechnest du: Produkt : Faktor.</div>`+d.map((o,i)=>`<div style="break-inside:avoid;margin-bottom:.55em"><div style="display:flex;gap:.35em"><b>${poL(i)}</b><span>${o.q}</span></div><div style="display:flex;gap:.4em;align-items:flex-end;margin-left:1.6em"><span class="tlln" style="flex:1;min-height:1.6em;border-bottom:1px solid #000">${tlSv(it,o.a)}</span></div>${o.w?'<div style="margin-left:1.6em;border-bottom:1px solid #000;min-height:1.6em"></div>':''}</div>`).join('');};
+const _r=renderPo;renderPo=function(){const r=_r.apply(this,arguments);try{const it=items.find(i=>i.id===sel);const g=$('#g-po');if(!it||!g||it.type!=='mgb')return r;const s=g.querySelector('select[data-m1="md"]');if(s&&!s.querySelector('option[value="fb"]')){s.insertAdjacentHTML('beforeend','<option value="fb">Fachbegriffe: Faktor und Produkt (Textaufgaben)</option>');s.value=it.md;}
+ if(it.md==='fb'&&!g.querySelector('select[data-m1="lv"]')){const bt=g.querySelector('[data-m1-act]');const lab=document.createElement('label');lab.innerHTML=`Zahlen<select data-m1="lv"><option value="1"${+it.lv!==2?' selected':''}>kleines Einmaleins</option><option value="2"${+it.lv===2?' selected':''}>größere Zahlen (z. B. 999 : 27)</option></select>`;(bt||g.lastChild).before(lab);}}catch(e){console.error(e);}return r;};
 }catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
