@@ -15028,6 +15028,18 @@ function panel(){const old=document.getElementById('g-ue');if(old)old.remove();c
 const _rp=renderProps;renderProps=function(){const r=_rp.apply(this,arguments);try{panel();}catch(e){console.error(e);}return r;};
 document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.ue)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();it.ue=t.checked;render();});
 }catch(e){console.error(e);}})();
+/* ===== Mehrschrittige Sachaufgaben: nur natürliche Zahlen (Standard) oder auch Dezimalzahlen ===== */
+(function(){try{
+const hasDec=x=>/\d,\d/.test(String(x.q||'')+' '+String(x.calc||'')+' '+String(x.s||''));
+const _g=mdGen;mdGen=function(it){if(!(it&&it.type==='ms'&&(it.ty==='mehr'||it.ty==='mehrd')&&it.dz!==true))return _g.apply(this,arguments);
+ const n=Math.max(1,+it.n||1),base=(it.ty==='mehr'?MSX:MSD).filter(x=>!hasDec(x)).map(x=>()=>Object.assign({},x)),extra=it.ty==='mehr'?((window.MSJ_TEST&&MSJ_TEST.M)||[]):(window.V4D||[]);
+ const pool=tshuf(base.concat(extra)),D=[],seen=new Set();for(let i=0;D.length<n&&i<pool.length*4;i++){let o;for(let g=0;g<15;g++){o=pool[i%pool.length]();if(!hasDec(o))break;o=null;}if(!o||seen.has(o.q.slice(0,40)))continue;seen.add(o.q.slice(0,40));D.push({q:o.q,calc:o.calc,s:o.s,pic:o.pic});}
+ it.d=D;};
+function panel(){const old=document.getElementById('g-dz');if(old)old.remove();const it=items.find(i=>i.id===sel);if(!it||it.type!=='ms'||(it.ty!=='mehr'&&it.ty!=='mehrd'))return;const s=document.querySelector('#rp select[data-md="ty"]');if(!s)return;
+ const l=document.createElement('label');l.id='g-dz';l.className='ck';l.innerHTML=`<input type="checkbox" data-dzm="1"${it.dz===true?' checked':''}> auch Dezimalzahlen (z. B. 18,50 €) – sonst nur natürliche Zahlen`;(s.closest('label')||s).after(l);}
+const _rp=renderProps;renderProps=function(){const r=_rp.apply(this,arguments);try{panel();}catch(e){console.error(e);}return r;};
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.dzm)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();it.dz=t.checked;it.d=null;mdGen(it);render();});
+}catch(e){console.error(e);}})();
 
 /* ===== Screening 1.–4. Klasse, Auswerteraster, Mathe-Fit ===== */
 (function(){try{
