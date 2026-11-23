@@ -15747,7 +15747,12 @@ const R=(l,h)=>l+Math.floor(Math.random()*(h-l+1)),P=a=>a[Math.floor(Math.random
 const U=(n,f)=>{const o=[];let g=0;while(o.length<n&&g++<800){const x=f(o.length);if(x&&!o.some(y=>JSON.stringify(y)===JSON.stringify(x)))o.push(x);}return o;};
 const NEWMD=['pa','pk','ki'];
 const _g=m1Gen;m1Gen=function(it){if(it.type==='mrg'&&NEWMD.includes(it.md)){const n=Math.max(1,Math.min(16,+it.n||8)),lv=+it.lv||1,L=lv>1?P2:P1,PB=P2.filter(p=>p[0]*p[1]>=200),cut=Math.ceil(n*2/3),LL=i=>lv===3?(i<cut?P1:PB):L;
-  if(it.md==='pa')it.d=U(n,i=>{const [a,b]=P(LL(i)),h=R(0,1);return {a,b,h};});
+  if(it.md==='pa'){/* abwechslungsreich: jedes Ergebnis möglichst nur einmal, kein Zahlenpaar doppelt */
+   const E1=[[2,5],[4,5],[2,10],[2,20],[8,5],[2,25],[5,10],[3,20],[12,5],[6,10],[4,20],[16,5],[8,10],[2,50],[4,25],[5,20],[10,10],[3,50],[6,25]];
+   const E2=[[2,100],[4,50],[5,40],[8,25],[10,20],[2,250],[4,125],[5,100],[10,50],[20,25],[3,100],[12,25],[6,50],[4,100],[16,25],[8,50],[24,25],[12,50],[3,250],[6,125],[8,125],[4,250],[2,500],[25,40],[20,50],[5,200],[12,125],[6,250],[3,500],[16,125],[8,250],[4,500],[25,80],[40,50],[24,125]];
+   const pick=(pool,k,usedP,usedQ)=>{const by={};pool.forEach(p=>{(by[p[0]*p[1]]=by[p[0]*p[1]]||[]).push(p);});const out=[];let round=0;while(out.length<k&&round<6){const prods=tshuf(Object.keys(by)).filter(x=>!usedP.has(+x+'_'+round));for(const pr of prods){if(out.length>=k)break;const c=tshuf(by[pr]).find(p=>!usedQ.has(p.join('x')));if(!c)continue;usedQ.add(c.join('x'));usedP.add(pr+'_'+round);out.push(c);}round++;}return out;};
+   const uP=new Set(),uQ=new Set();let L2;if(lv===3)L2=pick(E1,cut,uP,uQ).concat(pick(E2,n-cut,uP,uQ));else L2=pick(lv>1?E1.concat(E2):E1,n,uP,uQ);
+   it.d=L2.map(p=>{const [a,b]=Math.random()<.5?p:[p[1],p[0]];return {a,b,h:R(0,1)};});}
   else if(it.md==='pk'){const TG=lv===3?[[100,[[2,50],[4,25],[5,20]]],[1000,[[2,500],[4,250],[8,125],[5,200],[10,100],[20,50],[25,40]]]]:lv>1?[[1000,[[2,500],[4,250],[8,125],[5,200],[10,100],[20,50],[25,40]]],P([[200,[[2,100],[4,50],[5,40],[8,25],[10,20]]],[500,[[2,250],[4,125],[5,100],[10,50],[20,25]]]])]:[[100,[[2,50],[4,25],[5,20]]],P([[20,[[2,10],[4,5]]],[50,[[2,25],[5,10]]],[10,[[2,5]]],[200,[[2,100],[4,50],[8,25]]]])];
    it.d={blocks:TG.map(([T,L])=>{const ps=SH(L).slice(0,lv>1?5:4).map(p=>Math.random()<.5?p:[p[1],p[0]]);return {T,ps,right:SH(ps.map(p=>p[1]))};})};}
   else it.d=U(n,i=>{const [a,b]=P(LL(i)),o=(lv===3?i>=cut:lv>1)?[R(3,19)]:[P([3,6,7,9,11,12]),P([3,6,7,9,11])],f=SH([a,b].concat(o)),q=o.reduce((x,y)=>x*y,1);if(f.length===4&&(f[0]===a&&f[1]===b||f[0]===b&&f[1]===a))return null;return {f,p:[a,b],s:`(${a} · ${b}) · ${o.length>1?'('+o.join(' · ')+')':o[0]} = ${N(a*b)} · ${q} = ${N(a*b*q)}`};});
