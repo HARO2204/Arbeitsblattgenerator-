@@ -14948,6 +14948,272 @@ RQP.wrt=[['n','num','Anzahl der Rätsel',1,10]];
   return o;};
 }catch(e){console.error(e);}})();
 
+/* ===== Screening 1.–4. Klasse, Auswerteraster, Mathe-Fit ===== */
+(function(){try{
+const SCT=['scr','sca','mft'];POT.push(...SCT);TLT.push(...SCT);RQT.push(...SCT);
+Object.assign(TLN,{scr:'Screeningbogen (1.–4. Klasse)',sca:'Screening: Auswerteraster mit Ampel',mft:'Mathe-Fit: 5 Minuten jeden Tag'});
+TLD.scr={w:714,kl:'1',ver:'A',rl:true};TLD.sca={w:714,kl:'1',n:25};TLD.mft={w:714,kl:'1',tag:'mo',lv:'2'};
+/* --- Zufall mit Startwert (Version A/B/C bleiben immer gleich) --- */
+const seeded=(seed,fn)=>{const r=Math.random;let s=seed>>>0;Math.random=()=>{s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};try{return fn();}finally{Math.random=r;}};
+const R=(l,h,s)=>{s=s||1;return l+s*Math.floor(Math.random()*(Math.floor((h-l)/s)+1));},P=a=>a[Math.floor(Math.random()*a.length)],SH=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const F=n=>tfm(n),M='−',dc=x=>{const neg=x<0;x=Math.abs(Math.round(x*1000)/1000);const p=String(x).split('.');return (neg?M:'')+tfm(p[0])+(p[1]?','+p[1]:'');},zs=x=>x<0?M+F(-x):F(x),kz=x=>x<0?'('+M+F(-x)+')':F(x);
+const FR=(a,b)=>`<span style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.05;font-size:.92em;margin:0 .1em"><span style="border-bottom:1.3px solid currentColor;padding:0 .15em">${a}</span><span>${b}</span></span>`;
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b)[a,b]=[b,a%b];return a;},FRk=(a,b)=>{const g=gcd(a,b);a/=g;b/=g;if(b===1)return F(a);if(a>b){const w=Math.floor(a/b),r=a%b;return r?F(w)+' '+FR(r,b):F(w);}return FR(a,b);};
+const eu=x=>{const v=Math.round(x*100)/100;return Number.isInteger(v)?F(v):dc(v).replace(/,(\d)$/,',$10');};
+const Q=(q,a,o)=>Object.assign({q,a},o||{});
+/* ================= Aufgabengeneratoren ================= */
+const G={
+ /* Zahlen und Stellenwert */
+ zsSchreib:()=>{const ZT=R(1,9),T=R(1,9),Z=R(1,9),E=R(1,9),H=R(1,9),drop=P(['H','T','Z']);const v={ZT,T,H,Z,E};v[drop]=0;const s=['ZT','T','H','Z','E'].filter(k=>v[k]).map(k=>v[k]+' '+k).join(' ');return Q(`Schreibe als Zahl: ${s} =`,F(v.ZT*1e4+v.T*1e3+v.H*100+v.Z*10+v.E));},
+ zsZiffer:()=>{let n;do n=R(100000,999999);while(new Set(String(n)).size<6);const k=R(1,5),nm=['Einer','Zehner','Hunderter','Tausender','Zehntausender','Hunderttausender'][k];return Q(`Welche Ziffer steht in ${F(n)} an der ${nm}stelle?`,String(n)[5-k],{w:'f'});},
+ zsOrd:()=>{let d;do d=[R(1,9),R(0,9),R(1,9),R(0,9),R(1,9)];while(new Set(d).size<4);const S=new Set();let g=0;while(S.size<4&&g++<100){const p=SH(d);if(p[0])S.add(+p.join(''));}const L=[...S];return Q(`Ordne der Größe nach, beginne mit der kleinsten Zahl: ${SH(L).map(F).join(';  ')}`,L.sort((a,b)=>a-b).map(F).join(' < '),{w:'f'});},
+ zsRund:()=>{const n=R(10000,99999),k=P([['Hunderter',100],['Tausender',1000]]);return Q(`Runde ${F(n)} auf ${k[0]}:`,F(Math.round(n/k[1])*k[1]));},
+ zsNach:()=>{const n=R(2,99)*1000;return Q(`Vorgänger und Nachfolger von ${F(n)}:`,F(n-1)+' und '+F(n+1),{w:'f'});},
+ /* Einmaleins und Kopfrechnen */
+ mal:()=>{const a=R(3,9),b=R(4,9);return Q(`${a} · ${b} =`,a*b);},
+ geteilt:()=>{const a=R(3,9),b=R(4,9);return Q(`${a*b} : ${a} =`,b);},
+ kAdd:()=>{const a=R(26,79),b=R(17,68);return(a+b)%10===0?G.kAdd():Q(`${a} + ${b} =`,a+b);},
+ kSub:()=>{const a=R(102,190),b=R(28,89);return Q(`${a} ${M} ${b} =`,a-b);},
+ k10:()=>{const t=R(0,2);if(t===0){const a=R(12,95);return Q(`${a} · 10 =`,F(a*10));}if(t===1){const a=R(3,48);return Q(`${a} · 100 =`,F(a*100));}const a=R(12,95)*100;return Q(`${F(a)} : 100 =`,a/100);},
+ mal2:()=>{const a=R(3,9),b=R(2,9)*10;return Q(`${a} · ${b} =`,a*b);},
+ kAdd2:()=>{const a=R(125,489),b=R(105,399);return Q(`${a} + ${b} =`,F(a+b));},
+ kSub2:()=>{const a=R(410,950),b=R(125,a-100);return Q(`${a} ${M} ${b} =`,a-b);},
+ kMal3:()=>{const p=P([[12,15],[25,16],[14,5],[15,6],[25,12],[18,5],[16,4],[35,4],[45,2],[24,25]]);return Q(`${p[0]} · ${p[1]} =`,p[0]*p[1]);},
+ /* Schriftlich */
+ sAdd:()=>{const a=R(1000,8999),b=R(1000,8999);return Q(`${F(a)} + ${F(b)} =`,F(a+b),{s:1});},
+ sSub:()=>{const a=R(4000,9999),b=R(1000,a-500);return Q(`${F(a)} ${M} ${F(b)} =`,F(a-b),{s:1});},
+ sMul:()=>{const a=R(213,987),b=R(3,9);return Q(`${a} · ${b} =`,F(a*b),{s:1});},
+ sDiv:()=>{const b=R(3,9),q=R(103,987);return Q(`${F(q*b)} : ${b} =`,F(q),{s:1});},
+ sMul2:()=>{const a=R(123,689),b=R(12,58);return Q(`${a} · ${b} =`,F(a*b),{s:1});},
+ sDiv2:()=>{const b=R(12,35),q=R(21,98);return Q(`${F(q*b)} : ${b} =`,F(q),{s:1});},
+ /* Größen */
+ grM:()=>{const m=R(2,9),c=R(5,95);return Q(`${m} m ${c} cm = ___ cm`,F(m*100+c)+' cm',{nl:1});},
+ grKg:()=>{const k=R(2,9),g=R(50,950,50);return Q(`${k} kg ${g} g = ___ g`,F(k*1000+g)+' g',{nl:1});},
+ grH:()=>{const h=R(1,4),m=R(5,55,5);return Q(`${h} h ${m} min = ___ min`,(h*60+m)+' min',{nl:1});},
+ grEu:()=>{const a=R(2,9),b=R(15,85,5),c=R(1,5),d=R(25,95,5);const t=a*100+b+c*100+d;return Q(`${a} € ${b} c + ${c} € ${d} c =`,Math.floor(t/100)+' € '+(t%100)+' c');},
+ grDm:()=>{const x=R(12,95)/10;return Q(`${dc(x)} m = ___ cm`,F(Math.round(x*100))+' cm',{nl:1});},
+ grDkg:()=>{const g=R(12,95)*100;return Q(`${F(g)} g = ___ kg`,dc(g/1000)+' kg',{nl:1});},
+ grDt:()=>{const t=R(105,495,5)/100;return Q(`${dc(t)} t = ___ kg`,F(Math.round(t*1000))+' kg',{nl:1});},
+ grDmin:()=>{const m=R(75,230,5);return Q(`${m} min = ___ h ___ min`,Math.floor(m/60)+' h '+(m%60)+' min',{nl:1,w:'f'});},
+ grL:()=>{const l=R(12,95)/10;return Q(`${dc(l)} l = ___ ml`,F(Math.round(l*1000))+' ml',{nl:1});},
+ /* Brüche Grundvorstellung */
+ brHalb:()=>{const n=R(12,49)*2;return Q(`Die Hälfte von ${n} ist`,n/2);},
+ brViert:()=>{const n=R(5,25)*4;return Q(`Ein Viertel von ${n} ist`,n/4);},
+ brVon:()=>{const b=P([3,4,5,6,8]),a=R(1,b-1),k=R(2,9);return gcd(a,b)>1?G.brVon():Q(`${FR(a,b)} von ${b*k} =`,a*k);},
+ brKurz:()=>{const b=P([3,4,5,6,7,8,9]),a=R(1,b-1),k=R(2,6);return gcd(a,b)>1?G.brKurz():Q(`Kürze vollständig: ${FR(a*k,b*k)} =`,FR(a,b));},
+ brErw:()=>{const b=P([3,4,5,6]),a=R(1,b-1),k=R(2,5);return Q(`Erweitere ${FR(a,b)} auf den Nenner ${b*k}:`,FR(a*k,b*k));},
+ brAddG:()=>{const b=P([5,7,8,9,11]),a=R(1,b-3),c=R(1,b-a-1);return Q(`${FR(a,b)} + ${FR(c,b)} =`,FRk(a+c,b));},
+ brAdd:()=>{const p=P([[1,2,1,3],[1,2,1,4],[2,3,1,6],[3,4,1,8],[1,3,1,4],[2,5,1,2],[3,4,2,3],[5,6,1,3]]);return Q(`${FR(p[0],p[1])} + ${FR(p[2],p[3])} =`,FRk(p[0]*p[3]+p[2]*p[1],p[1]*p[3]));},
+ brMalZ:()=>{const b=P([3,4,5,7]),a=R(1,b-1),z=R(2,4);return Q(`${FR(a,b)} · ${z} =`,FRk(a*z,b));},
+ brVgl:()=>{const p=P([[1,2,1,3],[1,4,1,3],[2,3,3,4],[3,5,1,2],[5,8,3,4]]);const x=p[0]/p[1],y=p[2]/p[3];return Q(`Setze &lt; oder &gt;: ${FR(p[0],p[1])} ☐ ${FR(p[2],p[3])}`,x<y?'&lt;':'&gt;');},
+ /* Teilbarkeit */
+ teilbar:()=>{const d=P([3,9,4]),n=R(1001,9999);return Q(`Ist ${F(n)} durch ${d} teilbar? (ja/nein)`,n%d===0?'ja':'nein',{w:'f'});},
+ teiler:()=>{const n=P([12,18,20,24,28,30,36]);const t=[];for(let i=1;i<=n;i++)if(n%i===0)t.push(i);return Q(`Alle Teiler von ${n}:`,'{'+t.join(', ')+'}',{w:'f'});},
+ /* Dezimalzahlen */
+ dzOrd:()=>{const d=R(2,8);const L=[d/10,d/100,d*0.11,d/10+d/1000];return Q(`Ordne der Größe nach, beginne mit der kleinsten Zahl: ${SH(L).map(dc).join(';  ')}`,L.slice().sort((a,b)=>a-b).map(dc).join(' < '),{w:'f'});},
+ dzRund:()=>{const x=R(1001,9999)/1000;return Q(`Runde ${dc(x)} auf Zehntel:`,dc(Math.round(x*10)/10));},
+ dzSchreib:()=>{const z=R(1,9),h=R(1,9);return Q(`${z} Zehntel und ${h} Hundertstel als Dezimalzahl:`,dc(z/10+h/100));},
+ dzStelle:()=>{let n;do n=R(1101,9989);while(new Set(String(n)).size<4);const x=n/1000,k=R(1,3),nm=['Zehntel','Hundertstel','Tausendstel'][k-1];return Q(`Welche Ziffer steht in ${dc(x)} an der ${nm}stelle?`,String(n)[k],{w:'f'});},
+ dzVgl:()=>{const a=R(2,8),b=R(1,9),c=R(1,9);const x=a+b/10,y=a+b/10+(Math.random()<.5?-1:1)*c/100*(b>0?1:1);return x===y?G.dzVgl():Q(`Setze &lt; oder &gt;: ${dc(x)} ☐ ${dc(y)}`,x<y?'&lt;':'&gt;');},
+ dzAdd:()=>{const a=R(105,895)/100,b=R(12,89)/10;return Q(`${dc(a)} + ${dc(b)} =`,dc(a+b));},
+ dzSub:()=>{const a=R(3,9),b=R(105,295)/100;return Q(`${a} ${M} ${dc(b)} =`,dc(a-b));},
+ dz10:()=>{const t=R(0,1);if(t){const x=R(105,995)/100;return Q(`${dc(x)} · 100 =`,dc(x*100));}const x=R(105,995)/10;return Q(`${dc(x)} : 10 =`,dc(x/10));},
+ dzMulZ:()=>{const x=R(105,895)/100,z=R(3,8);return Q(`${dc(x)} · ${z} =`,dc(x*z),{s:1});},
+ dzMul:()=>{const a=R(2,9)/10,b=R(2,9)/10*(Math.random()<.5?10:1);return Q(`${dc(a)} · ${dc(b)} =`,dc(a*b));},
+ dzDivZ:()=>{const z=R(3,6),q=R(105,495)/100;return Q(`${dc(q*z)} : ${z} =`,dc(q));},
+ brDz:()=>{const p=P([[1,2],[1,4],[3,4],[1,5],[2,5],[3,5],[1,10],[7,10],[1,20],[3,20]]);return Q(`Schreibe ${FR(p[0],p[1])} als Dezimalzahl:`,dc(p[0]/p[1]));},
+ /* Vorrangregeln */
+ vrg:()=>{const t=R(0,2),a=R(2,9),b=R(2,9),c=R(2,9),d=R(12,40);if(t===0)return Q(`${d} + ${a} · ${b} =`,d+a*b);if(t===1)return Q(`(${d} ${M} ${a}) · ${b} =`,(d-a)*b);return Q(`${a*b} : ${a} + ${c} · ${b} =`,b+c*b);},
+ /* Prozent */
+ pzVon:()=>{const p=P([[10,R(12,95)*10],[50,R(12,95)*2],[25,R(5,40)*4],[20,R(5,40)*5],[1,R(3,15)*100]]);return Q(`${p[0]} % von ${F(p[1])} =`,F(p[0]*p[1]/100));},
+ pzDz:()=>{const x=R(5,95,5);return Q(`Schreibe ${dc(x/100)} in Prozent:`,x+' %');},
+ pzBr:()=>{const p=P([[25,1,4],[50,1,2],[75,3,4],[20,1,5],[10,1,10]]);return Q(`Schreibe ${p[0]} % als gekürzten Bruch:`,FR(p[1],p[2]));},
+ pzSatz:()=>{const G0=P([20,25,40,50,80,200]),p=P([5,10,20,25,40,50,75]);const W=G0*p/100;return W%1?G.pzSatz():Q(`${F(W)} von ${G0} sind wie viel Prozent?`,p+' %');},
+ pzRab:()=>{const pr=R(4,30)*10,p=P([10,20,25,30,50]);return Q(`Ein Pullover kostet ${pr} €. Er wird um ${p} % billiger. Neuer Preis:`,eu(pr*(100-p)/100)+' €',{w:'f'});},
+ pzErh:()=>{const pr=R(2,40)*50,p=P([5,10,20]);return Q(`Ein Preis von ${F(pr)} € wird um ${p} % erhöht. Neuer Preis:`,eu(pr*(100+p)/100)+' €',{w:'f'});},
+ pzGW:()=>{const p=P([5,10,15,20,25]),g=R(4,30)*20;const w=g*p/100;return w%1?G.pzGW():Q(`${p} % sind ${F(w)} €. Wie viel sind 100 %?`,F(g)+' €');},
+ /* Terme und Gleichungen */
+ tWert:()=>{const a=R(2,9),b=R(2,15),x=R(2,9);return Q(`Berechne ${a}x + ${b} für x = ${x}:`,a*x+b);},
+ tZus:()=>{const a=R(4,9),b=R(2,9),c=R(1,a-1),d=R(1,9);const r=a-c;return Q(`Fasse zusammen: ${a}a + ${b} ${M} ${c}a + ${d} =`,(r===1?'':r)+'a + '+(b+d));},
+ tZus2:()=>{const a=R(3,9),b=R(2,8),c=R(1,a-1),d=R(1,b+5);const r1=a-c,r2=b-d;return Q(`Fasse zusammen: ${a}x + ${b}y ${M} ${c}x ${M} ${d}y =`,(r1===1?'':r1)+'x'+(r2===0?'':(r2>0?' + ':' '+M+' ')+(Math.abs(r2)===1?'':Math.abs(r2))+'y'));},
+ glAdd:()=>{const x=R(12,60),b=R(8,39);return Q(`x + ${b} = ${x+b}`,'x = '+x);},
+ glMal:()=>{const x=R(3,12),b=R(3,9);return Q(`${b} · x = ${b*x}`,'x = '+x);},
+ gl2:()=>{const x=R(2,12),a=R(2,6),b=R(2,15);return Q(`${a}x + ${b} = ${a*x+b}`,'x = '+x);},
+ gl3:()=>{const x=R(2,9),a=R(2,5),b=R(2,9);return Q(`${a}x ${M} ${b} = ${a*x-b}`,'x = '+x);},
+ glK:()=>{const x=R(1,8),a=R(2,4),b=R(1,6);return Q(`${a}(x + ${b}) = ${a*(x+b)}`,'x = '+x);},
+ glB:()=>{const x=R(2,9),a=R(4,8),b=R(1,a-1);const c=(a-b)*x;return Q(`${a}x = ${b===1?'':b}x + ${c}`,'x = '+x);},
+ glT:()=>{const x=R(3,12),k=P([['Das Doppelte',2],['Das Dreifache',3],['Das Vierfache',4]]),b=R(3,15);return Q(`${k[0]} einer Zahl vermehrt um ${b} ergibt ${k[1]*x+b}. Wie heißt die Zahl?`,x,{w:'f'});},
+ klAus:()=>{const a=R(2,7),b=R(2,9);return Q(`Multipliziere aus: ${a}(x + ${b}) =`,a+'x + '+a*b);},
+ /* Ganze Zahlen und Potenzen */
+ gzAdd:()=>{const a=R(3,19),b=R(a+1,a+15);return Q(`${M}${a} + ${b} =`,zs(b-a));},
+ gzSub:()=>{const a=R(2,15),b=R(a+2,a+16);return Q(`${a} ${M} ${b} =`,zs(a-b));},
+ gzSub2:()=>{const a=R(2,12),b=R(2,12);return Q(`${M}${a} ${M} ${b} =`,zs(-a-b));},
+ gzMal:()=>{const a=R(2,9),b=R(2,9),s=R(0,2);const x=s===1?a:-a,y=s===2?b:-b;return Q(`${kz(x)} · ${kz(y)} =`,zs(x*y));},
+ gzDiv:()=>{const a=R(2,9),b=R(3,9);return Q(`(${M}${a*b}) : ${a} =`,zs(-b));},
+ gzOrd:()=>{const S=new Set();while(S.size<5)S.add(R(-9,6));const L=[...S];return Q(`Ordne der Größe nach, beginne mit der kleinsten Zahl: ${SH(L).map(zs).join(';  ')}`,L.sort((a,b)=>a-b).map(zs).join(' < '),{w:'f'});},
+ poZp:()=>{const k=R(3,7);return Q(`Schreibe als Zehnerpotenz: ${F(10**k)} =`,`10<sup>${k}</sup>`);},
+ poMul:()=>{const a=R(2,6),b=R(2,6),v=P(['a','x','b']);return Q(`${v}<sup>${a}</sup> · ${v}<sup>${b}</sup> =`,`${v}<sup>${a+b}</sup>`);},
+ poMon:()=>{const a=R(2,6),b=R(2,6);return Q(`${a}x · ${b}x =`,`${a*b}x<sup>2</sup>`);},
+ poQ:()=>{const a=R(11,25);return Q(`${a}<sup>2</sup> =`,a*a);},
+ /* Geometrie */
+ geoU:()=>{const a=R(4,15),b=R(2,a-1);return Q(`Rechteck: a = ${a} cm, b = ${b} cm. Umfang u =`,(2*a+2*b)+' cm',{w:'f'});},
+ geoA:()=>{const a=R(4,15),b=R(2,a-1);return Q(`Rechteck: a = ${a} cm, b = ${b} cm. Flächeninhalt A =`,(a*b)+' cm²',{w:'f'});},
+ geoQU:()=>{const a=R(3,12);return Q(`Ein Quadrat hat den Umfang ${4*a} cm. Wie lang ist eine Seite?`,a+' cm',{w:'f'});},
+ geoWa:()=>{const g=P([35,62,90,128,180,210,90,145]);const n=g<90?'spitzer':g===90?'rechter':g<180?'stumpfer':g===180?'gestreckter':'erhabener';return Q(`Ein Winkel ist ${g}° groß. Welche Winkelart ist das?`,n+' Winkel',{w:'f'});},
+ geoWs:()=>{const a=R(30,80),b=R(30,150-a);return Q(`Dreieck: α = ${a}°, β = ${b}°. Berechne γ:`,'γ = '+(180-a-b)+'°',{w:'f'});},
+ geoDr:()=>{const g=R(4,14),h=R(3,10)*2;return Q(`Dreieck: g = ${g} cm, h = ${h} cm. Flächeninhalt A =`,(g*h/2)+' cm²',{w:'f'});},
+ geoPa:()=>{const a=R(5,14),h=R(3,9);return Q(`Parallelogramm: a = ${a} cm, hₐ = ${h} cm. A =`,(a*h)+' cm²',{w:'f'});},
+ geoQd:()=>{const a=R(3,9),b=R(2,8),c=R(2,6);return Q(`Quader: ${a} cm, ${b} cm, ${c} cm. Volumen V =`,(a*b*c)+' cm³',{w:'f'});},
+ geoPy:()=>{const t=P([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15],[12,16,20]]);return Q(`Rechtwinkliges Dreieck: a = ${t[0]} cm, b = ${t[1]} cm. Hypotenuse c =`,t[2]+' cm',{w:'f'});},
+ geoPyK:()=>{const t=P([[3,4,5],[6,8,10],[5,12,13],[8,15,17],[9,12,15]]);return Q(`Rechtwinkliges Dreieck: c = ${t[2]} cm, a = ${t[0]} cm. Kathete b =`,t[1]+' cm',{w:'f'});},
+ geoKr:()=>{const d=R(2,9)*2;return Q(`Kreis: d = ${d} cm. Umfang u ≈ (π ≈ 3,14)`,dc(d*3.14)+' cm',{w:'f'});},
+ geoPr:()=>{const g=R(3,8),h=R(2,6)*2,H=R(4,12);return Q(`Dreiecksprisma: Grundfläche mit g = ${g} cm und h = ${h} cm, Körperhöhe ${H} cm. V =`,(g*h/2*H)+' cm³',{w:'f'});},
+ /* Statistik und Schlussrechnung */
+ stMw:()=>{const n=5;let L=Array.from({length:n},()=>R(2,19));const s=L.reduce((a,b)=>a+b,0),r=s%n;L[0]+=(n-r)%n;return Q(`Mittelwert von ${L.join(';  ')}:`,(L.reduce((a,b)=>a+b,0)/n),{w:'f'});},
+ stMed:()=>{const L=Array.from({length:5},()=>R(1,30));const S=L.slice().sort((a,b)=>a-b);return Q(`Median (Zentralwert) von ${L.join(';  ')}:`,S[2],{w:'f'});},
+ slR:()=>{const n=R(2,5),p=R(12,45)*5/100,m=R(6,12);return Q(`${n} Hefte kosten ${eu(n*p)} €. Wie viel kosten ${m} Hefte?`,eu(m*p)+' €',{w:'f'});},
+ slV:()=>{const a=R(2,5),b=R(2,5);return gcd(a,b)>1||a===b?G.slV():Q(`Teile 60 € im Verhältnis ${a} : ${b}:`,`${60*a/(a+b)} € und ${60*b/(a+b)} €`,{w:'f'});}
+};
+/* Sachaufgaben (2 Punkte), je Klasse drei Stufen */
+const SA={
+ 1:[()=>{const g=R(4,6)*10,t=R(12,24),s=R(4,9);return Q(`Anna hat ${g} €. Sie kauft ein T-Shirt um ${t} € und Socken um ${s} €. Wie viel Geld bleibt ihr?`,`${g} ${M} ${t} ${M} ${s} = ${g-t-s}. Es bleiben ihr ${g-t-s} €.`);},
+    ()=>{const r=R(6,9),p=R(12,18);return Q(`Ein Kinosaal hat ${r} Reihen mit je ${p} Plätzen. Wie viele Personen haben Platz?`,`${r} · ${p} = ${r*p}. Es haben ${r*p} Personen Platz.`);},
+    ()=>{const k=R(5,8),n=R(21,26),b=50;const t=k*n;return Q(`In einer Schule gibt es ${k} Klassen mit je ${n} Kindern. Für einen Ausflug fahren alle mit Bussen. Ein Bus hat ${b} Plätze. Wie viele Busse braucht man?`,`${k} · ${n} = ${t}; ${t} : ${b} = ${Math.floor(t/b)} Rest ${t%b}. Man braucht ${Math.ceil(t/b)} Busse.`);},
+    ()=>{const p=R(2,6),n=R(3,8),z=n*p<50?50:100;return Q(`Ein Eis kostet ${p} €. Leo kauft ${n} Eis für seine Freunde und bezahlt mit einem ${z}-€-Schein. Wie viel Geld bekommt er zurück?`,`${n} · ${p} = ${n*p}; ${z} ${M} ${n*p} = ${z-n*p}. Er bekommt ${z-n*p} € zurück.`);},
+    ()=>{const s=R(120,360,30),h=3;return Q(`Ein Bus fährt ${s} km in ${h} Stunden. Wie viele Kilometer fährt er durchschnittlich in einer Stunde?`,`${s} : ${h} = ${s/h}. Er fährt ${s/h} km pro Stunde.`);}],
+ 2:[()=>{const n=R(3,5),p=R(105,195,5)/100;return Q(`Lisa kauft ${n} Hefte zu je ${eu(p)} €. Sie bezahlt mit einem 10-€-Schein. Wie viel Geld bekommt sie zurück?`,`${n} · ${eu(p)} = ${eu(n*p)}; 10 ${M} ${eu(n*p)} = ${eu(10-n*p)}. Sie bekommt ${eu(10-n*p)} € zurück.`);},
+    ()=>{const a=R(12,25),b=R(6,a-2),pr=R(8,15);return Q(`Ein rechteckiger Garten ist ${a} m lang und ${b} m breit. Er wird eingezäunt, 1 m Zaun kostet ${pr} €. Wie viel kostet der Zaun?`,`u = 2 · ${a} + 2 · ${b} = ${2*a+2*b} m; ${2*a+2*b} · ${pr} = ${(2*a+2*b)*pr}. Der Zaun kostet ${F((2*a+2*b)*pr)} €.`);},
+    ()=>{const k=R(22,28),p=R(9,16),z=R(30,90,10);return Q(`${k} Kinder fahren ins Museum. Der Eintritt kostet pro Kind ${p} €, die Busfahrt kostet für alle zusammen ${z} €. Wie viel kostet der Ausflug insgesamt?`,`${k} · ${p} = ${k*p}; ${k*p} + ${z} = ${k*p+z}. Der Ausflug kostet ${k*p+z} €.`);},
+    ()=>{const t=R(3,6),a=R(18,35);return Q(`Max trainiert ${t}-mal pro Woche und läuft jedes Mal ${a} Runden zu je 400 m. Wie viele Kilometer läuft er pro Woche?`,`${t} · ${a} · 400 = ${F(t*a*400)} m = ${dc(t*a*0.4)} km.`);}],
+ 3:[()=>{const n=R(3,6),p=R(3,9)*n,m=R(7,12);return Q(`${n} kg Äpfel kosten ${eu(p*0.5)} €. Wie viel kosten ${m} kg Äpfel?`,`1 kg: ${eu(p*0.5)} : ${n} = ${eu(p*0.5/n)}; ${m} kg: ${eu(p*0.5/n*m)} €.`);},
+    ()=>{const pr=R(5,30)*10,p=P([10,20,25,30]);return Q(`Ein Fahrrad kostet ${pr} €. Im Ausverkauf gibt es ${p} % Rabatt. Wie viel kostet es jetzt?`,`${p} % von ${pr} = ${dc(pr*p/100)}; ${pr} ${M} ${dc(pr*p/100)} = ${eu(pr*(100-p)/100)}. Es kostet ${eu(pr*(100-p)/100)} €.`);},
+    ()=>{const a=R(4,7),b=R(3,5),pr=R(18,45);return Q(`Ein Zimmer ist ${a} m lang und ${b} m breit. Es wird ein neuer Boden verlegt, 1 m² kostet ${pr} €. Wie viel kostet der Boden?`,`A = ${a} · ${b} = ${a*b} m²; ${a*b} · ${pr} = ${a*b*pr}. Der Boden kostet ${a*b*pr} €.`);},
+    ()=>{const k=R(20,28),m=Math.round(k*R(30,70)/100);const p=Math.round(m/k*100);return Q(`In einer Schulstufe sind ${k*2} Kinder, davon sind ${m*2} Mädchen. Wie viel Prozent sind Mädchen? (Runde auf ganze Prozent.)`,`${m*2} : ${k*2} ≈ ${dc(Math.round(m/k*100)/100)} = ${p} %. Etwa ${p} % sind Mädchen.`);}],
+ 4:[()=>{const pr=R(2,40)*50,p=P([5,10,20]);return Q(`Ein Handyvertrag kostet ${eu(pr/100)} € im Monat. Der Preis wird um ${p} % erhöht. Wie viel kostet er jetzt?`,`${eu(pr/100)} · ${dc(1+p/100)} ≈ ${eu(pr/100*(1+p/100))}. Er kostet ${eu(pr/100*(1+p/100))} €.`);},
+    ()=>{const x=R(8,14),d=R(25,35);return Q(`Eine Mutter ist ${d} Jahre älter als ihre Tochter. Zusammen sind sie ${2*x+d} Jahre alt. Wie alt ist die Tochter? Stelle eine Gleichung auf.`,`x + x + ${d} = ${2*x+d}; 2x = ${2*x}; x = ${x}. Die Tochter ist ${x} Jahre alt.`);},
+    ()=>{const t=P([[3,4,5],[6,8,10],[5,12,13],[8,15,17]]),k=P([1,0.5]);const a=t[0]*k,b=t[1]*k,c=t[2]*k;return Q(`Eine ${dc(c)} m lange Leiter lehnt an einer Hauswand. Ihr Fuß steht ${dc(a)} m von der Wand entfernt. In welcher Höhe berührt sie die Wand?`,`h = √(${dc(c)}² ${M} ${dc(a)}²) = ${dc(b)} m.`);},
+    ()=>{const L=[R(8,16),R(10,20),R(6,14),R(12,22)];const s=L.reduce((a,b)=>a+b,0);const r=s%4;L[0]+=(4-r)%4;const m=L.reduce((a,b)=>a+b,0)/4;return Q(`Jonas notiert, wie viele Minuten er von Montag bis Donnerstag lernt: ${L.join(', ')} Minuten. Wie viele Minuten lernt er im Durchschnitt pro Tag?`,`(${L.join(' + ')}) : 4 = ${m}. Im Durchschnitt ${m} Minuten.`);}]};
+/* ================= Screeningbögen ================= */
+const SCR={
+ 1:{t:'Beginn 1. Klasse (Volksschulstoff)',z:25,S:[
+   ['Zahlen und Stellenwert','SW',['zsSchreib','zsZiffer','zsRund','zsNach','zsOrd'],2],
+   ['Einmaleins und Kopfrechnen','1x1',['mal','mal','mal','geteilt','geteilt','kAdd','kSub','k10'],4],
+   ['Schriftlich rechnen','SR',['sAdd','sSub','sMul','sDiv'],2],
+   ['Größen','GR',['grM','grKg','grH','grEu'],2],
+   ['Brüche und Geometrie','BG',['brHalb','brViert','geoU'],2],
+   ['Sachaufgaben','TX',[1,2,3],1]]},
+ 2:{t:'Beginn 2. Klasse (Stoff der 1. Klasse)',z:25,S:[
+   ['Natürliche Zahlen und Dezimalzahlen','ZD',['zsRund','dzSchreib','dzStelle','dzVgl','dzOrd'],2],
+   ['Rechnen und Vorrangregeln','RV',['mal2','kMal3','vrg','vrg','dzAdd','dzSub','dz10','dz10'],4],
+   ['Schriftlich rechnen','SR',['sMul2','sDiv','dzMulZ','sDiv2'],2],
+   ['Größen und Geometrie','GG',['grDm','grDkg','grDmin','geoU','geoA'],2],
+   ['Brüche und Teiler','BT',['brVon','brKurz','teilbar','brVgl'],2],
+   ['Sachaufgaben','TX',[1,2,3],1]]},
+ 3:{t:'Beginn 3. Klasse (Stoff der 2. Klasse)',z:25,S:[
+   ['Bruchrechnen','BR',['brErw','brKurz','brAddG','brAdd','brMalZ'],2],
+   ['Dezimalzahlen und Prozent','DP',['brDz','dzMul','dzDivZ','pzVon','pzDz'],2],
+   ['Terme und Gleichungen','TG',['tWert','tZus','glAdd','glMal','gl2'],2],
+   ['Geometrie','GE',['geoWs','geoDr','geoPa','geoQd'],1],
+   ['Schlussrechnung und Statistik','SS',['slR','stMw','slV'],1],
+   ['Sachaufgaben','TX',[1,2,3],1]]},
+ 4:{t:'Beginn 4. Klasse (Stoff der 3. Klasse)',z:25,S:[
+   ['Ganze Zahlen','GZ',['gzAdd','gzSub','gzMal','gzDiv','gzOrd'],2],
+   ['Potenzen und Terme','PT',['poZp','poMul','poMon','klAus','tZus2'],2],
+   ['Gleichungen','GL',['gl3','glK','glB','glT'],2],
+   ['Prozentrechnung','PR',['pzRab','pzErh','pzSatz','pzGW'],1],
+   ['Geometrie und Statistik','GS',['geoPy','geoPyK','geoKr','geoPr','stMed'],1],
+   ['Sachaufgaben','TX',[1,2,3],1]]}};
+const SCRMAX=kl=>SCR[kl].S.map(s=>s[0]==='Sachaufgaben'?6:s[2].length);
+const SEED={A:11,B:23,C:37};
+function scrGen(it){const kl=it.kl||'1',v=it.ver||'A',D=SCR[kl];const run=()=>D.S.map(([t,c,L,co])=>({t,c,co,T:t==='Sachaufgaben'?L.map(k=>SA[kl][(k-1+({A:0,B:1,C:2}[v]??R(0,3)))%SA[kl].length]()).map(x=>Object.assign(x,{p:2})):L.map(k=>G[k]())}));
+ it.d=v==='neu'?run():seeded(SEED[v]*100+ +kl,run);}
+const nl='<span class="tlln" style="flex:1;min-width:2.6em;min-height:1.35em;border-bottom:1px solid #000;display:inline-block;white-space:nowrap">';
+function tRow(it,t,i,full){const lab=`<b style="min-width:1.4em">${String.fromCharCode(97+i)})</b>`;
+ if(t.nl){const parts=t.q.split('___');return `<div style="display:flex;gap:.3em;align-items:flex-end;flex-wrap:wrap">${lab}<span>${parts.map((p,j)=>j? `<span style="display:inline-block;min-width:3.2em;border-bottom:1px solid #000;text-align:center">${j===1&&tlS(it)?'<span class="sv">'+(t.a)+'</span>':''}</span>`+p:p).join('')}</span></div>`;}
+ return `<div style="display:flex;gap:.3em;align-items:flex-end">${lab}<span style="${full?'':'white-space:nowrap'}">${t.q}</span>${nl}${tlSv(it,t.a)}</span></div>`;}
+function scrBlk(it){const kl=it.kl||'1',D=SCR[kl],d=it.d||[],mx=SCRMAX(kl),tot=mx.reduce((a,b)=>a+b,0);
+ const vn=it.ver==='neu'?'':` · Version ${it.ver||'A'}`;
+ let h=`<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2.5px solid #1f3a8a;padding-bottom:2px;margin-bottom:5px"><div style="font-weight:800;font-size:1.25em;color:#1f3a8a">🚦 Screening Mathematik</div><div style="font-weight:700;color:#1f3a8a">${D.t}${vn}</div></div>`;
+ h+=`<div style="display:flex;gap:1.2em;margin-bottom:4px"><span style="flex:2;display:flex;gap:.3em">Name:<span style="flex:1;border-bottom:1px solid #000"></span></span><span style="flex:1;display:flex;gap:.3em">Klasse:<span style="flex:1;border-bottom:1px solid #000"></span></span><span style="flex:1;display:flex;gap:.3em">Datum:<span style="flex:1;border-bottom:1px solid #000"></span></span></div>`;
+ h+=`<div style="font-size:.85em;color:#444;margin-bottom:6px">Bearbeitungszeit: ${D.z} Minuten · keine Hilfsmittel · Das ist kein Test mit Note – zeig einfach, was du schon kannst!</div>`;
+ d.forEach((s,si)=>{const mxs=mx[si];h+=`<div style="break-inside:avoid;margin-bottom:5px"><div style="display:flex;justify-content:space-between;background:#e8eefb;border-left:5px solid #1f3a8a;padding:1px 6px;font-weight:700;margin-bottom:3px"><span>${String.fromCharCode(65+si)} · ${s.t}</span><span style="font-weight:600">Punkte: ____ / ${mxs}</span></div>`;
+  if(s.t==='Sachaufgaben'){h+=s.T.map((t,i)=>`<div style="break-inside:avoid;margin:0 0 .35em"><div style="display:flex;gap:.3em"><b>${i+1}.</b><span>${t.q}</span></div>${it.rl!==false?`<div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.2em"><span style="font-size:.9em">R:</span><span class="tlln" style="flex:1;min-height:1.35em;border-bottom:1px solid #000"></span></div>`:''}<div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.2em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`).join('');}
+  else{const sh=s.T.filter(t=>t.w!=='f'),fu=s.T.filter(t=>t.w==='f');let k=0;
+   if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${s.co},1fr);gap:.25em 1.2em">`+sh.map(t=>tRow(it,t,k++)).join('')+`</div>`;
+   if(fu.length)h+=`<div style="display:grid;grid-template-columns:repeat(${fu.length>1&&s.co>1?2:1},1fr);gap:.25em 1.2em;margin-top:.25em">`+fu.map(t=>tRow(it,t,k++,true)).join('')+`</div>`;}
+  h+='</div>';});
+ h+=`<div style="display:flex;justify-content:flex-end;gap:1em;align-items:center;border-top:2px solid #1f3a8a;padding-top:3px;font-weight:700"><span>Gesamt: ______ / ${tot} Punkte</span><span style="font-weight:400;font-size:.9em">Ampel: <span style="display:inline-block;width:.9em;height:.9em;border-radius:50%;border:1.5px solid #2e7d32;background:#c8e6c9;vertical-align:middle"></span> <span style="display:inline-block;width:.9em;height:.9em;border-radius:50%;border:1.5px solid #b08a00;background:#fff3b0;vertical-align:middle"></span> <span style="display:inline-block;width:.9em;height:.9em;border-radius:50%;border:1.5px solid #c62828;background:#ffcdd2;vertical-align:middle"></span></span></div>`;
+ return `<div style="line-height:1.28;font-size:.95em">${h}</div>`;}
+function scrSol(it){const o=[];(it.d||[]).forEach(s=>s.T.forEach(t=>o.push(String(t.a).replace(/<[^>]+>/g,''))));return o;}
+/* ================= Auswerteraster ================= */
+function scaBlk(it){const kl=it.kl||'1',D=SCR[kl],mx=SCRMAX(kl),tot=mx.reduce((a,b)=>a+b,0),n=+it.n||25;
+ const th=(x,st)=>`<th style="border:1px solid #555;padding:2px 3px;background:#e8eefb;${st||''}">${x}</th>`,td=st=>`<td style="border:1px solid #888;height:1.45em;${st||''}"></td>`;
+ const dot=c=>`<span style="display:inline-block;width:.75em;height:.75em;border-radius:50%;border:1.3px solid ${c[0]};background:${c[1]};margin:0 1px"></span>`,AM=[['#2e7d32','#c8e6c9'],['#b08a00','#fff3b0'],['#c62828','#ffcdd2']];
+ let h=`<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2.5px solid #1f3a8a;margin-bottom:4px"><div style="font-weight:800;font-size:1.2em;color:#1f3a8a">🚦 Auswerteraster Screening Mathematik</div><div style="font-weight:700;color:#1f3a8a">${D.t}</div></div>`;
+ h+=`<div style="display:flex;gap:1.2em;margin-bottom:4px;font-size:.9em"><span style="flex:1;display:flex;gap:.3em">Klasse:<span style="flex:1;border-bottom:1px solid #000"></span></span><span style="flex:1;display:flex;gap:.3em">Lehrkraft:<span style="flex:1;border-bottom:1px solid #000"></span></span><span style="flex:1;display:flex;gap:.3em">Datum / Version:<span style="flex:1;border-bottom:1px solid #000"></span></span></div>`;
+ h+=`<table style="border-collapse:collapse;width:100%;font-size:.74em;text-align:center"><thead><tr>${th('Nr.')}${th('Name','width:22%')}${D.S.map((s,i)=>th(String.fromCharCode(65+i)+'<br><span style="font-weight:400">'+s[1]+'</span><br><span style="font-weight:400">/'+mx[i]+'</span>')).join('')}${th('Σ<br><span style="font-weight:400">/'+tot+'</span>')}${th('Ampel')}${th('Förder&shy;schwerpunkte','width:17%')}</tr></thead><tbody>`;
+ for(let i=0;i<n;i++)h+=`<tr><td style="border:1px solid #888">${i+1}</td>${td()}${D.S.map(()=>td()).join('')}${td()}<td style="border:1px solid #888;white-space:nowrap">${AM.map(dot).join('')}</td>${td()}</tr>`;
+ h+=`</tbody></table>`;
+ const lim=m=>[Math.ceil(m*.8),Math.ceil(m*.5)];
+ h+=`<div style="display:grid;grid-template-columns:1.25fr 1fr;gap:4px 14px;font-size:.74em;margin-top:5px;line-height:1.3"><div><b>Ampel je Bereich</b> (grün ≥ 80 %, gelb 50–79 %, rot &lt; 50 %):<br>${D.S.map((s,i)=>{const[g,y]=lim(mx[i]);return `<b>${String.fromCharCode(65+i)}</b> ${s[0]}: ${dot(AM[0])}${g}–${mx[i]} ${dot(AM[1])}${y}–${g-1} ${dot(AM[2])}0–${y-1}`;}).join('<br>')}<br><b>Gesamt:</b> ${dot(AM[0])}${Math.ceil(tot*.75)}–${tot} ${dot(AM[1])}${Math.ceil(tot*.5)}–${Math.ceil(tot*.75)-1} ${dot(AM[2])}0–${Math.ceil(tot*.5)-1}</div>`;
+ h+=`<div><b>Was die Ampel bedeutet</b><br>${dot(AM[2])} <b>Rot:</b> Grundlagenförderung in der Kleingruppe (täglich Mathe-Fit Niveau ★)<br>${dot(AM[1])} <b>Gelb:</b> aktueller Stoff mit Unterstützung, Lücken gezielt schließen<br>${dot(AM[0])} <b>Grün:</b> selbstständig, Erweiterungs- und Knobelaufgaben<br><b>Fehlerbilder</b> (in „Förderschwerpunkte“ eintragen): ${FB[kl]}<br><b>Tipp:</b> Version B nach Weihnachten, Version C am Schulschluss – gleicher Aufbau, andere Zahlen.</div></div>`;
+ return `<div>${h}</div>`;}
+const FB={1:'SW Stellenwert · 1x1 Einmaleins · Z zählendes Rechnen · SR schriftl. Verfahren · GR Größen · BG Brüche/Geometrie · TX Textverständnis · AS Antwortsatz fehlt',
+ 2:'DZ Dezimalzahlen · VR Vorrangregeln · 1x1 Einmaleins · SR schriftl. Verfahren · GR Größen · GE Umfang/Fläche · BR Brüche · TX Textverständnis',
+ 3:'BR Bruchrechnen · DZ Dezimalzahlen · PZ Prozent · TG Terme/Gleichungen · GE Geometrie · SL Schlussrechnung · TX Textverständnis',
+ 4:'GZ ganze Zahlen · VZ Vorzeichenregeln · PT Potenzen/Terme · GL Gleichungen · PR Prozent · PY Pythagoras · ST Statistik · TX Textverständnis'};
+/* ================= Mathe-Fit ================= */
+const TAGE={mo:'Montag',di:'Dienstag',mi:'Mittwoch',do:'Donnerstag',fr:'Freitag'};
+const MF={
+ 1:{mo:['Einmaleins',[['mal','geteilt'],['mal','geteilt','mal2'],['mal2','kMal3','geteilt']]],
+    di:['Kopfrechnen',[['kAdd','kSub','k10'],['kAdd','kSub','k10','kAdd2'],['kAdd2','kSub2','kMal3']]],
+    mi:['Zahlen und Stellenwert',[['zsSchreib','zsNach','zsZiffer'],['zsSchreib','zsZiffer','zsRund','zsNach'],['zsRund','zsZiffer','zsOrd']]],
+    do:['Größen',[['grM','grKg','grH'],['grM','grKg','grH','grEu'],['grDm','grDkg','grDmin','grEu']]],
+    fr:['Sachaufgaben',[[1],[1,2],[2,3]]]},
+ 2:{mo:['Kopfrechnen',[['mal','geteilt','mal2','kAdd'],['mal2','kMal3','kAdd2','kSub2'],['kMal3','vrg','kSub2']]],
+    di:['Dezimalzahlen',[['dzSchreib','dz10','dzVgl'],['dzAdd','dzSub','dz10','dzRund'],['dzAdd','dzSub','dzMulZ','dzStelle']]],
+    mi:['Größen',[['grM','grKg','grH'],['grDm','grDkg','grDmin','grDt'],['grDm','grDkg','grDt','grL']]],
+    do:['Brüche und Teiler',[['brHalb','brViert','brVon'],['brVon','brKurz','teilbar'],['brKurz','brErw','brVgl','teilbar']]],
+    fr:['Sachaufgaben',[[1],[1,2],[2,3]]]},
+ 3:{mo:['Kopfrechnen',[['mal2','kMal3','vrg'],['kMal3','vrg','dz10','dzMul'],['vrg','dzMul','dzDivZ','poQ']]],
+    di:['Bruchrechnen',[['brErw','brKurz','brAddG'],['brKurz','brAddG','brAdd','brVon'],['brAdd','brMalZ','brDz']]],
+    mi:['Terme und Gleichungen',[['tWert','glAdd','glMal'],['tWert','tZus','glAdd','gl2'],['tZus','gl2','gl3','glT']]],
+    do:['Prozent',[['pzVon','pzDz'],['pzVon','pzDz','pzBr'],['pzVon','pzSatz','pzRab']]],
+    fr:['Sachaufgaben',[[1],[1,2],[2,3]]]},
+ 4:{mo:['Ganze Zahlen',[['gzAdd','gzSub','gzMal'],['gzAdd','gzSub','gzSub2','gzMal','gzDiv'],['gzSub2','gzMal','gzDiv','gzOrd']]],
+    di:['Terme und Potenzen',[['poZp','poMon','klAus'],['poMul','poMon','klAus','tZus2'],['poMul','klAus','tZus2','poQ']]],
+    mi:['Gleichungen',[['glAdd','glMal','gl2'],['gl2','gl3','glK'],['glK','glB','glT']]],
+    do:['Prozent und Geometrie',[['pzVon','geoPy'],['pzVon','pzSatz','geoPy','geoKr'],['pzGW','pzErh','geoPyK','stMed']]],
+    fr:['Sachaufgaben',[[1],[1,2],[2,3]]]}};
+const MFN={1:10,2:10,3:8};
+function mfDay(kl,tag,lv,n){const [t,L]=MF[kl][tag],K=L[lv-1];if(tag==='fr'){const S=SA[kl==='1'?1:+kl-0];return {t,T:K.map(k=>{const pool=SA[kl];return pool[(k-1+R(0,pool.length-1))%pool.length]();}).map(x=>Object.assign(x,{fr:1}))};}
+ const T=[],seen=new Set();let g=0;while(T.length<n&&g++<200){const x=G[K[T.length%K.length]]();if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T};}
+function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo';
+ if(tag==='woche')it.d=Object.keys(TAGE).map(k=>Object.assign({k},mfDay(kl,k,lv,6)));else it.d=[Object.assign({k:tag},mfDay(kl,tag,lv,MFN[lv]))];}
+const ST=lv=>'★'.repeat(lv);
+function mfBlock(it,b,wk){const lv=+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co=wk?3:(+it.co||2);let k=0;
+ let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff4e0;border:1.5px solid #e08a00;border-radius:7px;padding:1px 8px;margin-bottom:4px;flex-wrap:wrap;gap:0 .8em"><span style="font-weight:800;color:#a35a00">💪 Mathe-Fit · ${TAGE[b.k]} · ${b.t} <span style="color:#e08a00">${ST(lv)}</span></span><span style="font-size:.85em;white-space:nowrap">${wk?'':'Name: __________ '}Zeit: _____ min · Richtig: ____ / ${b.T.length}</span></div>`;
+ if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:.3em 1.2em">`+sh.map(t=>tRow(it,t,k++)).join('')+'</div>';
+ if(full.length)h+=`<div style="margin-top:.3em">`+full.map(t=>t.fr?`<div style="margin-bottom:.35em"><div style="display:flex;gap:.3em"><b>${String.fromCharCode(97+k++)})</b><span>${t.q}</span></div><div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.4em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`:tRow(it,t,k++,true)).join('')+'</div>';
+ return h;}
+function mftBlk(it){const d=it.d||[],wk=it.tag==='woche';return `<div style="line-height:1.35">`+d.map((b,i)=>`<div style="break-inside:avoid;${wk&&i?'border-top:1.5px dashed #999;padding-top:6px;margin-top:6px':''}">${mfBlock(it,b,wk)}</div>`).join('')+'</div>';}
+/* ================= Anbindung an den Generator ================= */
+{const _g=rqGen,_b=rqBlk,_s=rqSol,DISP=['show','co','fs','nc','rl'];
+ rqGen=function(it){if(!SCT.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;if(it.type==='scr')return scrGen(it);if(it.type==='mft')return mftGen(it);it.d=[1];};
+ rqBlk=function(it){if(it.type==='scr')return scrBlk(it);if(it.type==='sca')return scaBlk(it);if(it.type==='mft')return mftBlk(it);return _b(it);};
+ rqSol=function(it){if(it.type==='scr')return scrSol(it);if(it.type==='mft')return (it.d||[]).flatMap(b=>b.T.map(t=>String(t.a).replace(/<[^>]+>/g,'')));if(it.type==='sca')return [];return _s(it);};}
+const KL=[['1','Beginn 1. Klasse (Volksschulstoff)'],['2','Beginn 2. Klasse (Stoff 1. Klasse)'],['3','Beginn 3. Klasse (Stoff 2. Klasse)'],['4','Beginn 4. Klasse (Stoff 3. Klasse)']];
+RQP.scr=[['kl','sel',KL,'Klasse'],['ver','sel',[['A','Version A (Herbst)'],['B','Version B (nach Weihnachten)'],['C','Version C (Schulschluss)'],['neu','zufällige neue Zahlen']],'Version'],['rl','ck','Rechenzeile bei Sachaufgaben']];
+RQP.sca=[['kl','sel',KL,'Klasse'],['n','sel',[[15,'15 Kinder'],[20,'20 Kinder'],[25,'25 Kinder'],[28,'28 Kinder']],'Zeilen']];
+RQP.mft=[['kl','sel',[['1','1. Klasse'],['2','2. Klasse'],['3','3. Klasse'],['4','4. Klasse']],'Klasse'],['tag','sel',[['mo','Montag'],['di','Dienstag'],['mi','Mittwoch'],['do','Donnerstag'],['fr','Freitag'],['woche','ganze Woche auf einem Blatt']],'Tag'],['lv','sel',[['1','★ Basis (Gruppe Rot)'],['2','★★ Standard (Gruppe Gelb)'],['3','★★★ Plus (Gruppe Grün)']],'Niveau'],['co','sel',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten']],'Spalten']];
+window.SCR_TEST={G,SA,SCR,scrGen,mftGen,MF};
+(function(){try{const _co=catOf;catOf=function(it){return it&&SCT.includes(it.type)?'fm':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&SCT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='sca');try{return _h.apply(this,arguments);}finally{items=keep;}};
+ const P=document.querySelector('.catp[data-c="fm"]');if(!P)return;const tile=(t,s)=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`;
+ P.insertAdjacentHTML('afterbegin','<div style="font-weight:700;margin:2px 0 6px;color:#1f3a8a">🚦 Screening und tägliches Training</div>'+tile('scr','<rect x="8" y="4" width="84" height="32" rx="4" fill="#f3f6ff" stroke="#1f3a8a" stroke-width="2"/><circle cx="22" cy="14" r="4" fill="#c62828"/><circle cx="22" cy="24" r="4" fill="#f2c200"/><circle cx="34" cy="14" r="4" fill="#2e7d32"/><path d="M44 13H84M44 21H84M44 29H72" stroke="#1f3a8a" stroke-width="2"/>')+tile('sca','<rect x="8" y="4" width="84" height="32" fill="#fff" stroke="#555"/><path d="M8 12H92M8 20H92M8 28H92M22 4V36M40 4V36M54 4V36M68 4V36" stroke="#888"/><circle cx="80" cy="16" r="3" fill="#2e7d32"/><circle cx="80" cy="24" r="3" fill="#c62828"/>')+tile('mft','<rect x="6" y="6" width="88" height="28" rx="6" fill="#fff4e0" stroke="#e08a00" stroke-width="2"/><text x="50" y="25" font-size="13" text-anchor="middle" font-weight="700" fill="#a35a00">💪 7 · 8 = __</text>'));}catch(e){console.error(e);}})();
+}catch(e){console.error(e);}})();
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
