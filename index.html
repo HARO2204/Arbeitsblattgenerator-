@@ -15323,6 +15323,90 @@ window.TXV_TEST={B1,B2,trzGen,WK};
  if(anchor)anchor.insertAdjacentHTML('afterend',html);else P2.insertAdjacentHTML('afterbegin',html);}catch(e){console.error(e);}})();
 }catch(e){console.error(e);}})();
 
+/* ===== Einmaleins-Blitzrechnen mit Fortschrittskurve + Rechengeschichten erfinden ===== */
+(function(){try{
+const BZT=['blz','ser'];POT.push(...BZT);TLT.push(...BZT);RQT.push(...BZT);
+Object.assign(TLN,{blz:'Einmaleins-Blitzrechnen (60 Sekunden) mit Fortschrittskurve',ser:'Rechengeschichten erfinden (Sachaufgaben selbst schreiben)'});
+TLD.blz={w:714,md:'blatt',re:'all',ra:'mal',n:40,zt:'60'};TLD.ser={w:714,md:'rech',lv:'1',n:3,fz:true};
+const R=(l,h,s)=>{s=s||1;return l+s*Math.floor(Math.random()*(Math.floor((h-l)/s)+1));},P=a=>a[Math.floor(Math.random()*a.length)],SH=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},M='−';
+/* ---------- Blitzrechnen ---------- */
+const RE={all:[2,3,4,5,6,7,8,9,10],klein:[2,3,4,5,10],gross:[6,7,8,9],schwer:null};
+const HARD=[[6,7],[6,8],[7,7],[7,8],[7,9],[8,8],[8,9],[6,9],[9,9],[6,6],[4,7],[4,8],[3,7],[3,8],[4,9],[3,9]];
+function blzGen(it){const n=+it.n||40,ra=it.ra||'mal',L=[];let last='';
+ for(let g=0;L.length<n&&g<n*30;g++){let a,b;if(it.re==='schwer'){[a,b]=P(HARD);if(Math.random()<.5)[a,b]=[b,a];}else if(/^r\d+$/.test(it.re||'')){a=+it.re.slice(1);b=R(1,10);if(Math.random()<.5)[a,b]=[b,a];}else{a=P(RE[it.re]||RE.all);b=R(2,10);if(Math.random()<.5)[a,b]=[b,a];}
+  const op=ra==='mix'?P(['·',':']):ra==='div'?':':'·';const q=op==='·'?`${a} · ${b}`:`${a*b} : ${a}`,r=op==='·'?a*b:b;if(L.slice(-12).some(x=>x.q===q)&&g<n*25)continue;L.push({q,r});}
+ it.d=L;}
+function curve(it,rows,big){const n=+it.n||40,cols=big?20:10,W=660,H=big?330:190,x0=34,y0=10,cw=(W-x0-8)/cols,step=n>=60?10:5,ns=n/step,ch=(H-y0-24)/ns;
+ let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;max-width:100%;display:block">`;
+ for(let i=0;i<=ns;i++){const y=y0+i*ch;s+=`<line x1="${x0}" y1="${y}" x2="${x0+cols*cw}" y2="${y}" stroke="${i===ns?'#000':'#bbb'}" stroke-width="${i===ns?1.2:.6}"/><text x="${x0-4}" y="${y+3.5}" font-size="9" text-anchor="end" font-family="Arial">${n-i*step}</text>`;}
+ for(let j=0;j<=cols;j++){const x=x0+j*cw;s+=`<line x1="${x}" y1="${y0}" x2="${x}" y2="${y0+ns*ch}" stroke="${j===0?'#000':'#ddd'}" stroke-width="${j===0?1.2:.6}"/>`;if(j<cols)s+=`<text x="${x+cw/2}" y="${y0+ns*ch+12}" font-size="9" text-anchor="middle" font-family="Arial">${j+1}.</text>`;}
+ s+=`<text x="${x0+cols*cw/2}" y="${H-2}" font-size="9" text-anchor="middle" font-family="Arial">Durchgang</text></svg>`;
+ const dt=`<div style="display:grid;grid-template-columns:repeat(${cols},1fr);margin-left:${x0/W*100}%;margin-right:${8/W*100}%;font-size:.7em;text-align:center">${Array.from({length:cols},()=>`<div style="border:1px solid #bbb;border-top:none;height:1.5em"></div>`).join('')}</div><div style="font-size:.7em;margin-left:${x0/W*100}%">↑ Datum</div>`;
+ return `<div style="break-inside:avoid"><div style="font-weight:700;margin:.3em 0 .1em">📈 Meine Fortschrittskurve${big?' – Einmaleins-Blitzrechnen':''} <span style="font-weight:400;font-size:.85em">– mach bei deiner Anzahl richtiger Aufgaben ein Kreuz und verbinde die Kreuze</span></div>${s}${dt}</div>`;}
+function blzBlk(it){const md=it.md||'blatt',d=it.d||[],sh=tlS(it),n=d.length,zt=it.zt==='120'?'2 Minuten':it.zt==='90'?'90 Sekunden':'60 Sekunden';
+ if(md==='kurve')return `<div><div style="display:flex;gap:1.2em;margin-bottom:6px"><span style="flex:2;display:flex;gap:.3em">Name:<span style="flex:1;border-bottom:1px solid #000"></span></span></div>${curve(it,0,true)}</div>`;
+ const rn={all:'alle Reihen',klein:'2er, 3er, 4er, 5er, 10er',gross:'6er, 7er, 8er, 9er',schwer:'die schweren Aufgaben'}[it.re||'all']||(/^r\d+$/.test(it.re||'')?it.re.slice(1)+'er-Reihe':'');
+ let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff4e0;border:1.5px solid #e08a00;border-radius:7px;padding:2px 8px;margin-bottom:5px;flex-wrap:wrap;gap:0 1em"><b style="color:#a35a00">⚡ Einmaleins-Blitzrechnen · ${zt} · ${rn}</b><span style="font-size:.9em;white-space:nowrap">Name: ____________ Datum: ________ Richtig: ____ / ${n}</span></div>`;
+ const co=n>=60?5:4;h+=`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:.15em 1em;font-size:${n>=60?'.95em':'1em'}">`+d.map(o=>`<div style="display:flex;gap:.3em;align-items:flex-end;white-space:nowrap"><span>${o.q} =</span><span class="tlln" style="flex:1;min-width:1.8em;min-height:1.3em;border-bottom:1px solid #000">${tlSv(it,o.r)}</span></div>`).join('')+'</div>';
+ if(md==='blatt')h+=curve(it,0,false);
+ return `<div style="line-height:1.4">${h}</div>`;}
+/* ---------- Rechengeschichten ---------- */
+const NM=['Lena','Jonas','Mia','Elias','Sara','David','Emma','Noah','Lea','Paul','Amira','Luka'];
+const ST={
+ '+':[(a,b,n)=>[`${n} hat ${a} Sticker. Zum Geburtstag bekommt ${n} ${b} Sticker dazu.`,`Wie viele Sticker hat ${n} jetzt insgesamt?`,`${n} hat jetzt ${a+b} Sticker.`,'Sticker'],
+      (a,b,n)=>[`Im Bus sitzen ${a} Fahrgäste. An der Haltestelle steigen ${b} Personen ein.`,`Wie viele Fahrgäste sind jetzt im Bus?`,`Jetzt sind ${a+b} Fahrgäste im Bus.`,'Bus'],
+      (a,b,n)=>[`${n} läuft am Montag ${a} Minuten und am Dienstag ${b} Minuten.`,`Wie viele Minuten läuft ${n} zusammen?`,`${n} läuft zusammen ${a+b} Minuten.`,'Sport']],
+ '−':[(a,b,n)=>[`${n} hat ${a} €. ${n} kauft ein Buch um ${b} €.`,`Wie viel Geld bleibt übrig?`,`Es bleiben ${a-b} € übrig.`,'Einkaufen'],
+      (a,b,n)=>[`Ein Kinosaal hat ${a} Plätze. ${b} Plätze sind schon besetzt.`,`Wie viele Plätze sind noch frei?`,`Es sind noch ${a-b} Plätze frei.`,'Kino'],
+      (a,b,n)=>[`${n} hat ${a} Punkte im Spiel, ${NM[(NM.indexOf(n)+3)%NM.length]} hat ${b} Punkte.`,`Um wie viele Punkte hat ${n} mehr?`,`${n} hat ${a-b} Punkte mehr.`,'Spiel']],
+ '·':[(a,b,n)=>[`Für das Klassenfest werden ${a} Packungen Saft gekauft. In jeder Packung sind ${b} Flaschen.`,`Wie viele Flaschen sind es insgesamt?`,`Es sind ${a*b} Flaschen.`,'Klassenfest'],
+      (a,b,n)=>[`Eine Kinokarte kostet ${b} €. ${n} kauft ${a} Karten.`,`Wie viel muss ${n} bezahlen?`,`${n} muss ${a*b} € bezahlen.`,'Kino'],
+      (a,b,n)=>[`Ein Regal hat ${a} Fächer. In jedem Fach stehen ${b} Bücher.`,`Wie viele Bücher stehen im Regal?`,`Im Regal stehen ${a*b} Bücher.`,'Bücherei']],
+ ':':[(a,b,n)=>[`${a} Murmeln werden gerecht auf ${b} Kinder aufgeteilt.`,`Wie viele Murmeln bekommt jedes Kind?`,`Jedes Kind bekommt ${a/b} Murmeln.`,'Spielen'],
+      (a,b,n)=>[`${a} Kinder bilden Gruppen mit je ${b} Kindern.`,`Wie viele Gruppen gibt es?`,`Es gibt ${a/b} Gruppen.`,'Schule'],
+      (a,b,n)=>[`${n} und Freunde zahlen für eine Pizza-Bestellung ${a} €. Sie sind ${b} Personen und teilen gerecht.`,`Wie viel zahlt jede Person?`,`Jede Person zahlt ${a/b} €.`,'Pizza']]};
+const THM=[['Kino','🎬','Karte, Platz, Reihe'],['Sport','⚽','Spiel, Tor, Mannschaft, Runde'],['Einkaufen','🛒','Preis, Euro, bezahlen'],['Pizza','🍕','Pizza, Stück, teilen'],['Schule','🏫','Klasse, Heft, Gruppe'],['Smartphone','📱','App, Foto, Minuten'],['Tiere','🐶','Futter, Hund, Katze'],['Ausflug','🚌','Bus, Eintritt, Kinder'],['Garten','🌻','Beet, Pflanzen, Reihe'],['Geburtstag','🎂','Gäste, Kuchen, Geschenke'],['Sticker','⭐','Sammelalbum, Sticker'],['Bus','🚌','Fahrgäste, Haltestelle'],['Spiel','🎮','Punkte, Level'],['Klassenfest','🎉','Getränke, Essen'],['Bücherei','📚','Bücher, Regal'],['Spielen','🎲','Murmeln, Karten']];
+const SIG={'+':['insgesamt','zusammen','dazu','mehr als'],'−':['übrig','weniger','Unterschied','ausgeben'],'·':['je','jeweils','-mal so viel','pro Stück'],':':['verteilen','gerecht','jede/jeder','Gruppen']};
+function numsFor(op,lv){if(op==='+'){const a=lv==='2'?R(120,480):R(12,68),b=lv==='2'?R(45,260):R(8,35);return [a,b,a+b];}if(op==='−'){const a=lv==='2'?R(200,900):R(30,99),b=lv==='2'?R(45,a-30):R(8,a-5);return [a,b,a-b];}if(op==='·'){const a=lv==='2'?R(12,25):R(3,9),b=lv==='2'?R(4,9):R(3,9);return [a,b,a*b];}const b=R(3,9),q=lv==='2'?R(12,25):R(3,9);return [b*q,b,q];}
+/* zweischrittige Rechnungen mit Beispielgeschichte */
+const TWO=[()=>{const a=R(3,6),b=R(4,9),c=R(5,20);const n=P(NM);return {c:`${a} · ${b} + ${c}`,r:a*b+c,st:[`${n} kauft ${a} Packungen Kekse zu je ${b} €. Dazu kommt ein Getränk um ${c} €.`,`Wie viel zahlt ${n} insgesamt?`,`${n} zahlt ${a*b+c} €.`,'Einkaufen']};},
+ ()=>{const a=R(3,6),b=R(3,8),g=Math.ceil((a*b+5)/10)*10+10;const n=P(NM);return {c:`${g} ${M} ${a} · ${b}`,r:g-a*b,st:[`${n} hat ${g} €. ${n} kauft ${a} Hefte zu je ${b} €.`,`Wie viel Geld bleibt übrig?`,`Es bleiben ${g-a*b} € übrig.`,'Schule']};},
+ ()=>{const k=R(3,6),q=R(4,9),z=R(2,k*q-2);const s=k*q;return {c:`(${s-z} + ${z}) : ${k}`,r:q,st:[`In einer Dose sind ${s-z} Gummibärchen, ${z} kommen dazu. Sie werden gerecht auf ${k} Kinder verteilt.`,`Wie viele Gummibärchen bekommt jedes Kind?`,`Jedes Kind bekommt ${q} Gummibärchen.`,'Spielen']};},
+ ()=>{const a=R(4,8),b=R(5,12),c=R(2,a*b-4);return {c:`${a} · ${b} ${M} ${c}`,r:a*b-c,st:[`Ein Kinosaal hat ${a} Reihen mit je ${b} Plätzen. ${c} Plätze bleiben frei.`,`Wie viele Personen sind im Kino?`,`Im Kino sind ${a*b-c} Personen.`,'Kino']};}];
+function serGen(it){const n=Math.max(1,Math.min(5,+it.n||3)),md=it.md||'rech',lv=it.lv||'1',ops=SH(['+','−','·',':']),D=[];
+ for(let i=0;i<n;i++){const two=lv==='3'||(lv==='mix'&&i%2===1);
+  if(two&&md!=='wahl'){const t=P(TWO)();D.push({calc:t.c,r:t.r,st:t.st,th:THM.find(x=>x[0]===t.st[3])||P(THM)});continue;}
+  const op=ops[i%4],[a,b,r]=numsFor(op,lv==='mix'?'1':lv==='3'?'2':lv),nm=P(NM),f=P(ST[op]),st=f(a,b,nm);const th=THM.find(t=>t[0]===st[3])||P(THM);
+  const o={op,a,b,r,calc:`${a} ${op} ${b}`,st,th,sw:P(SIG[op])};
+  if(md==='wahl'){const alt=[];const ot=SH(['+','−','·',':'].filter(x=>x!==op));const mk=(x,y,p)=>`${x} ${p} ${y}`;alt.push(mk(a,b,op));alt.push(mk(a,b,ot[0]));if(op==='−'||op===':')alt.push(mk(b,a,op));else alt.push(mk(a,b,ot[1]));o.opts=SH(alt);}
+  D.push(o);}
+ it.d=D;}
+const MDS={rech:'Erfinde zu jeder Rechnung eine passende Rechengeschichte mit Frage. Schreibe dann die Antwort.',thema:'Erfinde zu jeder Rechnung eine Rechengeschichte zum angegebenen Thema. Verwende das Signalwort!',wahl:'Welche Rechnung passt zur Geschichte? Kreuze an und rechne.'};
+function serBlk(it){NUMIT=it;const md=it.md||'rech',d=it.d||[],sh=tlS(it);const ln=(lab,sol,h)=>`<div style="display:flex;gap:.4em;align-items:flex-end;margin:.2em 0 0 1.6em"><span style="white-space:nowrap;font-size:.92em;min-width:${lab?'4.6em':'0'}">${lab}</span><span class="tlln" style="flex:1;min-height:${h||1.55}em">${tlSv(it,sol)}</span></div>`;
+ const box=on=>`<span style="display:inline-flex;width:1em;height:1em;border:1.5px solid #000;align-items:center;justify-content:center;font-size:.85em;vertical-align:-.1em;margin-right:.25em">${on&&sh?'<span class="sv" style="font-weight:800">✗</span>':''}</span>`;
+ return wnH1(MDS[md])+d.map((o,i)=>{let h=`<div style="break-inside:avoid;margin-bottom:.75em">`;
+  if(md==='wahl'){h+=`<div class="tlrw" style="align-items:flex-start"><b>${poL(i)}</b><span>${o.st[0]} <b>${o.st[1]}</b></span></div><div style="margin:.3em 0 0 1.6em;display:flex;gap:1.6em;flex-wrap:wrap">${o.opts.map(x=>`<span style="white-space:nowrap">${box(x===o.calc)}${x}</span>`).join('')}</div>`+ln('Ergebnis:',`${o.calc} = ${o.r}`)+ln('Antwort:',o.st[2]);return h+'</div>';}
+  const tag=md==='thema'?`<span style="margin-left:1em;font-size:.92em;background:#fff4e0;border:1px solid #e08a00;border-radius:5px;padding:0 6px">${o.th[1]} Thema: <b>${o.th[0]}</b>${o.op?` · Signalwort: <b>„${o.sw}“</b>`:''}</span>`:'';
+  h+=`<div class="tlrw" style="align-items:center;flex-wrap:wrap"><b>${poL(i)}</b><span style="font-size:1.1em;font-weight:700;border:2px solid #1f3a8a;border-radius:6px;padding:1px 10px;background:#f3f6ff">${o.calc} = ${it.fz===false?'?':o.r}</span>${tag}</div>`;
+  
+  h+=`<div style="margin:.2em 0 0 1.6em;font-size:.92em">Meine Geschichte:</div><div style="margin-left:1.6em;min-height:3.2em;line-height:1.6em;background:repeating-linear-gradient(transparent 0 calc(1.6em - 1px),#000 calc(1.6em - 1px) 1.6em)">${sh?'<span class="sv">'+o.st[0]+'</span>':''}</div>`;
+  h+=ln('Frage:',o.st[1])+ln('Antwort:',o.st[2]);
+  return h+'</div>';}).join('');}
+/* ---------- Anbindung ---------- */
+{const _g=rqGen,_b=rqBlk,_s=rqSol,DISP=['show','co','fs','nc','md','zt','fz'];
+ rqGen=function(it){if(!BZT.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d&&!(it.type==='ser'&&kk==='md'))return;return it.type==='blz'?blzGen(it):serGen(it);};
+ rqBlk=function(it){return it.type==='blz'?blzBlk(it):it.type==='ser'?serBlk(it):_b(it);};
+ rqSol=function(it){return it.type==='blz'?(it.d||[]).map(o=>String(o.r)):it.type==='ser'?(it.d||[]).map(o=>o.st[2]):_s(it);};}
+RQP.blz=[['md','sel',[['blatt','Aufgaben + kleine Fortschrittskurve'],['nur','nur Aufgaben'],['kurve','nur große Fortschrittskurve (20 Durchgänge)']],'Blatt'],['re','sel',[['all','alle Reihen (2–10)'],['klein','leichte Reihen (2, 3, 4, 5, 10)'],['gross','schwere Reihen (6, 7, 8, 9)'],['schwer','die schwersten Aufgaben (6·7, 7·8, 8·9 …)'],...[2,3,4,5,6,7,8,9].map(k=>['r'+k,'nur die '+k+'er-Reihe'])],'Reihen'],['ra','sel',[['mal','Malnehmen'],['div','Teilen'],['mix','gemischt']],'Rechenart'],['n','sel',[[30,'30 Aufgaben'],[40,'40 Aufgaben'],[60,'60 Aufgaben']],'Anzahl'],['zt','sel',[['60','60 Sekunden'],['90','90 Sekunden'],['120','2 Minuten']],'Zeit']];
+RQP.ser=[['md','sel',[['rech','Rechnung → Geschichte erfinden'],['thema','mit Thema und Signalwort'],['wahl','Welche Rechnung passt? (ankreuzen)']],'Übung'],['lv','sel',[['1','einschrittig, kleine Zahlen'],['2','einschrittig, größere Zahlen'],['3','zweischrittig'],['mix','gemischt']],'Schwierigkeit'],['n','num','Anzahl',1,5],['fz','ck','Ergebnis bei der Rechnung angeben']];
+window.BLZ_TEST={blzGen,serGen,TWO,ST};
+(function(){try{const _co=catOf;catOf=function(it){return it&&BZT.includes(it.type)?'fm':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&BZT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ const P2=document.querySelector('.catp[data-c="fm"]');if(!P2)return;const tile=(t,s)=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`;
+ const a1=P2.querySelector('.pal[data-t="mft"]');if(a1)a1.insertAdjacentHTML('afterend',tile('blz','<rect x="4" y="5" width="56" height="30" rx="5" fill="#fff4e0" stroke="#e08a00" stroke-width="2"/><text x="32" y="25" font-size="12" text-anchor="middle" font-weight="700" fill="#a35a00">⚡ 7·8</text><path d="M66 32L74 24L82 27L94 10" fill="none" stroke="#1f5fa8" stroke-width="2"/><path d="M64 34H96M64 34V6" stroke="#000"/>'));
+ const a2=P2.querySelector('.pal[data-t="trz"]');if(a2)a2.insertAdjacentHTML('afterend',tile('ser','<rect x="4" y="6" width="34" height="14" rx="3" fill="#f3f6ff" stroke="#1f3a8a"/><text x="21" y="17" font-size="9" text-anchor="middle" font-weight="700">6 · 8</text><path d="M42 13H50" stroke="#000" stroke-width="1.5"/><path d="M47 10L51 13L47 16" fill="none" stroke="#000" stroke-width="1.5"/><path d="M56 9H94M56 16H94M56 23H86M8 30H70" stroke="#555" stroke-width="1.6"/><text x="80" y="36" font-size="10">✎</text>'));}catch(e){console.error(e);}})();
+}catch(e){console.error(e);}})();
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
