@@ -15234,7 +15234,7 @@ const KL=[['1','Beginn 1. Klasse (Volksschulstoff)'],['2','Beginn 2. Klasse (Sto
 RQP.scr=[['kl','sel',KL,'Klasse'],['ver','sel',[['A','Version A (Herbst)'],['B','Version B (nach Weihnachten)'],['C','Version C (Schulschluss)'],['neu','zufällige neue Zahlen']],'Version'],['rl','ck','Rechenzeile bei Sachaufgaben']];
 RQP.sca=[['kl','sel',KL,'Klasse'],['n','sel',[[15,'15 Kinder'],[20,'20 Kinder'],[25,'25 Kinder'],[28,'28 Kinder']],'Zeilen']];
 RQP.mft=[['kl','sel',[['1','1. Klasse'],['2','2. Klasse'],['3','3. Klasse'],['4','4. Klasse']],'Klasse'],['tag','sel',[['mo','Montag'],['di','Dienstag'],['mi','Mittwoch'],['do','Donnerstag'],['fr','Freitag'],['frei','ohne Wochentag'],['woche','ganze Woche auf einem Blatt']],'Tag'],['th','sel',[['plan','Wochenplan (Thema je nach Tag)'],...Object.entries(TH).map(([k,v])=>[k,v[0]])],'Thema'],['th2','sel',[['-','kein 2. Thema'],...Object.entries(TH).filter(e=>e[1][1]).map(([k,v])=>[k,v[0]])],'2. Thema dazumischen'],['lv','sel',[['1','★ Basis (Gruppe Rot)'],['2','★★ Standard (Gruppe Gelb)'],['3','★★★ Plus (Gruppe Grün)']],'Niveau'],['n','sel',[[0,'automatisch'],[4,'4'],[6,'6'],[8,'8'],[10,'10'],[12,'12'],[15,'15']],'Anzahl der Aufgaben'],['co','sel',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten']],'Spalten']];
-window.SCR_TEST={G,SA,SCR,scrGen,mftGen,MF};
+window.SCR_TEST={G,SA,SCR,scrGen,mftGen,MF,TH,tRow};
 (function(){try{const _co=catOf;catOf=function(it){return it&&SCT.includes(it.type)?'fm':_co.apply(this,arguments);};
  const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&SCT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
  const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='sca');try{return _h.apply(this,arguments);}finally{items=keep;}};
@@ -15405,6 +15405,85 @@ window.BLZ_TEST={blzGen,serGen,TWO,ST};
  const P2=document.querySelector('.catp[data-c="fm"]');if(!P2)return;const tile=(t,s)=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`;
  const a1=P2.querySelector('.pal[data-t="mft"]');if(a1)a1.insertAdjacentHTML('afterend',tile('blz','<rect x="4" y="5" width="56" height="30" rx="5" fill="#fff4e0" stroke="#e08a00" stroke-width="2"/><text x="32" y="25" font-size="12" text-anchor="middle" font-weight="700" fill="#a35a00">⚡ 7·8</text><path d="M66 32L74 24L82 27L94 10" fill="none" stroke="#1f5fa8" stroke-width="2"/><path d="M64 34H96M64 34V6" stroke="#000"/>'));
  const a2=P2.querySelector('.pal[data-t="trz"]');if(a2)a2.insertAdjacentHTML('afterend',tile('ser','<rect x="4" y="6" width="34" height="14" rx="3" fill="#f3f6ff" stroke="#1f3a8a"/><text x="21" y="17" font-size="9" text-anchor="middle" font-weight="700">6 · 8</text><path d="M42 13H50" stroke="#000" stroke-width="1.5"/><path d="M47 10L51 13L47 16" fill="none" stroke="#000" stroke-width="1.5"/><path d="M56 9H94M56 16H94M56 23H86M8 30H70" stroke="#555" stroke-width="1.6"/><text x="80" y="36" font-size="10">✎</text>'));}catch(e){console.error(e);}})();
+}catch(e){console.error(e);}})();
+
+/* ===== Schätzen und Überschlagen + Lernstands-Check + Klassenliste ===== */
+(function(){try{
+const SHT=['sue','lsc','lsk'];POT.push(...SHT);TLT.push(...SHT);RQT.push(...SHT);
+Object.assign(TLN,{sue:'Schätzen und Überschlagen (Kann das stimmen?)',lsc:'Lernstands-Check (10 Minuten, ohne Note)',lsk:'Lernstands-Check: Klassenliste zum Abhaken'});
+TLD.sue={w:714,md:'kann',lv:'1',n:8,ge:true};TLD.lsc={w:714,th:'e1x1',th2:'-',kl:'1'};TLD.lsk={w:714,n:25,c:6};
+const R=(l,h,s)=>{s=s||1;return l+s*Math.floor(Math.random()*(Math.floor((h-l)/s)+1));},P=a=>a[Math.floor(Math.random()*a.length)],SH=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;},M='−';
+const dc=x=>{const neg=x<0;x=Math.abs(Math.round(x*1000)/1000);const p=String(x).split('.');return (neg?M:'')+tfm(p[0])+(p[1]?','+p[1]:'');};
+const r1=x=>{if(!x)return 0;const p=10**Math.floor(Math.log10(Math.abs(x)));return Math.round(Math.round(x/p)*p*1000)/1000;};
+/* ---------- Rechnungen je Stufe ---------- */
+function calc(lv){const t=lv==='1'?P(['+','−','·','·']):lv==='2'?P(['·','·',':',':','+']):P(['·d','·d','+d',':d']);let a,b,r,o;
+ if(t==='+'){a=R(1200,8900);b=R(1100,7900);r=a+b;o='+';}
+ else if(t==='−'){a=R(4000,9800);b=R(1100,a-1500);r=a-b;o=M;}
+ else if(t==='·'){if(lv==='1'){a=R(21,98);b=R(3,9);if(Math.random()<.5)a=R(112,890);}else{a=R(18,89);b=R(12,79);if(Math.random()<.4)a=R(112,690);}r=a*b;o='·';}
+ else if(t===':'){b=Math.random()<.5?R(3,9):R(12,48);const q=b<10?R(112,980):R(12,95);a=b*q;r=q;o=':';}
+ else if(t==='·d'){a=R(21,98)/10;b=R(21,89)/10;r=Math.round(a*b*100)/100;o='·';}
+ else if(t==='+d'){a=R(105,995)/100;b=R(12,98)/10;r=Math.round((a+b)*100)/100;o='+';}
+ else{b=R(3,9);const q=R(105,985)/100;a=Math.round(b*q*100)/100;r=q;o=':';}
+ const h100=x=>Math.round(x/100)*100,big=(o==='+'||o===M)&&!t.endsWith('d'),ra=big?h100(a):r1(a),rb=big?h100(b):r1(b);let ue=o==='+'?ra+rb:o===M?ra-rb:o==='·'?ra*rb:ra/rb;ue=Math.round(ue*1000)/1000;
+ if(o===':'){/* passende Zahlen für den Überschlag */const bb=rb,aa=r1(a/bb)*bb;ue=Math.round(aa/bb*1000)/1000;return {a,b,o,r,ue,ues:`${dc(aa)} : ${dc(bb)} = ${dc(ue)}`};}
+ return {a,b,o,r,ue,ues:`${dc(ra)} ${o} ${dc(rb)} = ${dc(ue)}`};}
+const wrong=c=>{const k=P(['x10','d10','off']);const dec=!Number.isInteger(c.r);if(k==='x10')return c.r*10;if(k==='d10'&&(dec||c.r%10===0||c.r>=1000))return Math.round(c.r/10*100)/100;const f=R(35,60)/100*(Math.random()<.5?-1:1);let w=c.r+(dec?Math.round(c.r*f*10)/10:Math.round(c.r*f/10)*10);return w>0?w:c.r*10;};
+function sueGen(it){const n=Math.max(1,Math.min(12,+it.n||8)),md=it.md||'kann',D=[],FL=SH(Array.from({length:n},(_,i)=>i<Math.ceil(n/2)));
+ for(let i=0;i<n;i++){const lv=it.lv==='mix'?P(['1','2','3']):it.lv||'1',c=calc(lv);
+  if(md==='kann'){const right=FL[i];c.shown=right?c.r:wrong(c);if(!right&&c.shown===c.r)c.shown=c.r*10;c.ok=right;}
+  if(md==='wahl'){const o=[c.r,c.r*10,c.r>=100&&Number.isInteger(c.r/10)?c.r/10:c.r*100];c.opts=SH(o.map(x=>Math.round(x*100)/100));}
+  if(md==='grenz'){let T=r1(c.ue*(Math.random()<.5?R(70,85):R(118,140))/100);if(Math.abs(T-c.r)/c.r<.15)T=r1(c.r*(Math.random()<.5?.5:2));c.T=T;}
+  D.push(c);}
+ it.d=D;}
+const box=(on,sh)=>`<span style="display:inline-flex;width:1em;height:1em;border:1.5px solid #000;align-items:center;justify-content:center;font-size:.85em;vertical-align:-.1em;margin-right:.2em">${on&&sh?'<span class="sv" style="font-weight:800">✗</span>':''}</span>`;
+const SMD={kann:'Kann das stimmen? Mache einen Überschlag und kreuze an.',ueb:'Mache zuerst einen Überschlag, dann rechne genau. Vergleiche!',wahl:'Welches Ergebnis ist richtig? Rechne nicht genau – überschlage!',grenz:'Größer oder kleiner? Entscheide mit einem Überschlag.'};
+function sueBlk(it){NUMIT=it;const md=it.md||'kann',d=it.d||[],sh=tlS(it);const L=(lab,sol,w)=>`<span style="display:inline-flex;gap:.3em;align-items:flex-end;${w?'flex:'+w:''}"><span style="white-space:nowrap;font-size:.92em">${lab}</span><span class="tlln" style="flex:1;min-width:7em;min-height:1.4em;border-bottom:1px solid #000;white-space:nowrap">${tlSv(it,sol)}</span></span>`;
+ const ex=`<div style="font-size:.85em;background:#f3f6ff;border:1px solid #c8d3ea;border-radius:6px;padding:2px 8px;margin-bottom:6px">💡 <b>Überschlag:</b> Runde die Zahlen sinnvoll und rechne im Kopf. Beim Malnehmen und Teilen auf die höchste Stelle (487 · 19 ≈ 500 · 20 = 10 000), beim Plus und Minus auf Hunderter (4 677 − 3 474 ≈ 4 700 − 3 500 = 1 200).</div>`;
+ return wnH1(SMD[md])+ex+d.map((c,i)=>{const q=`${dc(c.a)} ${c.o} ${dc(c.b)}`,lab=`<b style="min-width:1.5em">${poL(i)}</b>`;
+  if(md==='kann')return `<div style="display:flex;gap:.8em;align-items:flex-end;margin-bottom:.45em;flex-wrap:wrap">${lab}<span style="min-width:10.5em;white-space:nowrap">${q} = ${dc(c.shown)}</span>${L('Überschlag:',c.ues,'1')}<span style="white-space:nowrap">${box(c.ok,sh)}stimmt</span><span style="white-space:nowrap">${box(!c.ok,sh)}stimmt nicht</span></div>`;
+  if(md==='ueb')return `<div style="display:flex;gap:.8em;align-items:flex-end;margin-bottom:.45em;flex-wrap:wrap">${lab}<span style="min-width:7.5em;white-space:nowrap">${q}</span>${L('Überschlag:',c.ues,'1')}${it.ge!==false?L('Genau:',dc(c.r),'1'):''}</div>`;
+  if(md==='wahl')return `<div style="display:flex;gap:1.2em;align-items:center;margin-bottom:.45em;flex-wrap:wrap">${lab}<span style="min-width:7.5em;white-space:nowrap">${q} ≈</span>${c.opts.map(x=>`<span style="white-space:nowrap">${box(x===Math.round(c.r*100)/100,sh)}${dc(x)}</span>`).join('')}${sh?`<span class="sv" style="font-size:.85em">(${c.ues})</span>`:''}</div>`;
+  return `<div style="display:flex;gap:1em;align-items:center;margin-bottom:.45em;flex-wrap:wrap">${lab}<span style="white-space:nowrap">${q} ist</span><span style="white-space:nowrap">${box(c.r>c.T,sh)}größer</span><span style="white-space:nowrap">${box(c.r<c.T,sh)}kleiner</span><span style="white-space:nowrap">als ${dc(c.T)}.</span>${sh?`<span class="sv" style="font-size:.85em">(${c.ues}; genau ${dc(c.r)})</span>`:''}</div>`;}).join('');}
+/* ---------- Lernstands-Check ---------- */
+function lscGen(it){const T=window.SCR_TEST;if(!T)return;const th=it.th||'e1x1',kl=it.kl||'1',D=[];const seen=new Set();
+ if(th==='sach'){const pool=SH(T.SA[kl]||T.SA[1]);it.d=[{lv:1,T:[pool[0]()]},{lv:2,T:[pool[1%pool.length]()]},{lv:3,T:[pool[2%pool.length]()]}];return;}
+ const K=lv=>{let k=T.TH[th][1][lv-1].slice();if(it.th2&&it.th2!=='-'&&T.TH[it.th2]&&T.TH[it.th2][1])k=k.concat(T.TH[it.th2][1][lv-1]);return SH(k);};
+ [[1,3],[2,3],[3,2]].forEach(([lv,n])=>{const k=K(lv),L=[];let g=0;while(L.length<n&&g++<200){const x=T.G[k[L.length%k.length]]();if(seen.has(x.q))continue;seen.add(x.q);L.push(x);}D.push({lv,T:L});});it.d=D;}
+function lscBlk(it){const T=window.SCR_TEST,d=it.d||[];if(!T)return '';const th=T.TH[it.th||'e1x1'],th2=it.th2&&it.th2!=='-'&&T.TH[it.th2]?' + '+T.TH[it.th2][0]:'';const tot=d.reduce((a,b)=>a+b.T.length,0);let k=0;
+ let h=`<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2.5px solid #2e7d32;padding-bottom:2px;margin-bottom:4px;flex-wrap:wrap"><div style="font-weight:800;font-size:1.15em;color:#2e7d32">✅ Lernstands-Check · ${th?th[0]:''}${th2}</div><div style="font-size:.9em">ohne Note · 10 Minuten</div></div>`;
+ h+=`<div style="display:flex;gap:1.2em;margin-bottom:5px"><span style="flex:2;display:flex;gap:.3em">Name:<span style="flex:1;border-bottom:1px solid #000"></span></span><span style="flex:1;display:flex;gap:.3em">Datum:<span style="flex:1;border-bottom:1px solid #000"></span></span></div>`;
+ const LAB={1:'★ Das muss ich können',2:'★★ Das sollte ich können',3:'★★★ Das ist die Herausforderung'};
+ d.forEach(b=>{h+=`<div style="font-weight:700;color:#2e7d32;font-size:.92em;margin:.25em 0 .15em">${LAB[b.lv]}</div>`;
+  const sh=b.T.filter(t=>!(t.w==='f'||t.p===2||/Wie|Welch|Ist /.test(t.q)&&t.q.length>45)),fu=b.T.filter(t=>!sh.includes(t));
+  if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${Math.min(3,sh.length)},1fr);gap:.25em 1.2em">`+sh.map(t=>T.tRow(it,t,k++)).join('')+'</div>';
+  if(fu.length)h+=fu.map(t=>t.p===2?`<div style="margin:.15em 0"><div style="display:flex;gap:.3em"><b>${String.fromCharCode(97+k++)})</b><span>${t.q}</span></div><div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.4em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`:T.tRow(it,t,k++,true)).join('');});
+ h+=`<div style="display:flex;gap:1em;align-items:center;flex-wrap:wrap;border-top:1.5px solid #2e7d32;margin-top:.45em;padding-top:.25em;font-size:.92em"><span>So sicher fühle ich mich: <span style="font-size:1.2em;letter-spacing:.35em">😀 🙂 😐 😟</span></span><span style="flex:1;display:flex;gap:.3em;min-width:14em">Das übe ich noch:<span style="flex:1;border-bottom:1px solid #000"></span></span></div>`;
+ h+=`<div style="display:flex;justify-content:flex-end;gap:1em;font-size:.85em;margin-top:.2em;color:#333"><span>Richtig: ____ / ${tot}</span><span>Lehrkraft: ☐ ✓ kann es ☐ ~ teilweise ☐ ⚠ üben</span></div>`;
+ return `<div style="line-height:1.32">${h}</div>`;}
+/* ---------- Klassenliste ---------- */
+function lskBlk(it){const n=+it.n||25,c=+it.c||6;const th=x=>`<th style="border:1px solid #555;padding:2px 3px;background:#e8f5e9;font-weight:600;${x||''}">`;
+ let h=`<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2.5px solid #2e7d32;margin-bottom:4px"><div style="font-weight:800;font-size:1.15em;color:#2e7d32">✅ Lernstands-Checks · Klassenliste</div><div style="display:flex;gap:.3em;width:40%">Klasse:<span style="flex:1;border-bottom:1px solid #000"></span></div></div>`;
+ h+=`<table style="border-collapse:collapse;width:100%;font-size:.75em;text-align:center"><thead><tr>${th()}Nr.</th>${th('width:24%')}Name</th>${Array.from({length:c},(_,i)=>`${th()}<div style="text-align:left;font-weight:400">Thema:</div><div style="height:1.3em;border-bottom:1px dotted #777"></div><div style="text-align:left;font-weight:400">Datum:</div><div style="height:1.1em"></div></th>`).join('')}${th('width:14%')}Förderung</th></tr></thead><tbody>`;
+ for(let i=0;i<n;i++)h+=`<tr><td style="border:1px solid #888;height:1.5em">${i+1}</td><td style="border:1px solid #888"></td>${Array.from({length:c},()=>'<td style="border:1px solid #888"></td>').join('')}<td style="border:1px solid #888"></td></tr>`;
+ h+=`<tr><td colspan="2" style="border:1px solid #888;text-align:right;padding-right:4px;font-weight:600">Anzahl ⚠</td>${Array.from({length:c},()=>'<td style="border:1px solid #888;height:1.5em"></td>').join('')}<td style="border:1px solid #888"></td></tr></tbody></table>`;
+ h+=`<div style="font-size:.78em;margin-top:5px;line-height:1.35"><b>Eintragen:</b> ✓ kann es (ab 80 % richtig) · ~ teilweise (50–79 %) · ⚠ üben (unter 50 %).<br><b>So geht's:</b> Alle 2–3 Wochen ein Check zum aktuellen oder zu einem Grundlagenthema. Kinder mit ⚠ bekommen in der Übungsphase das passende Mathe-Fit-Thema auf Niveau ★ und machen den Check nach 2 Wochen noch einmal. Wenn in einer Spalte viele ⚠ stehen, braucht die ganze Klasse eine Wiederholung.</div>`;
+ return `<div>${h}</div>`;}
+/* ---------- Anbindung ---------- */
+{const _g=rqGen,_b=rqBlk,_s=rqSol,DISP=['show','co','fs','nc','ge'];
+ rqGen=function(it){if(!SHT.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(it.type==='lsk'){it.d=[1];return;}if(!fr&&kk&&DISP.includes(kk)&&it.d)return;return it.type==='sue'?sueGen(it):lscGen(it);};
+ rqBlk=function(it){return it.type==='sue'?sueBlk(it):it.type==='lsc'?lscBlk(it):it.type==='lsk'?lskBlk(it):_b(it);};
+ rqSol=function(it){if(it.type==='sue')return (it.d||[]).map(c=>c.ues);if(it.type==='lsc')return (it.d||[]).flatMap(b=>b.T.map(t=>String(t.a).replace(/<[^>]+>/g,'')));if(it.type==='lsk')return [];return _s(it);};}
+RQP.sue=[['md','sel',[['kann','Kann das stimmen? (ankreuzen)'],['ueb','Überschlag, dann genau rechnen'],['wahl','Welches Ergebnis ist richtig?'],['grenz','Größer oder kleiner als …?']],'Übung'],['lv','sel',[['1','Stufe 1: + − und · mit einstelliger Zahl'],['2','Stufe 2: · und : mit zweistelligen Zahlen'],['3','Stufe 3: Dezimalzahlen'],['mix','gemischt']],'Schwierigkeit'],['n','num','Anzahl',1,12],['ge','ck','Zeile „Genau“ (bei Überschlag, dann genau)']];
+const thOpts=()=>{const T=window.SCR_TEST;return T?Object.entries(T.TH).map(([k,v])=>[k,v[0]]):[['e1x1','Einmaleins']];};
+RQP.lsc=[['th','sel',thOpts(),'Thema'],['th2','sel',[['-','kein 2. Thema'],...thOpts().filter(x=>x[0]!=='sach')],'2. Thema dazumischen'],['kl','sel',[['1','1. Klasse'],['2','2. Klasse'],['3','3. Klasse'],['4','4. Klasse']],'Klasse (nur für Sachaufgaben)']];
+RQP.lsk=[['n','sel',[[15,'15 Kinder'],[20,'20 Kinder'],[25,'25 Kinder'],[28,'28 Kinder']],'Zeilen'],['c','sel',[[4,'4 Checks'],[5,'5 Checks'],[6,'6 Checks'],[8,'8 Checks']],'Spalten']];
+window.SCH_TEST={calc,sueGen,lscGen};
+(function(){try{const _co=catOf;catOf=function(it){return it&&SHT.includes(it.type)?'fm':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&SHT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='lsk');try{return _h.apply(this,arguments);}finally{items=keep;}};
+ const P2=document.querySelector('.catp[data-c="fm"]');if(!P2)return;const tile=(t,s)=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${s}</svg><span>${TLN[t]}</span></div>`;
+ const a1=P2.querySelector('.pal[data-t="sca"]');if(a1)a1.insertAdjacentHTML('afterend',tile('lsc','<rect x="8" y="4" width="84" height="32" rx="4" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/><text x="20" y="25" font-size="14">✅</text><path d="M36 14H84M36 22H84M36 30H70" stroke="#2e7d32" stroke-width="2"/>')+tile('lsk','<rect x="8" y="4" width="84" height="32" fill="#fff" stroke="#555"/><path d="M8 12H92M8 20H92M8 28H92M30 4V36M46 4V36M62 4V36M78 4V36" stroke="#888"/><text x="54" y="19" font-size="8" text-anchor="middle" fill="#2e7d32">✓</text><text x="70" y="27" font-size="8" text-anchor="middle" fill="#c62828">⚠</text>'));
+ const a2=P2.querySelector('.pal[data-t="blz"]');if(a2)a2.insertAdjacentHTML('afterend',tile('sue','<rect x="4" y="6" width="92" height="28" rx="5" fill="#f3f6ff" stroke="#1f3a8a" stroke-width="2"/><text x="50" y="25" font-size="11" text-anchor="middle" font-weight="700" fill="#1f3a8a">49·21 ≈ 50·20 ?</text>'));}catch(e){console.error(e);}})();
 }catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
