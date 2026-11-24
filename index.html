@@ -15317,9 +15317,9 @@ function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo',th=it.th||
  const nn=n||MFN[lv],kp=Math.max(1,+it.kp||1);
  if(it.kn==='neu'){it.d=Array.from({length:kp},()=>one(tag,th,nn));return;}
  const b=one(tag,th,nn);it.d=Array.from({length:kp},()=>b);}
-const ST=lv=>'★'.repeat(lv);
+const ST=lv=>'★'.repeat(lv),MC={1:['#c62828','#ffebee','#b71c1c'],2:['#d4a000','#fff8d6','#8a6500'],3:['#2e7d32','#e8f5e9','#1b5e20']};
 function mfBlock(it,b,wk){const lv=+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co=wk?3:(+it.co||2);let k=0;
- let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff4e0;border:1.5px solid #e08a00;border-radius:7px;padding:1px 8px;margin-bottom:4px;flex-wrap:wrap;gap:0 .8em"><span style="font-weight:800;color:#a35a00">💪 Mathe-Fit · ${TAGE[b.k]?TAGE[b.k]+' · ':''}${b.t} <span style="color:#e08a00">${ST(lv)}</span></span><span style="font-size:.85em;white-space:nowrap">${wk?'':'Name: __________ '}Zeit: _____ min · Richtig: ____ / ${b.T.length}</span></div>`;
+ let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:${MC[lv][1]};border:1.5px solid ${MC[lv][0]};border-radius:7px;padding:1px 8px;margin-bottom:4px;flex-wrap:wrap;gap:0 .8em"><span style="font-weight:800;color:${MC[lv][2]}">💪 Mathe-Fit · ${TAGE[b.k]?TAGE[b.k]+' · ':''}${b.t} <span style="color:${MC[lv][0]}">${ST(lv)}</span></span><span style="font-size:.85em;white-space:nowrap">${wk?'':'Name: __________ '}Zeit: _____ min · Richtig: ____ / ${b.T.length}</span></div>`;
  if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:.3em 1.2em">`+sh.map(t=>tRow(it,t,k++)).join('')+'</div>';
  if(full.length)h+=`<div style="margin-top:.3em">`+full.map(t=>t.fr?`<div style="margin-bottom:.35em"><div style="display:flex;gap:.3em"><b>${String.fromCharCode(97+k++)})</b><span>${t.q}</span></div><div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.4em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`:tRow(it,t,k++,true)).join('')+'</div>';
  return h;}
