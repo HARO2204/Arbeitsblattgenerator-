@@ -1902,7 +1902,7 @@ const PRK=[
  {t:'Landwirt Baumgartner besitzt {P} ha Wald. Das sind {p} seines gesamten Besitzes. Wie viel ha besitzt Herr Baumgartner insgesamt?',a:'Herr Baumgartner besitzt insgesamt {G} ha.',r:[20,100]},
  {t:'In einer Firma sind {P} Frauen beschäftigt. Das sind {p} aller Beschäftigten. Wie viele Beschäftigte hat die Firma?',a:'Die Firma hat {G} Beschäftigte.',pm:60,r:[100,500]},
  {t:'Gerhard bekommt {P} € Preisnachlass auf ein Fahrrad. Das sind {p} des Preises. Wie viel kostet das Fahrrad ohne Nachlass?',a:'Das Fahrrad kostet ohne Nachlass {G} €.',pm:30,r:[200,600],m:1}];
-const PRI=[['Buch',10],['Zeitung',10],['Brot',10],['Zeitschrift',10],['Fernseher',20],['Jeans',20],['Handy',20],['Fahrrad',20],['Laptop',20],['Sessel',20],['Schuhe',20],['Lampe',20]];
+const PRI=[['Buch',10,10,40],['Zeitung',10,1,4],['Brot',10,2,6],['Zeitschrift',10,3,8],['Kochbuch',10,20,50],['Lexikon',10,30,90],['Wocheneinkauf',10,40,180],['Obstkorb',10,10,40],['Fernseher',20,300,1500],['Jeans',20,30,90],['Handy',20,150,900],['Fahrrad',20,200,1200],['Laptop',20,400,1500],['Sessel',20,80,500],['Schuhe',20,40,120],['Lampe',20,20,150],['Rucksack',20,20,80],['Kopfhörer',20,20,250]];
 const PRTH=[
  {n:'Lieblingssport',i:'Die Kinder einer Klasse wurden nach ihrem Lieblingssport gefragt:',c:['Fußball','Schwimmen','Tanzen','Radfahren','Reiten'],l:'Die übrigen mögen am liebsten'},
  {n:'Haustiere',i:'In einer Umfrage wurde nach den Haustieren der Kinder gefragt:',c:['Hund','Katze','Hamster','Fische','Vögel'],l:'Die übrigen haben'},
@@ -2164,8 +2164,8 @@ function prGen(it){const k=it.type,n=+it.n||1,lv=+it.lv||1;
   if(it.fm==='rech'){let kq=0;const kord=tshuf(['prw','prs','prk']);it.d=tuniq(n,()=>{const kk=k==='prx'?kord[kq++%3]:k,p=prP(lv),G=prG(p,20,500,false,lv===3?2:lv),P=G*p/100;return kk==='prw'?{l:`${p} % von ${pn(G)} =`,s:pn(P),u:''}:kk==='prs'?{l:`${pn(P)} von ${pn(G)} =`,s:String(p),u:' %'}:{l:`${pn(P)} sind ${p} %. Grundwert:`,s:pn(G),u:''};});}
   else it.d=Array.from({length:n},(_,i)=>prMk1(k,lv,pool[i%pool.length]));}
  else if(k==='prr'){it.d=Array.from({length:n},()=>{const kk=it.ka==='alle'?tpick(['w','s','g']):it.ka,p=prP(lv),G=prG(p,20,500,it.un==='€',lv),A=Math.round(G*p)/100;return {k:kk,p,G,A};});}
- else if(k==='prm'){const lst=PRI.filter(x=>it.sz==='alle'||x[1]===+it.sz),nm=tshuf(lst);
-  it.d=Array.from({length:n},(_,i)=>{const [name,sz]=nm[i%nm.length],net=lv===1?10*kri(1,100):lv===2?kri(5,500):kri(5,2000)/10,gro=Math.round(net*(100+sz))/100,tax=Math.round((gro-net)*100)/100;
+ else if(k==='prm'){let lst=PRI.filter(x=>it.sz==='alle'||x[1]===+it.sz);if(lv===1)lst=lst.filter(x=>x[3]>=20);const nm=tshuf(lst);
+  it.d=Array.from({length:n},(_,i)=>{const [name,sz,lo,hi]=nm[i%nm.length],net=lv===1?10*kri(Math.max(1,Math.ceil(lo/10)),Math.max(1,Math.floor(hi/10))):lv===2?kri(lo,hi):kri(lo*10,hi*10)/10,gro=Math.round(net*(100+sz))/100,tax=Math.round((gro-net)*100)/100;
    return {nm:name,sz,net,tax,gro,g:it.md==='brutto'?'b':it.md==='mix'?(Math.random()<.5?'n':'b'):'n'};});}
  else if(k==='prz'){if(it.md==='unter')it.d=Array.from({length:Math.min(n,PRRO.length)},(_,i)=>PRRO[i]).length?tshuf(PRRO).slice(0,n).map(t=>{const p=prP(lv),G=prG(p,t.r[0],t.r[1],false,lv),P=G*p/100,U='(?: (?:Kindern|Kinder|€|m|kg|Schülern|Schüler))?';return {t:t.t.replace(new RegExp('\\{G\\}'+U),m=>'[G:'+pn(G)+m.slice(3)+']').replace(new RegExp('\\{P\\}'+U),m=>'[A:'+pn(P)+m.slice(3)+']').replace('{p}','[p:'+p+' %]')};}):[];
   else if(it.md==='rolle')it.d=Array.from({length:n},(_,i)=>{const t=tshuf(PRRO)[0],p=prP(lv),G=prG(p,t.r[0],t.r[1],false,lv),P=G*p/100;return {t:t.t.replace('{G}',pn(G)).replace('{P}',pn(P)).replace('{p}',p+' %'),v:[[p+' %','Prozentsatz'],[pn(G)+' '+t.u[0],'Grundwert'],[pn(P)+' '+t.u[1],'Prozentwert']]};});
