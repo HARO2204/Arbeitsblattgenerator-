@@ -16231,7 +16231,7 @@ add('dezR',{c:'A',kl:[2],w:'h',gen:(kl,lv)=>L('Rechne.',uniq(()=>{const r=G[P(['
 add('potR',{c:'A',kl:[3,4],w:'h',gen:(kl,lv)=>L('Potenzen.',uniq(()=>{const r=G[P(['poZp','poMul','poQ'])](lv);return {q:r.q,a:r.a};},4))});
 add('stat',{c:'S',kl:[2,3,4],w:'f',gen:(kl,lv)=>L('Statistik und Schlussrechnung',uniq(()=>{const r=G[P(['stMw','stMed','slR'])](lv);return {q:r.q,a:String(r.a)};},2),{fl:1})});
 /* ---------- Höhen-Schätzung (px) ---------- */
-function est(b){const B=BK[b.k];const hd=34;if(b.ty==='L'){const n=b.T.length;if(b.fl)return hd+b.T.reduce((s,t)=>s+(String(t.q).length>80?62:44)+(t.blk?18:0),0);if(b.c2)return hd+Math.ceil(n/2)*34;return hd+n*31;}
+function est(b){const B=BK[b.k];const hd=34;if(b.ty==='L'){const n=b.T.length;if(b.fl)return hd+b.T.reduce((s,t)=>s+(String(t.q).length>80?62:44)+(t.blk?18:0),0);if(b.c2)return hd+n*36;return hd+n*31;}
  return hd+({gM:150,gD:170,gA:150,vz:120,rt:150,tb:140,zs:130,vn:140,fo:110,sp:150,zc:150,ko:170,kg:150,dg:200,wg:170,mq:150,bd:170})[b.ty]||150;}
 function cnt(b){return b.ty==='L'?b.T.length:(b.n||1);}
 /* ---------- Seite zusammenstellen ---------- */
@@ -16256,7 +16256,7 @@ function qHTML(it,t,w){const q=String(t.q);if(q.includes('___')){const parts=q.s
  return q+(q?' ':'')+LN(it,t.a,w);}
 function bodyL(it,b,n0){let n=n0;const T=b.T;
  if(b.fl)return T.map(t=>{if(!t.q)return `<div class="mgr">${CIRC(n++)}<span style="flex:1;display:flex">${LN(it,t.a,'100%')}</span></div><div class="mgr" style="margin-left:1.8em"><span style="flex:1;display:flex">${LN(it,'','100%')}</span></div>`;const long=t.blk||String(t.q).length>60;return `<div class="mgr" style="align-items:flex-start;flex-wrap:wrap">${CIRC(n++)}<span style="flex:1 1 0;min-width:0">${t.q}</span>${long?`<div style="flex-basis:100%;display:flex;margin:.25em 0 .1em 1.8em">${LN(it,t.a,'100%')}</div>`:LN(it,t.a,'8em')}</div>`;}).join('');
- if(b.c2)return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.2em 1.2em">`+T.map(t=>`<div class="mgr">${CIRC(n++)}<span>${qHTML(it,t,'3.2em')}</span></div>`).join('')+'</div>';
+ if(b.c2)return T.map(t=>`<div class="mgr" style="align-items:center;margin:.35em 0">${CIRC(n++)}<span style="white-space:nowrap;letter-spacing:.02em">${qHTML(it,t,'4.2em')}</span></div>`).join('');
  return T.map(t=>`<div class="mgr">${CIRC(n++)}<span style="flex:1;min-width:0">${qHTML(it,t,b.wide?'9em':'5em')}</span></div>`).join('');}
 const cell=(x,o)=>`<td style="border:1px solid #999;width:1.25em;height:1.25em;text-align:center;padding:0;font-size:.95em;${o||''}">${x==null?'':x}</td>`;
 function grid(cols,rows,first,res,uline){let h='<table style="border-collapse:collapse;margin:.2em 0">';for(let r=0;r<rows;r++){h+='<tr>';for(let c=0;c<cols;c++){let x=null,st='';if(r===0&&first[c]!=null)x=first[c];if(r===0&&uline&&c>=uline[0]&&c<=uline[1])st='border-bottom:2px solid #000;';if(res&&res.r===r&&res.v[c]!=null)x=`<span class="sv">${res.v[c]}</span>`;h+=cell(x,st);}h+='</tr>';}return h+'</table>';}
