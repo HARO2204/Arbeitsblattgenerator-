@@ -15088,6 +15088,8 @@ const G={
  grDkg:()=>{const g=R(12,95)*100;return Q(`${F(g)} g = ___ kg`,dc(g/1000)+' kg',{nl:1});},
  grDt:()=>{const t=R(105,495,5)/100;return Q(`${dc(t)} t = ___ kg`,F(Math.round(t*1000))+' kg',{nl:1});},
  grDmin:()=>{const m=R(75,230,5);return Q(`${m} min = ___ h ___ min`,Math.floor(m/60)+' h '+(m%60)+' min',{nl:1,w:'f'});},
+ grFl2:()=>{const t=R(0,3);if(t===0){const a=R(2,9);return Q(`${a} m² = ___ dm²`,F(a*100)+' dm²',{nl:1});}if(t===1){const a=R(3,95);return Q(`${a*100} cm² = ___ dm²`,a+' dm²',{nl:1});}if(t===2){const a=R(2,9),b=R(5,95);return Q(`${a} dm² ${b} cm² = ___ cm²`,F(a*100+b)+' cm²',{nl:1});}const a=R(12,95)/10;return Q(`${dc(a)} m² = ___ dm²`,F(Math.round(a*100))+' dm²',{nl:1});},
+ grRm:()=>{const t=R(0,3);if(t===0){const a=R(2,9);return Q(`${a} dm³ = ___ l`,a+' l',{nl:1});}if(t===1){const a=R(2,9);return Q(`${a} l = ___ ml`,F(a*1000)+' ml',{nl:1});}if(t===2){const a=R(2,9);return Q(`${a} m³ = ___ dm³`,F(a*1000)+' dm³',{nl:1});}const a=R(2,9)*1000;return Q(`${F(a)} cm³ = ___ dm³`,(a/1000)+' dm³',{nl:1});},
  grL:()=>{const l=R(12,95)/10;return Q(`${dc(l)} l = ___ ml`,F(Math.round(l*1000))+' ml',{nl:1});},
  /* Brüche Grundvorstellung */
  brHalb:()=>{const n=R(12,49)*2;return Q(`Die Hälfte von ${n} ist`,n/2);},
@@ -15300,6 +15302,8 @@ const TH={
  geo:['Umfang, Fläche, Volumen',[['geoU','geoA','geoQU'],['geoA','geoDr','geoPa'],['geoDr','geoPa','geoQd','geoWs']]],
  wink:['Winkel',[['geoWa'],['geoWa','geoWs'],['geoWs','geoWa']]],
  py:['Pythagoras und Kreis',[['geoPy'],['geoPy','geoPyK'],['geoPyK','geoKr','geoPr']]],
+ flm:['Flächen- und Raummaße',[['grFl2'],['grFl2','grRm'],['grFl2','grRm','grDt']]],
+ form:['Formeln: Umfang, Fläche, Volumen',[['geoU','geoA','geoQU'],['geoU','geoA','geoDr','geoQd'],['geoDr','geoPa','geoQd','geoKr','geoPr']]],
  st:['Statistik und Schlussrechnung',[['stMw','slR'],['stMw','stMed','slR'],['stMed','slV','slR']]],
  sach:['Sachaufgaben',null]};
 function mfTheme(kl,th,th2,lv,n){if(th==='sach'){const pool=SA[kl];return {t:TH.sach[0],T:SH(pool).slice(0,lv===1?1:2).map(f=>Object.assign(f(),{fr:1}))};}
@@ -15308,24 +15312,31 @@ function mfTheme(kl,th,th2,lv,n){if(th==='sach'){const pool=SA[kl];return {t:TH.
 function mfDay(kl,tag,lv,n){const [t,L]=MF[kl][tag],K=L[lv-1];if(tag==='fr'){const S=SA[kl==='1'?1:+kl-0];return {t,T:K.map(k=>{const pool=SA[kl];return pool[(k-1+R(0,pool.length-1))%pool.length]();}).map(x=>Object.assign(x,{fr:1}))};}
  const T=[],seen=new Set();let g=0;while(T.length<n&&g++<200){const x=G[K[T.length%K.length]]();if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T};}
 function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo',th=it.th||'plan',n=+it.n||0;
- if(th!=='plan'){const days=tag==='woche'?Object.keys(TAGE):[tag];it.d=days.map(k=>{const b=Object.assign({k},mfTheme(kl,th,it.th2,lv,n||(tag==='woche'?6:MFN[lv])));if(tag==='woche'&&b.T.filter(t=>t.w==='f'||t.fr).length>2)b.T=b.T.slice(0,Math.min(b.T.length,n?Math.min(n,4):4));return b;});return;}
- if(tag==='woche')it.d=Object.keys(TAGE).map(k=>Object.assign({k},mfDay(kl,k,lv,6)));else it.d=[Object.assign({k:tag},mfDay(kl,tag==='frei'?'mo':tag,lv,n||MFN[lv]))];}
+ const one=(k,dth,nn)=>{let b;if(dth==='plan')b=Object.assign({k},mfDay(kl,k==='frei'?'mo':k,lv,nn));else b=Object.assign({k},mfTheme(kl,dth,it.th2,lv,nn));if(tag==='woche'&&b.T.filter(t=>t.w==='f'||t.fr).length>2)b.T=b.T.slice(0,Math.min(b.T.length,n?Math.min(n,4):4));return b;};
+ if(tag==='woche'){it.d=Object.keys(TAGE).map(k=>{const dt=it['t_'+k]&&it['t_'+k]!=='auto'?it['t_'+k]:th;return one(k,dt,n||6);});return;}
+ const nn=n||MFN[lv],kp=Math.max(1,+it.kp||1);
+ if(it.kn==='neu'){it.d=Array.from({length:kp},()=>one(tag,th,nn));return;}
+ const b=one(tag,th,nn);it.d=Array.from({length:kp},()=>b);}
 const ST=lv=>'★'.repeat(lv);
 function mfBlock(it,b,wk){const lv=+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co=wk?3:(+it.co||2);let k=0;
  let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:#fff4e0;border:1.5px solid #e08a00;border-radius:7px;padding:1px 8px;margin-bottom:4px;flex-wrap:wrap;gap:0 .8em"><span style="font-weight:800;color:#a35a00">💪 Mathe-Fit · ${TAGE[b.k]?TAGE[b.k]+' · ':''}${b.t} <span style="color:#e08a00">${ST(lv)}</span></span><span style="font-size:.85em;white-space:nowrap">${wk?'':'Name: __________ '}Zeit: _____ min · Richtig: ____ / ${b.T.length}</span></div>`;
  if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:.3em 1.2em">`+sh.map(t=>tRow(it,t,k++)).join('')+'</div>';
  if(full.length)h+=`<div style="margin-top:.3em">`+full.map(t=>t.fr?`<div style="margin-bottom:.35em"><div style="display:flex;gap:.3em"><b>${String.fromCharCode(97+k++)})</b><span>${t.q}</span></div><div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.4em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`:tRow(it,t,k++,true)).join('')+'</div>';
  return h;}
-function mftBlk(it){const d=it.d||[],wk=it.tag==='woche';return `<div style="line-height:1.35">`+d.map((b,i)=>`<div style="break-inside:avoid;${wk&&i?'border-top:1.5px dashed #999;padding-top:6px;margin-top:6px':''}">${mfBlock(it,b,wk)}</div>`).join('')+'</div>';}
+function mftBlk(it){const d=it.d||[],wk=it.tag==='woche';return `<div style="line-height:1.35">`+d.map((b,i)=>`<div class="mfb" style="break-inside:avoid;${i?'border-top:1.5px dashed #999;padding-top:6px;margin-top:6px;position:relative':''}">${i&&!wk?'<span style="position:absolute;top:-.8em;left:-.2em;background:#fff;font-size:.8em">✂</span>':''}${mfBlock(it,b,wk)}</div>`).join('')+'</div>';}
 /* ================= Anbindung an den Generator ================= */
 {const _g=rqGen,_b=rqBlk,_s=rqSol,DISP=['show','co','fs','nc','rl'];
- rqGen=function(it){if(!SCT.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;if(it.type==='scr')return scrGen(it);if(it.type==='mft')return mftGen(it);it.d=[1];};
+ rqGen=function(it){if(!SCT.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;if(it.type==='mft'&&!fr&&(kk==='kp'||kk==='kn')&&it.d&&it.d[0]&&it.tag!=='woche'&&it.kn!=='neu'){it.d=Array.from({length:Math.max(1,+it.kp||1)},()=>it.d[0]);return;}if(it.type==='scr')return scrGen(it);if(it.type==='mft')return mftGen(it);it.d=[1];};
  rqBlk=function(it){if(it.type==='scr')return scrBlk(it);if(it.type==='sca')return scaBlk(it);if(it.type==='mft')return mftBlk(it);return _b(it);};
  rqSol=function(it){if(it.type==='scr')return scrSol(it);if(it.type==='mft')return (it.d||[]).flatMap(b=>b.T.map(t=>String(t.a).replace(/<[^>]+>/g,'')));if(it.type==='sca')return [];return _s(it);};}
 const KL=[['1','Beginn 1. Klasse (Volksschulstoff)'],['2','Beginn 2. Klasse (Stoff 1. Klasse)'],['3','Beginn 3. Klasse (Stoff 2. Klasse)'],['4','Beginn 4. Klasse (Stoff 3. Klasse)']];
 RQP.scr=[['kl','sel',KL,'Klasse'],['ver','sel',[['A','Version A (Herbst)'],['B','Version B (nach Weihnachten)'],['C','Version C (Schulschluss)'],['neu','zufällige neue Zahlen']],'Version'],['rl','ck','Rechenzeile bei Sachaufgaben']];
 RQP.sca=[['kl','sel',KL,'Klasse'],['n','sel',[[15,'15 Kinder'],[20,'20 Kinder'],[25,'25 Kinder'],[28,'28 Kinder']],'Zeilen']];
-RQP.mft=[['kl','sel',[['1','1. Klasse'],['2','2. Klasse'],['3','3. Klasse'],['4','4. Klasse']],'Klasse'],['tag','sel',[['mo','Montag'],['di','Dienstag'],['mi','Mittwoch'],['do','Donnerstag'],['fr','Freitag'],['frei','ohne Wochentag'],['woche','ganze Woche auf einem Blatt']],'Tag'],['th','sel',[['plan','Wochenplan (Thema je nach Tag)'],...Object.entries(TH).map(([k,v])=>[k,v[0]])],'Thema'],['th2','sel',[['-','kein 2. Thema'],...Object.entries(TH).filter(e=>e[1][1]).map(([k,v])=>[k,v[0]])],'2. Thema dazumischen'],['lv','sel',[['1','★ Basis (Gruppe Rot)'],['2','★★ Standard (Gruppe Gelb)'],['3','★★★ Plus (Gruppe Grün)']],'Niveau'],['n','sel',[[0,'automatisch'],[4,'4'],[6,'6'],[8,'8'],[10,'10'],[12,'12'],[15,'15']],'Anzahl der Aufgaben'],['co','sel',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten']],'Spalten']];
+const THO=()=>Object.entries(TH).map(([k,v])=>[k,v[0]]);
+RQP.mft=[['kl','sel',[['1','1. Klasse'],['2','2. Klasse'],['3','3. Klasse'],['4','4. Klasse']],'Klasse'],['tag','sel',[['mo','Montag'],['di','Dienstag'],['mi','Mittwoch'],['do','Donnerstag'],['fr','Freitag'],['frei','ohne Wochentag'],['woche','ganze Woche auf einem Blatt']],'Tag'],['th','sel',[['plan','Wochenplan (Thema je nach Tag)'],...THO()],'Thema'],
+ ...['mo','di','mi','do','fr'].map(k=>['t_'+k,'sel',[['auto','wie oben bei „Thema“'],['plan','Wochenplan-Thema'],...THO()],'Thema am '+TAGE[k],it=>it.tag==='woche']),
+ ['th2','sel',[['-','kein 2. Thema'],...THO().filter(x=>x[0]!=='sach')],'2. Thema dazumischen'],['lv','sel',[['1','★ Basis (Gruppe Rot)'],['2','★★ Standard (Gruppe Gelb)'],['3','★★★ Plus (Gruppe Grün)']],'Niveau'],['n','sel',[[0,'automatisch'],[4,'4'],[5,'5'],[6,'6'],[7,'7'],[8,'8'],[10,'10'],[12,'12'],[15,'15']],'Anzahl der Aufgaben (pro Tag)'],['co','sel',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten'],[4,'4 Spalten']],'Spalten'],
+ ['kp','sel',[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6'],[7,'7'],[8,'8'],[9,'9'],[10,'10']],'Wie oft auf der Seite? (zum Ausschneiden)',it=>it.tag!=='woche'],['kn','sel',[['gleich','alle gleich (leichter zu kontrollieren)'],['neu','jedes Mal neue Zahlen']],'Kopien',it=>it.tag!=='woche'&&+it.kp>1]];
 window.SCR_TEST={G,SA,SCR,scrGen,mftGen,MF,TH,tRow};
 (function(){try{const _co=catOf;catOf=function(it){return it&&SCT.includes(it.type)?'fm':_co.apply(this,arguments);};
  const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&SCT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
@@ -15940,6 +15951,31 @@ rqGen=function(it){if(it.type==='mws'&&it.md==='49'){const kk=window.__GQK,fr=wi
 rqBlk=function(it){return it.type==='mws'&&it.md==='49'?blk49(it):_b(it);};
 rqSol=function(it){if(it.type==='mws'&&it.md==='49'){const d=it.d||{};return d.L?[E(d.alt-d.neu),E(d.spw),E(d.spj)]:[];}return _s(it);};
 const o=RQP.mws&&RQP.mws.find(x=>x[0]==='md');if(o)o[2].push(['49','⭐ 4.0-Aufgabe: Der neue Steuersatz 4,9 % (Ersparnis)']);
+}catch(e){console.error(e);}})();
+
+/* ===== Mathe-Fit: Seite füllen + Sammelpass + Hausübungsgutschein ===== */
+(function(){try{
+/* Knopf „Seite füllen“: so viele Kopien, wie auf die Seite passen */
+function panel(){const old=document.getElementById('g-mff');if(old)old.remove();const it=items.find(i=>i.id===sel);if(!it||it.type!=='mft'||it.tag==='woche')return;const s=document.querySelector('#rp select[data-rq="kp"]');if(!s)return;
+ const b=document.createElement('button');b.type='button';b.id='g-mff';b.textContent='📄 Seite füllen (so oft wie möglich)';b.style.cssText='width:100%;margin:4px 0 6px';(s.closest('label')||s).after(b);}
+const _rp=renderProps;renderProps=function(){const r=_rp.apply(this,arguments);try{panel();}catch(e){console.error(e);}return r;};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#g-mff');if(!b)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();
+ const keepKn=it.kn;it.kp=1;if(it.d&&it.d[0])it.d=[it.d[0]];render();const el=document.querySelector(`.item[data-id="${it.id}"]`),blk=el&&el.querySelector('.mfb');if(!el||!blk){toast&&toast('Bitte zuerst einen Wochentag wählen.');return;}
+ const h=blk.offsetHeight,gap=14,top=it.y-Math.floor(it.y/PH)*PH,free=PH-top-(typeof TOPM!=='undefined'?TOPM:40)-20,k=Math.max(1,Math.min(12,Math.floor((free+gap)/(h+gap))));
+ it.kp=k;if(keepKn==='neu'){window.__GQF=1;rqGen(it);}else it.d=Array.from({length:k},()=>it.d[0]);render();renderProps();toast&&toast(`${k}× auf der Seite – zum Ausschneiden.`);});
+/* Sammelpass und Gutschein */
+POT.push('mfp');TLT.push('mfp');RQT.push('mfp');TLN.mfp='Mathe-Fit: Sammelpass (100 Aufgaben) und Hausübungsgutschein';TLD.mfp={w:714,md:'pass',ziel:100,nm:'Hausübungsgutschein'};
+function blk(it){const z=+it.ziel||100,md=it.md||'pass',nm=it.nm||'Hausübungsgutschein';
+ if(md==='pass'){const cols=10,rows=Math.ceil(z/cols);const card=()=>`<div style="border:2px solid #e08a00;border-radius:10px;padding:8px 12px;break-inside:avoid;background:#fff"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px"><b style="font-size:1.15em;color:#a35a00">💪 Mein Mathe-Fit-Sammelpass</b><span style="display:flex;gap:.3em;min-width:14em">Name:<span style="flex:1;border-bottom:1px solid #000"></span></span></div><div style="font-size:.85em;margin:.25em 0 .4em">Male für jede <b>richtige</b> Mathe-Fit-Aufgabe ein Feld an. Bei <b>${z}</b> Feldern bekommst du einen <b>${nm}</b>! 🎉</div><div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:3px">${Array.from({length:rows*cols},(_,i)=>`<div style="border:1.3px solid #999;border-radius:3px;height:1.55em;font-size:.62em;color:#aaa;text-align:right;padding:1px 2px;${(i+1)%10===0?'border-color:#e08a00;':''}">${i<z?(i+1)%10===0?i+1:'':''}</div>`).join('')}</div></div>`;
+  return `<div style="display:grid;grid-template-columns:1fr;gap:16px">${card()}<div style="border-top:1.5px dashed #999"></div>${card()}</div>`;}
+ const g=()=>`<div style="border:3px double #2e7d32;border-radius:12px;padding:10px 14px;text-align:center;background:#f6fbf6;break-inside:avoid;min-height:200px;display:flex;flex-direction:column;justify-content:center;gap:5px"><div style="font-size:1.8em">🎟️</div><div style="font-weight:800;font-size:1.3em;color:#2e7d32">${nm}</div><div style="font-size:.9em">für <b>${z} richtige</b> Mathe-Fit-Aufgaben</div><div style="display:flex;gap:.3em;margin-top:.4em;font-size:.9em">Name:<span style="flex:1;border-bottom:1px solid #000"></span></div><div style="font-size:.75em;color:#444">Gilt für eine Hausübung nach Wahl (nicht für Schularbeitsvorbereitungen).</div><div style="display:flex;gap:1em;font-size:.85em;margin-top:.3em"><span style="flex:1;display:flex;gap:.3em">Datum:<span style="flex:1;border-bottom:1px solid #000"></span></span><span style="flex:1;display:flex;gap:.3em">Lehrkraft:<span style="flex:1;border-bottom:1px solid #000"></span></span></div></div>`;
+ return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">${Array.from({length:6},g).join('')}</div>`;}
+{const _g=rqGen,_b=rqBlk,_s=rqSol;rqGen=function(it){if(it.type==='mfp'){it.d=[1];return;}return _g(it);};rqBlk=function(it){return it.type==='mfp'?blk(it):_b(it);};rqSol=function(it){return it.type==='mfp'?[]:_s(it);};}
+{const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='mfp');try{return _h.apply(this,arguments);}finally{items=keep;}};}
+RQP.mfp=[['md','sel',[['pass','Sammelpass (2 pro Seite)'],['gut','Gutscheine (6 pro Seite)']],'Art'],['ziel','sel',[[50,'50 richtige Aufgaben'],[100,'100 richtige Aufgaben'],[150,'150 richtige Aufgaben'],[200,'200 richtige Aufgaben']],'Ziel'],['nm','sel',[['Hausübungsgutschein','Hausübungsgutschein'],['Joker-Gutschein','Joker-Gutschein'],['Mathe-Fit-Urkunde','Mathe-Fit-Urkunde']],'Belohnung']];
+(function(){try{const _co=catOf;catOf=function(it){return it&&it.type==='mfp'?'fm':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&it.type==='mfp')$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
+ const a=document.querySelector('.catp[data-c="fm"] .pal[data-t="mft"]');if(a)a.insertAdjacentHTML('afterend',`<div class="pal" draggable="true" data-t="mfp" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><rect x="4" y="5" width="56" height="30" rx="4" fill="#fff" stroke="#e08a00" stroke-width="2"/>${Array.from({length:12},(_,i)=>`<rect x="${9+(i%6)*8}" y="${11+Math.floor(i/6)*10}" width="6" height="7" fill="${i<7?'#ffcc80':'#fff'}" stroke="#999" stroke-width=".6"/>`).join('')}<text x="80" y="27" font-size="16" text-anchor="middle">🎟️</text></svg><span>${TLN.mfp}</span></div>`);}catch(e){console.error(e);}})();
 }catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
