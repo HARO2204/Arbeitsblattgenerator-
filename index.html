@@ -16763,6 +16763,29 @@ const route=()=>{const m=/^#ueb-([a-z0-9]+)$/.exec(location.hash);if(m&&SRC[m[1]
 window.ONL_TEST={S,build,draw,check,one};
 }catch(e){console.error(e);}})();
 
+/* ===== Standard: keine ganzen Rechen- und Antwortzeilen; oben einschaltbar ===== */
+(function(){try{if(typeof mk!=='function')return;
+let ON=false;try{ON=localStorage.getItem('vk_zeilen')==='1';}catch(e){}
+const SKIP=['text','num','frm','ckf','head','sbr','fel','mfp','scr','sca','kzl','lsk','ffp','fec','cutl','lqr','bsm'];
+const LAB=/^(➲\s*)?(Rechnung|Antwort(satz)?|Rechenweg|Zwischenrechnung|Probe(\s*\(.*\))?|Lösung(sweg)?|Gleichung|Begründung|Erklärung|A|R)\s*:?$/;
+function mark(e,it){if(ON||!e||SKIP.includes(it.type))return;const W=Math.max(e.offsetWidth||714,560);
+ e.querySelectorAll('div.tlln[style*="display:block"],.bsln').forEach(x=>{if(!x.textContent.trim()&&x.offsetWidth>=W*.6)x.classList.add('zlx');});
+ e.querySelectorAll('.tlrw').forEach(r=>{const f=r.firstElementChild;if(!f)return;const t=(f.textContent||'').trim();if(!LAB.test(t))return;const ln=r.querySelector('.tlln');if(ln&&ln.textContent.trim())return;r.classList.add('zlx');});
+ e.querySelectorAll('div').forEach(x=>{if(x.children.length||x.classList.contains('zlx')||x.classList.contains('ln')||x.closest('.no-print,svg,table,.zlx'))return;if((x.textContent||'').replace(/ /g,'').trim())return;const c=getComputedStyle(x);if(!(parseFloat(c.borderBottomWidth)>0)||parseFloat(c.borderTopWidth)>0||c.borderBottomColor==='rgba(0, 0, 0, 0)')return;if(x.offsetHeight>60||x.offsetWidth<W*.6)return;x.classList.add('zlx');});}
+const _mk=mk;mk=function(it){const r=_mk.apply(this,arguments);try{if(!ON){const e=document.querySelector(`#sheet .item[data-id="${it.id}"]`);mark(e,it);}}catch(x){console.error(x);}return r;};
+{const st=document.createElement('style');st.textContent='.zlx{display:none!important}'+
+'#sheet.heft.hs-m .ln,#sheet.heft.hs-m div.tlln,#sheet.heft.hs-m .hb,#sheet.heft.hs-m .hk,#sheet.heft.hs-m .hl{display:none!important}'+
+'#sheet.heft.hs-m .ln:first-child,#sheet.heft.hs-m div.tlln:first-child,#sheet.heft.hs-m .hb:first-child,#sheet.heft.hs-m :not(.ln):not(.tlln):not(.hb):not(.hk) + .ln,#sheet.heft.hs-m :not(.ln):not(.tlln):not(.hb):not(.hk) + div.tlln,#sheet.heft.hs-m :not(.ln):not(.tlln):not(.hb):not(.hk) + .hb{display:block!important;visibility:hidden;min-height:0!important;height:2mm!important;margin:0!important;padding:0!important;border:none!important;background:none!important}'+
+'#sheet.heft.hs-m .tlrw:not(:has(*:not(.hl):not(.tlln))){display:none!important}#sheet.heft.hs-m .item{padding-bottom:1.5mm}';document.head.appendChild(st);}
+{const sp=document.getElementById('heftsp');if(sp&&!sp.querySelector('option[value="m"]')){const k=sp.querySelector('option[value="k"]');k.insertAdjacentHTML('beforebegin','<option value="m">Platz klein (minimal + 2–3 mm)</option>');try{if(localStorage.getItem('vk_heftsp')==='m')sp.value='m';}catch(e){}}
+ const apply=()=>{const sh=document.getElementById('sheet');if(sh)sh.classList.toggle('hs-m',!!(sp&&sp.value==='m'));};apply();if(sp)sp.addEventListener('change',()=>{apply();try{render();}catch(e){}});
+ const _r=render;render=function(){apply();return _r.apply(this,arguments);};}
+const hb=document.getElementById('heft');const lab=hb&&hb.closest('label');if(lab){lab.insertAdjacentHTML('beforebegin',`<label title="Ganze Rechen- und Antwortzeilen unter den Aufgaben anzeigen. Kurze Ergebnisstriche wie „7 · 8 = ___“ sind immer da."><input type="checkbox" id="zeilenAn"${ON?' checked':''}> Rechen-/Antwortzeilen</label>`);
+ document.getElementById('zeilenAn').addEventListener('change',e=>{ON=e.target.checked;try{localStorage.setItem('vk_zeilen',ON?'1':'0');}catch(x){}render();});}
+window.ZL_TEST={mark,get on(){return ON;}};
+setTimeout(()=>{try{render();}catch(e){}},0);
+}catch(e){console.error(e);}})();
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
