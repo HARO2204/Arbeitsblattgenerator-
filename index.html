@@ -15225,7 +15225,7 @@ function scrGen(it){const kl=it.kl||'1',v=it.ver||'A',D=SCR[kl];const run=()=>D.
 const nl='<span class="tlln" style="flex:1;min-width:4.2em;min-height:1.35em;border-bottom:1px solid #000;display:inline-block;white-space:nowrap">';
 function tRow(it,t,i,full){const lab=`<b style="min-width:1.4em;flex:none">${String.fromCharCode(97+i)})</b>`;
  if(t.nl){const parts=t.q.split('___'),V=(String(t.a).match(/\d[\d\s   ,]*/g)||[]).map(x=>x.trim());return `<div style="display:flex;gap:.3em;align-items:flex-end;flex-wrap:wrap">${lab}<span>${parts.map((p,j)=>j? `<span style="display:inline-block;min-width:4.8em;border-bottom:1px solid #000;text-align:center">${tlS(it)&&V[j-1]!=null?'<span class="sv">'+V[j-1]+'</span>':''}</span>`+p:p).join('')}</span></div>`;}
- if(full)return `<div style="display:flex;gap:.3em;align-items:flex-end;flex-wrap:wrap">${lab}<span style="flex:0 1 auto">${t.q}</span><span class="tlln" style="flex:1 0 9em;min-height:1.35em;border-bottom:1px solid #000;white-space:nowrap">${tlSv(it,t.a)}</span></div>`;
+ if(full)return `<div style="display:flex;gap:.3em;align-items:flex-end;flex-wrap:wrap">${lab}<span style="flex:0 1 auto;min-width:0;max-width:calc(100% - 2em)">${t.q}</span><span class="tlln" style="flex:1 0 9em;min-height:1.35em;border-bottom:1px solid #000;white-space:nowrap">${tlSv(it,t.a)}</span></div>`;
  return `<div style="display:flex;gap:.3em;align-items:flex-end;flex-wrap:wrap">${lab}<span style="white-space:nowrap">${t.q}</span>${nl}${tlSv(it,t.a)}</span></div>`;}
 function scrBlk(it){const kl=it.kl||'1',D=SCR[kl],d=it.d||[],mx=SCRMAX(kl),tot=mx.reduce((a,b)=>a+b,0);
  const vn=it.ver==='neu'?'':` · Version ${it.ver||'A'}`;
@@ -15306,11 +15306,11 @@ const TH={
  form:['Formeln: Umfang, Fläche, Volumen',[['geoU','geoA','geoQU'],['geoU','geoA','geoDr','geoQd'],['geoDr','geoPa','geoQd','geoKr','geoPr']]],
  st:['Statistik und Schlussrechnung',[['stMw','slR'],['stMw','stMed','slR'],['stMed','slV','slR']]],
  sach:['Sachaufgaben',null]};
-function mfTheme(kl,th,th2,lv,n){if(th==='sach'){const pool=SA[kl];return {t:TH.sach[0],T:SH(pool).slice(0,lv===1?1:2).map(f=>Object.assign(f(),{fr:1,sa:1}))};}
+function mfTheme(kl,th,th2,lv,n){if(th==='sach'){const pool=SA[kl];return {t:TH.sach[0],T:SH(pool).slice(0,lv===1?1:2).map(f=>Object.assign(f(),{fr:1,sa:1,si:pool.indexOf(f)}))};}
  let K=TH[th][1][lv-1].slice(),t=TH[th][0];if(th2&&th2!=='-'&&TH[th2]&&TH[th2][1]){K=K.concat(TH[th2][1][lv-1]);t+=' + '+TH[th2][0];}
- const T=[],seen=new Set();let g=0,i=0;K=SH(K);while(T.length<n&&g++<300){const g=K[i++%K.length],x=G[g]();x.g=g;if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T,K:[...new Set(K)]};}
-function mfDay(kl,tag,lv,n){const [t,L]=MF[kl][tag],K=L[lv-1];if(tag==='fr'){const S=SA[kl==='1'?1:+kl-0];return {t,T:K.map(k=>{const pool=SA[kl];return pool[(k-1+R(0,pool.length-1))%pool.length]();}).map(x=>Object.assign(x,{fr:1,sa:1}))};}
- const T=[],seen=new Set();let g=0;while(T.length<n&&g++<200){const g=K[T.length%K.length],x=G[g]();x.g=g;if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T,K:[...new Set(K)]};}
+ const T=[],seen=new Set();let g=0,i=0;K=SH(K);while(T.length<n&&g++<300){const g=K[i++%K.length],x=G[g](lv);x.g=g;if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T,K:[...new Set(K)]};}
+function mfDay(kl,tag,lv,n){const [t,L]=MF[kl][tag],K=L[lv-1];if(tag==='fr'){const S=SA[kl==='1'?1:+kl-0];const pool=SA[kl];return {t,T:SH(pool).slice(0,K.length).map(f=>Object.assign(f(),{fr:1,sa:1,si:pool.indexOf(f)}))};}
+ const T=[],seen=new Set();let g=0;while(T.length<n&&g++<200){const g=K[T.length%K.length],x=G[g](lv);x.g=g;if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T,K:[...new Set(K)]};}
 function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo',th=it.th||'plan',n=+it.n||0;
  const one=(k,dth,nn,lk,fix)=>{lk=lk||lv;let b;if(dth==='plan')b=Object.assign({k,lv:lk},mfDay(kl,k==='frei'?'mo':k,lk,nn));else b=Object.assign({k,lv:lk},mfTheme(kl,dth,it.th2,lk,nn));if(tag==='woche'&&!fix&&b.T.filter(t=>t.w==='f'||t.fr).length>2)b.T=b.T.slice(0,Math.min(b.T.length,n?Math.min(n,4):4));return b;};
  if(tag==='woche'){it.d=Object.keys(TAGE).map(k=>{const dt=it['t_'+k]&&it['t_'+k]!=='auto'?it['t_'+k]:th,nk=+it['n_'+k]||0,lk=+it['l_'+k]||0;return one(k,dt,nk||n||6,lk,!!nk);});return;}
@@ -15318,14 +15318,14 @@ function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo',th=it.th||
  if(it.kn==='neu'){it.d=Array.from({length:kp},()=>one(tag,th,nn));return;}
  const b=one(tag,th,nn);it.d=Array.from({length:kp},()=>b);}
 const ST=lv=>'★'.repeat(lv),MC={1:['#c62828','#ffebee','#b71c1c'],2:['#d4a000','#fff8d6','#8a6500'],3:['#2e7d32','#e8f5e9','#1b5e20']};
-function mfBlock(it,b,wk,bi){bi=bi||0;const W=(t,h)=>{const ti=b.T.indexOf(t);return `<div class="mfq" style="position:relative">${h}<span class="mfc no-print"><button type="button" title="Neu würfeln (gleiche Aufgabenart)" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();mfRe(${it.id},${bi},${ti},'w')">🎲</button>${(b.K&&b.K.length>1&&t.g)||t.sa?`<button type="button" title="Andere Aufgabenart" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();mfRe(${it.id},${bi},${ti},'a')">🔀</button>`:''}<button type="button" title="Platz tauschen mit der nächsten Aufgabe" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();mfRe(${it.id},${bi},${ti},'s')">⇄</button></span></div>`;};const lv=b.lv||+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co0=wk?3:(+it.co||2),pl=t=>String(t.q).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').length+(t.u?String(t.u).length+1:0),mx=sh.reduce((m,t)=>Math.max(m,pl(t)),0),co=Math.max(1,Math.min(co0,Math.floor(80/(mx+7))));let k=0;
+function mfBlock(it,b,wk,bi){bi=bi||0;const W=(t,h)=>{const ti=b.T.indexOf(t);return `<div class="mfq" style="position:relative">${h}<span class="mfc no-print"><button type="button" title="Neu würfeln (gleiche Aufgabenart)" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();mfRe(${it.id},${bi},${ti},'w')">🎲</button>${(b.K&&b.K.length>1&&t.g)||t.sa?`<button type="button" title="Andere Aufgabenart" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();mfRe(${it.id},${bi},${ti},'a')">🔀</button>`:''}<button type="button" title="Platz tauschen mit der nächsten Aufgabe" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();mfRe(${it.id},${bi},${ti},'s')">⇄</button></span></div>`;};const lv=b.lv||+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co0=wk?3:(+it.co||2),pl=t=>t.L||String(t.q).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').length+(t.u?String(t.u).length+1:0),mx=sh.reduce((m,t)=>Math.max(m,pl(t)),0),co=Math.max(1,Math.min(co0,Math.floor(80/(mx+7))));let k=0;
  let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:${MC[lv][1]};border:1.5px solid ${MC[lv][0]};border-radius:7px;padding:5px 8px;min-height:2.1em;margin-bottom:4px;flex-wrap:wrap;gap:0 .8em"><span style="font-weight:800;color:${MC[lv][2]}">💪 Mathe-Fit · ${it.owt?(wk?'Tag '+(bi+1)+' · ':''):(TAGE[b.k]?TAGE[b.k]+' · ':'')}${b.t} <span style="color:${MC[lv][0]}">${ST(lv)}</span></span><span style="font-size:.85em;white-space:nowrap">${wk?'':'Name: <span style="display:inline-block;width:16em;border-bottom:1px solid #000;margin-right:.6em"></span>'}${it.ozt?'':'Zeit: _____ min · '}Richtig: ____ / ${b.T.length}</span></div>`;
  if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:.3em 1.2em">`+sh.map(t=>W(t,tRow(it,t,k++))).join('')+'</div>';
  if(full.length)h+=`<div style="margin-top:.3em">`+full.map(t=>W(t,t.fr?`<div style="margin-bottom:.35em"><div style="display:flex;gap:.3em"><b>${String.fromCharCode(97+k++)})</b><span>${t.q}</span></div><div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.4em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`:tRow(it,t,k++,true))).join('')+'</div>';
  return h;}
 window.mfRe=function(id,bi,ti,m){const it=items.find(x=>x.id===id);if(!it||!it.d||!it.d[bi])return;const b=it.d[bi],t=b.T[ti];if(!t)return;const kl=it.kl||'1';
  if(m==='s'){const T=b.T,big=x=>!!(x.w==='f'||x.fr);let j=-1;for(let q=1;q<T.length;q++){const c=(ti+q)%T.length;if(big(T[c])===big(t)){j=c;break;}}if(j<0){toast('Keine passende Aufgabe zum Tauschen');return;}rec();[T[ti],T[j]]=[T[j],T[ti]];}
- else{const has=new Set(b.T.map(x=>x.q));let x=null;for(let g=0;g<40&&!x;g++){let y;if(t.sa){const P=SA[kl];y=Object.assign(P[R(0,P.length-1)](),{fr:1,sa:1});}else{let key=t.g;if(m==='a'&&b.K){const O=b.K.filter(k=>k!==t.g);if(O.length)key=O[R(0,O.length-1)];}if(!key||!G[key]){toast('Diese Aufgabe bitte einmal neu erzeugen (🎲 oben)');return;}y=G[key]();y.g=key;}if(!has.has(y.q))x=y;}if(!x){toast('Keine neue Aufgabe gefunden');return;}rec();b.T[ti]=x;}
+ else{const has=new Set(b.T.map(x=>x.q));let x=null;for(let g=0;g<40&&!x;g++){let y;if(t.sa){const P=SA[kl],us=new Set(b.T.filter(z=>z.sa).map(z=>z.si));let ix=[...P.keys()].filter(j=>!us.has(j));if(m==='w'&&t.si!=null)ix=[t.si];if(!ix.length)ix=[...P.keys()].filter(j=>j!==t.si);const j=ix[R(0,ix.length-1)];y=Object.assign(P[j](),{fr:1,sa:1,si:j});}else{let key=t.g;if(m==='a'&&b.K){const O=b.K.filter(k=>k!==t.g);if(O.length)key=O[R(0,O.length-1)];}if(!key||!G[key]){toast('Diese Aufgabe bitte einmal neu erzeugen (🎲 oben)');return;}y=G[key](b.lv||+it.lv||2);y.g=key;}if(!has.has(y.q))x=y;}if(!x){toast('Keine neue Aufgabe gefunden');return;}rec();b.T[ti]=x;}
  if(it.tag!=='woche'&&it.kn!=='neu')it.d=it.d.map(()=>b);render();};
 function mftBlk(it){const d=it.d||[],wk=it.tag==='woche';return `<div style="line-height:1.35">`+d.map((b,i)=>`<div class="mfb" style="break-inside:avoid;${i?'border-top:1.5px dashed #999;padding-top:6px;margin-top:6px;position:relative':''}">${i&&!wk?'<span style="position:absolute;top:-.8em;left:-.2em;background:#fff;font-size:.8em">✂</span>':''}${mfBlock(it,b,wk,i)}</div>`).join('')+'</div>';}
 /* ================= Anbindung an den Generator ================= */
@@ -15340,7 +15340,7 @@ const THO=()=>Object.entries(TH).map(([k,v])=>[k,v[0]]);
 RQP.mft=[['kl','sel',[['1','1. Klasse'],['2','2. Klasse'],['3','3. Klasse'],['4','4. Klasse']],'Klasse'],['tag','sel',[['mo','Montag'],['di','Dienstag'],['mi','Mittwoch'],['do','Donnerstag'],['fr','Freitag'],['frei','ohne Wochentag'],['woche','ganze Woche auf einem Blatt']],'Tag'],['th','sel',[['plan','Wochenplan (Thema je nach Tag)'],...THO()],'Thema'],
  ['th2','sel',[['-','kein 2. Thema'],...THO().filter(x=>x[0]!=='sach')],'2. Thema dazumischen'],['lv','sel',[['1','★ Basis (Gruppe Rot)'],['2','★★ Standard (Gruppe Gelb)'],['3','★★★ Plus (Gruppe Grün)']],'Niveau'],['n','sel',[[0,'automatisch'],[4,'4'],[5,'5'],[6,'6'],[7,'7'],[8,'8'],[10,'10'],[12,'12'],[15,'15']],'Anzahl der Aufgaben (pro Tag)'],['co','sel',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten'],[4,'4 Spalten']],'Spalten'],['owt','ck','Wochentag nicht anzeigen (nicht tagesgebunden)'],['ozt','ck','Zeit-Feld weglassen'],
  ['kp','sel',[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6'],[7,'7'],[8,'8'],[9,'9'],[10,'10']],'Wie oft auf der Seite? (zum Ausschneiden)',it=>it.tag!=='woche'],['kn','sel',[['gleich','alle gleich (leichter zu kontrollieren)'],['neu','jedes Mal neue Zahlen']],'Kopien',it=>it.tag!=='woche'&&+it.kp>1]];
-window.SCR_TEST={G,SA,SCR,scrGen,mftGen,MF,TH,tRow,TAGE};
+window.SCR_TEST={G,SA,SCR,scrGen,mftGen,MF,TH,tRow,TAGE,H:{R,P,SH,F,M,dc,FR,eu,Q,gcd}};
 (function(){try{const _co=catOf;catOf=function(it){return it&&SCT.includes(it.type)?'fm':_co.apply(this,arguments);};
  const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&SCT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
  const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='sca');try{return _h.apply(this,arguments);}finally{items=keep;}};
@@ -15994,6 +15994,117 @@ document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.datase
 
 /* Mathe-Fit: einzelne Aufgaben würfeln/tauschen – Knöpfe nur am Bildschirm */
 (function(){const st=document.createElement('style');st.textContent='.mfc{display:none;position:absolute;right:0;top:-3px;gap:2px;z-index:9}.item.sel .mfq:hover>.mfc{display:flex}.mfc button{font:12px system-ui,sans-serif;line-height:1;padding:2px 5px;border:1px solid var(--acc);background:#fff;color:var(--acc);border-radius:6px;cursor:pointer;box-shadow:0 1px 3px #0003}.item.sel .mfq:hover{background:rgba(255,200,80,.18)}@media print{.mfc{display:none!important}}';document.head.appendChild(st);})();
+
+/* ===== Mathe-Fit: neue Themen (Logik, Zahlenstrahl, Umfang, Partnerzahlen, Prozente im Kopf, Brüche auswendig) + mehr Sachaufgaben ===== */
+(function(){try{const T=window.SCR_TEST;if(!T)return;const {G,SA,TH}=T,{R,P,SH,F,M,dc,FR,eu,Q}=T.H;
+const nr=x=>dc(Math.round(x*1000)/1000);
+/* ---------- Zahlenstrahl ---------- */
+function strahl(a,s,i,lab2){const W=232,x0=10,dx=21,y=24;let g='';for(let k=0;k<=10;k++){const x=x0+k*dx,big=k%5===0;g+=`<line x1="${x}" y1="${y-(big?6:4)}" x2="${x}" y2="${y+(big?6:4)}" stroke="currentColor" stroke-width="${big?1.4:1}"/>`;}
+ const xi=x0+i*dx;g+=`<line x1="${xi-4}" y1="${y-12}" x2="${xi+4}" y2="${y-4}" stroke="#c62828" stroke-width="2"/><line x1="${xi+4}" y1="${y-12}" x2="${xi-4}" y2="${y-4}" stroke="#c62828" stroke-width="2"/>`;
+ const L=(k,v)=>`<text x="${x0+k*dx}" y="${y+18}" font-size="11" text-anchor="middle" fill="currentColor">${v}</text>`;
+ g+=L(0,nr(a))+(lab2?L(lab2,nr(a+lab2*s)):L(10,nr(a+10*s)));
+ return `<svg viewBox="0 0 ${W+8} 46" width="${W+8}" height="46" style="display:inline-block;vertical-align:middle;overflow:visible"><line x1="${x0-4}" y1="${y}" x2="${x0+10*dx+8}" y2="${y}" stroke="currentColor" stroke-width="1.4"/><path d="M${x0+10*dx+8} ${y-4}L${x0+10*dx+14} ${y}L${x0+10*dx+8} ${y+4}" fill="currentColor"/>${g}</svg>`;}
+G.zsX=lv=>{lv=lv||2;let a,s,l2=0;if(lv===1){s=P([1,1,10]);a=s===1?R(0,9)*10:R(0,6)*100;}else if(lv===2){s=P([5,10,50,100]);a=R(1,9)*s*10;}else{const c=P(['dez','gr','l2']);if(c==='dez'){s=P([0.1,0.1,0.5]);a=R(0,9);}else if(c==='gr'){s=P([25,250]);a=R(0,4)*s*4;}else{s=P([2,5,20,50]);a=R(0,5)*s*10;l2=P([2,4,5]);}}
+ let i=R(1,9);if(l2&&i===l2)i++;return Q(`${strahl(a,s,i,l2)} ✕ =`,nr(a+i*s),{L:40});};
+G.zsMitte=lv=>{lv=lv||2;let a,d;if(lv===1){a=R(1,8)*10;d=R(1,4)*20;}else if(lv===2){a=R(1,8)*100;d=R(1,6)*20;}else{if(Math.random()<.5){a=R(1,9)*1000;d=R(1,8)*200;}else{a=R(1,9);d=R(1,9)*0.2;}}
+ return Q(`Mitte zwischen ${nr(a)} und ${nr(a+d)}:`,nr(a+d/2));};
+G.zsNbr=lv=>{lv=lv||2;const st=lv===1?10:lv===2?100:1000,n=lv===1?R(21,989):lv===2?R(1010,9990):R(10100,99900);if(n%st===0)return G.zsNbr(lv);const lo=Math.floor(n/st)*st;
+ return Q(`${st===10?'Nachbarzehner':st===100?'Nachbarhunderter':'Nachbartausender'}: ___ &lt; ${F(n)} &lt; ___`,`${F(lo)} | ${F(lo+st)}`,{nl:1,L:40});};
+/* ---------- Logik ---------- */
+G.lgFolge=lv=>{lv=lv||2;let t=[];const typ=lv===1?P(['add']):lv===2?P(['add','sub','add2']):P(['mul','inc','alt','add2']);
+ if(typ==='add'){const a=R(1,20),d=R(2,9);t=[0,1,2,3,4,5].map(k=>a+k*d);}
+ else if(typ==='sub'){const d=R(3,12),a=d*6+R(5,40);t=[0,1,2,3,4,5].map(k=>a-k*d);}
+ else if(typ==='add2'){const a=R(10,200),d=P([11,12,15,25,20,50,99]);t=[0,1,2,3,4,5].map(k=>a+k*d);}
+ else if(typ==='mul'){const a=R(1,5),f=P([2,2,3]);t=[0,1,2,3,4,5].map(k=>a*f**k);}
+ else if(typ==='inc'){const a=R(1,10);let v=a;t=[a];for(let k=1;k<6;k++){v+=k;t.push(v);}}
+ else{const a=R(5,20),u=R(4,9),v=R(1,u-1);t=[a];for(let k=1;k<6;k++)t.push(t[k-1]+(k%2?u:-v));}
+ return Q(`${t.slice(0,4).map(F).join(', ')}, ___, ___`,`${F(t[4])} | ${F(t[5])}`,{nl:1});};
+G.lgLuecke=lv=>{lv=lv||2;const c=lv===1?P(['+','−','·']):lv===2?P(['·',':','+','−']):P(['2s','2s',':','·']);
+ if(c==='+'){const a=R(12,60),x=R(8,39);return Q(`___ + ${a} = ${a+x}`,F(x),{nl:1});}
+ if(c==='−'){const x=R(40,99),a=R(8,x-10);return Q(`___ ${M} ${a} = ${x-a}`,F(x),{nl:1});}
+ if(c==='·'){const a=lv===1?R(2,9):R(3,12),x=R(3,9);return Q(`___ · ${a} = ${a*x}`,F(x),{nl:1});}
+ if(c===':'){const a=R(3,9),x=R(3,9)*a;return Q(`${F(x)} : ___ = ${x/a}`,F(a),{nl:1});}
+ const a=R(2,9),x=R(3,12),b=R(2,20);return Q(`${a} · ___ + ${b} = ${a*x+b}`,F(x),{nl:1});};
+G.lgSym=lv=>{lv=lv||2;const S=P([['▲','■'],['■','●'],['●','▲']]);
+ if(lv===1){const x=R(3,12);return Q(`${S[0]} + ${S[0]} = ${2*x} → ${S[0]} =`,F(x));}
+ if(lv===2){const x=R(3,15),k=P([3,4]);return Q(`${Array(k).fill(S[0]).join(' + ')} = ${k*x} → ${S[0]} =`,F(x));}
+ const x=R(3,12),y=R(2,15);return Q(`${S[0]} + ${S[0]} = ${2*x}, ${S[0]} + ${S[1]} = ${x+y} → ${S[1]} =`,F(y));};
+G.lgDenk=lv=>{lv=lv||2;const x=R(3,lv===1?12:20);
+ if(lv===1){const a=R(5,30);return Q(`Ich denke mir eine Zahl und addiere ${a}. Ich erhalte ${x+a}. Wie heißt meine Zahl?`,F(x),{fr:1});}
+ const f=R(2,lv===2?5:9),a=R(2,20),op=lv===3&&Math.random()<.5?'sub':'add';const r=op==='add'?x*f+a:x*f-a;if(r<=0)return G.lgDenk(lv);
+ return Q(`Ich denke mir eine Zahl, multipliziere sie mit ${f} und ${op==='add'?'addiere':'subtrahiere'} ${a}. Ich erhalte ${r}. Wie heißt meine Zahl?`,F(x),{fr:1});};
+/* ---------- Umfang Rechteck / Quadrat ---------- */
+const UE=()=>P(['cm','cm','m','dm']);
+G.uR=lv=>{lv=lv||2;const a=R(3,lv===1?10:25),b=R(2,a-1),e=UE();return Q(`Rechteck a = ${a} ${e}, b = ${b} ${e}: u = ___ ${e}`,F(2*(a+b)),{nl:1});};
+G.uQ=lv=>{lv=lv||2;const a=R(2,lv===1?10:30),e=UE();return Q(`Quadrat a = ${a} ${e}: u = ___ ${e}`,F(4*a),{nl:1});};
+G.uQr=lv=>{lv=lv||2;const a=R(3,lv===1?10:25),e=UE();return Q(`Quadrat u = ${4*a} ${e}: a = ___ ${e}`,F(a),{nl:1});};
+G.uRr=lv=>{lv=lv||2;const a=R(5,30),b=R(2,a-1),e=UE();return Q(`Rechteck u = ${2*(a+b)} ${e}, a = ${a} ${e}: b = ___ ${e}`,F(b),{nl:1});};
+G.uMix=()=>{if(Math.random()<.5){const a=R(1,3),b=R(15,95,5);return Q(`Rechteck a = ${a} m, b = ${b} cm: u = ___ cm`,F(2*(100*a+b)),{nl:1});}const a=R(12,48)/10;return Q(`Quadrat a = ${dc(a)} m: u = ___ m`,dc(Math.round(4*a*10)/10),{nl:1});};
+/* ---------- Partnerzahlen ---------- */
+const PP1=[[2,5],[4,25],[20,5],[50,2],[10,10],[25,4],[5,20]],PP2=PP1.concat([[200,5],[500,2],[250,4],[50,20],[25,40],[125,8],[20,50],[25,8],[50,4],[125,4],[250,8],[500,4],[40,25],[2,500],[5,200]]);
+const sw=p=>Math.random()<.5?p:[p[1],p[0]];
+const PP3=PP2.slice(PP1.length);G.pzP=lv=>{const p=sw(P(lv===1?PP1:lv===3?PP3:PP2));return Q(`${F(p[0])} · ${F(p[1])} =`,F(p[0]*p[1]));};
+G.pzL=lv=>{const p=sw(P(lv===1?PP1:PP2));return Q(`${F(p[0])} · ___ = ${F(p[0]*p[1])}`,F(p[1]),{nl:1});};
+G.pzG=lv=>{const p=P([[2,5],[4,25],[20,5],[50,2],[25,4],[125,8],[5,20]]);let m=R(3,19);if(m%10===0)m++;const o=SH([p[0],m,p[1]]);if(o[1]!==m&&Math.random()<.6){o.splice(o.indexOf(m),1);o.splice(1,0,m);}return Q(`${o.map(F).join(' · ')} =`,F(p[0]*p[1]*m));};
+G.pzG2=()=>{const p=P([[25,4],[5,2],[50,2],[125,8],[250,4],[25,4]]),k=R(3,12);return Q(`${p[0]} · ${F(p[1]*k)} =`,F(p[0]*p[1]*k));};
+/* ---------- Prozente im Kopf ---------- */
+G.pkV=lv=>{lv=lv||2;const p=P(lv===1?[50,10]:lv===2?[50,10,25,20,1,5]:[75,30,15,25,20,5,200]);
+ const st={50:2,10:10,100:1,25:4,20:5,1:100,5:20,75:4,30:10,15:20,200:1}[p];const g=st*R(lv===1?2:3,lv===1?40:60);const r=g*p/100;if(!Number.isInteger(r))return G.pkV(lv);
+ const u=P(['€','€','kg','m','']);return Q(`${p} % von ${F(g)}${u?' '+u:''} =`,F(r)+(u?' '+u:''));};
+G.pkR=()=>{const p=P([10,10,50,25,20,1]),w=R(3,40);const g=w*100/p;return Q(`${p} % sind ${F(w)} € → 100 % = ___ €`,F(g),{nl:1});};
+G.pkW=()=>{const p=P([50,25,10,20,75,5]),st={50:2,25:4,10:10,20:5,75:4,5:20}[p],gg=st*R(2,30),w=gg*p/100;if(!Number.isInteger(w))return G.pkW();return Q(`${F(w)} von ${F(gg)} = ___ %`,String(p),{nl:1});};
+/* ---------- Brüche, Dezimalzahlen, Prozent auswendig ---------- */
+const BL={1:[[1,2],[1,4],[3,4],[1,10]],2:[[1,2],[1,4],[3,4],[1,10],[1,5],[2,5],[3,5],[4,5],[3,10],[7,10]],3:[[1,2],[1,4],[3,4],[1,10],[1,5],[2,5],[4,5],[3,10],[1,8],[3,8],[1,20],[1,100],[1,25],[1,50]]};
+const bp=lv=>P(BL[lv||2]);
+G.bdD=lv=>{const [a,b]=bp(lv);return Q(`${FR(a,b)} =`,nr(a/b),{L:8});};
+G.bdB=lv=>{const [a,b]=bp(lv);return Q(`${nr(a/b)} = (Bruch)`,FR(a,b));};
+G.bdP=lv=>{const [a,b]=bp(lv);return Q(`${FR(a,b)} = ___ %`,nr(a/b*100),{nl:1,L:10});};
+G.bdPB=lv=>{const [a,b]=bp(lv);return Q(`${nr(a/b*100)} % = (Bruch)`,FR(a,b));};
+G.bdDP=lv=>{const [a,b]=bp(lv);return Q(`${nr(a/b)} = ___ %`,nr(a/b*100),{nl:1});};
+G.bdTri=lv=>{const [a,b]=bp(lv);return Q(`${FR(a,b)} = ___ = ___ %`,`${nr(a/b)} | ${nr(a/b*100)}`,{nl:1,L:26});};
+/* ---------- Themen ---------- */
+Object.assign(TH,{
+ lg:['Logik und Zahlenrätsel',[['lgFolge','lgLuecke','lgSym'],['lgFolge','lgLuecke','lgSym','lgDenk'],['lgFolge','lgLuecke','lgSym','lgDenk']]],
+ zstr:['Zahlenstrahl und Nachbarzahlen',[['zsX','zsMitte','zsNbr'],['zsX','zsMitte','zsNbr'],['zsX','zsMitte','zsNbr']]],
+ umf:['Umfang Rechteck und Quadrat',[['uR','uQ'],['uR','uQ','uQr','uRr'],['uRr','uQr','uMix','uR']]],
+ pzz:['Partnerzahlen (25 · 4, 20 · 5 …)',[['pzP','pzL'],['pzP','pzL','pzG'],['pzP','pzG','pzG2','pzL']]],
+ pzk:['Prozente im Kopf (ab 3. Kl.)',[['pkV'],['pkV','pkV','pkR'],['pkV','pkR','pkW']]],
+ bdz:['Brüche ↔ Dezimalzahlen auswendig (ab 3. Kl.)',[['bdD','bdB'],['bdD','bdB'],['bdD','bdB']]],
+ bdp:['Brüche ↔ Prozent auswendig (ab 3. Kl.)',[['bdP','bdPB'],['bdP','bdPB','bdDP'],['bdP','bdPB','bdDP','bdTri']]]});
+/* sach ans Ende */
+{const s=TH.sach;delete TH.sach;TH.sach=s;}
+const THO=()=>Object.entries(TH).map(([k,v])=>[k,v[0]]);
+if(RQP.mft)RQP.mft.forEach(e=>{if(e[0]==='th')e[2]=[['plan','Wochenplan (Thema je nach Tag)'],...THO()];if(e[0]==='th2')e[2]=[['-','kein 2. Thema'],...THO().filter(x=>x[0]!=='sach')];});
+/* ---------- mehr Sachaufgaben (jugendnah, alle verschieden) ---------- */
+SA[1].push(
+ ()=>{const w=R(3,9),n=R(4,12);return Q(`Tim spart jede Woche ${w} € für ein neues Videospiel. Wie viel Geld hat er nach ${n} Wochen?`,`${n} · ${w} = ${n*w}. Er hat ${n*w} €.`);},
+ ()=>{const g=R(5,8),k=4*g;return Q(`In einer Klasse sind ${k} Kinder. Für ein Projekt werden Vierergruppen gebildet. Wie viele Gruppen gibt es?`,`${k} : 4 = ${g}. Es gibt ${g} Gruppen.`);},
+ ()=>{const p=R(7,11),q=R(3,6),n=3;return Q(`Ein Kinoticket kostet ${p} €, ein Popcorn ${q} €. Drei Freunde kaufen jeweils ein Ticket und ein Popcorn. Wie viel bezahlen sie zusammen?`,`${n} · (${p} + ${q}) = ${n*(p+q)}. Sie bezahlen ${n*(p+q)} €.`);},
+ ()=>{const s=R(12,25),d=R(6,12);return Q(`Lea liest jeden Tag ${s} Seiten. Ihr Buch hat ${s*d} Seiten. Wie viele Tage braucht sie für das ganze Buch?`,`${s*d} : ${s} = ${d}. Sie braucht ${d} Tage.`);},
+ ()=>{const a=R(3,8),b=R(6,15),c=R(2,9);return Q(`Ein Basketballteam trifft ${a} Dreier, ${b} Zweier und ${c} Freiwürfe (je 1 Punkt). Wie viele Punkte hat das Team?`,`${a} · 3 + ${b} · 2 + ${c} = ${3*a+2*b+c}. Das Team hat ${3*a+2*b+c} Punkte.`);},
+ ()=>{const p=R(80,100),h=R(2,4),v=15;return Q(`Ein Handy-Akku ist zu ${p} % geladen. Beim Spielen verbraucht er ${v} % pro Stunde. Wie viel Prozent sind nach ${h} Stunden noch übrig?`,`${p} ${M} ${h} · ${v} = ${p-h*v}. Es sind noch ${p-h*v} % übrig.`);});
+SA[2].push(
+ ()=>{const p=P([5.99,6.99,7.99,9.99]);return Q(`Ein Musik-Streaming-Abo kostet ${eu(p)} € pro Monat. Wie viel kostet es in einem Jahr?`,`12 · ${eu(p)} = ${eu(12*p)}. Es kostet ${eu(12*p)} € im Jahr.`);},
+ ()=>{const n=R(3,5),p=P([8.5,9.5,10.5,11.5,12.5]),f=4;return Q(`Vier Freunde bestellen ${n} Pizzen zu je ${eu(p)} € und teilen die Rechnung gerecht. Wie viel zahlt jeder?`,`${n} · ${eu(p)} = ${eu(n*p)}; ${eu(n*p)} : 4 = ${eu(n*p/4)}. Jeder zahlt ${eu(n*p/f)} €.`);},
+ ()=>{const a=R(80,110),b=R(50,70),r=3;return Q(`Ein Sportplatz ist ${a} m lang und ${b} m breit. Lena läuft ${r} Runden um den Platz. Wie viele Meter läuft sie?`,`u = 2 · (${a} + ${b}) = ${2*(a+b)} m; ${r} · ${2*(a+b)} = ${F(r*2*(a+b))}. Sie läuft ${F(r*2*(a+b))} m.`);},
+ ()=>{const v=P([1.5,1,2]),g=P([0.25,0.2,0.5]);const n=Math.round(v/g);return Q(`Eine Flasche Eistee enthält ${dc(v)} l. Wie viele Gläser zu ${dc(g)} l kann man damit füllen?`,`${dc(v)} : ${dc(g)} = ${n}. Man kann ${n} Gläser füllen.`);},
+ ()=>{const s=P([12,15,20,25]),k=R(6,15);return Q(`Jakob lädt ein Video mit ${s*k} MB hoch. Pro Sekunde werden ${s} MB hochgeladen. Wie viele Sekunden dauert das?`,`${s*k} : ${s} = ${k}. Es dauert ${k} Sekunden.`);},
+ ()=>{const p=R(12,25),k=R(3,6),r=P([2.5,3.5,4.5]);return Q(`Ein Klettergarten kostet ${p} € Eintritt. ${k} Freunde gehen hin und jeder kauft noch ein Getränk um ${eu(r)} €. Wie viel geben sie zusammen aus?`,`${k} · (${p} + ${eu(r)}) = ${eu(k*(p+r))}. Sie geben ${eu(k*(p+r))} € aus.`);});
+SA[3].push(
+ ()=>{const p=R(4,12)*10,r=P([10,20,25,30]);return Q(`Eine Jacke kostet ${p} €. Im Sale gibt es ${r} % Rabatt. Wie viel kostet die Jacke jetzt?`,`${r} % von ${p} = ${p*r/100}; ${p} ${M} ${p*r/100} = ${p-p*r/100}. Sie kostet ${p-p*r/100} €.`);},
+ ()=>{const g=P([200,300,400]),p=4,n=P([6,8,10,12]);return Q(`Für ${p} Personen braucht man ${g} g Nudeln. Wie viel Gramm Nudeln braucht man für ${n} Personen?`,`1 Person: ${g} : ${p} = ${g/p} g; ${n} Personen: ${n} · ${g/p} = ${F(n*g/p)} g.`);},
+ ()=>{const p=R(4,8)*10;return Q(`Ein Konzertticket kostet ${p} €. Dazu kommen 10 % Vorverkaufsgebühr. Wie viel kostet das Ticket insgesamt?`,`10 % von ${p} = ${p/10}; ${p} + ${p/10} = ${p+p/10}. Es kostet ${p+p/10} €.`);},
+ ()=>{const k=P([20,25,30]);const [a,b]=P([[3,5],[2,5],[4,5],[1,5]]);return Q(`In einer Klasse sind ${k} Kinder. ${a}/${b} davon fahren mit dem Bus zur Schule. Wie viele Kinder sind das?`,`${k} : ${b} · ${a} = ${k/b*a}. Es sind ${k/b*a} Kinder.`);},
+ ()=>{const a=R(6,10),b=R(3,5),t=P([1.2,1.5,2]);return Q(`Ein Pool ist ${a} m lang, ${b} m breit und ${dc(t)} m tief. Wie viele m³ Wasser passen hinein?`,`${a} · ${b} · ${dc(t)} = ${dc(a*b*t)}. Es passen ${dc(a*b*t)} m³ hinein.`);},
+ ()=>{const n=12,r=R(25,45),p=Math.round(n*r*0.9/10)*10;return Q(`Ein Handy kostet ${p} €. Man kann es auch in ${n} Raten zu je ${r} € bezahlen. Wie viel mehr zahlt man bei Ratenzahlung?`,`${n} · ${r} = ${n*r}; ${n*r} ${M} ${p} = ${n*r-p}. Man zahlt ${n*r-p} € mehr.`);});
+SA[4].push(
+ ()=>{const k=P([400,500,800,1000,1200]),z=P([2,3]);return Q(`Mia legt ${F(k)} € auf ein Sparkonto mit ${z} % Zinsen pro Jahr. Wie viel Geld hat sie nach einem Jahr?`,`${z} % von ${F(k)} = ${F(k*z/100)}; ${F(k)} + ${F(k*z/100)} = ${F(k+k*z/100)}. Sie hat ${F(k+k*z/100)} €.`);},
+ ()=>{const v=20,s=P([4,5,7,8,10]);return Q(`Ein E-Scooter fährt durchschnittlich ${v} km/h. Wie viele Minuten braucht Elias für ${s} km?`,`${s} : ${v} = ${dc(s/v)} h = ${s*3} min. Er braucht ${s*3} Minuten.`);},
+ ()=>{const g=P([9,12,15]),gb=P([1.5,2,2.5]),n=R(3,8);return Q(`Ein Handytarif kostet ${g} € Grundgebühr pro Monat und ${eu(gb)} € für jedes zusätzliche GB. Lara braucht ${n} zusätzliche GB. Wie viel zahlt sie in diesem Monat?`,`${g} + ${n} · ${eu(gb)} = ${eu(g+n*gb)}. Sie zahlt ${eu(g+n*gb)} €.`);},
+ ()=>{const t=R(5,12);return Q(`Lisa ist dreimal so alt wie ihr Bruder Tom. Zusammen sind sie ${4*t} Jahre alt. Wie alt ist Tom?`,`x + 3x = ${4*t} → 4x = ${4*t} → x = ${t}. Tom ist ${t} Jahre alt.`);},
+ ()=>{const d=P([0.8,1,1.2,1.5]);return Q(`Ein runder Tisch hat einen Durchmesser von ${dc(d)} m. Wie groß ist sein Umfang? (π ≈ 3,14)`,`u = d · π = ${dc(d)} · 3,14 = ${dc(Math.round(d*3.14*1000)/1000)} m.`);},
+ ()=>{const n=R(3,12)*10;return Q(`Ein Paar Sneaker kostet ohne Mehrwertsteuer ${n} €. Dazu kommen 20 % MwSt. Wie viel kosten die Sneaker im Geschäft?`,`20 % von ${n} = ${n/5}; ${n} + ${n/5} = ${n*1.2}. Sie kosten ${F(n*1.2)} €.`);});
+}catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
