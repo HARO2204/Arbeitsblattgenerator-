@@ -15306,11 +15306,11 @@ const TH={
  form:['Formeln: Umfang, Fläche, Volumen',[['geoU','geoA','geoQU'],['geoU','geoA','geoDr','geoQd'],['geoDr','geoPa','geoQd','geoKr','geoPr']]],
  st:['Statistik und Schlussrechnung',[['stMw','slR'],['stMw','stMed','slR'],['stMed','slV','slR']]],
  sach:['Sachaufgaben',null]};
-function mfTheme(kl,th,th2,lv,n){if(th==='sach'){const pool=SA[kl];return {t:TH.sach[0],T:SH(pool).slice(0,lv===1?1:2).map(f=>Object.assign(f(),{fr:1}))};}
+function mfTheme(kl,th,th2,lv,n){if(th==='sach'){const pool=SA[kl];return {t:TH.sach[0],T:SH(pool).slice(0,lv===1?1:2).map(f=>Object.assign(f(),{fr:1,sa:1}))};}
  let K=TH[th][1][lv-1].slice(),t=TH[th][0];if(th2&&th2!=='-'&&TH[th2]&&TH[th2][1]){K=K.concat(TH[th2][1][lv-1]);t+=' + '+TH[th2][0];}
- const T=[],seen=new Set();let g=0,i=0;K=SH(K);while(T.length<n&&g++<300){const x=G[K[i++%K.length]]();if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T};}
-function mfDay(kl,tag,lv,n){const [t,L]=MF[kl][tag],K=L[lv-1];if(tag==='fr'){const S=SA[kl==='1'?1:+kl-0];return {t,T:K.map(k=>{const pool=SA[kl];return pool[(k-1+R(0,pool.length-1))%pool.length]();}).map(x=>Object.assign(x,{fr:1}))};}
- const T=[],seen=new Set();let g=0;while(T.length<n&&g++<200){const x=G[K[T.length%K.length]]();if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T};}
+ const T=[],seen=new Set();let g=0,i=0;K=SH(K);while(T.length<n&&g++<300){const g=K[i++%K.length],x=G[g]();x.g=g;if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T,K:[...new Set(K)]};}
+function mfDay(kl,tag,lv,n){const [t,L]=MF[kl][tag],K=L[lv-1];if(tag==='fr'){const S=SA[kl==='1'?1:+kl-0];return {t,T:K.map(k=>{const pool=SA[kl];return pool[(k-1+R(0,pool.length-1))%pool.length]();}).map(x=>Object.assign(x,{fr:1,sa:1}))};}
+ const T=[],seen=new Set();let g=0;while(T.length<n&&g++<200){const g=K[T.length%K.length],x=G[g]();x.g=g;if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T,K:[...new Set(K)]};}
 function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo',th=it.th||'plan',n=+it.n||0;
  const one=(k,dth,nn,lk,fix)=>{lk=lk||lv;let b;if(dth==='plan')b=Object.assign({k,lv:lk},mfDay(kl,k==='frei'?'mo':k,lk,nn));else b=Object.assign({k,lv:lk},mfTheme(kl,dth,it.th2,lk,nn));if(tag==='woche'&&!fix&&b.T.filter(t=>t.w==='f'||t.fr).length>2)b.T=b.T.slice(0,Math.min(b.T.length,n?Math.min(n,4):4));return b;};
  if(tag==='woche'){it.d=Object.keys(TAGE).map(k=>{const dt=it['t_'+k]&&it['t_'+k]!=='auto'?it['t_'+k]:th,nk=+it['n_'+k]||0,lk=+it['l_'+k]||0;return one(k,dt,nk||n||6,lk,!!nk);});return;}
@@ -15318,12 +15318,16 @@ function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo',th=it.th||
  if(it.kn==='neu'){it.d=Array.from({length:kp},()=>one(tag,th,nn));return;}
  const b=one(tag,th,nn);it.d=Array.from({length:kp},()=>b);}
 const ST=lv=>'★'.repeat(lv),MC={1:['#c62828','#ffebee','#b71c1c'],2:['#d4a000','#fff8d6','#8a6500'],3:['#2e7d32','#e8f5e9','#1b5e20']};
-function mfBlock(it,b,wk){const lv=b.lv||+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co=wk?3:(+it.co||2);let k=0;
+function mfBlock(it,b,wk,bi){bi=bi||0;const W=(t,h)=>{const ti=b.T.indexOf(t);return `<div class="mfq" style="position:relative">${h}<span class="mfc no-print"><button type="button" title="Neu würfeln (gleiche Aufgabenart)" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();mfRe(${it.id},${bi},${ti},'w')">🎲</button>${(b.K&&b.K.length>1&&t.g)||t.sa?`<button type="button" title="Andere Aufgabenart" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();mfRe(${it.id},${bi},${ti},'a')">🔀</button>`:''}<button type="button" title="Platz tauschen mit der nächsten Aufgabe" onpointerdown="event.stopPropagation()" onclick="event.stopPropagation();mfRe(${it.id},${bi},${ti},'s')">⇄</button></span></div>`;};const lv=b.lv||+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co=wk?3:(+it.co||2);let k=0;
  let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:${MC[lv][1]};border:1.5px solid ${MC[lv][0]};border-radius:7px;padding:1px 8px;margin-bottom:4px;flex-wrap:wrap;gap:0 .8em"><span style="font-weight:800;color:${MC[lv][2]}">💪 Mathe-Fit · ${TAGE[b.k]?TAGE[b.k]+' · ':''}${b.t} <span style="color:${MC[lv][0]}">${ST(lv)}</span></span><span style="font-size:.85em;white-space:nowrap">${wk?'':'Name: __________ '}Zeit: _____ min · Richtig: ____ / ${b.T.length}</span></div>`;
- if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:.3em 1.2em">`+sh.map(t=>tRow(it,t,k++)).join('')+'</div>';
- if(full.length)h+=`<div style="margin-top:.3em">`+full.map(t=>t.fr?`<div style="margin-bottom:.35em"><div style="display:flex;gap:.3em"><b>${String.fromCharCode(97+k++)})</b><span>${t.q}</span></div><div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.4em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`:tRow(it,t,k++,true)).join('')+'</div>';
+ if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:.3em 1.2em">`+sh.map(t=>W(t,tRow(it,t,k++))).join('')+'</div>';
+ if(full.length)h+=`<div style="margin-top:.3em">`+full.map(t=>W(t,t.fr?`<div style="margin-bottom:.35em"><div style="display:flex;gap:.3em"><b>${String.fromCharCode(97+k++)})</b><span>${t.q}</span></div><div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.4em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`:tRow(it,t,k++,true))).join('')+'</div>';
  return h;}
-function mftBlk(it){const d=it.d||[],wk=it.tag==='woche';return `<div style="line-height:1.35">`+d.map((b,i)=>`<div class="mfb" style="break-inside:avoid;${i?'border-top:1.5px dashed #999;padding-top:6px;margin-top:6px;position:relative':''}">${i&&!wk?'<span style="position:absolute;top:-.8em;left:-.2em;background:#fff;font-size:.8em">✂</span>':''}${mfBlock(it,b,wk)}</div>`).join('')+'</div>';}
+window.mfRe=function(id,bi,ti,m){const it=items.find(x=>x.id===id);if(!it||!it.d||!it.d[bi])return;const b=it.d[bi],t=b.T[ti];if(!t)return;const kl=it.kl||'1';
+ if(m==='s'){const T=b.T,big=x=>!!(x.w==='f'||x.fr);let j=-1;for(let q=1;q<T.length;q++){const c=(ti+q)%T.length;if(big(T[c])===big(t)){j=c;break;}}if(j<0){toast('Keine passende Aufgabe zum Tauschen');return;}rec();[T[ti],T[j]]=[T[j],T[ti]];}
+ else{const has=new Set(b.T.map(x=>x.q));let x=null;for(let g=0;g<40&&!x;g++){let y;if(t.sa){const P=SA[kl];y=Object.assign(P[R(0,P.length-1)](),{fr:1,sa:1});}else{let key=t.g;if(m==='a'&&b.K){const O=b.K.filter(k=>k!==t.g);if(O.length)key=O[R(0,O.length-1)];}if(!key||!G[key]){toast('Diese Aufgabe bitte einmal neu erzeugen (🎲 oben)');return;}y=G[key]();y.g=key;}if(!has.has(y.q))x=y;}if(!x){toast('Keine neue Aufgabe gefunden');return;}rec();b.T[ti]=x;}
+ if(it.tag!=='woche'&&it.kn!=='neu')it.d=it.d.map(()=>b);render();};
+function mftBlk(it){const d=it.d||[],wk=it.tag==='woche';return `<div style="line-height:1.35">`+d.map((b,i)=>`<div class="mfb" style="break-inside:avoid;${i?'border-top:1.5px dashed #999;padding-top:6px;margin-top:6px;position:relative':''}">${i&&!wk?'<span style="position:absolute;top:-.8em;left:-.2em;background:#fff;font-size:.8em">✂</span>':''}${mfBlock(it,b,wk,i)}</div>`).join('')+'</div>';}
 /* ================= Anbindung an den Generator ================= */
 {const _g=rqGen,_b=rqBlk,_s=rqSol,DISP=['show','co','fs','nc','rl'];
  rqGen=function(it){if(!SCT.includes(it.type))return _g(it);const kk=window.__GQK,fr=window.__GQF;window.__GQK=null;window.__GQF=0;if(!fr&&kk&&DISP.includes(kk)&&it.d)return;if(it.type==='mft'&&!fr&&(kk==='kp'||kk==='kn')&&it.d&&it.d[0]&&it.tag!=='woche'&&it.kn!=='neu'){it.d=Array.from({length:Math.max(1,+it.kp||1)},()=>it.d[0]);return;}if(it.type==='scr')return scrGen(it);if(it.type==='mft')return mftGen(it);it.d=[1];};
@@ -15987,6 +15991,9 @@ function panel(){const old=document.getElementById('g-mfw');if(old)old.remove();
 const _rp=renderProps;renderProps=function(){const r=_rp.apply(this,arguments);try{panel();}catch(e){console.error(e);}return r;};
 document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.mfw)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();const k=t.dataset.mfw;it[k]=k[0]==='t'?t.value:+t.value;window.__GQF=1;rqGen(it);render();});
 }catch(e){console.error(e);}})();
+
+/* Mathe-Fit: einzelne Aufgaben würfeln/tauschen – Knöpfe nur am Bildschirm */
+(function(){const st=document.createElement('style');st.textContent='.mfc{display:none;position:absolute;right:0;top:-3px;gap:2px;z-index:9}.item.sel .mfq:hover>.mfc{display:flex}.mfc button{font:12px system-ui,sans-serif;line-height:1;padding:2px 5px;border:1px solid var(--acc);background:#fff;color:var(--acc);border-radius:6px;cursor:pointer;box-shadow:0 1px 3px #0003}.item.sel .mfq:hover{background:rgba(255,200,80,.18)}@media print{.mfc{display:none!important}}';document.head.appendChild(st);})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
