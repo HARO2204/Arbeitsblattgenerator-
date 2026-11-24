@@ -16688,6 +16688,81 @@ table.kg-t{border-collapse:collapse;margin-top:3px}table.kg-t td{border:1px soli
 window.KNG_TEST={A,gen};
 }catch(e){console.error(e);}})();
 
+/* ===== Online-Übung: IKM, Bildungsstandards, Knobelaufgaben – Beamer (Lehrkraft) oder selbst üben (Schüler/innen) ===== */
+(function(){try{const BS=window.BST_TEST,IK=window.IKM_TEST,KG=window.KNG_TEST,T0=window.SCR_TEST;if(!BS||!IK||!KG||!T0)return;const {P,SH}=T0.H;
+const MIR='https://haro2204.github.io/Arbeitsblattgenerator-/';
+const base=()=>{let v='';try{v=localStorage.getItem('smbase')||'';}catch(e){}if(v&&/github\.io/.test(v))return v.replace(/#.*$/,'');if(/github\.io$/.test(location.hostname))return location.origin+location.pathname;return MIR;};
+const SRC={ikm:'IKM-Testformat (iKMPLUS)',bist5:'Bildungsstandards 5. Schulstufe',bist6:'Bildungsstandards 6. Schulstufe',bist7:'Bildungsstandards 7. Schulstufe',bist8:'Bildungsstandards 8. Schulstufe',knobel56:'Knobelaufgaben 1.–2. Klasse',knobel78:'Knobelaufgaben 3.–4. Klasse',mix:'Gemischt (IKM + Knobeln)'};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+let S={src:'ikm',md:'sus',n:10,L:[],k:0,sc:0,done:{}};
+function one(src){if(src==='mix')src=P(['ikm','ikm','knobel56','knobel78']);
+ if(src==='ikm'){const i=R0(IK.A.length),a=IK.A[i];let d=null;for(let g=0;g<60&&!d;g++)d=a.g();if(a.gx)d=a.gx(d);return {k:'ikm',i,d,a};}
+ if(src.startsWith('knobel')){const kl=src.slice(6),i=R0(KG.A.length),a=KG.A[i];let d=null;for(let g=0;g<300&&!d;g++)d=a.g(kl);return {k:'kng',i,d,a};}
+ const st=+src.slice(4),idx=BS.A.map((a,i)=>i).filter(i=>BS.A[i].st===st),i=P(idx),a=BS.A[i];let d=null;for(let g=0;g<30&&!d;g++)d=a.g();return {k:'bst',i,d,a};}
+function R0(n){return Math.floor(Math.random()*n);}
+function build(){const L=[],used=new Set();let g=0;while(L.length<S.n&&g++<400){const t=one(S.src);if(!t.d)continue;const key=t.k+t.i;if(used.has(key)&&g<200)continue;used.add(key);L.push(t);}if(S.src.startsWith('knobel'))L.sort((x,y)=>x.a.p-y.a.p);S.L=L;S.k=0;S.sc=0;S.done={};}
+/* ---------- Oberfläche ---------- */
+function ov(){let o=document.getElementById('onl');if(o)return o;o=document.createElement('div');o.id='onl';document.body.appendChild(o);
+ o.addEventListener('click',e=>{const b=e.target.closest('[data-o]');if(!b)return;const a=b.dataset.o;
+  if(a==='x'){o.remove();if(/^#ueb-/.test(location.hash))history.replaceState(null,'',location.pathname+location.search);return;}
+  if(a==='new'){build();draw();return;}if(a==='prev'){if(S.k>0){S.k--;draw();}return;}if(a==='next'){if(S.k<S.L.length)S.k++;draw();return;}
+  if(a==='chk'){check();return;}if(a==='self'){const dn=S.done[S.k];if(!dn||!dn.self||dn.ok!=null)return;dn.ok=b.dataset.v==='1';if(dn.ok)S.sc++;draw(true);return;}
+  if(a==='qr'){qr();return;}
+  if(a==='opt'){const t=S.L[S.k];if(S.done[S.k]&&S.md==='sus')return;const box=b.closest('[data-grp]');box.querySelectorAll('[data-o="opt"]').forEach(x=>x.classList.toggle('on',x===b));return;}});
+ o.addEventListener('change',e=>{const t=e.target;if(t.dataset.s){S[t.dataset.s]=t.dataset.s==='n'?+t.value:t.value;build();draw();}});
+ return o;}
+function head(){const sel=(k,L)=>`<select data-s="${k}">${L.map(([v,t])=>`<option value="${v}"${String(S[k])===String(v)?' selected':''}>${t}</option>`).join('')}</select>`;
+ return `<div class="on-top"><b>💻 Online-Übung</b>${sel('src',Object.entries(SRC))}${sel('md',[['sus','🧑‍🎓 Selbst üben (Schüler/innen)'],['lk','📽️ Lehrkraft (Beamer)']])}${sel('n',[[5,'5 Aufgaben'],[10,'10 Aufgaben'],[15,'15 Aufgaben'],[20,'20 Aufgaben']])}<button data-o="new">🔄 Neue Aufgaben</button><button data-o="qr">📱 Link / QR für Schüler/innen</button><span style="flex:1"></span><button data-o="x" title="Schließen">✕</button></div>`;}
+function tags(t){if(t.k==='ikm')return `${t.a.H} · ${t.a.I} · ${t.a.sw}`;if(t.k==='kng')return `${t.a.p} Punkte`;return `${t.a.H.join(' · ')} · ${t.a.I.join(' · ')} · ${t.a.K}`;}
+function body(t,show){const d=t.d,lk=S.md==='lk';
+ if(t.k==='bst')return `<div class="on-st">${t.a.h(d,show)}</div>${!show&&!lk?'<textarea class="on-ta" placeholder="Deine Lösung / Notizen …"></textarea>':''}`;
+ if(t.k==='kng'){const op=d.o.map((x,j)=>`<button class="on-op${show&&j===d.ok?' good':''}${show&&S.done[S.k]&&S.done[S.k].pick===j&&j!==d.ok?' bad':''}" data-o="opt" data-j="${j}"><b>(${'ABCDE'[j]})</b> ${x}</button>`).join('');return `<div class="on-st" style="display:flex;gap:1em;flex-wrap:wrap"><div style="flex:1;min-width:16em">${d.q}</div>${d.fig?`<div>${d.fig}</div>`:''}</div><div class="on-ops" data-grp="1">${op}</div>`;}
+ let a='';const pk=S.done[S.k]&&S.done[S.k].pick;
+ if(d.ty==='sc')a=`<div class="on-ops on-col" data-grp="1">${d.opts.map((x,j)=>`<button class="on-op${show&&j===d.ok?' good':''}${show&&pk===j&&j!==d.ok?' bad':''}" data-o="opt" data-j="${j}"><span class="on-r"></span>${x}</button>`).join('')}</div>`;
+ else if(d.ty==='rf'){const L=d.lab||['Richtig','Falsch'];a=`<table class="on-rf"><tr><th></th><th>${L[0]}</th><th>${L[1]}</th></tr>${d.opts.map((x,j)=>{const p=pk&&pk[j];return `<tr data-grp="${j}"><td>${x}</td>${[0,1].map(v=>`<td><button class="on-op on-rb${show&&(v===0)===d.ok[j]?' good':''}${show&&p!=null&&p===v&&(v===0)!==d.ok[j]?' bad':''}" data-o="opt" data-v="${v}"><span class="on-r"></span></button></td>`).join('')}</tr>`;}).join('')}</table>`;}
+ else if(d.ty==='inp')a=`<div class="on-in">${d.pre||''}<input class="on-inp" type="text" inputmode="text" autocomplete="off">${d.unit?' '+d.unit:''}${show?`<span class="on-sol">✔ ${d.sol}</span>`:''}</div>`;
+ else a=`<textarea class="on-ta" placeholder="Schreibe deine Erklärung …"></textarea>${show?`<div class="on-sol">Musterlösung: ${d.sol}</div>`:''}`;
+ return `<div class="on-st">${d.st}</div><div class="on-sep"></div><div class="on-q">${d.q}</div>${a}`;}
+function draw(keep){const o=ov();const lk=S.md==='lk';o.className=lk?'lk':'';
+ if(S.k>=S.L.length){const n=S.L.length;o.innerHTML=head()+`<div class="on-main"><div class="on-card" style="text-align:center"><div style="font-size:2.2em">🎉</div><h2>Geschafft!</h2>${lk?'':`<p style="font-size:1.3em">Du hast <b>${S.sc} von ${n}</b> Aufgaben richtig gelöst.</p><p>${S.sc>=n*.8?'Super – du bist fit für die Testung! 💪':S.sc>=n*.5?'Gut gemacht! Schau dir die Fehler noch einmal an.':'Üb weiter – jede Runde bringt dich weiter!'}</p>`}<button class="on-big" data-o="new">🔄 Neue Runde</button> <button class="on-big" data-o="prev">◀ Zurück</button></div></div>`;return;}
+ const t=S.L[S.k],dn=S.done[S.k],show=!!(dn&&(dn.shown||dn.self||dn.ok!=null));
+ const ctrl=lk?`<button class="on-big" data-o="chk">${show?'Lösung ist eingeblendet':'💡 Lösung einblenden'}</button>`:(!dn?`<button class="on-big" data-o="chk">✔ Prüfen</button>`:dn.self&&dn.ok==null?`<span>Hattest du es richtig? </span><button class="on-big good" data-o="self" data-v="1">👍 Ja</button> <button class="on-big bad" data-o="self" data-v="0">👎 Nein</button>`:`<span class="on-fb ${dn.ok?'good':'bad'}">${dn.ok?'✅ Richtig!':'❌ Leider nicht – schau dir die Lösung an.'}</span>`);
+ o.innerHTML=head()+`<div class="on-main"><div class="on-bar"><span>Aufgabe ${S.k+1} von ${S.L.length}</span><span class="on-tag">${tags(t)}</span>${lk?'':`<span>⭐ ${S.sc} richtig</span>`}</div><div class="on-card">${body(t,show)}</div><div class="on-nav"><button class="on-big" data-o="prev"${S.k?'':' disabled'}>◀</button>${ctrl}<button class="on-big" data-o="next">${S.k===S.L.length-1?'Ende ▶':'Weiter ▶'}</button></div></div>`;
+ if(dn&&dn.pick!=null&&t.k!=='bst'){const c=o.querySelector('.on-card');if(t.d.ty==='rf')dn.pick.forEach((v,j)=>{const r=c.querySelector(`tr[data-grp="${j}"]`);if(r&&v!=null){const b=r.querySelector(`[data-v="${v}"]`);if(b)b.classList.add('on');}});else{const b=c.querySelector(`[data-j="${dn.pick}"]`);if(b)b.classList.add('on');}}
+ if(dn&&dn.txt!=null){const x=o.querySelector('.on-inp,.on-ta');if(x)x.value=dn.txt;}}
+const num=s=>{const m=String(s).replace(/\s| | /g,'').replace(',','.').match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):NaN;};
+function check(){const t=S.L[S.k],d=t.d,o=ov(),c=o.querySelector('.on-card');if(S.done[S.k])return;
+ if(S.md==='lk'){S.done[S.k]={shown:true,pick:pickOf(t,c),txt:(c.querySelector('.on-inp,.on-ta')||{}).value};draw();return;}
+ const pick=pickOf(t,c),txt=(c.querySelector('.on-inp,.on-ta')||{}).value;
+ if(t.k==='bst'){S.done[S.k]={self:true,ok:null,txt};draw();return;}
+ if(t.k==='kng'||d.ty==='sc'){if(pick==null){toast('Bitte zuerst eine Antwort auswählen.');return;}const ok=pick===d.ok;S.done[S.k]={ok,pick};if(ok)S.sc++;draw();return;}
+ if(d.ty==='rf'){if(pick.some(v=>v==null)){toast('Bitte in jeder Zeile ankreuzen.');return;}const ok=pick.every((v,j)=>(v===0)===d.ok[j]);S.done[S.k]={ok,pick};if(ok)S.sc++;draw();return;}
+ if(d.ty==='inp'){if(!txt||!txt.trim()){toast('Bitte zuerst eine Antwort eingeben.');return;}const sol=String(d.sol);if(/[a-zA-Z]/.test(sol.replace(/ca\.|\(± ?\d+\)/g,''))){S.done[S.k]={self:true,ok:null,txt};draw();return;}const tol=(sol.match(/±\s?(\d+)/)||[0,0])[1];const ok=Math.abs(num(txt)-num(sol))<=+tol+1e-9;S.done[S.k]={ok,txt};if(ok)S.sc++;draw();return;}
+ S.done[S.k]={self:true,ok:null,txt};draw();}
+function pickOf(t,c){if(t.d.ty==='rf'&&t.k==='ikm')return t.d.opts.map((_,j)=>{const b=c.querySelector(`tr[data-grp="${j}"] .on`);return b?+b.dataset.v:null;});const b=c.querySelector('[data-o="opt"].on');return b?+b.dataset.j:null;}
+function qr(){const u=base()+'#ueb-'+S.src;const d=document.createElement('div');d.className='on-qr';d.innerHTML=`<div class="on-card" style="max-width:420px;text-align:center"><h3 style="margin-top:0">📱 Übung für Schüler/innen</h3><div>${typeof window.__qrSvg==='function'?window.__qrSvg(u,220):''}</div><div style="word-break:break-all;font-size:.9em;margin:.5em 0"><b>${esc(u)}</b></div><div style="font-size:.85em;color:#555">Mit dem iPad scannen. Die Übung „${SRC[S.src]}“ startet sofort, jedes Mal mit neuen Aufgaben. Die Ergebnisse bleiben nur auf dem Gerät des Kindes.</div><button class="on-big" style="margin-top:.6em" onclick="try{navigator.clipboard.writeText('${u}');toast('Link kopiert.')}catch(e){}">📋 Link kopieren</button> <button class="on-big" onclick="this.closest('.on-qr').remove()">Schließen</button></div>`;ov().appendChild(d);}
+window.onlStart=function(src,md){S.src=src||S.src;S.md=md||S.md;build();draw();};
+const route=()=>{const m=/^#ueb-([a-z0-9]+)$/.exec(location.hash);if(m&&SRC[m[1]])setTimeout(()=>onlStart(m[1],'sus'),500);};route();window.addEventListener('hashchange',route);
+{const st=document.createElement('style');st.textContent=`#onl{position:fixed;inset:0;z-index:99999;background:#f4f6fb;overflow:auto;font:16px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;color:#111}
+#onl .on-top{position:sticky;top:0;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:8px 12px;background:#1f3a8a;color:#fff;z-index:2}#onl .on-top select,#onl .on-top button{font:inherit;font-size:14px;padding:4px 8px;border-radius:6px;border:none}
+#onl .on-main{max-width:960px;margin:0 auto;padding:14px}#onl .on-bar{display:flex;gap:1em;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;color:#333}.on-tag{font-size:.8em;border:1px solid #999;border-radius:10px;padding:0 8px}
+#onl .on-card{background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 10px #0002;overflow-x:auto}#onl.lk .on-card{font-size:1.35em}
+#onl .on-sep{border-top:2px solid #b5c96a;margin:12px 0 8px;max-width:480px}#onl .on-q{font-weight:700;margin-bottom:8px}
+#onl .on-ops{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}#onl .on-col{flex-direction:column;align-items:stretch;max-width:560px}
+#onl .on-op{font:inherit;text-align:left;display:flex;gap:.6em;align-items:center;background:#fff;border:2px solid #ccd;border-radius:10px;padding:6px 12px;cursor:pointer;min-height:2.4em}#onl .on-op.on{border-color:#1f3a8a;background:#e8eefc}
+#onl .on-r{display:inline-block;flex:none;width:1em;height:1em;border:2px solid #777;border-radius:50%}#onl .on-op.on .on-r{background:#1f3a8a;border-color:#1f3a8a}
+#onl .on-op.good{border-color:#2e7d32;background:#e7f5e8}#onl .on-op.bad{border-color:#c62828;background:#fdecea}
+#onl table.on-rf{border-collapse:collapse}#onl .on-rf td,#onl .on-rf th{border-bottom:1px solid #ddd;padding:4px 10px}#onl .on-rb{justify-content:center;min-height:2em;padding:4px 10px}
+#onl .on-ta{width:100%;max-width:640px;min-height:5em;font:inherit;border:2px solid #ccd;border-radius:8px;padding:6px;margin-top:8px}#onl .on-in{display:flex;gap:.5em;align-items:center;flex-wrap:wrap}#onl .on-inp{font:inherit;width:10em;border:2px solid #ccd;border-radius:8px;padding:4px 8px}
+#onl .on-sol{color:#2e7d32;font-weight:700;margin-left:.6em}#onl div.on-sol{margin:.6em 0 0}#onl .sv{color:#c0392b;font-weight:700}
+#onl .on-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}#onl .on-big{font:inherit;font-size:1.05em;padding:8px 16px;border-radius:10px;border:none;background:#1f3a8a;color:#fff;cursor:pointer}#onl .on-big[disabled]{opacity:.35}
+#onl .on-big.good{background:#2e7d32}#onl .on-big.bad{background:#c62828}#onl .on-fb{font-weight:700;font-size:1.1em}#onl .on-fb.good{color:#2e7d32}#onl .on-fb.bad{color:#c62828}
+#onl .on-qr{position:fixed;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;z-index:5;padding:16px}
+#onl table.bst,#onl table.ikt{border-collapse:collapse}#onl table.bst td,#onl table.bst th{border:1px solid #777;padding:3px 7px}#onl .bsb{display:inline-flex;width:.95em;height:.95em;border:1.4px solid #333;vertical-align:middle;margin-right:.3em}#onl .bsm{display:grid;gap:3px}#onl .bsmr{display:flex;gap:.4em}#onl svg{max-width:100%}`;document.head.appendChild(st);}
+(function(){const Pn=document.querySelector('#left .catp[data-c="bist"]');if(!Pn)return;Pn.insertAdjacentHTML('afterbegin',`<div style="display:grid;gap:6px;margin-bottom:10px"><button type="button" style="font:inherit;padding:8px;border-radius:8px;border:1.5px solid #1f3a8a;background:#e8eefc;cursor:pointer;text-align:left" onclick="onlStart('ikm','lk')">📽️ <b>Online-Übung am Beamer</b><br><span style="font-size:12px">Aufgabe zeigen, gemeinsam lösen, dann Lösung einblenden</span></button><button type="button" style="font:inherit;padding:8px;border-radius:8px;border:1.5px solid #2e7d32;background:#e7f5e8;cursor:pointer;text-align:left" onclick="onlStart('ikm','sus')">🧑‍🎓 <b>Online-Übung für Schüler/innen</b><br><span style="font-size:12px">selbst lösen mit sofortiger Rückmeldung – Link/QR fürs iPad</span></button></div>`);})();
+window.ONL_TEST={S,build,draw,check,one};
+}catch(e){console.error(e);}})();
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
