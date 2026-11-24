@@ -15312,13 +15312,13 @@ function mfTheme(kl,th,th2,lv,n){if(th==='sach'){const pool=SA[kl];return {t:TH.
 function mfDay(kl,tag,lv,n){const [t,L]=MF[kl][tag],K=L[lv-1];if(tag==='fr'){const S=SA[kl==='1'?1:+kl-0];return {t,T:K.map(k=>{const pool=SA[kl];return pool[(k-1+R(0,pool.length-1))%pool.length]();}).map(x=>Object.assign(x,{fr:1}))};}
  const T=[],seen=new Set();let g=0;while(T.length<n&&g++<200){const x=G[K[T.length%K.length]]();if(seen.has(x.q))continue;seen.add(x.q);T.push(x);}return {t,T};}
 function mftGen(it){const kl=it.kl||'1',lv=+it.lv||2,tag=it.tag||'mo',th=it.th||'plan',n=+it.n||0;
- const one=(k,dth,nn)=>{let b;if(dth==='plan')b=Object.assign({k},mfDay(kl,k==='frei'?'mo':k,lv,nn));else b=Object.assign({k},mfTheme(kl,dth,it.th2,lv,nn));if(tag==='woche'&&b.T.filter(t=>t.w==='f'||t.fr).length>2)b.T=b.T.slice(0,Math.min(b.T.length,n?Math.min(n,4):4));return b;};
- if(tag==='woche'){it.d=Object.keys(TAGE).map(k=>{const dt=it['t_'+k]&&it['t_'+k]!=='auto'?it['t_'+k]:th;return one(k,dt,n||6);});return;}
+ const one=(k,dth,nn,lk,fix)=>{lk=lk||lv;let b;if(dth==='plan')b=Object.assign({k,lv:lk},mfDay(kl,k==='frei'?'mo':k,lk,nn));else b=Object.assign({k,lv:lk},mfTheme(kl,dth,it.th2,lk,nn));if(tag==='woche'&&!fix&&b.T.filter(t=>t.w==='f'||t.fr).length>2)b.T=b.T.slice(0,Math.min(b.T.length,n?Math.min(n,4):4));return b;};
+ if(tag==='woche'){it.d=Object.keys(TAGE).map(k=>{const dt=it['t_'+k]&&it['t_'+k]!=='auto'?it['t_'+k]:th,nk=+it['n_'+k]||0,lk=+it['l_'+k]||0;return one(k,dt,nk||n||6,lk,!!nk);});return;}
  const nn=n||MFN[lv],kp=Math.max(1,+it.kp||1);
  if(it.kn==='neu'){it.d=Array.from({length:kp},()=>one(tag,th,nn));return;}
  const b=one(tag,th,nn);it.d=Array.from({length:kp},()=>b);}
 const ST=lv=>'★'.repeat(lv),MC={1:['#c62828','#ffebee','#b71c1c'],2:['#d4a000','#fff8d6','#8a6500'],3:['#2e7d32','#e8f5e9','#1b5e20']};
-function mfBlock(it,b,wk){const lv=+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co=wk?3:(+it.co||2);let k=0;
+function mfBlock(it,b,wk){const lv=b.lv||+it.lv||2,full=b.T.filter(t=>t.w==='f'||t.fr),sh=b.T.filter(t=>!(t.w==='f'||t.fr)),co=wk?3:(+it.co||2);let k=0;
  let h=`<div style="display:flex;justify-content:space-between;align-items:center;background:${MC[lv][1]};border:1.5px solid ${MC[lv][0]};border-radius:7px;padding:1px 8px;margin-bottom:4px;flex-wrap:wrap;gap:0 .8em"><span style="font-weight:800;color:${MC[lv][2]}">💪 Mathe-Fit · ${TAGE[b.k]?TAGE[b.k]+' · ':''}${b.t} <span style="color:${MC[lv][0]}">${ST(lv)}</span></span><span style="font-size:.85em;white-space:nowrap">${wk?'':'Name: __________ '}Zeit: _____ min · Richtig: ____ / ${b.T.length}</span></div>`;
  if(sh.length)h+=`<div style="display:grid;grid-template-columns:repeat(${co},1fr);gap:.3em 1.2em">`+sh.map(t=>tRow(it,t,k++)).join('')+'</div>';
  if(full.length)h+=`<div style="margin-top:.3em">`+full.map(t=>t.fr?`<div style="margin-bottom:.35em"><div style="display:flex;gap:.3em"><b>${String.fromCharCode(97+k++)})</b><span>${t.q}</span></div><div style="display:flex;gap:.3em;align-items:flex-end;margin-left:1.4em"><span style="font-size:.9em">A:</span><span class="tlln" style="flex:1;min-height:1.45em;border-bottom:1px solid #000">${tlSv(it,t.a)}</span></div></div>`:tRow(it,t,k++,true)).join('')+'</div>';
@@ -15334,10 +15334,9 @@ RQP.scr=[['kl','sel',KL,'Klasse'],['ver','sel',[['A','Version A (Herbst)'],['B',
 RQP.sca=[['kl','sel',KL,'Klasse'],['n','sel',[[15,'15 Kinder'],[20,'20 Kinder'],[25,'25 Kinder'],[28,'28 Kinder']],'Zeilen']];
 const THO=()=>Object.entries(TH).map(([k,v])=>[k,v[0]]);
 RQP.mft=[['kl','sel',[['1','1. Klasse'],['2','2. Klasse'],['3','3. Klasse'],['4','4. Klasse']],'Klasse'],['tag','sel',[['mo','Montag'],['di','Dienstag'],['mi','Mittwoch'],['do','Donnerstag'],['fr','Freitag'],['frei','ohne Wochentag'],['woche','ganze Woche auf einem Blatt']],'Tag'],['th','sel',[['plan','Wochenplan (Thema je nach Tag)'],...THO()],'Thema'],
- ...['mo','di','mi','do','fr'].map(k=>['t_'+k,'sel',[['auto','wie oben bei „Thema“'],['plan','Wochenplan-Thema'],...THO()],'Thema am '+TAGE[k],it=>it.tag==='woche']),
  ['th2','sel',[['-','kein 2. Thema'],...THO().filter(x=>x[0]!=='sach')],'2. Thema dazumischen'],['lv','sel',[['1','★ Basis (Gruppe Rot)'],['2','★★ Standard (Gruppe Gelb)'],['3','★★★ Plus (Gruppe Grün)']],'Niveau'],['n','sel',[[0,'automatisch'],[4,'4'],[5,'5'],[6,'6'],[7,'7'],[8,'8'],[10,'10'],[12,'12'],[15,'15']],'Anzahl der Aufgaben (pro Tag)'],['co','sel',[[1,'1 Spalte'],[2,'2 Spalten'],[3,'3 Spalten'],[4,'4 Spalten']],'Spalten'],
  ['kp','sel',[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6'],[7,'7'],[8,'8'],[9,'9'],[10,'10']],'Wie oft auf der Seite? (zum Ausschneiden)',it=>it.tag!=='woche'],['kn','sel',[['gleich','alle gleich (leichter zu kontrollieren)'],['neu','jedes Mal neue Zahlen']],'Kopien',it=>it.tag!=='woche'&&+it.kp>1]];
-window.SCR_TEST={G,SA,SCR,scrGen,mftGen,MF,TH,tRow};
+window.SCR_TEST={G,SA,SCR,scrGen,mftGen,MF,TH,tRow,TAGE};
 (function(){try{const _co=catOf;catOf=function(it){return it&&SCT.includes(it.type)?'fm':_co.apply(this,arguments);};
  const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&SCT.includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
  const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='sca');try{return _h.apply(this,arguments);}finally{items=keep;}};
@@ -15976,6 +15975,17 @@ RQP.mfp=[['md','sel',[['pass','Sammelpass (2 pro Seite)'],['gut','Gutscheine (6 
 (function(){try{const _co=catOf;catOf=function(it){return it&&it.type==='mfp'?'fm':_co.apply(this,arguments);};
  const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&it.type==='mfp')$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};
  const a=document.querySelector('.catp[data-c="fm"] .pal[data-t="mft"]');if(a)a.insertAdjacentHTML('afterend',`<div class="pal" draggable="true" data-t="mfp" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><rect x="4" y="5" width="56" height="30" rx="4" fill="#fff" stroke="#e08a00" stroke-width="2"/>${Array.from({length:12},(_,i)=>`<rect x="${9+(i%6)*8}" y="${11+Math.floor(i/6)*10}" width="6" height="7" fill="${i<7?'#ffcc80':'#fff'}" stroke="#999" stroke-width=".6"/>`).join('')}<text x="80" y="27" font-size="16" text-anchor="middle">🎟️</text></svg><span>${TLN.mfp}</span></div>`);}catch(e){console.error(e);}})();
+}catch(e){console.error(e);}})();
+/* ===== Mathe-Fit Woche: Tabelle „Thema · Anzahl · Niveau“ für jeden Tag ===== */
+(function(){try{const T=window.SCR_TEST;if(!T)return;
+const THO=()=>Object.entries(T.TH).map(([k,v])=>[k,v[0]]);
+function panel(){const old=document.getElementById('g-mfw');if(old)old.remove();const it=items.find(i=>i.id===sel);if(!it||it.type!=='mft'||it.tag!=='woche')return;const s=document.querySelector('#rp select[data-rq="th"]');if(!s)return;
+ const opt=(L,v)=>L.map(([a,b])=>`<option value="${a}"${String(v)===String(a)?' selected':''}>${b}</option>`).join('');
+ const g=document.createElement('div');g.id='g-mfw';g.style.cssText='margin:6px 0 8px;border:1px solid #e0c48a;border-radius:8px;padding:6px;background:#fffaf0';
+ g.innerHTML=`<div style="font-weight:700;margin-bottom:4px">📅 Jeder Tag einzeln</div><div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:3px 5px;align-items:center;font-size:12.5px"><span></span><b>Anzahl</b><b>Niveau</b>${Object.entries(T.TAGE).map(([k,n])=>`<b style="grid-row:span 2;align-self:start;padding-top:4px">${n.slice(0,2)}</b><select data-mfw="t_${k}" style="grid-column:span 2;min-width:0;width:100%">${opt([['auto','wie „Thema“ oben'],['plan','Wochenplan'],...THO()],it['t_'+k]||'auto')}</select><select data-mfw="n_${k}" style="margin-bottom:5px">${opt([[0,'auto'],[4,'4'],[5,'5'],[6,'6'],[7,'7'],[8,'8'],[9,'9'],[10,'10']],it['n_'+k]||0)}</select><select data-mfw="l_${k}" style="margin-bottom:5px">${opt([[0,'wie oben'],[1,'★ rot'],[2,'★★ gelb'],[3,'★★★ grün']],it['l_'+k]||0)}</select>`).join('')}</div><div style="font-size:11.5px;color:#666;margin-top:4px">Tipp: Bei vielen Aufgaben pro Tag passt die Woche eventuell nicht mehr auf eine Seite.</div>`;
+ (s.closest('label')||s).after(g);}
+const _rp=renderProps;renderProps=function(){const r=_rp.apply(this,arguments);try{panel();}catch(e){console.error(e);}return r;};
+document.addEventListener('change',e=>{const t=e.target;if(!t.dataset||!t.dataset.mfw)return;const it=items.find(i=>i.id===sel);if(!it)return;rec();const k=t.dataset.mfw;it[k]=k[0]==='t'?t.value:+t.value;window.__GQF=1;rqGen(it);render();});
 }catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
