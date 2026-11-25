@@ -575,7 +575,7 @@ function decoBorder(k,FT,th){const W=794,H=PH;let sd=11+k*17;const R=()=>{sd=(sd
  pts.forEach(pt=>{T.L.forEach(l=>lay(pt,l[0],l[1]*(R()<.5?1:-1),l[2]));});
  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${o}</svg>`;}
 function fitPages(){let mb=0;sheet.querySelectorAll('.item').forEach(e=>{mb=Math.max(mb,e.offsetTop+e.offsetHeight);});
- let n=Math.max(1,Math.ceil(mb/PH),+(($('#npg')||{}).value)||1);if(SOL)n=Math.max(n,PGN);n=Math.min(n,10);PGN=n;
+ let n=Math.max(1,Math.ceil(mb/PH),+(($('#npg')||{}).value)||1);if(SOL)n=Math.max(n,PGN);n=Math.min(n,24);PGN=n;
  sheet.style.height=n*PH+'px';sheet.style.setProperty('--np',n);
  sheet.querySelectorAll('.pgdec').forEach(e=>e.remove());
  const add=(cls,css,html)=>{const d=document.createElement('div');d.className='pgdec '+cls;d.style.cssText=css;if(html!=null)d.innerHTML=html;sheet.appendChild(d);};
@@ -16879,6 +16879,86 @@ RQP.rsz=[['md','sel',[['pol','🌍 Pol zu Pol'],['netz','🕸️ Spinnennetz']],
  Pn.insertAdjacentHTML('beforeend','<div style="font-weight:700;margin:10px 0 6px;color:#1f3a8a">🎲 Übungsstunde „Reise“</div>'+tile('rse','<circle cx="32" cy="20" r="17" fill="#cfe8fb" stroke="#2b6ca3"/><path d="M32 37C24 30 40 24 30 16S36 6 32 3" stroke="#c0392b" stroke-width="1.6" fill="none" stroke-dasharray="3 2"/><g stroke="#666"><line x1="70" y1="20" x2="70" y2="3"/><line x1="70" y1="20" x2="86" y2="12"/><line x1="70" y1="20" x2="86" y2="30"/><line x1="70" y1="20" x2="70" y2="37"/><line x1="70" y1="20" x2="54" y2="30"/><line x1="70" y1="20" x2="54" y2="12"/></g><path d="M70 6L82 13L82 28L70 34L58 28L58 13Z" fill="none" stroke="#7a4fb5"/>')+tile('rsz','<rect x="8" y="10" width="84" height="20" rx="3" fill="#fff" stroke="#555"/>'+[0,1,2,3,4,5].map(i=>`<circle cx="${20+i*12}" cy="20" r="4.5" fill="${i<3?'#c0392b':'#fff'}" stroke="#555"/>`).join('')));
  const _co=catOf;catOf=function(it){return it&&['rse','rsz'].includes(it.type)?'mfit':_co.apply(this,arguments);};
  const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&['rse','rsz'].includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};})();
+}catch(e){console.error(e);}})();
+
+/* ===== Stationen-Rallye mit Lösungswort ===== */
+(function(){try{if(!window.SCR_TEST)return;const {G,TH}=SCR_TEST;
+POT.push('srl');TLT.push('srl');RQT.push('srl');
+TLN.srl='Stationen-Rallye mit Lösungswort';
+TLD.srl={w:714,th1:'kopf',th2:'',th3:'',lv:1,wo:'MATHEPROFI',wx:'',md:'mc',pr:2,lz:true};
+const WORDS=['ZAHLEN','SCHATZ','KLASSE','PINGUIN','GEWINNER','TEAMWORK','ZAUBERER','GEOMETRIE','RECHENHAI','DETEKTIVE','MATHEPROFI','BRUCHPROFI','ZAHLENHELD','KOPFRECHNEN','ZAHLENFUCHS','SUPERHELDEN','WEIHNACHTEN','MATHEMATIKER','SCHNEEFLOCKE','RECHENKÜNSTLER'];
+const ABC='ABCDEFGHIJKLMNOPRSTUVWZ';
+const R=n=>Math.floor(Math.random()*n),SH=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const plain=s=>String(s).replace(/<\/?(span|sup|sub|b|i)[^>]*>/g,'');
+function okA(a,tab){const t=plain(a).trim();if(!t||t.length>24||/\||&lt;|&gt;|<|>/.test(t))return false;return !tab||!/[{}]|\bund\b|^(ja|nein)$/i.test(t);}
+/* Zahl erkennen: Präfix (x = ), Zahl, Einheit */
+function parse(a){const s=String(a);if(/<(span|sup)/.test(s))return null;const m=s.match(/^((?:[a-zA-Zα-ω]\s?=\s?)?)([−-]?)(\d{1,3}(?:[    ]\d{3})+|\d+)(?:,(\d+))?(\s?[^\d]*)$/);if(!m)return null;
+ const sep=(s.match(/\d([    ])\d{3}/)||[])[1]||' ';const v=(m[2]?-1:1)*parseFloat(m[3].replace(/\D/g,'')+'.'+(m[4]||'0'));return {pre:m[1],v,dec:(m[4]||'').length,u:m[5],sep,neg:m[2]};}
+function fmt(P,x,dec){if(dec<0){dec=0;while(dec<3&&Math.abs(x*10**dec-Math.round(x*10**dec))>1e-7)dec++;}x=Math.round(x*10**dec)/10**dec;let [i,d]=Math.abs(x).toFixed(dec).split('.');if(i.length>=4)i=i.replace(/\B(?=(\d{3})+(?!\d))/g,P.sep);return P.pre+(x<0?'−':'')+i+(d?','+d:'')+P.u;}
+function near(a,k){const P=parse(a);if(!P)return null;const v=P.v,d=P.dec,st=10**-d;const C=[];
+ const c=[[v+st,d],[v-st,d],[v+10*st,d],[v-10*st,d],[v*10,-1],[v/10,-1],[v+2*st,d],[v-2*st,d],[v+100*st,d]];
+ SH(c).forEach(([x,dd])=>{if(v>=0&&x<0)return;if(Math.abs(x-v)<1e-9)return;const f=fmt(P,x,dd);if(f!==String(a)&&!C.includes(f))C.push(f);});return C.slice(0,k);}
+function others(g,lv,a,k,tab){const C=[];for(let t=0;t<40&&C.length<k;t++){try{const o=G[g](lv);const s=String(o.a);if(okA(s,tab)&&s!==String(a)&&!C.includes(s))C.push(s);}catch(e){}}return C.length>=k?C:null;}
+function word(it){const w=(it.wo==='eigen'?(it.wx||''):it.wo||'MATHEPROFI').toUpperCase().replace(/[^A-ZÄÖÜß0-9]/g,'');return w.length>=3?w.slice(0,20):'MATHEPROFI';}
+function srlGen(it){const W=word(it),n=W.length,lv=Math.max(0,Math.min(2,(+it.lv||1)-1));
+ const ths=[it.th1,it.th2,it.th3].filter(t=>t&&TH[t]);if(!ths.length)ths.push('kopf');
+ let pool=[];ths.forEach(t=>pool.push(...(TH[t][1][lv]||TH[t][1][0])));pool=[...new Set(pool)].filter(g=>G[g]);
+ const S=[],used=new Set(),tab=it.md==='tab';let ord=[];
+ const step=(g)=>{let o;try{o=G[g](lv);}catch(e){return false;}const a=String(o.a);if(!o.q||!okA(a,tab)||(tab&&used.has(a)))return false;
+  let ds;if(/^(ja|nein)$/i.test(a))ds=[/^ja$/i.test(a)?'nein':'ja'];else{ds=near(a,2);if(!ds||ds.length<2)ds=others(g,lv,a,2,tab);}
+  if(!ds||(tab&&ds.some(x=>used.has(x))))return false;
+  const i=S.length,L=W[i];const lets=SH(ABC.split('').filter(c=>c!==L)).slice(0,2);const opts=SH([[a,L,1],...ds.map((x,j)=>[x,lets[j],0])]);
+  S.push({q:o.q,a,o:opts,L,x:ds[0],xl:lets[0]});used.add(a);ds.forEach(x=>used.add(x));return true;};
+ for(let tr=0;S.length<n&&tr<1500;tr++){if(!ord.length)ord=SH(pool);step(ord.pop());}
+ if(S.length<n){const fb=SH([...new Set([...TH.kopf[1][lv],...TH.e1x1[1][lv]])].filter(g=>G[g]));for(let tr=0;S.length<n&&tr<1500;tr++)step(fb[tr%fb.length]);it._fb=true;}else it._fb=false;
+ it.d=S;it.W=W;}
+/* ---------- Darstellung ---------- */
+const COL=['#1d5f86','#b03a2e','#1e8449','#7d3c98','#b9770e','#117a65','#2e4053','#a04000'];
+const blank=q=>String(q).replace(/_{3,}/g,'<span style="display:inline-block;min-width:2.4em;border-bottom:.08em solid currentColor">&nbsp;</span>');
+function card(it,s,i,w,h,F){const c=COL[i%COL.length],tab=it.md==='tab',sv=!!it.show;
+ const op=tab?`<div style="font-size:${F*.5}px;text-align:center;color:#333;border:2px dashed ${c};border-radius:10px;padding:${F*.3}px">Rechne im Heft. Suche dein Ergebnis in der <b>Code-Tabelle</b> auf deinem Laufzettel.${sv?`<div style="color:#c0392b;font-weight:700;margin-top:4px">Lösung: ${s.a} → ${s.L}</div>`:''}</div>`
+  :`<div style="display:grid;grid-template-columns:repeat(${s.o.length},1fr);gap:${F*.3}px">${s.o.map(([a,l,ok])=>`<div style="border:${sv&&ok?4:2}px solid ${sv&&ok?'#27ae60':c};border-radius:12px;padding:${F*.25}px ${F*.2}px;display:flex;align-items:center;gap:${F*.25}px;justify-content:center;background:${sv&&ok?'#eafaf1':'#fff'}"><span style="flex:none;width:${F*1.05}px;height:${F*1.05}px;border-radius:50%;background:${c};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:${F*.6}px">${l}</span><span style="font-size:${F*.8}px;font-weight:700;white-space:nowrap">${a}</span></div>`).join('')}</div>`;
+ return `<div style="width:${w}px;height:${h}px;box-sizing:border-box;border:3px solid ${c};border-radius:18px;padding:${F*.4}px ${F*.5}px;display:flex;flex-direction:column;gap:${F*.3}px;overflow:hidden;background:#fff">
+ <div style="display:flex;align-items:center;gap:${F*.35}px"><span style="width:${F*1.6}px;height:${F*1.6}px;border-radius:50%;background:${c};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:${F*.9}px">${i+1}</span><span style="font-size:${F*.65}px;font-weight:800;color:${c}">Station ${i+1}</span><span style="flex:1"></span><span style="font-size:${F*.38}px;color:#888">🏃 Stationen-Rallye</span></div>
+ <div style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:${plain(s.q).replace(/<svg[\s\S]*?<\/svg>/g,"").length>34?F*1.05:F*1.6}px;line-height:1.35;font-weight:700;min-height:0">${blank(s.q)}</div>${op}
+ <div style="font-size:${F*.36}px;color:#666;text-align:center">${tab?'':'Rechne zuerst im Heft, dann wähle. '}Trage den Buchstaben in <b>Feld ${i+1}</b> auf deinem Laufzettel ein.</div></div>`;}
+function lzH(it){const n=(it.d||[]).length;return 110+Math.ceil(n/4)*36+90+(it.md==='tab'?40+Math.ceil(2*n/5)*32:0);}
+function lauf(it){const S=it.d||[],n=S.length,sv=!!it.show,tab=it.md==='tab';
+ let h=`<div style="display:flex;justify-content:space-between;align-items:baseline;gap:1em"><b style="font-size:20px;color:#1d5f86">🏃 Stationen-Rallye – Laufzettel</b><span>Name: <span style="display:inline-block;width:12em;border-bottom:1px solid #000"></span></span></div>
+ <div style="font-size:13px;color:#444;margin:6px 0 8px">Geh zu einer freien Station, rechne im Heft und trage das Ergebnis und den Buchstaben im Feld mit der <b>Stationsnummer</b> ein. Wenn alle Felder voll sind, ergibt sich das <b>Lösungswort</b>!</div>
+ <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px 10px;font-size:14px">${S.map((s,i)=>`<div style="display:flex;align-items:center;gap:6px;height:30px"><b style="width:1.6em;text-align:right">${i+1}</b><span style="flex:1;border-bottom:1px solid #000;height:22px;color:#c0392b;font-size:13px;white-space:nowrap;overflow:hidden">${sv?s.a:''}</span></div>`).join('')}</div>
+ <div style="margin-top:12px;font-weight:700;font-size:14px">Lösungswort:</div><div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">${S.map((s,i)=>`<div style="text-align:center"><div style="width:38px;height:40px;border:2px solid #1d5f86;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#c0392b">${sv?s.L:''}</div><div style="font-size:10px;color:#666">${i+1}</div></div>`).join('')}</div>`;
+ if(tab){const T=SH(S.flatMap(s=>[[s.a,s.L],[s.x,s.xl]]));h+=`<div style="margin-top:10px;font-weight:700;font-size:14px">Code-Tabelle <span style="font-weight:400;color:#666;font-size:12px">(Achtung: Hier stehen auch falsche Ergebnisse!)</span></div><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:4px;font-size:13px">${T.map(([a,l])=>`<div style="border:1px solid #9bb;border-radius:6px;padding:3px 6px;display:flex;justify-content:space-between;gap:4px;white-space:nowrap;overflow:hidden"><span>${a}</span><b style="color:#1d5f86">${l}</b></div>`).join('')}</div>`;}
+ return `<div style="padding:4px 2px">${h}</div>`;}
+const CH=1040;
+function srlBlk(it){if(!it.d||!it.d.length)srlGen(it);const S=it.d,pr=+it.pr||2,top=(it.y||0)%PH;let pages=[];
+ const cut='<div style="height:10px;border-top:1.5px dashed #aaa;margin-top:9px;position:relative"><span style="position:absolute;left:2px;top:-12px;background:#fff;font-size:13px">✂</span></div>';
+ for(let i=0;i<S.length;i+=pr){let h='';
+  if(pr===1)h=card(it,S[i],i,714,CH,56);
+  else if(pr===2)h=card(it,S[i],i,714,505,30)+(S[i+1]?cut+card(it,S[i+1],i+1,714,505,30):'');
+  else{const c=j=>S[j]?card(it,S[j],j,349,505,20):'<div style="width:349px"></div>';h=`<div style="display:flex;gap:16px">${c(i)}${c(i+1)}</div>`+(S[i+2]?cut+`<div style="display:flex;gap:16px">${c(i+2)}${c(i+3)}</div>`:'');}
+  pages.push(h);}
+ if(it.lz!==false){const two=lzH(it)<=500;pages.push(two?`<div style="height:505px;overflow:hidden">${lauf(it)}</div>${cut}<div style="height:505px;overflow:hidden">${lauf(it)}</div>`:lauf(it));}
+ const sp=top>TOPM+30?`<div style="height:${PH-top+TOPM}px"></div>`:'';
+ return sp+pages.map((p,k)=>`<div style="height:${CH}px;overflow:hidden">${p}</div>`).join(`<div style="height:${PH-CH}px"></div>`);}
+{const _g=rqGen,_b=rqBlk,_s=rqSol;rqGen=function(it){if(it.type==='srl'){srlGen(it);return;}return _g(it);};rqBlk=function(it){return it.type==='srl'?srlBlk(it):_b(it);};rqSol=function(it){return it.type==='srl'?[]:_s(it);};}
+{const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='srl');try{return _h.apply(this,arguments);}finally{items=keep;}};}
+const TO=[['','– kein weiteres –'],...Object.keys(TH).filter(k=>k!=='sach').map(k=>[k,TH[k][0]])];
+RQP.srl=[['th1','sel',TO.slice(1),'Thema'],['th2','sel',TO,'2. Thema (gemischt)'],['th3','sel',TO,'3. Thema (gemischt)'],['lv','sel',[[1,'Niveau 1 – leicht'],[2,'Niveau 2 – mittel'],[3,'Niveau 3 – schwer']],'Niveau'],
+ ['wo','sel',[...WORDS.map(w=>[w,`${w} (${w.length} Stationen)`]),['eigen','✏️ eigenes Wort …']],'Lösungswort = Anzahl der Stationen'],
+ ['md','sel',[['mc','3 Antworten zur Auswahl auf der Karte'],['tab','offen rechnen + Code-Tabelle am Laufzettel']],'Antwortform'],
+ ['pr','sel',[[1,'1 Station pro Seite (groß)'],[2,'2 Stationen pro Seite'],[4,'4 Stationen pro Seite']],'Karten'],['lz','ck','Laufzettel für die Kinder dazu (2 pro Seite, wenn möglich)']];
+/* eigenes Wort: Textfeld */
+{const _r=renderPo;renderPo=function(){_r.apply(this,arguments);const it=items.find(i=>i.id===sel&&i.type==='srl');const g=$('#g-po');if(!it||!g)return;
+ const s=g.querySelector('[data-rq="wo"]');if(s&&it.wo==='eigen'&&!g.querySelector('[data-rq="wx"]'))s.closest('label').insertAdjacentHTML('afterend',`<label>Eigenes Wort (3–20 Buchstaben)<input type="text" data-rq="wx" value="${(it.wx||'').replace(/"/g,'')}" placeholder="z. B. KLASSE1A" style="width:12em;text-transform:uppercase"></label>`);
+ g.insertAdjacentHTML('beforeend',(it._fb?'<div style="font-size:12px;color:#b03a2e;margin-top:6px">⚠️ Das gewählte Thema hat zu wenig verschiedene Aufgaben – einige Stationen wurden mit Kopfrechnen aufgefüllt. Wähle ein 2. Thema oder ein kürzeres Wort.</div>':'')+`<div style="font-size:12px;color:var(--mut);margin-top:6px">Jeder Buchstabe des Wortes ist eine Station. „Lösung zeigen“ markiert die richtigen Antworten und füllt den Laufzettel aus (Lehrer-Kontrollblatt). Tipp: Karten auf farbiges Papier kopieren und im Raum oder am Gang aufhängen.</div>`);};}
+(function(){const Pn=document.querySelector('#left .catp[data-c="mfit"]');if(!Pn)return;const rz=Pn.querySelector('.pal[data-t="rsz"]');
+ const html=`<div class="pal" draggable="true" data-t="srl" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><rect x="4" y="6" width="26" height="30" rx="3" fill="#fff" stroke="#1d5f86" stroke-width="1.5"/><circle cx="11" cy="12" r="4" fill="#1d5f86"/><rect x="37" y="6" width="26" height="30" rx="3" fill="#fff" stroke="#b03a2e" stroke-width="1.5"/><circle cx="44" cy="12" r="4" fill="#b03a2e"/><rect x="70" y="6" width="26" height="30" rx="3" fill="#fff" stroke="#1e8449" stroke-width="1.5"/><circle cx="77" cy="12" r="4" fill="#1e8449"/><text x="17" y="31" font-size="9" font-weight="700" text-anchor="middle">M</text><text x="50" y="31" font-size="9" font-weight="700" text-anchor="middle">A</text><text x="83" y="31" font-size="9" font-weight="700" text-anchor="middle">T</text></svg><span>${TLN.srl}</span></div>`;
+ if(rz)rz.insertAdjacentHTML('afterend',html);else Pn.insertAdjacentHTML('beforeend',html);
+ const hd=[...Pn.querySelectorAll('div')].find(d=>d.textContent==='🎲 Übungsstunde „Reise“');if(hd)hd.textContent='🎲 Übungsstunde mit Bewegung';
+ const _co=catOf;catOf=function(it){return it&&it.type==='srl'?'mfit':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&it.type==='srl')$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};})();
+window.SRL_TEST={srlGen,near,parse,word,okA};
 }catch(e){console.error(e);}})();
 
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
