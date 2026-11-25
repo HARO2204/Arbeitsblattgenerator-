@@ -16786,6 +16786,101 @@ window.ZL_TEST={mark,get on(){return ON;}};
 setTimeout(()=>{try{render();}catch(e){}},0);
 }catch(e){console.error(e);}})();
 
+/* ===== Übungsstunde „Reise“: Tafelplakat (Pol zu Pol / Spinnennetz) + Laufzettel ===== */
+(function(){try{
+POT.push('rse','rsz');TLT.push('rse','rsz');RQT.push('rse','rsz');
+TLN.rse='Reise-Plakat für die Tafel (Pol zu Pol / Spinnennetz)';TLN.rsz='Reise-Laufzettel für die Kinder';
+TLD.rse={w:714,md:'pol',n:10,gr:'1',ti:true};TLD.rsz={w:714,md:'pol',n:10,kp:3};
+const TIT={pol:'Reise von Pol zu Pol',netz:'Reise auf dem Spinnennetz'};
+const W=1414,H=1000;
+/* liefert {g: svg-Inhalt, dk:[[x,y,w,h]...] Andock-Flächen je Station 0..n} */
+function globe(n){const cx=430,cy=590,r=360,L=900,LW=470;let g='';const dk=[];
+ g+=`<defs><radialGradient id="rsgg" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#eef8ff"/><stop offset="1" stop-color="#b8dcf5"/></radialGradient><clipPath id="rsgc"><circle cx="${cx}" cy="${cy}" r="${r}"/></clipPath></defs>`;
+ g+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#rsgg)" stroke="#1d5f86" stroke-width="3"/><g clip-path="url(#rsgc)">`;
+ const land=[[-.5,-.35,.3,.2,-20],[-.2,.15,.2,.34,10],[.42,-.28,.33,.22,15],[.5,.3,.18,.18,-10],[-.62,.4,.16,.12,30]];
+ g+=land.map(([x,y,a,b,o])=>`<ellipse cx="${cx+x*r}" cy="${cy+y*r}" rx="${a*r}" ry="${b*r}" transform="rotate(${o} ${cx+x*r} ${cy+y*r})" fill="#cfe7c1" stroke="#9cc58a" stroke-width="1.5"/>`).join('');
+ g+=`<ellipse cx="${cx}" cy="${cy+r}" rx="${r*.5}" ry="${r*.13}" fill="#fff"/><ellipse cx="${cx}" cy="${cy-r}" rx="${r*.5}" ry="${r*.13}" fill="#fff"/>`;
+ [.25,.55,.82].forEach(k=>g+=`<ellipse cx="${cx}" cy="${cy}" rx="${r*k}" ry="${r}" fill="none" stroke="#1d5f86" stroke-width="1" opacity=".4"/>`);
+ for(let k=-2;k<=2;k++){const y=cy+r*Math.sin(k*Math.PI/6),rx=r*Math.cos(k*Math.PI/6);g+=`<line x1="${cx-rx}" y1="${y}" x2="${cx+rx}" y2="${y}" stroke="#1d5f86" stroke-width="${k?1:2}" opacity="${k?.4:.6}"/>`;}
+ g+='</g>';
+ const sp=2*r*.97/n,lh=Math.min(64,sp*.86),nr=Math.max(7,Math.min(17,sp*.33));
+ const P=[];for(let i=0;i<=n;i++){const y=cy+r*.97-sp*i,t=(y-cy)/r;P.push([cx-r*.25*Math.sqrt(Math.max(0,1-t*t)),y]);}
+ g+=`<path d="M${cx} ${cy+r} A${r*.25} ${r} 0 0 1 ${cx} ${cy-r}" fill="none" stroke="#1d5f86" stroke-width="7" stroke-linecap="round"/>`;
+ P.forEach(([x,y],i)=>{g+=`<line x1="${x}" y1="${y}" x2="${L}" y2="${y}" stroke="#7fa9c2" stroke-width="1.2"/>`;});
+ P.forEach(([x,y],i)=>{const e=i===0||i===n;g+=`<circle cx="${x}" cy="${y}" r="${e?nr*1.35:nr}" fill="${e?'#ffe9a8':'#fff'}" stroke="#1d5f86" stroke-width="3"/>`;
+  const f=e?'#d7ecf7':'#fff';g+=`<rect x="${L}" y="${y-lh/2}" width="${LW}" height="${lh}" rx="${lh/2}" fill="${f}" stroke="#7fa9c2" stroke-width="2"/><circle cx="${L+lh/2}" cy="${y}" r="${lh*.36}" fill="#1d5f86"/><text x="${L+lh/2}" y="${y+lh*.13}" font-size="${lh*.36}" font-weight="700" text-anchor="middle" fill="#fff">${i}</text>`;
+  dk.push([L+lh*1.05,y-lh/2,LW-lh*1.1,lh]);});
+ g+=`<text x="${cx+40}" y="${cy+r+8}" font-size="30" font-weight="800" fill="#1d5f86">🐧 START · Südpol</text><text x="${cx+40}" y="${cy-r-10}" font-size="30" font-weight="800" fill="#1d5f86">🐻‍❄️ ZIEL · Nordpol</text>`;
+ g+=`<text x="${L}" y="${P[n][1]-lh/2-14}" font-size="24" font-weight="700" fill="#1d5f86">Platz für eure Namensmagnete</text>`;
+ return {g,dk};}
+function web(n){const cx=707,cy=595,R=345,S=Math.max(6,Math.min(10,Math.round(n/1.3))),r0=R*.2;let g='';const dk=[];
+ const ang=k=>k*2*Math.PI/S,rad=k=>k>=n?0:r0+(R-r0)*(1-k/n);const P=[];for(let k=0;k<=n;k++)P.push([cx+rad(k)*Math.cos(ang(k)),cy+rad(k)*Math.sin(ang(k))]);
+ for(let s=0;s<S;s++)g+=`<line x1="${cx}" y1="${cy}" x2="${cx+R*1.12*Math.cos(ang(s))}" y2="${cy+R*1.12*Math.sin(ang(s))}" stroke="#9d8bb0" stroke-width="2"/>`;
+ const poly=rr=>Array.from({length:S+1},(_,s)=>[cx+rr*Math.cos(ang(s)),cy+rr*Math.sin(ang(s))].join(',')).join(' ');
+ g+=`<polygon points="${poly(R*1.1)}" fill="none" stroke="#9d8bb0" stroke-width="2"/>`;
+ const gap=(R-r0)*S/n;for(let rr=R-gap/2;rr>r0*.6;rr-=gap)g+=`<polygon points="${poly(rr)}" fill="none" stroke="#c9bdd6" stroke-width="1.3"/>`;
+ g+=`<polyline points="${P.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#6b2f73" stroke-width="6" stroke-linejoin="round"/>`;
+ const nr=n>16?19:n>12?22:26;
+ P.forEach(([x,y],k)=>{const e=k===0||k===n;g+=`<circle cx="${x}" cy="${y}" r="${e?nr*1.3:nr}" fill="${e?'#f1dcef':'#fff'}" stroke="#6b2f73" stroke-width="3"/><text x="${x}" y="${y+nr*.36}" font-size="${nr}" font-weight="700" text-anchor="middle" fill="#4a1f50">${k}</text>`;
+  dk.push([x-85,y+nr*(e?1.3:1)+3,170,54]);});
+ g+=`<text x="${P[0][0]+nr*1.6}" y="${P[0][1]+10}" font-size="28" font-weight="800" fill="#6b2f73">START</text><text x="${cx}" y="${cy-nr*1.3-12}" font-size="28" font-weight="800" text-anchor="middle" fill="#6b2f73">🕷️ ZIEL</text>`;
+ return {g,dk};}
+function poster(it){const n=+it.n||10,o=(it.md==='netz'?web:globe)(n),c=it.md==='netz'?'#6b2f73':'#1d5f86';
+ let g=`<rect width="${W}" height="${H}" fill="#fff"/>`+o.g;
+ if(it.ti!==false)g+=`<text x="60" y="85" font-size="62" font-weight="800" fill="#16303f">${TIT[it.md]||TIT.pol}</text><text x="62" y="132" font-size="28" fill="${c}">Eine gelöste Aufgabe = ein Schritt weiter.</text><line x1="60" y1="155" x2="${W-60}" y2="155" stroke="#16303f" stroke-width="1.5"/>`;
+ return {g,dk:o.dk};}
+/* Querformat auf Hochformat-Seite: gedreht */
+function rot(svgInner,vb){const h=1010;return `<div style="position:relative;height:${h}px;width:714px"><svg viewBox="${vb}" style="position:absolute;left:0;top:0;width:${h}px;height:714px;transform-origin:0 0;transform:translate(714px,0) rotate(90deg)">${svgInner}</svg></div>`;}
+function rseBlk(it){const gr=it.gr||'1',P=poster(it),top=(it.y||0)%PH;
+ const bt=`<div class="no-print" style="position:absolute;right:6px;top:6px;z-index:3;display:flex;flex-direction:column;gap:4px;align-items:flex-end;font-size:12px"><button type="button" onclick="event.stopPropagation();window.rseBeamer&&rseBeamer('${it.id}')" style="padding:5px 12px;border-radius:8px;border:1px solid #1d5f86;background:#e6f2fa;cursor:pointer">📽️ Am Beamer zeigen (Namen anklicken = Schritt weiter)</button><span style="color:#777;background:#fffc;padding:1px 4px">Druck: Querformat${gr==='4'?', 4 Blätter (Teil 1–4) zu A2 zusammenkleben':''}</span></div>`;
+ const sp=top>TOPM+30?`<div style="height:${PH-top+TOPM-40}px"></div>`:'';
+ if(gr==='1')return `<div style="position:relative">`+bt+sp+rot(P.g,`0 0 ${W} ${H}`)+'</div>';
+ let h='<div style="position:relative">'+bt+sp;[[0,0],[W/2,0],[0,H/2],[W/2,H/2]].forEach(([x,y],i)=>{h+=(i?`<div style="height:${PH-1010}px"></div>`:'')+`<div style="position:relative">${rot(P.g+`<rect x="${x+2}" y="${y+2}" width="${W/2-4}" height="${H/2-4}" fill="none" stroke="#bbb" stroke-dasharray="6 6"/><text x="${x+W/2-12}" y="${y+24}" font-size="14" text-anchor="end" fill="#999">Teil ${i+1}/4</text>`,`${x} ${y} ${W/2} ${H/2}`)}</div>`;});
+ return h+'</div>';}
+/* ---------- Beamer-Ansicht mit Namen ---------- */
+window.rseBeamer=function(id){const it=items.find(i=>i.id===id);if(!it)return;const n=+it.n||10,P=poster(it),md=it.md==='netz'?'netz':'pol',col=md==='netz'?'#6b2f73':'#1d5f86';
+ const LS=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');localStorage.setItem(k,JSON.stringify(v));}catch(e){return null;}};
+ let names=LS('vk_rse_names')||[],pos=LS('vk_rse_pos_'+md)||{};
+ document.getElementById('rseB')?.remove();
+ const o=document.createElement('div');o.id='rseB';o.style.cssText='position:fixed;inset:0;z-index:99999;background:#fff;display:flex;flex-direction:column;font-family:system-ui,sans-serif';
+ o.innerHTML=`<div id="rseT" style="display:flex;gap:8px;align-items:center;padding:6px 10px;background:#f2f5f8;border-bottom:1px solid #ccd;font-size:14px;flex-wrap:wrap"><b style="color:${col}">📽️ ${TIT[md]}</b><button data-a="nm">👥 Namen eingeben</button><button data-a="rs">↺ Alle zum Start</button><button data-a="fs">⛶ Vollbild</button><span style="color:#666">Klick auf Namen = 1 Schritt weiter · Rechtsklick (oder lang drücken) = zurück</span><span style="flex:1"></span><button data-a="x">✕ Schließen (Esc)</button></div>
+ <div id="rseN" style="display:none;padding:8px 10px;background:#fffbe8;border-bottom:1px solid #e5d9a6"><div style="font-size:13px;margin-bottom:4px">Namen der Kinder – einer pro Zeile oder mit Beistrich getrennt (bleiben auf diesem Gerät gespeichert):</div><textarea style="width:100%;height:90px;font-size:14px"></textarea><button data-a="ok" style="margin-top:4px">Übernehmen</button></div>
+ <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:6px"><div id="rseC" style="position:relative;aspect-ratio:${W}/${H};height:100%;max-width:100%;max-height:100%"><svg viewBox="0 0 ${W} ${H}" style="position:absolute;inset:0;width:100%;height:100%">${P.g}</svg><div id="rseD" style="position:absolute;inset:0"></div></div></div>`;
+ document.body.appendChild(o);const C=o.querySelector('#rseC'),D=o.querySelector('#rseD'),ta=o.querySelector('textarea');
+ const fit=()=>{const a=C.parentElement.getBoundingClientRect();let w=a.width-12,h=w*H/W;if(h>a.height-12){h=a.height-12;w=h*W/H;}C.style.width=w+'px';C.style.height=h+'px';draw();};
+ const cols=['#e74c3c','#2980b9','#27ae60','#8e44ad','#d35400','#16a085','#c0392b','#2c3e50','#f39c12','#7f8c8d'];
+ function draw(){const s=C.clientWidth/W;D.innerHTML='';const by={};names.forEach((nm,i)=>{const k=Math.min(n,Math.max(0,pos[nm]||0));(by[k]=by[k]||[]).push([nm,i]);});
+  Object.keys(by).forEach(k=>{const [x,y,w,h]=P.dk[k];const b=document.createElement('div');b.style.cssText=`position:absolute;left:${x*s}px;top:${y*s}px;width:${w*s}px;min-height:${h*s}px;display:flex;flex-wrap:wrap;gap:${3*s}px;align-content:center;${md==='netz'?'justify-content:center;':''}`;
+   const lim=(+k===0?2.6:1.5)*h;let f=Math.min(22,h*.45);for(;f>9;f-=1){const tw=by[k].reduce((a,[nm])=>a+f*.62*nm.length+f*1.1+4,0),rows=Math.ceil(tw/(w*.95));if(rows*f*1.45<=lim)break;}const fs=f*s;
+   by[k].forEach(([nm,i])=>{const c=document.createElement('span');c.textContent=nm;c.title=nm+' – Station '+k;c.style.cssText=`background:${cols[i%cols.length]};color:#fff;border-radius:999px;padding:${1.5*s}px ${8*s}px;font-weight:700;font-size:${fs}px;cursor:pointer;user-select:none;box-shadow:0 1px 3px #0005;white-space:nowrap;line-height:1.3`;
+    c.onclick=()=>{pos[nm]=Math.min(n,(pos[nm]||0)+1);LS('vk_rse_pos_'+md,pos);draw();if(pos[nm]===n)toast?.('🎉 '+nm+' ist am Ziel!');};
+    c.oncontextmenu=e=>{e.preventDefault();pos[nm]=Math.max(0,(pos[nm]||0)-1);LS('vk_rse_pos_'+md,pos);draw();};
+    let tm;c.ontouchstart=()=>{tm=setTimeout(()=>{c.oncontextmenu({preventDefault(){}});tm=-1;},600);};c.ontouchend=e=>{if(tm===-1)e.preventDefault();clearTimeout(tm);};
+    b.appendChild(c);});D.appendChild(b);});
+  if(!names.length){const h=document.createElement('div');h.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#fffbe8;border:2px solid #e5d9a6;border-radius:12px;padding:12px 18px;font-size:18px';h.textContent='👥 Oben „Namen eingeben“ – dann erscheinen die Namen am Start.';D.appendChild(h);}}
+ const close=()=>{o.remove();document.removeEventListener('keydown',kd);window.removeEventListener('resize',fit);};const kd=e=>{if(e.key==='Escape'&&document.activeElement!==ta)close();};
+ document.addEventListener('keydown',kd);window.addEventListener('resize',fit);
+ o.querySelector('#rseT').onclick=e=>{const a=e.target.dataset&&e.target.dataset.a;if(!a)return;
+  if(a==='x')close();if(a==='nm'){const N=o.querySelector('#rseN');N.style.display=N.style.display==='none'?'':'none';ta.value=names.join('\n');ta.focus();}
+  if(a==='rs'){pos={};LS('vk_rse_pos_'+md,pos);draw();}
+  if(a==='fs'){try{document.fullscreenElement?document.exitFullscreen():o.requestFullscreen();}catch(x){}}
+  setTimeout(fit,60);};
+ o.querySelector('[data-a="ok"]').onclick=()=>{names=[...new Set(ta.value.split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean))].slice(0,40);LS('vk_rse_names',names);o.querySelector('#rseN').style.display='none';setTimeout(fit,30);};
+ setTimeout(fit,0);};
+function rszBlk(it){const n=+it.n||12,kp=Math.max(1,+it.kp||3),netz=it.md==='netz';const one=()=>{const cs=Array.from({length:n},(_,i)=>`<span class="rsz-c">${i+1}</span>`).join('<span class="rsz-l"></span>');return `<div class="rsz">${'<div style="display:flex;justify-content:space-between;align-items:baseline;gap:1em"><b style="font-size:17px;color:#1f3a8a">'+(TIT[it.md]||TIT.pol)+' – meine Reise</b><span>Name: <span style="display:inline-block;width:11em;border-bottom:1px solid #000"></span></span></div>'}<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px 0;margin-top:10px"><span class="rsz-e">${netz?'START':'🐧 Südpol'}</span><span class="rsz-l"></span>${cs}<span class="rsz-l"></span><span class="rsz-e">${netz?'🕷️ ZIEL':'🐻‍❄️ Nordpol'}</span></div><div style="font-size:12px;color:#555;margin-top:6px">Male nach jeder gelösten Aufgabe einen Kreis an – und rücke deinen Magneten an der Tafel einen Schritt weiter!</div></div>`;};
+ return Array.from({length:kp},one).join('<div style="border-top:1.5px dashed #999;margin:10px 0;position:relative"><span style="position:absolute;left:-2px;top:-11px;background:#fff">✂</span></div>');}
+{const _g=rqGen,_b=rqBlk,_s=rqSol;rqGen=function(it){if(it.type==='rse'||it.type==='rsz'){it.d=[1];return;}return _g(it);};rqBlk=function(it){return it.type==='rse'?rseBlk(it):it.type==='rsz'?rszBlk(it):_b(it);};rqSol=function(it){return (it.type==='rse'||it.type==='rsz')?[]:_s(it);};}
+{const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='rse'&&i.type!=='rsz');try{return _h.apply(this,arguments);}finally{items=keep;}};}
+const NS=[[5,'5'],[6,'6'],[8,'8'],[10,'10'],[12,'12'],[15,'15'],[18,'18'],[20,'20'],[25,'25']];
+RQP.rse=[['md','sel',[['pol','🌍 Reise von Pol zu Pol'],['netz','🕸️ Reise auf dem Spinnennetz']],'Motiv'],['n','sel',NS,'Anzahl der Aufgaben (= Schritte bis zum Ziel)'],['gr','sel',[['1','1 A4-Seite (quer)'],['4','groß: 4 A4-Seiten zum Zusammenkleben (A2 quer)']],'Größe'],['ti','ck','Überschrift und Spielregel anzeigen']];
+RQP.rsz=[['md','sel',[['pol','🌍 Pol zu Pol'],['netz','🕸️ Spinnennetz']],'Motiv'],['n','sel',NS,'Anzahl der Stationen'],['kp','sel',[[1,'1'],[2,'2'],[3,'3'],[4,'4']],'Laufzettel pro Seite']];
+{const st=document.createElement('style');st.textContent='.rsz{padding:4px 0}.rsz-c{display:inline-flex;width:30px;height:30px;border-radius:50%;border:2px solid #555;align-items:center;justify-content:center;font-weight:700;font-size:13px;background:#fff}.rsz-l{display:inline-block;width:10px;border-top:2px dashed #888}.rsz-e{display:inline-block;border:2px solid #b8860b;background:#fff6c9;border-radius:14px;padding:2px 8px;font-weight:700;font-size:12px}';document.head.appendChild(st);}
+(function(){const Pn=document.querySelector('#left .catp[data-c="mfit"]');if(!Pn)return;const tile=(t,svg)=>`<div class="pal" draggable="true" data-t="${t}" style="margin-bottom:8px"><svg viewBox="0 0 100 40">${svg}</svg><span>${TLN[t]}</span></div>`;
+ Pn.insertAdjacentHTML('beforeend','<div style="font-weight:700;margin:10px 0 6px;color:#1f3a8a">🎲 Übungsstunde „Reise“</div>'+tile('rse','<circle cx="32" cy="20" r="17" fill="#cfe8fb" stroke="#2b6ca3"/><path d="M32 37C24 30 40 24 30 16S36 6 32 3" stroke="#c0392b" stroke-width="1.6" fill="none" stroke-dasharray="3 2"/><g stroke="#666"><line x1="70" y1="20" x2="70" y2="3"/><line x1="70" y1="20" x2="86" y2="12"/><line x1="70" y1="20" x2="86" y2="30"/><line x1="70" y1="20" x2="70" y2="37"/><line x1="70" y1="20" x2="54" y2="30"/><line x1="70" y1="20" x2="54" y2="12"/></g><path d="M70 6L82 13L82 28L70 34L58 28L58 13Z" fill="none" stroke="#7a4fb5"/>')+tile('rsz','<rect x="8" y="10" width="84" height="20" rx="3" fill="#fff" stroke="#555"/>'+[0,1,2,3,4,5].map(i=>`<circle cx="${20+i*12}" cy="20" r="4.5" fill="${i<3?'#c0392b':'#fff'}" stroke="#555"/>`).join('')));
+ const _co=catOf;catOf=function(it){return it&&['rse','rsz'].includes(it.type)?'mfit':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&['rse','rsz'].includes(it.type))$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};})();
+}catch(e){console.error(e);}})();
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
