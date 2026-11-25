@@ -16961,6 +16961,62 @@ RQP.srl=[['th1','sel',TO.slice(1),'Thema'],['th2','sel',TO,'2. Thema (gemischt)'
 window.SRL_TEST={srlGen,near,parse,word,okA};
 }catch(e){console.error(e);}})();
 
+/* ===== Partnersuche: Karten (Aufgabe ↔ Ergebnis, Partnerzahlen, Bruch/Dezimal/Prozent) ===== */
+(function(){try{if(!window.SCR_TEST||!window.SRL_TEST)return;const {G,TH}=SCR_TEST,okA=SRL_TEST.okA;
+POT.push('psk');TLT.push('psk');RQT.push('psk');
+TLN.psk='Partnersuche-Karten';
+TLD.psk={w:714,md:'rg',th1:'kopf',th2:'',lv:1,n:12,bd:'bdp3',sy:false};
+const R=n=>Math.floor(Math.random()*n),SH=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
+const plain=s=>String(s).replace(/<svg[\s\S]*?<\/svg>/g,'').replace(/<[^>]+>/g,'');
+const fr=(z,n)=>`<span style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.05;margin:0 .1em"><span style="border-bottom:.07em solid currentColor;padding:0 .15em">${z}</span><span>${n}</span></span>`;
+const BDP=[[1,2,'0,5',50],[1,4,'0,25',25],[3,4,'0,75',75],[1,5,'0,2',20],[2,5,'0,4',40],[3,5,'0,6',60],[4,5,'0,8',80],[1,10,'0,1',10],[3,10,'0,3',30],[7,10,'0,7',70],[9,10,'0,9',90],[1,20,'0,05',5],[1,8,'0,125','12,5'],[1,100,'0,01',1],[1,1,'1',100],[3,20,'0,15',15],[1,50,'0,02',2],[1,25,'0,04',4]];
+const MUL=[[2,50,100],[4,25,100],[5,20,100],[20,5,100],[25,4,100],[50,2,100],[8,125,1000],[125,8,1000],[4,250,1000],[250,4,1000],[2,500,1000],[500,2,1000],[5,200,1000],[200,5,1000],[40,25,1000],[20,50,1000],[10,100,1000],[100,10,1000],[16,625,10000],[400,25,10000],[125,80,10000],[250,40,10000],[625,16,10000],[2000,5,10000],[1000,10,10000]];
+const nb=x=>String(x).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const blank=q=>String(q).replace(/_{3,}/g,'<span style="display:inline-block;min-width:1.8em;border-bottom:.07em solid currentColor">&nbsp;</span>');
+function pskGen(it){const n=Math.max(2,Math.min(20,+it.n||12)),md=it.md||'rg',lv=Math.max(0,Math.min(2,(+it.lv||1)-1));const P=[];const used=new Set();
+ if(md==='rg'){const ths=[it.th1,it.th2].filter(t=>t&&TH[t]);if(!ths.length)ths.push('kopf');let pool=[...new Set(ths.flatMap(t=>TH[t][1][lv]||TH[t][1][0]))].filter(g=>G[g]);let ord=[];
+  for(let tr=0;P.length<n&&tr<3000;tr++){if(!ord.length)ord=SH(pool);const g=ord.pop();let o;try{o=G[g](lv);}catch(e){continue;}const a=String(o.a);if(!o.q||!okA(a,true)||used.has(a))continue;used.add(a);P.push([[blank(o.q),'Aufgabe'],[a,'Ergebnis']]);}
+  it._fb=P.length<n;}
+ else if(md==='pzm'){SH(MUL).forEach(([a,b,t])=>{if(P.length>=n||used.has(b)||used.has('q'+a))return;used.add(b);used.add('q'+a);P.push([[`${nb(a)} · ___ = ${nb(t)}`,'Aufgabe'],[nb(b),'Partnerzahl']]);});it._fb=P.length<n;}
+ else if(md==='pza'){const T=lv===0?[100]:lv===1?[100,1000]:[1000,1];for(let tr=0;P.length<n&&tr<500;tr++){const t=T[R(T.length)];let a,b;
+   const dc=x=>('0,'+String(x).padStart(2,'0')).replace(/0$/,'');
+   if(t===1){const x=5*(1+R(19));a=dc(x);b=dc(100-x);}
+   else if(t===100){a=5+R(90);if(lv===0)a=5*(1+R(19));b=100-a;}else{a=lv===1?50*(1+R(19)):10*(5+R(90));b=1000-a;}
+   if(used.has(String(b))||used.has('q'+a))continue;used.add(String(b));used.add('q'+a);P.push([[`${nb(a)} + ___ = ${nb(t)}`,'Aufgabe'],[nb(b),'Partnerzahl']]);}it._fb=false;}
+ else{const bd=it.bd||'bdp3';SH(BDP).slice(0,n).forEach(([z,nn,d,p])=>{const B=[fr(z,nn),'Bruch'],D=[d,'Dezimalzahl'],Q=[p+' %','Prozent'];
+   P.push(bd==='bd'?[B,D]:bd==='bp'?[B,Q]:bd==='dp'?[D,Q]:[B,D,Q]);});it._fb=n>BDP.length;}
+ it.d=P;it.ord=SH(P.flatMap((g,k)=>g.map((c,j)=>[k,j])));}
+const SY=['🍎','🐟','⭐','🌙','🚀','🎈','🐞','🌻','⚽','🎵','🍀','🦋','🐢','🍓','🔔','🧩','🐝','🍋','🎲','🦊'];
+const CC=['#1d5f86','#b03a2e','#1e8449'];
+function cell(it,k,j){const g=it.d[k];if(!g)return '<div></div>';const [t,lab]=g[j],c=CC[j%3],L=plain(t).length,fs=L>34?17:L>20?22:L>12?28:36;
+ return `<div style="box-sizing:border-box;height:258px;border:1.5px dashed #999;padding:8px;display:flex;flex-direction:column;position:relative">
+ <div style="font-size:12px;font-weight:700;color:${c};text-transform:uppercase;letter-spacing:.06em">${lab}</div>
+ <div style="flex:1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:${fs}px;font-weight:700;line-height:1.3;border:3px solid ${c};border-radius:14px;margin-top:4px;padding:6px;min-height:0;overflow:hidden">${t}</div>
+ <div style="display:flex;justify-content:space-between;font-size:12px;color:#888;margin-top:4px;min-height:16px"><span>${it.d[0].length>2?'Findet euch zu dritt!':'Finde deinen Partner!'}</span><span style="font-size:15px">${it.sy?SY[k%SY.length]:''}${it.show?` <b style="color:#c0392b;font-size:12px">${it.d[0].length>2?'Gruppe':'Paar'} ${k+1}</b>`:''}</span></div></div>`;}
+const CH=1040;
+function pskBlk(it){if(!it.d||!it.ord)pskGen(it);const O=it.ord,top=(it.y||0)%PH,pages=[];
+ for(let i=0;i<O.length;i+=12)pages.push(`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2px">${O.slice(i,i+12).map(([k,j])=>cell(it,k,j)).join('')}</div>`);
+ const sp=top>TOPM+30?`<div style="height:${PH-top+TOPM}px"></div>`:'';
+ return sp+pages.map(p=>`<div style="height:${CH}px;overflow:hidden">${p}</div>`).join(`<div style="height:${PH-CH}px"></div>`);}
+{const _g=rqGen,_b=rqBlk,_s=rqSol;rqGen=function(it){if(it.type==='psk'){pskGen(it);return;}return _g(it);};rqBlk=function(it){return it.type==='psk'?pskBlk(it):_b(it);};rqSol=function(it){return it.type==='psk'?[]:_s(it);};}
+{const _h=hasSol;hasSol=function(){const keep=items;items=keep.filter(i=>i.type!=='psk');try{return _h.apply(this,arguments);}finally{items=keep;}};}
+const TO=Object.keys(TH).filter(k=>k!=='sach'&&k!=='teil').map(k=>[k,TH[k][0]]);
+RQP.psk=[['md','sel',[['rg','Aufgabe ↔ Ergebnis (Mathe-Fit-Themen)'],['pzm','Partnerzahlen mal (25 · 4 = 100, 8 · 125 = 1000 …)'],['pza','Ergänzen auf 100 / 1000'],['bdp','Bruch ↔ Dezimalzahl ↔ Prozent']],'Art der Karten'],
+ ['th1','sel',TO,'Thema',it=>(it.md||'rg')==='rg'],['th2','sel',[['','– kein weiteres –'],...TO],'2. Thema (gemischt)',it=>(it.md||'rg')==='rg'],
+ ['bd','sel',[['bdp3','Dreiergruppen: Bruch – Dezimalzahl – Prozent'],['bd','Paare: Bruch – Dezimalzahl'],['bp','Paare: Bruch – Prozent'],['dp','Paare: Dezimalzahl – Prozent']],'Kombination',it=>it.md==='bdp'],
+ ['lv','sel',[[1,'Niveau 1 – leicht'],[2,'Niveau 2 – mittel'],[3,'Niveau 3 – schwer']],'Niveau',it=>it.md!=='bdp'],
+ ['n','sel',[4,5,6,7,8,9,10,11,12,13,14,15,16].map(x=>[x,x]),'Anzahl Paare bzw. Gruppen'],['sy','ck','Gleiches Kontroll-Symbol auf zusammengehörigen Karten']];
+{const _r=renderPo;renderPo=function(){_r.apply(this,arguments);const it=items.find(i=>i.id===sel&&i.type==='psk');const g=$('#g-po');if(!it||!g)return;
+ const k=(it.d||[]).reduce((s,x)=>s+x.length,0);
+ g.insertAdjacentHTML('beforeend',(it._fb?'<div style="font-size:12px;color:#b03a2e;margin-top:6px">⚠️ Für diese Auswahl gibt es nicht so viele verschiedene Ergebnisse – es sind weniger Karten entstanden. Wähle ein 2. Thema oder weniger Paare.</div>':'')+`<div style="font-size:12px;color:var(--mut);margin-top:6px"><b>${k} Karten</b> (12 pro Seite, entlang der Linien ausschneiden). Bei ungerader Kinderzahl spielst du selbst mit oder ein Kind bekommt eine Zusatzaufgabe. „Lösung zeigen“ schreibt die Paarnummer auf jede Karte.</div>`);};}
+(function(){const Pn=document.querySelector('#left .catp[data-c="mfit"]');if(!Pn)return;const rz=Pn.querySelector('.pal[data-t="srl"]');
+ const html=`<div class="pal" draggable="true" data-t="psk" style="margin-bottom:8px"><svg viewBox="0 0 100 40"><rect x="8" y="6" width="34" height="28" rx="4" fill="#fff" stroke="#1d5f86" stroke-width="1.8"/><text x="25" y="25" font-size="10" font-weight="700" text-anchor="middle">25·4</text><rect x="58" y="6" width="34" height="28" rx="4" fill="#fff" stroke="#b03a2e" stroke-width="1.8"/><text x="75" y="25" font-size="10" font-weight="700" text-anchor="middle">100</text><path d="M44 20h12" stroke="#555" stroke-width="1.5" stroke-dasharray="2 2"/></svg><span>${TLN.psk}</span></div>`;
+ if(rz)rz.insertAdjacentHTML('afterend',html);else Pn.insertAdjacentHTML('beforeend',html);
+ const _co=catOf;catOf=function(it){return it&&it.type==='psk'?'mfit':_co.apply(this,arguments);};
+ const _ac=applyCat;applyCat=function(){_ac.apply(this,arguments);const it=items.find(i=>i.id===sel);if(it&&it.type==='psk')$('#rp').querySelectorAll('[data-cats]').forEach(g=>g.style.display=g.dataset.cats.split(' ').includes('po')?'':'none');};})();
+window.PSK_TEST={pskGen};
+}catch(e){console.error(e);}})();
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
