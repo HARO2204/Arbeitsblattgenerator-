@@ -17181,6 +17181,87 @@ RQP.psk=[['md','sel',[['rg','Aufgabe ↔ Ergebnis (Mathe-Fit-Themen)'],['pzm','P
 window.PSK_TEST={pskGen};
 }catch(e){console.error(e);}})();
 
+/* ===== Timer-Werkzeug: Time-Timer (rote Scheibe), digitaler Countdown, Stoppuhr ===== */
+(function(){try{
+const LS=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem('vk_tmr_'+k)||'null');localStorage.setItem('vk_tmr_'+k,JSON.stringify(v));}catch(e){return null;}};
+const T={view:LS('view')||'tt',dur:LS('dur')||300,rest:null,end:0,run:false,sw:0,swStart:0,swRun:false,laps:[],snd:LS('snd')!==false,lab:LS('lab')||'',sc:LS('sc')||'60',done:false};T.rest=T.dur;
+let RAF=null,AC=null;
+const fmt=s=>{s=Math.max(0,Math.ceil(s));const h=Math.floor(s/3600),m=Math.floor(s/60)%60,x=s%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(x).padStart(2,'0');};
+const fmtSW=ms=>{const s=Math.floor(ms/1000),m=Math.floor(s/60),x=s%60,z=Math.floor(ms%1000/100);return `${m}:${String(x).padStart(2,'0')}<span style="font-size:.5em">,${z}</span>`;};
+function beep(){if(!T.snd)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();[0,.45,.9].forEach(t=>{const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=880;o.connect(g);g.connect(AC.destination);const t0=AC.currentTime+t;g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(.35,t0+.02);g.gain.linearRampToValueAtTime(0,t0+.35);o.start(t0);o.stop(t0+.4);});}catch(e){}}
+function now(){return performance.now();}
+function remaining(){return T.run?Math.max(0,(T.end-now())/1000):T.rest;}
+function start(){if(T.view==='sw'){if(T.swRun){T.sw+=now()-T.swStart;T.swRun=false;}else{T.swStart=now();T.swRun=true;}loop();draw();return;}
+ try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();AC.resume&&AC.resume();}catch(e){}
+ if(T.run){T.rest=remaining();T.run=false;}else{if(T.rest<=0)T.rest=T.dur;T.done=false;T.end=now()+T.rest*1000;T.run=true;}loop();draw();}
+function reset(){if(T.view==='sw'){T.sw=0;T.swRun=false;T.laps=[];draw();return;}T.run=false;T.rest=T.dur;T.done=false;draw();}
+function setDur(s){T.dur=Math.max(1,Math.min(5*3600,Math.round(s)));LS('dur',T.dur);T.run=false;T.rest=T.dur;T.done=false;draw();}
+function loop(){cancelAnimationFrame(RAF);const step=()=>{if(!document.getElementById('tmr')){return;}
+ if(T.run&&remaining()<=0){T.run=false;T.rest=0;T.done=true;beep();draw();return;}upd();if(T.run||T.swRun)RAF=requestAnimationFrame(step);};RAF=requestAnimationFrame(step);}
+/* ---------- Time-Timer ---------- */
+function scale(){if(T.sc==='60')return 60;const m=T.dur/60;return [5,10,15,20,30,60,90,120,180,240,300].find(x=>x>=m)||300;}
+function dial(){const S=scale(),R=200,c=230;let g=`<circle cx="${c}" cy="${c}" r="${R+22}" fill="#fff" stroke="#333" stroke-width="4"/>`;
+ const st=S<=10?1:S<=30?1:S<=60?1:5,lb=S<=10?1:S<=20?5:S<=60?5:S<=120?10:30;
+ for(let m=0;m<S;m+=st){const a=-m/S*2*Math.PI-Math.PI/2,big=m%lb===0,r1=R+(big?2:8),r2=R+18;g+=`<line x1="${c+r1*Math.cos(a)}" y1="${c+r1*Math.sin(a)}" x2="${c+r2*Math.cos(a)}" y2="${c+r2*Math.sin(a)}" stroke="#333" stroke-width="${big?3:1.4}"/>`;}
+ for(let m=0;m<S;m+=lb){const a=-m/S*2*Math.PI-Math.PI/2,r=R+48;g+=`<text x="${c+r*Math.cos(a)}" y="${c+r*Math.sin(a)+10}" font-size="28" font-weight="700" text-anchor="middle" fill="#333">${m}</text>`;}
+ g+=`<path id="tmr-sec" fill="#d32f2f"/><circle cx="${c}" cy="${c}" r="22" fill="#eee" stroke="#555" stroke-width="3"/>`;
+ return `<svg viewBox="-44 -44 548 548" style="height:calc(100vh - 250px);max-height:calc(100dvh - 250px);width:auto;max-width:92vw;display:block;margin:0 auto">${g}</svg>`;}
+function sector(sec){const S=scale()*60,R=200,c=230,f=Math.min(1,sec/S);if(f<=0)return '';if(f>=.9999)return `M${c} ${c-R}A${R} ${R} 0 1 0 ${c} ${c+R}A${R} ${R} 0 1 0 ${c} ${c-R}Z`;const a=-f*2*Math.PI-Math.PI/2,x=c+R*Math.cos(a),y=c+R*Math.sin(a);return `M${c} ${c}L${c} ${c-R}A${R} ${R} 0 ${f>.5?1:0} 0 ${x} ${y}Z`;}
+/* ---------- Oberfläche ---------- */
+const PRE=[1,2,3,5,10,15,20,30,45,60];
+function ov(){let o=document.getElementById('tmr');if(o)return o;o=document.createElement('div');o.id='tmr';document.body.appendChild(o);
+ o.addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;const a=b.dataset.t;
+  if(a==='x')close();else if(a==='v'){T.view=b.dataset.v;LS('view',T.view);draw();}else if(a==='go')start();else if(a==='rs')reset();
+  else if(a==='pre')setDur(+b.dataset.m*60);else if(a==='pm'){setDur((T.run?remaining():T.rest)+ +b.dataset.s);}
+  else if(a==='snd'){T.snd=!T.snd;LS('snd',T.snd);draw();}else if(a==='fs'){try{document.fullscreenElement?document.exitFullscreen():o.requestFullscreen();}catch(x){}}
+  else if(a==='ok'){T.done=false;T.rest=T.dur;draw();}else if(a==='lap'){if(T.swRun)T.laps.push(T.sw+now()-T.swStart);draw();}
+  else if(a==='sc'){T.sc=T.sc==='60'?'auto':'60';LS('sc',T.sc);draw();}});
+ o.addEventListener('change',e=>{const t=e.target;if(t.id==='tmr-min'){const v=String(t.value).replace(',','.').split(':');const s=v.length>1?(+v[0]||0)*60+(+v[1]||0):(parseFloat(v[0])||0)*60;if(s>0)setDur(s);}if(t.id==='tmr-lab'){T.lab=t.value;LS('lab',T.lab);}});
+ return o;}
+function close(){cancelAnimationFrame(RAF);document.removeEventListener('keydown',kd);const o=document.getElementById('tmr');if(o)o.remove();if(location.hash==='#timer')history.replaceState(null,'',location.pathname+location.search);}
+function kd(e){if(!document.getElementById('tmr'))return;if(/input|textarea|select/i.test(e.target.tagName))return;if(e.key===' '){e.preventDefault();start();}else if(e.key==='r'||e.key==='R')reset();else if(e.key==='Escape'&&!document.fullscreenElement)close();}
+function draw(){const o=ov(),V=T.view,sw=V==='sw';const tab=(v,t)=>`<button data-t="v" data-v="${v}" class="${V===v?'on':''}">${t}</button>`;
+ const run=sw?T.swRun:T.run;
+ o.innerHTML=`<div class="tm-top">${tab('tt','🔴 Time-Timer')}${tab('dg','🔢 Digital')}${tab('sw','⏱️ Stoppuhr')}<span style="flex:1"></span><button data-t="snd" title="Signalton am Ende">${T.snd?'🔔 Ton an':'🔕 Ton aus'}</button><button data-t="fs">⛶ Vollbild</button><button data-t="x">✕ Schließen</button></div>
+ <div class="tm-main">${T.lab&&!sw?`<div class="tm-lab">${T.lab.replace(/</g,'&lt;')}</div>`:''}
+  ${V==='tt'?`<div class="tm-dial">${dial()}</div><div class="tm-small" id="tmr-d"></div>`:sw?`<div class="tm-big" id="tmr-d"></div><div class="tm-laps">${T.laps.map((l,i)=>`<span>Runde ${i+1}: ${fmtSW(i?l-T.laps[i-1]:l).replace(/<[^>]+>/g,'')}</span>`).join('')}</div>`:`<div class="tm-big" id="tmr-d"></div><div class="tm-bar"><div id="tmr-b"></div></div>`}
+  <div class="tm-done" id="tmr-done" data-t="ok" title="Klicken zum Schließen"${T.done&&!sw?'':' hidden'}>⏰ Die Zeit ist um!</div>
+ </div>
+ <div class="tm-ctl"><button class="tm-go ${run?'pause':''}" data-t="go">${run?'⏸ Pause':'▶ Start'}</button><button data-t="rs">↺ Zurücksetzen</button>${sw?`<button data-t="lap"${T.swRun?'':' disabled'}>🏁 Runde</button>`:`
+  <span class="tm-sep"></span>${PRE.map(m=>`<button data-t="pre" data-m="${m}" class="${T.dur===m*60?'on':''}">${m} min</button>`).join('')}
+  <span class="tm-sep"></span><button data-t="pm" data-s="-60">− 1 min</button><button data-t="pm" data-s="60">+ 1 min</button>
+  <label>eigene Zeit <input id="tmr-min" type="text" inputmode="decimal" placeholder="z. B. 7 oder 2:30" style="width:9em"></label>
+  ${V==='tt'?`<button data-t="sc" title="Zifferblatt">${T.sc==='60'?'Skala: 60 min':'Skala: passend'}</button>`:''}
+  <label>Text <input id="tmr-lab" type="text" value="${T.lab.replace(/"/g,'&quot;')}" placeholder="z. B. Leise arbeiten 🤫" style="width:12em"></label>`}</div>
+ <div class="tm-hint">Leertaste = Start/Pause · R = Zurücksetzen · Esc = Schließen</div>`;
+ upd();if(run)loop();}
+function upd(){const d=document.getElementById('tmr-d');if(!d)return;
+ if(T.view==='sw'){d.innerHTML=fmtSW(T.sw+(T.swRun?now()-T.swStart:0));return;}
+ const r=remaining();d.textContent=fmt(r);d.classList.toggle('warn',r<=10&&r>0&&T.run);
+ const b=document.getElementById('tmr-b');if(b)b.style.width=(T.dur?r/T.dur*100:0)+'%';
+ const s=document.getElementById('tmr-sec');if(s)s.setAttribute('d',sector(r));
+ const dn=document.getElementById('tmr-done');if(dn)dn.hidden=!T.done;}
+window.tmrOpen=function(){ov();document.removeEventListener('keydown',kd);document.addEventListener('keydown',kd);draw();};
+{const st=document.createElement('style');st.textContent=`#tmr{position:fixed;inset:0;z-index:99998;background:#fff;color:#111;display:flex;flex-direction:column;font:16px/1.4 system-ui,-apple-system,Segoe UI,sans-serif}
+#tmr button{font:inherit;font-size:14px;padding:6px 12px;border-radius:8px;border:1.5px solid #c7cbd6;background:#fff;cursor:pointer}#tmr button.on{background:#1f3a8a;color:#fff;border-color:#1f3a8a}#tmr button[disabled]{opacity:.4}
+#tmr .tm-top{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 12px;background:#f2f4f8;border-bottom:1px solid #dde}
+#tmr .tm-main{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;position:relative;overflow:hidden}
+#tmr .tm-lab{font-size:clamp(20px,4vw,44px);font-weight:700;color:#1f3a8a;margin-bottom:.2em;text-align:center}
+#tmr .tm-dial{display:flex;align-items:center;justify-content:center;max-width:100%}#tmr .tm-small{font-size:clamp(22px,4vw,40px);font-weight:700;font-variant-numeric:tabular-nums;color:#444}
+#tmr .tm-big{font-size:clamp(80px,24vw,320px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1}#tmr .warn{color:#d32f2f}
+#tmr .tm-bar{width:min(900px,90%);height:22px;background:#e6e8ee;border-radius:11px;overflow:hidden;margin-top:18px}#tmr .tm-bar div{height:100%;background:#d32f2f;border-radius:11px;transition:width .2s linear}
+#tmr .tm-laps{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;font-size:18px;margin-top:10px;color:#444}
+#tmr .tm-done{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#d32f2f;color:#fff;font-size:clamp(28px,6vw,72px);font-weight:800;padding:.3em .8em;border-radius:20px;white-space:nowrap;cursor:pointer;box-shadow:0 8px 40px #0005;animation:tmrp 1s ease-in-out infinite alternate}
+@keyframes tmrp{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-50%,-50%) scale(1.06)}}
+#tmr .tm-ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;padding:10px 12px;border-top:1px solid #dde;background:#f7f8fb}#tmr .tm-ctl label{font-size:14px;display:flex;gap:4px;align-items:center}#tmr .tm-ctl input{font:inherit;font-size:14px;padding:5px 8px;border:1.5px solid #c7cbd6;border-radius:8px}
+#tmr .tm-go{font-size:18px!important;font-weight:700;background:#2e7d32!important;color:#fff;border-color:#2e7d32!important;min-width:7em}#tmr .tm-go.pause{background:#b26a00!important;border-color:#b26a00!important}
+#tmr .tm-sep{width:1px;height:26px;background:#ccd;margin:0 4px}#tmr .tm-hint{text-align:center;font-size:12px;color:#888;padding:0 0 6px;background:#f7f8fb}`;document.head.appendChild(st);}
+/* Knopf in der oberen Leiste */
+{const r=document.getElementById('tgR');if(r)r.insertAdjacentHTML('afterend','<button type="button" id="tmrBtn" title="Timer und Stoppuhr für die Klasse (Beamer)" style="margin-left:6px">⏱️ Timer</button>');const b=document.getElementById('tmrBtn');if(b)b.onclick=()=>tmrOpen();}
+const route=()=>{if(location.hash==='#timer')setTimeout(()=>tmrOpen(),300);};route();window.addEventListener('hashchange',route);
+window.TMR_TEST={T,sector,fmt,setDur,start};
+}catch(e){console.error(e);}})();
+
 /* ===== Mein Fehler-Tagebuch (Vorlage) ===== */
 POT.push('ftb');TLT.push('ftb');RQT.push('ftb');TLN.ftb='Mein Fehler-Tagebuch (Vorlage)';
 TLD.ftb={w:714,md:'tab',n:6,bsp:true,ti:'Mein Fehler-Tagebuch',mas:''};
