@@ -5097,6 +5097,13 @@ function m1Gen(it){const k=it.type,md=it.md,n=Math.max(1,Math.min(16,+it.n||6)),
   else if(md==='zz')it.d={R:tshuf([3,4,6,7,8,9,11,12]).slice(0,r).sort((a,b)=>a-b),C:m1U(Math.min(c,5),()=>kri(2,9)*10**kri(1,5)).sort((a,b)=>a-b)};
   else it.d={R:tshuf([3,4,5,6,7,8,9,11,12,14,15]).slice(0,r).sort((a,b)=>a-b),C:[0,1].concat(tshuf([2,3,4,5,6,7,8,9]).slice(0,c-2)).sort((a,b)=>a-b)};}
  else if(k==='mzn'){if(md==='zz')it.d=m1U(n,()=>{const a=kri(2,9),b=kri(2,9),e=kri(1,3),f=kri(1,2);return {a:a*10**e,b:b*10**f};});
+  else if(md==='kr'){let ty=tshuf(['z','e','p','x']).concat(tshuf(['p','x','p','e','z','p','x','p','e','x'])),ti=0;const big=lv>1;
+   it.d=m1U(n,()=>{const t=ty[ti++%ty.length];let a,b;
+    if(t==='z'){a=big?kri(1000,99999):kri(11,999);b=0;}
+    else if(t==='e'){a=big?kri(1000,99999):kri(11,999);b=1;}
+    else if(t==='p'){b=tpick([10,100,1000]);a=big?kri(101,9999):kri(2,99);if(a%10===0)a+=1;}
+    else{a=kri(1,9)*10**kri(1,big?3:2);b=kri(1,9)*10**kri(1,big?2:1);if(a<20||b<20)return null;}
+    return Math.random()<.5?{a,b}:{a:b,b:a};});}
   else if(md==='vg')it.d=m1U(Math.min(n,12),()=>{const a=kri(12,88),b=kri(12,88),up=Math.random()<.5;if(a%10===0||b%10===0)return null;const R=x=>up?Math.ceil(x/10)*10:Math.floor(x/10)*10;return {a,b,c:R(a),d:R(b),s:up?'<':'>'};});
   else it.d=m1U(Math.min(n,8),()=>{const a=lv>1?kri(11,99):kri(2,9),b=lv>2?kri(2,9):1;return {a,b};});}
  else if(k==='mrg'){if(md==='vo')it.d=m1U(n,()=>{const p=tpick([[2,5],[4,5],[25,4],[5,8],[2,15],[5,6],[2,50],[5,20],[25,8],[125,8],[50,4],[250,4],[20,50],[25,40],[2,500],[5,40]]),o=lv>1?[kri(3,12)]:[tpick([3,4,6,7,8,9]),tpick([2,3,4,6,7,9])],f=tshuf(p.concat(o)),q=o.reduce((a,b)=>a*b,1);return {f,s:'('+p.join(' · ')+') · '+(o.length>1?'('+o.join(' · ')+')':o[0])+' = '+m1N(p[0]*p[1])+' · '+q+' = '+m1N(p[0]*p[1]*q)};});
@@ -5112,6 +5119,7 @@ function m1Blk(it){const k=it.type,d=it.d,md=it.md,sh=tlS(it),co=+it.co||2,th='b
   return wnH1('Schreibe die Rechnung als Multiplikation an und berechne das Produkt.')+tlGrid(co,d.map((o,i)=>row(i,`<span>${Array(o.k).fill(o.v).join(' + ')} =</span><span class="tlln" style="flex:1;min-width:6em">${tlSv(it,o.k+' · '+o.v+' = '+o.k*o.v)}</span>`,1)).join(''));}
  if(k==='mtb')return wnH1('Ergänze die Tabelle.')+`<table style="border-collapse:collapse;width:100%;text-align:center"><tr><td style="${th}${Hc}width:5em">·</td>${d.C.map(c=>`<td style="${th}${Hc}">${m1N(c)}</td>`).join('')}</tr>${d.R.map(r=>`<tr><td style="${th}${Hc}">${m1N(r)}</td>${d.C.map(c=>`<td style="${th}height:2.1em;font-size:.92em;white-space:nowrap">${tlSv(it,m1N(r*c))}</td>`).join('')}</tr>`).join('')}</table>`;
  if(k==='mzn'){
+  if(md==='kr')return wnH1('Rechne im Kopf!')+tlGrid(Math.min(co,3),d.map((o,i)=>row(i,`<span style="white-space:nowrap">${m1N(o.a)} · ${m1N(o.b)} =</span><span class="tlln" style="flex:1;min-width:6.5em">${tlSv(it,m1N(o.a*o.b))}</span>`)).join(''));
   if(md==='zz')return wnH1('Berechne. Multipliziere zuerst die Ziffern und hänge dann die Nullen an.')+tlGrid(Math.min(co,3),d.map((o,i)=>row(i,`<span style="white-space:nowrap">${m1N(o.a)} · ${m1N(o.b)} =</span><span class="tlln" style="flex:1;min-width:6.5em">${tlSv(it,m1N(o.a*o.b))}</span>`)).join(''));
   if(md==='vg')return wnH1('Setze &lt; oder &gt; ein, ohne schriftlich zu rechnen.')+tlGrid(co,d.map((o,i)=>row(i,`<span style="white-space:nowrap">${o.a} · ${o.b}</span><span style="display:inline-block;width:1.7em;height:1.5em;border:1.3px solid #000;text-align:center;line-height:1.5em">${tlSv(it,o.s==='<'?'&lt;':'&gt;')}</span><span style="white-space:nowrap">${o.c} · ${o.d}</span>`)).join(''));
   return wnH1('Berechne. Was fällt dir auf?')+tlGrid(Math.min(co,3),d.map((o,i)=>`<div style="break-inside:avoid;margin-bottom:.5em">${[10,100,1000].map((z,j)=>`<div style="display:flex;gap:.4em;align-items:flex-end;margin:.25em 0"><b style="width:1.3em">${j?'':poL(i)}</b><span style="white-space:nowrap">${o.a} · ${m1N(o.b*z)} =</span><span class="tlln" style="flex:1;min-width:6.5em;white-space:nowrap">${tlSv(it,m1N(o.a*o.b*z))}</span></div>`).join('')}</div>`).join(''));}
@@ -5133,7 +5141,7 @@ const m1Block=it=>{const h=m1Blk(it);return `<div class="tlx" style="${kst(it)}"
   let H=`<div style="font-weight:700;margin-bottom:4px">${TLN[k]}</div>`;
   if(k==='mgb')H+=sl('md',[['ad','Addition als Multiplikation schreiben'],['pf','Punktefelder'],['bt','Tabelle Faktor · Faktor = Produkt'],['rf','Richtig oder falsch (große Zahlen)']],'Aufgabe')+N+(it.md==='ad'||it.md==='pf'?C:'');
   else if(k==='mtb')H+=sl('md',[['ee','Einmaleins (auch 11, 12, 14 …)'],['st','mal 0, 1, 10, 100, 1 000 …'],['zz','mal Zehnerzahlen (20, 400 …)']],'Tabelle')+sl('r',tN([2,3,4,5,6]),'Zeilen')+sl('c',tN([3,4,5,6,7]),'Spalten');
-  else if(k==='mzn')H+=sl('md',[['pk','Päckchen: mal 10, 100, 1 000'],['zz','Zehnerzahlen: 70 · 30, 700 · 300'],['vg','Vergleichen mit < oder >']],'Aufgabe')+N+C+(it.md==='pk'?sl('lv',[[1,'2 · 10, 2 · 100 …'],[2,'23 · 10, 23 · 100 …'],[3,'2 · 30, 2 · 300 …']],'Zahlen'):'');
+  else if(k==='mzn')H+=sl('md',[['pk','Päckchen: mal 10, 100, 1 000'],['zz','Zehnerzahlen: 70 · 30, 700 · 300'],['kr','Rechne im Kopf (gemischt: · 0, · 1, · 10/100/1 000, Zehnerzahlen)'],['vg','Vergleichen mit < oder >']],'Aufgabe')+N+C+(it.md==='kr'?sl('lv',[[1,'kleinere Zahlen (bis 1 000)'],[2,'größere Zahlen (bis 100 000)']],'Zahlen'):'')+(it.md==='pk'?sl('lv',[[1,'2 · 10, 2 · 100 …'],[2,'23 · 10, 23 · 100 …'],[3,'2 · 30, 2 · 300 …']],'Zahlen'):'');
   else if(k==='mrg')H+=sl('md',[['mf','Mehrere Faktoren und Klammern'],['vo','Vorteilhaft rechnen'],['ue','Überschlag und Multiplikation'],['ev','Einservorteil']],'Aufgabe')+N+C+(it.md==='mf'?'':sl('lv',it.md==='vo'?[[1,'vier Faktoren'],[2,'drei Faktoren']]:it.md==='ev'?[[1,'mal 12 bis 19'],[2,'mal 112 bis 198']]:[[1,'zweistellig · zweistellig'],[2,'dreistellig · dreistellig']],'Zahlen'));
   else H+=sl('md',[['bg','Begriffe: Faktor und Produkt'],['zn','Multiplizieren mit 10, 100, 1 000'],['rg','Rechengesetze'],['tr','Tricks beim Multiplizieren']],'Inhalt');
   H+=(k==='mmk'?'':ck('show','Lösung zeigen')+'<button data-m1-act="mix">Neu mischen</button>');g.innerHTML=H;};}
